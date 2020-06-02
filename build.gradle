@@ -1,0 +1,31 @@
+apply plugin: 'kotlin'
+apply from: 'gradle/versions.gradle'
+
+buildscript {
+    apply from: 'gradle/versions.gradle'
+
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+        maven {
+            url "https://maven.google.com"
+        }
+        tasks.withType(Javadoc) {
+            options.addStringOption('encoding', 'UTF-8')
+        }
+    }
+}

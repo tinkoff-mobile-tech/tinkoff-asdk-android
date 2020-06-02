@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/acq_content"
+        style="?acqContentLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="?acqViewHorizontalOffset"
+        android:layout_marginRight="?acqViewHorizontalOffset"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/acq_loop_tv_title"
+            style="?attr/acqSubmitAmountDescriptionStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="?acqViewHorizontalOffset"
+            android:layout_marginRight="?acqViewHorizontalOffset"
+            android:visibility="visible" />
+
+        <EditText
+            android:id="@+id/acq_loop_et_amount"
+            style="?acqSubmitAmountEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="?acqViewHorizontalOffset"
+            android:layout_marginRight="?acqViewHorizontalOffset"
+            android:digits="0123456789.,"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            android:singleLine="true"
+            tools:ignore="Autofill,LabelFor,TextFields" />
+
+        <Button
+            android:id="@+id/acq_loop_btn_check"
+            style="?acqButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="?acqViewHorizontalOffset"
+            android:layout_marginRight="?acqViewHorizontalOffset" />
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/acq_error_message_with_button"
+        tools:visibility="gone" />
+
+    <include
+        layout="@layout/acq_progress_bar"
+        tools:visibility="visible" />
+
+</FrameLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+    <color name="acq_colorMain">#FFFFFF</color>
+    <color name="acq_colorMainDark">#CCCCCC</color>
+    <color name="acq_colorAccent">#428BF9</color>
+    <color name="acq_colorBrandGray">#3e4757</color>
+    <color name="acq_colorButton">#FFDD2D</color>
+    <color name="acq_colorButtonPressed">#55ffdd2d</color>
+    <color name="acq_colorButtonDisable">#cccccc</color>
+    <color name="acq_colorTitle">#000000</color>
+    <color name="acq_colorText">#333333</color>
+    <color name="acq_colorHint">#C7C9CC</color>
+    <color name="acq_colorCoins">#9E9E9E</color>
+    <color name="acq_colorBackgroundTransparentGray">#4D000000</color>
+    <color name="acq_colorShadow">#F1F1F1</color>
+    <color name="acq_colorCardBackground">@color/acq_colorMain</color>
+    <color name="acq_colorDarkHint">#9299A2</color>
+    <color name="acq_colorQrMessage">#000000</color>
+    <color name="acq_colorQrBackground">#F6F7F8</color>
+    <color name="acq_colorFpsBackground">#0F0738</color>
+
+    <color name="acq_colorTextInvalid">#F52222</color>
+    <color name="acq_colorTextButton">@color/acq_colorText</color>
+
+    <color name="acq_colorNfcBackground">@color/acq_colorBrandGray</color>
+    <color name="acq_colorNfcTint">#FFFFFF</color>
+    <color name="acq_colorNfcTintPressed">#8CFFFFFF</color>
+
+    <color name="acq_colorKeyText">#FFFFFF</color>
+    <color name="acq_colorKeyCircle">#2CFFFFFF</color>
+    <color name="acq_colorKeyboardBackground">@color/acq_colorBrandGray</color>
+</resources>

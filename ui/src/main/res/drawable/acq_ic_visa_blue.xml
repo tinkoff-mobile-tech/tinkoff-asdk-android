@@ -1,0 +1,38 @@
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="18dp"
+    android:viewportWidth="36"
+    android:viewportHeight="18">
+  <path
+      android:pathData="M31.3183,4.9295C30.7765,4.9295 30.3213,5.2461 30.1189,5.7356L25.8893,15.9165H28.8494L29.4352,14.2733H33.0529L33.3924,15.9165H36L33.7236,4.9295H31.3183ZM32.5862,12.023L31.7312,7.8994L30.2478,12.023H32.5862Z"
+      android:fillColor="#224E9D"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M23.8756,4.7288C21.113,4.7435 19.1711,6.2333 19.1564,8.3612C19.1385,9.9424 20.5549,10.8236 21.6237,11.3507C22.7236,11.8892 23.0907,12.2335 23.0858,12.7149C23.0777,13.4508 22.2096,13.7772 21.3985,13.7886C20.0191,13.8125 19.203,13.4261 18.5554,13.1196L18.5037,13.0951L17.9946,15.5037C18.6522,15.8072 19.8679,16.0732 21.1277,16.0862C24.091,16.0862 26.0264,14.6111 26.0345,12.3282C26.0423,10.594 24.6175,9.8397 23.4777,9.2362C22.7127,8.8312 22.076,8.4942 22.0872,7.9745C22.0953,7.5796 22.4674,7.1602 23.2817,7.0541C23.6847,7.0019 24.7993,6.9595 26.0606,7.5453L26.5567,5.2167C25.886,4.9719 25.0277,4.7353 23.9589,4.7288H23.8756Z"
+      android:fillColor="#224E9D"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M15.5713,4.9295L13.2378,15.9165H16.0576L18.3894,4.9295H15.5713Z"
+      android:fillColor="#224E9D"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M8.4664,12.4081L11.4004,4.9295H14.3605L9.793,15.9165H6.815L4.5663,7.1488C4.4309,6.6086 4.3118,6.4096 3.8973,6.1827C3.2201,5.8123 2.1007,5.4647 1.1167,5.2477L1.1819,4.9295H5.9795C6.5898,4.9295 7.1413,5.3391 7.2784,6.0505L8.4664,12.4081Z"
+      android:fillColor="#224E9D"
+      android:fillType="evenOdd"/>
+</vector>

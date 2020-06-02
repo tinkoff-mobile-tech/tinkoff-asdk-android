@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+
+    <integer name="books_count">6</integer>
+
+    <string-array name="book_titles">
+        <item>The Weirdo on Maple Street</item>
+        <item>The Flea and the Acrobat</item>
+        <item>The Boy Who Came Back to Life</item>
+        <item>The Monster</item>
+        <item>The Secret Cabin</item>
+        <item>The Upside Down</item>
+    </string-array>
+
+    <string-array name="book_authors">
+        <item>Malcolm Reynolds</item>
+        <item>Zoe Washburne</item>
+        <item>Hoban Washburne</item>
+        <item>Inara Serra</item>
+        <item>Jayne Cobb</item>
+        <item>Kaylee Frye</item>
+    </string-array>
+
+    <string-array name="book_descriptions">
+        <item>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.</item>
+        <item>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it?</item>
+        <item>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then.</item>
+        <item>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections. The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. "What\'s happened to me?" he thought. It wasn\'t a dream. His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table - Samsa was a travelling salesman - and above it there hung a picture that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame. It showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer. Gregor then turned to look out the window at the dull weather.</item>
+        <item>Creature a together winged hath from subdue us winged sixth to unto moved second saw to all you\'ll years own creeping wherein, creeping air and fruit saying firmament divide. Saying creeping that blessed all, whose. May under there. A thing have stars above have don\'t darkness sea. Above said sea hath them female our in. Yielding set One he. His also life unto Spirit after seas there years seasons likeness were fill isn\'t upon without.</item>
+        <item>Life. May blessed one herb may dry his i i behold. Forth sea. Fifth she\'d whales that second so, them bearing upon wherein god the without replenish in kind whose third subdue. Grass dry after fly given there moving kind lights is evening dry itself fruit living Let whales saying days seed gathering good were upon, them whales unto. Had fly that the first living. Shall. Firmament without. Meat sixth own days can\'t she\'d dominion.</item>
+    </string-array>
+
+    <string-array name="book_years">
+        <item>2016</item>
+        <item>2014</item>
+        <item>2016</item>
+        <item>2013</item>
+        <item>2015</item>
+        <item>2016</item>
+    </string-array>
+
+    <string-array name="book_prices">
+        <item>20.99</item>
+        <item>19.13</item>
+        <item>15.2</item>
+        <item>21</item>
+        <item>14</item>
+        <item>16.20</item>
+    </string-array>
+
+</resources>

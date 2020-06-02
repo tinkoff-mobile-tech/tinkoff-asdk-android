@@ -1,0 +1,26 @@
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+  <path
+      android:pathData="M15.7,8C15.7,7.4477 15.2523,7 14.7,7H3.5L8.4,2.1C8.7866,1.7134 8.7866,1.0866 8.4,0.7C8.0134,0.3134 7.3866,0.3134 7,0.7L0.4071,7.2929C0.0166,7.6834 0.0166,8.3166 0.4071,8.7071L7,15.3C7.3866,15.6866 8.0134,15.6866 8.4,15.3C8.7866,14.9134 8.7866,14.2866 8.4,13.9L3.5,9H14.7C15.2523,9 15.7,8.5523 15.7,8Z"
+      android:fillColor="#428BF9"
+      android:fillType="evenOdd"/>
+</vector>

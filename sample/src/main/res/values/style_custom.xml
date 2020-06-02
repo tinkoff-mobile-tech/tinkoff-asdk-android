@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+    <!-- Acquiring -->
+    <style name="AcquiringTheme.Custom" parent="AcquiringTheme">
+        <item name="colorPrimary">@color/custom_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/custom_colorPrimaryDark</item>
+        <item name="colorAccent">@color/custom_colorAccent</item>
+        <item name="android:textColor">@color/custom_textColor</item>
+
+        <item name="acqContentLayoutStyle">@style/AcquiringContentLayout.Custom</item>
+        <item name="acqToolbarStyle">@style/AcquiringToolbarStyle.Custom</item>
+        <item name="acqEmailStyle">@style/AcquiringEmailStyle.Custom.Payment</item>
+        <item name="acqButtonStyle">@style/AcquiringButtonStyle.Custom</item>
+        <item name="acqCardItemStyle">@style/AcquiringCardItemsStyle.Custom</item>
+        <item name="acqEditCardStyle">@style/AcquiringEditCardStyle.Custom</item>
+        <item name="acqErrorTitleStyle">@style/AcquiringTitleStyle.Custom</item>
+        <item name="acqScreenTitleLayoutStyle">@style/AcquiringScreenTitleLayoutStyle.Custom</item>
+        <item name="acqScreenTitleStyle">@style/AcquiringScreenTitleStyle.Custom</item>
+        <item name="acqOrderTitleStyle">@style/AcquiringOrderTitleStyle.Custom</item>
+        <item name="acqOrderDescriptionStyle">@style/AcquiringOrderDescriptionStyle.Custom</item>
+        <item name="acqPaySecureIconStyle">@style/AcquiringPaySecureIconStyle.Custom</item>
+        <item name="acqSubmitAmountDescriptionStyle">@style/AcquiringSubmitAmountTitleStyle.Custom
+        </item>
+        <item name="acqSubmitAmountEditTextStyle">@style/AcquiringEditTextStyle.Custom</item>
+        <item name="acqViewHorizontalOffset">16dp</item>
+        <item name="acqScreenViewType">expandable</item>
+    </style>
+
+    <style name="AcquiringTheme.AttachCard.Custom" parent="AcquiringTheme.Custom">
+        <item name="acqScreenViewType">fullscreen</item>
+        <item name="acqEmailStyle">@style/AcquiringEmailStyle.Custom.Base</item>
+    </style>
+
+    <style name="AcquiringContentLayout.Custom" parent="AcquiringContentLayout">
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+    <style name="AcquiringToolbarStyle.Custom" parent="AcquiringToolbarStyle">
+        <item name="titleTextColor">@color/common_white</item>
+    </style>
+
+    <style name="AcquiringEmailStyle.Custom.Base" parent="AcquiringEditTextStyle">
+        <item name="android:textColor">@color/custom_colorAccent</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="AcquiringEmailStyle.Custom.Payment" parent="AcquiringEditTextStyle">
+        <item name="android:textColor">@color/custom_colorAccent</item>
+        <item name="android:background">@null</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="AcquiringButtonStyle.Custom.Base" parent="AcquiringButtonStyle.Base">
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/bg_grey_button</item>
+    </style>
+
+    <style name="AcquiringButtonStyle.Custom" parent="AcquiringButtonStyle.Custom.Base" />
+
+    <style name="AcquiringCardItemsStyle.Custom" parent="AcquiringCardItemsStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+    </style>
+
+    <style name="AcquiringEditCardStyle.Custom" parent="AcquiringEditCardStyle">
+        <item name="cursorColor">@color/custom_colorAccent</item>
+        <item name="android:textColorHint">@color/common_gray</item>
+        <item name="textColorInvalid">@color/custom_textColorInvalid</item>
+        <item name="numberHint">Custom Card Number</item>
+        <item name="dateHint">**/**</item>
+        <item name="cvcHint">***</item>
+        <item name="keyboardBackgroundColor">#222645</item>
+        <item name="keyboardKeyTextColor">#ffffff</item>
+    </style>
+
+    <style name="AcquiringTitleStyle.Custom" parent="AcquiringTitleTextStyle">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AcquiringScreenTitleLayoutStyle.Custom" parent="AcquiringScreenTitleLayoutStyle">
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">22dp</item>
+    </style>
+
+    <style name="AcquiringScreenTitleStyle.Custom" parent="AcquiringScreenTitleStyle">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AcquiringOrderTitleStyle.Custom" parent="AcquiringOrderTitleStyle">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="AcquiringOrderDescriptionStyle.Custom" parent="AcquiringOrderDescriptionStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/common_gray</item>
+    </style>
+
+    <style name="AcquiringPaySecureIconStyle.Custom" parent="AcquiringPaySecureIconStyle">
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <style name="AcquiringEditTextStyle.Custom" parent="AcquiringEditTextStyle">
+        <item name="android:textColorHint">@color/acq_colorText</item>
+        <item name="android:background">@drawable/acq_edit_text_bg</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+
+    <style name="AcquiringSubmitAmountTitleStyle.Custom" parent="AcquiringSubmitAmountDescriptionStyle">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+</resources>

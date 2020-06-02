@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+    <color name="colorPrimary">#009ecf</color>
+    <color name="colorPrimaryDark">#009ecf</color>
+
+    <color name="book_dark_text">#333333</color>
+    <color name="transparent">#00000000</color>
+    <color name="cover_frame_gray">#C7C9CC</color>
+    <color name="dividers_color">#c7c9cc</color>
+    <color name="grey_button_bg">#eaecee</color>
+    <color name="grey_button_bg_pressed">#8ceaecee</color>
+    <color name="grey_button_text">#9299a2</color>
+
+    <color name="common_gray">#9299A2</color>
+    <color name="common_yellow">#ffdd2d</color>
+    <color name="common_yellow_semitransparent">#8cffdd2d</color>
+
+    <color name="common_white">#FFFFFF</color>
+    <color name="common_white_semitransparent">#8CFFFFFF</color>
+
+    <color name="custom_colorPrimary">#2E3359</color>
+    <color name="custom_colorPrimaryDark">#222645</color>
+    <color name="custom_colorAccent">#3DB2E6</color>
+    <color name="custom_textColorInvalid">#E4297A</color>
+    <color name="custom_textColor">#313131</color>
+</resources>

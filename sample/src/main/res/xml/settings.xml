@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreference
+        android:key="@string/acq_sp_use_system_keyboard"
+        android:title="@string/settings_title_use_system_keyboard"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+        android:key="@string/acq_sp_recurrent_payment"
+        android:title="@string/settings_title_recurrent_payment"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/acq_sp_handle_cards_error"
+        android:title="@string/settings_title_handle_cards_list_error"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/acq_sp_android_pay"
+        android:title="@string/settings_title_google_pay"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/acq_sp_fps"
+        android:title="@string/settings_title_fps"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:key="@string/acq_sp_terminal_id"
+        android:title="@string/settings_title_terminal_id"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:defaultValue="@string/acq_sp_default_style_id"
+        android:entries="@array/acq_sp_styles_keys"
+        android:entryValues="@array/acq_sp_styles_keys"
+        android:key="@string/acq_sp_style_id"
+        android:title="@string/settings_title_style_id"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:defaultValue="@string/acq_sp_dark_mode_auto_id"
+        android:entries="@array/acq_sp_mode"
+        android:entryValues="@array/acq_sp_mode"
+        android:key="@string/acq_sp_dark_mode_id"
+        android:title="@string/settings_title_dark_mode_id"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:defaultValue="@string/acq_sp_check_type_no"
+        android:entries="@array/acq_sp_check_type_keys"
+        android:entryValues="@array/acq_sp_check_type_keys"
+        android:key="@string/acq_sp_check_type_id"
+        android:title="@string/settings_title_check_type_id"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:defaultValue="@string/acq_sp_camera_type_card_io"
+        android:entries="@array/acq_sp_camera_type_keys"
+        android:entryValues="@array/acq_sp_camera_type_keys"
+        android:key="@string/acq_sp_camera_type_id"
+        android:title="@string/settings_title_camera"
+        app:iconSpaceReserved="false" />
+
+</androidx.preference.PreferenceScreen>

@@ -1,0 +1,43 @@
+/*
+ * Copyright © 2020 Tinkoff Bank
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package ru.tinkoff.acquiring.sdk.models
+
+import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+
+/**
+ * @author Mariya Chernyadieva
+ */
+internal sealed class ScreenState
+
+internal object DefaultScreenState : ScreenState()
+internal class ErrorScreenState(val message: String) : ScreenState()
+internal class FinishWithErrorScreenState(val error: Throwable) : ScreenState()
+internal class BrowseSbpBankScreenState(val paymentId: Long, val deepLink: String) : ScreenState()
+
+internal sealed class Screen : ScreenState()
+internal object PaymentScreenState : Screen()
+internal class RejectedCardScreenState(val cardId: String) : Screen()
+internal class ThreeDsScreenState(val data: ThreeDsData) : Screen()
+internal class ThreeDsDataCollectScreenState(val response: Check3dsVersionResponse?) : Screen()
+internal class LoopConfirmationScreenState(val requestKey: String) : Screen()
+
+internal sealed class LoadState : ScreenState()
+internal object LoadingState : LoadState()
+internal object LoadedState : LoadState()
+
+internal sealed class ScreenEvent : ScreenState()
+internal object ErrorButtonClickedEvent : ScreenEvent()

@@ -1,0 +1,198 @@
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+
+    <style name="AcquiringTheme.Base" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/acq_colorMain</item>
+        <item name="colorPrimaryDark">@color/acq_colorMainDark</item>
+        <item name="colorAccent">@color/acq_colorAccent</item>
+        <item name="android:textColor">@color/acq_colorText</item>
+        <item name="alertDialogTheme">@style/AcquiringDialogStyle</item>
+
+        <item name="acqContentLayoutStyle">@style/AcquiringContentLayout</item>
+        <item name="acqToolbarStyle">@style/AcquiringToolbarStyle</item>
+        <item name="acqSavedCardsAddCardStyle">@style/AcquiringSavedCardsAddCardStyle</item>
+        <item name="acqSavedCardsDeleteCardStyle">@style/AcquiringSavedCardsDeleteCardStyle</item>
+        <item name="acqSavedCardsItemCardDataStyle">@style/AcquiringTitleTextStyle</item>
+        <item name="acqStaticQrMessageStyle">@style/AcquiringQrStaticMessage</item>
+        <item name="acqEmailStyle">@style/AcquiringEmailStyle</item>
+        <item name="acqButtonStyle">@style/AcquiringButtonStyle</item>
+        <item name="acqCardItemStyle">@style/AcquiringCardItemsStyle</item>
+        <item name="acqEditCardStyle">@style/AcquiringEditCardStyle</item>
+        <item name="acqErrorTitleStyle">@style/AcquiringTitleTextStyle</item>
+        <item name="acqScreenTitleLayoutStyle">@style/AcquiringScreenTitleLayoutStyle</item>
+        <item name="acqScreenTitleStyle">@style/AcquiringScreenTitleStyle</item>
+        <item name="acqOrderTitleStyle">@style/AcquiringOrderTitleStyle</item>
+        <item name="acqOrderDescriptionStyle">@style/AcquiringOrderDescriptionStyle</item>
+        <item name="acqPaySecureIconStyle">@style/AcquiringPaySecureIconStyle</item>
+        <item name="acqSubmitAmountDescriptionStyle">@style/AcquiringSubmitAmountDescriptionStyle
+        </item>
+        <item name="acqSubmitAmountEditTextStyle">@style/AcquiringEditTextStyle</item>
+        <item name="acqViewHorizontalOffset">@dimen/acq_content_margin_horizontal</item>
+        <item name="acqScreenViewType">expandable</item>
+    </style>
+
+    <style name="AcquiringTheme" parent="AcquiringTheme.Base">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="AcquiringNfcTheme" parent="AcquiringTheme">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="AcquiringContentLayout">
+        <item name="android:paddingTop">@dimen/acq_content_padding</item>
+        <item name="android:paddingBottom">@dimen/acq_content_padding</item>
+    </style>
+
+    <style name="AcquiringToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?colorPrimary</item>
+        <item name="navigationIcon">@drawable/acq_arrow_back</item>
+        <item name="titleTextColor">?android:textColor</item>
+    </style>
+
+    <style name="AcqToolbarTitleStyle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="AcquiringSavedCardsAddCardStyle">
+        <item name="android:layout_margin">@dimen/acq_add_card_text_button_margin</item>
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textColor">?colorAccent</item>
+    </style>
+
+    <style name="AcquiringSavedCardsDeleteCardStyle">
+        <item name="android:textSize">@dimen/acq_large_text_size</item>
+        <item name="android:paddingLeft">@dimen/acq_delete_card_text_button_margin_horizontal</item>
+        <item name="android:paddingRight">@dimen/acq_delete_card_text_button_margin_horizontal
+        </item>
+        <item name="android:paddingTop">@dimen/acq_delete_card_text_button_margin_vertical</item>
+        <item name="android:paddingBottom">@dimen/acq_delete_card_text_button_margin_vertical</item>
+        <item name="android:textColor">@color/acq_colorTextInvalid</item>
+    </style>
+
+    <style name="AcquiringEmailStyle" parent="AcquiringEditTextStyle">
+        <item name="android:paddingTop">@dimen/acq_email_padding</item>
+    </style>
+
+    <style name="AcquiringButtonStyle.Base" parent="Base.TextAppearance.AppCompat.Widget.Button">
+        <item name="android:background">@drawable/acq_button_bg</item>
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
+        <item name="android:padding">@dimen/acq_button_padding</item>
+        <item name="android:textColor">@color/acq_colorTextButton</item>
+        <item name="android:layout_marginTop">@dimen/acq_button_margin</item>
+    </style>
+
+    <style name="AcquiringButtonStyle" parent="AcquiringButtonStyle.Base">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AcquiringCardItemsStyle">
+        <item name="android:padding">@dimen/acq_item_card_background_padding</item>
+    </style>
+
+    <style name="AcquiringEditCardStyle">
+        <item name="android:textColorHint">@color/acq_colorHint</item>
+        <item name="textColorInvalid">@color/acq_colorTextInvalid</item>
+        <item name="keyboardBackgroundColor">@color/acq_colorKeyboardBackground</item>
+        <item name="keyboardKeyTextColor">@color/acq_colorKeyText</item>
+    </style>
+
+    <style name="AcquiringTitleTextStyle">
+        <item name="android:textSize">@dimen/acq_large_text_size</item>
+        <item name="android:textColor">@color/acq_colorTitle</item>
+    </style>
+
+    <style name="AcquiringScreenTitleLayoutStyle">
+        <item name="android:layout_marginTop">@dimen/acq_screen_title_layout_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/acq_screen_title_layout_margin_bottom</item>
+    </style>
+
+    <style name="AcquiringScreenTitleStyle" parent="AcquiringTitleTextStyle">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AcquiringOrderTitleStyle" parent="AcquiringTitleTextStyle">
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AcquiringOrderDescriptionStyle">
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:layout_marginBottom">@dimen/acq_order_description_margin</item>
+    </style>
+
+    <style name="AcquiringEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColorHint">@color/acq_colorHint</item>
+        <item name="android:background">@drawable/acq_edit_text_bg</item>
+        <item name="android:paddingTop">@dimen/acq_edittext_padding</item>
+        <item name="android:paddingBottom">@dimen/acq_edittext_padding</item>
+        <item name="android:textSize">@dimen/acq_large_text_size</item>
+        <item name="android:layout_marginBottom">@dimen/acq_edittext_margin</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+    </style>
+
+    <style name="AcquiringSubmitAmountDescriptionStyle">
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
+    </style>
+
+    <style name="AcquiringPaySecureIconStyle">
+        <item name="android:layout_marginTop">@dimen/acq_secure_icons_margin</item>
+        <item name="android:layout_marginBottom">@dimen/acq_secure_icons_margin</item>
+    </style>
+
+    <style name="AcquiringQrStaticMessage" parent="AcquiringScreenTitleStyle"/>
+
+    <style name="AcquiringScrollingPagerIndicator">
+        <item name="spi_dotSize">@dimen/acq_dot_size</item>
+        <item name="spi_dotColor">@color/acq_colorHint</item>
+        <item name="spi_dotSelectedColor">?colorAccent</item>
+        <item name="spi_dotSelectedSize">@dimen/acq_dot_selected_size</item>
+        <item name="spi_dotSpacing">@dimen/acq_dot_spacing</item>
+        <item name="spi_visibleDotCount">3</item>
+        <item name="spi_visibleDotThreshold">2</item>
+        <item name="spi_looped">false</item>
+    </style>
+
+    <style name="AcquiringResultNotificationDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="AcquiringDialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:textColorPrimary">@color/acq_colorDarkHint</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">?colorAccent</item>
+    </style>
+
+</resources>

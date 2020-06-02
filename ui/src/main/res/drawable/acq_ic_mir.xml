@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="21dp"
+    android:height="10dp"
+    android:viewportWidth="21"
+    android:viewportHeight="10">
+
+    <path
+        android:fillColor="#fff"
+        android:pathData="M1.58,10A1.58,1.58,0,0,1,0,8.43V2.07A1.58,1.58,0,0,1,1.58 0.5 H19.42A1.58,1.58,0,0,1,21,2.07V8.43A1.58,1.58,0,0,1,19.42,10Z" />
+    <path
+        android:fillColor="#00b4e5"
+        android:pathData="M16.24,4.94a2.46,2.46,0,0,1-2.26-2h3.1A1.65,1.65,0,0,1,18.74,4.6a1.31,1.31,0,0,1,0,0.34Z" />
+    <path
+        android:fillColor="#4eb45f"
+        android:pathData="M6.76,2.9H8.25V7.58H6.76V5.07H6.59L5.76,7.58H5.09L4.26,5.07H4.09V7.58H2.6V2.9H4.09s0.44,0,0.67 0.67 c0.6,1.77 0.67 ,2,0.67,2s0.13-0.44 0.66 -2C6.32,2.9,6.76,2.9,6.76,2.9Zm5.49,0h1.33V7.58h-1.5V4.91h-0.16L10.75,7.25a0.6 0.6 ,0,0,1-0.5 0.33 H8.92V2.9h1.5V5.58h0.16l1.17-2.35A0.69 0.69 ,0,0,1,12.25,2.9Zm2,2.17h4.39a1.65,1.65,0,0,1-1.56,1.18H15.74V7.58H14.25Z" />
+</vector>

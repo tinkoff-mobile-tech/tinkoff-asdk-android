@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<resources>
+
+    <string name="acq_sp_use_system_keyboard" translatable="false">acq_sp_use_system_keyboard</string>
+    <string name="acq_sp_recurrent_payment" translatable="false">acq_sp_recurrent_payment</string>
+    <string name="acq_sp_terminal_id" translatable="false">acq_sp_terminal_id</string>
+    <string name="acq_sp_android_pay" translatable="false">acq_sp_android_pay</string>
+    <string name="acq_sp_fps" translatable="false">acq_sp_fps</string>
+    <string name="acq_sp_handle_cards_error" translatable="false">acq_sp_handle_cards_error</string>
+
+    <string name="acq_sp_style_id" translatable="false">acq_sp_style_id</string>
+    <string name="acq_sp_default_style_id" translatable="false">Default</string>
+    <string name="acq_sp_custom_style_id" translatable="false">Custom</string>
+    <string-array name="acq_sp_styles_keys">
+        <item>@string/acq_sp_default_style_id</item>
+        <item>@string/acq_sp_custom_style_id</item>
+    </string-array>
+
+    <string name="acq_sp_dark_mode_id" translatable="false">acq_sp_dark_mode_id</string>
+    <string name="acq_sp_dark_mode_disabled_id">Disabled</string>
+    <string name="acq_sp_dark_mode_enabled_id">Enabled</string>
+    <string name="acq_sp_dark_mode_auto_id">Auto</string>
+    <string-array name="acq_sp_mode">
+        <item>@string/acq_sp_dark_mode_disabled_id</item>
+        <item>@string/acq_sp_dark_mode_enabled_id</item>
+        <item>@string/acq_sp_dark_mode_auto_id</item>
+    </string-array>
+
+    <string name="acq_sp_check_type_id" translatable="false">acq_sp_check_type_id</string>
+    <string name="acq_sp_check_type_no" translatable="false">NO</string>
+    <string-array name="acq_sp_check_type_keys" translatable="false">
+        <item>@string/acq_sp_check_type_no</item>
+        <item>HOLD</item>
+        <item>3DS</item>
+        <item>3DSHOLD</item>
+    </string-array>
+
+    <string name="acq_sp_camera_type_id" translatable="false">acq_sp_camera_type_id</string>
+    <string name="acq_sp_camera_type_card_io" translatable="false">Card.IO</string>
+    <string-array name="acq_sp_camera_type_keys" translatable="false">
+        <item>@string/acq_sp_camera_type_card_io</item>
+        <item>TEST-DEMO</item>
+    </string-array>
+
+</resources>

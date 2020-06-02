@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply from: '../gradle/dokka.gradle'
+apply from: '../gradle/versions.gradle'
+apply from: '../gradle/publish.gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    testImplementation 'junit:junit:4.13'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+

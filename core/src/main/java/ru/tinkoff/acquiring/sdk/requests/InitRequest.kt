@@ -1,0 +1,151 @@
+/*
+ * Copyright © 2020 Tinkoff Bank
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package ru.tinkoff.acquiring.sdk.requests
+
+import ru.tinkoff.acquiring.sdk.models.Receipt
+import ru.tinkoff.acquiring.sdk.models.Shop
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi.INIT_METHOD
+import ru.tinkoff.acquiring.sdk.responses.InitResponse
+
+/**
+ * Инициирует новый платеж
+ *
+ * @author Mariya Chernyadieva
+ */
+class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
+
+    /**
+     * Сумма в копейках
+     */
+    var amount: Long = 0
+
+    /**
+     * Номер заказа в системе продавца
+     */
+    var orderId: String? = null
+
+    /**
+     * Название шаблона формы оплаты продавца
+     */
+    var payForm: String? = null
+
+    /**
+     * Идентификатор покупателя в системе продавца
+     */
+    var customerKey: String? = null
+
+    /**
+     * Краткое описание
+     */
+    var description: String? = null
+
+    /**
+     * Язык платёжной формы.
+     * ru - форма оплаты на русском языке;
+     * en - форма оплаты на английском языке.
+     * По-умолчанию - форма оплаты на русском языке
+     */
+    var language: String? = null
+
+    /**
+     * Форма проведения платежа [ru.tinkoff.acquiring.sdk.models.enums.PayType]
+     */
+    var payType: String? = null
+
+    /**
+     * Объект с данными чека
+     */
+    var receipt: Receipt? = null
+
+    /**
+     * Указывает, что совершается рекуррентный или нерекуррентный платеж
+     */
+    var recurrent: Boolean = false
+
+    /**
+     * Флаг, что происходит оплата в рекуретном режиме, и вместо вызова FinishAuthorize
+     * необходимо вызвать Charge
+     */
+    var chargeFlag: Boolean = false
+
+    /**
+     * Объект, содержащий дополнительные параметры в виде "ключ":"значение".
+     * Данные параметры будут переданы в запросе платежа/привязки карты.
+     * Максимальная длина для каждого передаваемого параметра:
+     * Ключ – 20 знаков,
+     * Значение – 100 знаков.
+     * Максимальное количество пар "ключ-значение" не может превышать 20
+     */
+    var data: Map<String, String>? = null
+
+    /**
+     * Список с данными магазинов
+     */
+    var shops: List<Shop>? = null
+
+    /**
+     * Список с данными чеков
+     */
+    var receipts: List<Receipt>? = null
+
+    override fun asMap(): MutableMap<String, Any> {
+        val map = super.asMap()
+
+        map.putIfNotNull(AMOUNT, amount.toString())
+        map.putIfNotNull(ORDER_ID, orderId)
+        map.putIfNotNull(CUSTOMER_KEY, customerKey)
+        map.putIfNotNull(DESCRIPTION, description)
+        map.putIfNotNull(PAY_FORM, payForm)
+        map.putIfNotNull(RECURRENT, if (recurrent) RECURRENT_FLAG_Y else null)
+        map.putIfNotNull(LANGUAGE, language)
+        map.putIfNotNull(PAY_TYPE, payType)
+        map.putIfNotNull(RECEIPT, receipt)
+        map.putIfNotNull(RECEIPTS, receipts)
+        map.putIfNotNull(SHOPS, shops)
+        map.putDataIfNonNull(data)
+
+        return map
+    }
+
+    override fun validate() {
+        orderId.validate(ORDER_ID)
+        amount.validate(AMOUNT)
+    }
+
+    override fun execute(onSuccess: (InitResponse) -> Unit, onFailure: (Exception) -> Unit) {
+        super.performRequest(this, InitResponse::class.java, onSuccess, onFailure)
+    }
+
+    fun receipt(receipt: Receipt.() -> Unit) {
+        this.receipt = Receipt().apply(receipt)
+    }
+
+    private fun MutableMap<String, Any>.putDataIfNonNull(data: Map<String, String>?) {
+        val dataMap = HashMap<String, String>()
+
+        if (data != null) {
+            dataMap.putAll(data)
+        }
+
+        dataMap[CHARGE_FLAG] = chargeFlag.toString()
+        this[DATA] = dataMap
+    }
+
+    companion object {
+        private const val RECURRENT_FLAG_Y = "Y"
+    }
+}

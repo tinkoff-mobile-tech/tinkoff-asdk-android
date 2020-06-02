@@ -1,0 +1,92 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply from: rootProject.file('gradle/versions.gradle')
+
+def isAndroidLibrary = project.extensions.findByName('android') != null
+
+def getReleaseRepositoryUrl() {
+    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
+            : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
+def getSnapshotRepositoryUrl() {
+    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
+            : "https://oss.sonatype.org/content/repositories/snapshots/"
+}
+
+def getRepositoryUsername() {
+    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ''
+}
+
+def getRepositoryPassword() {
+    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ''
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from isAndroidLibrary ? components.release : components.java
+                groupId GROUP
+                version versionName
+                artifactId POM_ARTIFACT_ID
+                afterEvaluate {
+                    artifact sourcesJar
+                    artifact javadocJar
+                }
+                pom {
+                    name = POM_NAME
+                    packaging = POM_PACKAGING
+                    description = POM_DESCRIPTION
+                    url = POM_URL
+                    scm {
+                        url = POM_SCM_URL
+                        connection = POM_SCM_CONNECTION
+                        developerConnection = POM_SCM_DEV_CONNECTION
+                    }
+                    licenses {
+                        license {
+                            name = POM_LICENCE_NAME
+                            url = POM_LICENCE_URL
+                            distribution = POM_LICENCE_DIST
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = POM_DEVELOPER_ID
+                            name = POM_DEVELOPER_NAME
+                        }
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                url isRelease ? getReleaseRepositoryUrl() : getSnapshotRepositoryUrl()
+                credentials {
+                    username = getRepositoryUsername()
+                    password = getRepositoryPassword()
+                }
+            }
+        }
+    }
+
+    task dokkaJavadoc(type: dokka.getClass()) {
+        outputFormat = 'javadoc'
+        outputDirectory = "$buildDir/dokka"
+    }
+
+    task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+        archiveClassifier.set('javadoc')
+        from "$buildDir/dokka"
+    }
+
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set("sources")
+        from isAndroidLibrary ? android.sourceSets.main.java.srcDirs : sourceSets.main.allSource
+    }
+    signing {
+        required { isRelease }
+        sign publishing.publications.release
+    }
+}
