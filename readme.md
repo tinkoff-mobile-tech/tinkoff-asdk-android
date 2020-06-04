@@ -1,5 +1,9 @@
 # Tinkoff Acquiring SDK for Android
 
+[![Maven Central](https://img.shields.io/maven-central/v/ru.tinkoff.acquiring/ui.svg?maxAge=3600)][search.maven]
+
+<img src="images/pay.jpeg" width="320"> <img src="images/attach.jpeg" width="320">
+
 Acquiring SDK позволяет интегрировать [Интернет-Эквайринг Tinkoff][acquiring] в мобильные приложения для платформы Android.
 
 Возможности SDK:
@@ -23,9 +27,8 @@ implementation 'ru.tinkoff.acquiring:ui:$latestVersion'
 ```
 Если вы хотите внедрить сканирование с помощью библиотеки Card-IO, то необходимо добавить в [_build.gradle_][build-config]
 ```groovy
-implementation 'ru.tinkoff.acquiring:card-io:$latestVersion'
+implementation 'ru.tinkoff.acquiring:cardio:$latestVersion'
 ```
-
 
 ### Подготовка к работе
 Для начала работы с SDK вам понадобятся:
@@ -35,56 +38,63 @@ implementation 'ru.tinkoff.acquiring:card-io:$latestVersion'
 
 Которые выдаются после подключения к [Интернет-Эквайрингу][acquiring].
 
+SDK позволяет настроить режим работы (debug/prod). По умолчанию - режим prod.
+Чтобы настроить debug режим, установите параметры:
+```kotlin
+AcquiringSdk.isDeveloperMode = true // используется тестовый URL, деньги с карт не списываются
+AcquiringSdk.isDebug = true         // включение логирования запросов
+```
 
 ### Пример работы
-Для проведения оплаты необходимо вызвать метод **TinkoffAcquiring**#_openPaymentScreen_. Метод запустит экран оплаты **PaymentActivity**. Активити должна быть настроена на обработку конкретного платежа, поэтому в метод необходимо передать настройки проведения оплаты, включающие в себя данные заказа, данные покупателя и опционально параметры кастомизации экрана оплаты:
+Для проведения оплаты необходимо вызвать метод **TinkoffAcquiring**#_openPaymentScreen_. Метод запустит экран оплаты **PaymentActivity**. Активити должна быть настроена на обработку конкретного платежа, поэтому в метод необходимо передать настройки проведения оплаты, включающие в себя данные заказа, данные покупателя и опционально параметры кастомизации экрана оплаты.
+Кроме того, можно указать тему, указать локализацию формы (или передать свою), а также указать модуль для сканирования (свой или **CameraCardIOScanner**).
 
 ```kotlin
-var paymentOptions = 
+val paymentOptions = 
         PaymentOptions().setOptions {
-            orderOptions {                       // данные заказа
-                orderId = "ORDER-ID"             // ID заказа в вашей системе
-                amount = 1000                    // сумма для оплаты
-                title = "НАЗВАНИЕ ПЛАТЕЖА"       // название платежа, видимое пользователю
-                description = "ОПИСАНИЕ ПЛАТЕЖА" // описание платежа, видимое пользователю
-                recurrentPayment = false         // флаг определяющий является ли платеж рекуррентным [1]
-            }
-            customerOptions {                    // данные покупателя
-                customerKey = "CUSTOMER_KEY"     // уникальный ID пользователя для сохранения данных его карты
-                email = "batman@gotham.co"       // E-mail клиента для отправки уведомления об оплате
-            }
-            featuresOptions {                    // настройки визуального отображения и функций экрана оплаты
-                useSecureKeyboard = true         // флаг использования безопасной клавиатуры [2]
+            orderOptions {                          // данные заказа
+                orderId = "ORDER-ID"                // ID заказа в вашей системе
+                amount = Money.ofRubles(1000)       // сумма для оплаты
+                title = "НАЗВАНИЕ ПЛАТЕЖА"          // название платежа, видимое пользователю
+                description = "ОПИСАНИЕ ПЛАТЕЖА"    // описание платежа, видимое пользователю
+                recurrentPayment = false            // флаг определяющий является ли платеж рекуррентным [1]
+            }   
+            customerOptions {                       // данные покупателя
+                checkType = CheckType.NO.toString() // тип привязки карты
+                customerKey = "CUSTOMER_KEY"        // уникальный ID пользователя для сохранения данных его карты
+                email = "batman@gotham.co"          // E-mail клиента для отправки уведомления об оплате
+            }   
+            featuresOptions {                       // настройки визуального отображения и функций экрана оплаты
+                useSecureKeyboard = true            // флаг использования безопасной клавиатуры [2]
+                cameraCardScanner = CameraCardIOScanner()
+                theme = themeId
             }
         }
 
-var tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY") // создание объекта для взаимодействия с SDK и передача данных продавца
+val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY") // создание объекта для взаимодействия с SDK и передача данных продавца
 tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE)
 ```
 Результат вызова метода вернется в **onActivityResult**.
 
 Можно передать данные чека, указав параметр **receipt** в методе **PaymentOptions**#_orderOptions_ и передать дополнительные параметры **additionalData**. Эти объекты при их наличии будут переданы на сервер с помощью метода [**API Init**][init-documentation], где можно посмотреть их детальное описание.
-Кроме того, можно указать тему, указать локализацию формы (или передать свою), а также указать модуль для сканирования (свой или **CameraCardIOScanner**)
 
 ```kotlin
-var paymentOptions = 
+val paymentOptions = 
         PaymentOptions().setOptions {
-            orderOptions {                       // данные заказа
+            orderOptions {               
                 receipt = myReceipt
                 additionalData = dataMap
-                // другие параметры
+                // другие параметры заказа
             }
-            customerOptions {                    // данные покупателя
-                customerKey = "CUSTOMER_KEY"     // уникальный ID пользователя для сохранения данных его карты
+            customerOptions {                    
+                // данные покупателя
             }
-            featuresOptions {                    // настройки визуального отображения и функций экрана оплаты
-                theme = themeId
-                localizationSource = AsdkSource(Language.RU)
-                cameraCardScanner = CameraCardIOScanner()
+            featuresOptions {                    
+                // настройки визуального отображения и функций экрана оплаты
             }
         }
 
-var tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
+val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
 tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE)
 ```
 [1] _Рекуррентный платеж_ может производиться для дальнейшего списания средств с сохраненной карты, без ввода ее реквизитов. Эта возможность, например, может использоваться для осуществления платежей по подписке.
@@ -93,23 +103,23 @@ tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_RE
 
 
 ### Экран привязки карт
-Для запуска привязки карт необходимо запустить **TinkoffAcquiring**#_openAttachCardScreen_. В метод также необходимо передать некоторые параметры - тип привязки, данные покупателя и опционально параметры кастомизации (по-аналогии с экраном оплаты):
+Для запуска экрана привязки карт необходимо запустить **TinkoffAcquiring**#_openAttachCardScreen_. В метод также необходимо передать некоторые параметры - тип привязки, данные покупателя и опционально параметры кастомизации (по-аналогии с экраном оплаты):
 ```kotlin
-var attachCardOptions = 
+val attachCardOptions = 
         AttachCardOptions().setOptions {
-            customerOptions {                    // данные покупателя
-                customerKey = "CUSTOMER_KEY"     // уникальный ID пользователя для сохранения данных его карты
-                checkType = settings.checkType   // тип привязки карты
-                email = "batman@gotham.co"       // E-mail клиента для отправки уведомления о привязке
+            customerOptions {                       // данные покупателя
+                customerKey = "CUSTOMER_KEY"        // уникальный ID пользователя для сохранения данных его карты
+                checkType = CheckType.NO.toString() // тип привязки карты
+                email = "batman@gotham.co"          // E-mail клиента для отправки уведомления о привязке
             }
-            featuresOptions {                    // настройки визуального отображения и функций экрана оплаты
+            featuresOptions {                       // настройки визуального отображения и функций экрана оплаты
                 useSecureKeyboard = true
                 cameraCardScanner = CameraCardIOScanner()
                 theme = themeId
             }
         }
 
-var tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
+val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
 tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTACH_CARD_REQUEST_CODE)
 ```
 
@@ -128,6 +138,7 @@ tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTA
 ```
 
 Вставить кнопку в разметку интерфейса в соответствии с [Правилами использования бренда Google Pay][google-pay-brand]
+
 Сконфигурировать параметры в коде приложения.
 Для упрощения работы с Google Pay, Acquiring SDK берет на себя работу по настройке параметров, конфигурации Google Pay, предоставляя интерфейс для вызова необходимых методов **GooglePayHelper**.
 
@@ -136,8 +147,8 @@ tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTA
 fun setupGooglePay() {
     val googlePayButton = findViewById<View>(R.id.btn_google_pay) // определяем кнопку, вставленную в разметку
 
-    val googleParams = GooglePayParams("TERMINAL_KEY",  // конфигурируем основные параметры
-            environment = SessionParams.GPAY_TEST_ENVIRONMENT
+    val googleParams = GooglePayParams("TERMINAL_KEY",     // конфигурируем основные параметры
+            environment = WalletConstants.ENVIRONMENT_TEST // тестовое окружение
     )
 
     val googlePayHelper = GooglePayHelper(googleParams) // передаем параметры в класс-помощник
@@ -145,7 +156,7 @@ fun setupGooglePay() {
     googlePayHelper.initGooglePay(this) { ready ->      // вызываем метод для определения доступности Google Pay на девайсе
         if (ready) {                                    // если Google Pay доступен и настроен правильно, по клику на кнопку открываем экран оплаты Google Pay
             googlePayButton.setOnClickListener {
-                googlePayHelper.openGooglePay(this@PayableActivity, totalPrice, GOOGLE_PAY_REQUEST_CODE)
+                googlePayHelper.openGooglePay(this@MainActivity, Money.ofRubles(1000), GOOGLE_PAY_REQUEST_CODE)
             }
         } else {
             googlePayButton.visibility = View.GONE      // если Google Pay недоступен на девайсе, необходимо скрыть кнопку
@@ -214,7 +225,7 @@ var paymentOptions = PaymentOptions().setOptions {
 
 По умолчанию, если в localizationSource не задан, определяется и используется локаль устройства.
 Файлы локализации имеют формат json, где ключом является место использования строки на форме, значением - перевод.
-Существует возможность добавить свои локализации на другие языки. Подробнее см. файл полной документации.
+Существует возможность добавить свои локализации на другие языки. Подробнее см. [файл полной документации][full-doc].
 
 #### Проведение платежа без открытия экрана оплаты
 Для проведения платежа без открытия экрана необходимо вызвать метод **TinkoffAcquiring**#_initPayment_, который запустит процесс оплаты с инициацией и подтверждением платежа (будут вызваны методы API Init и FinishAuthorize). 
@@ -224,11 +235,10 @@ var paymentOptions = PaymentOptions().setOptions {
 
 Пример запуска платежа:
 ```kotlin 
-TinkoffAcquiring.initPayment(token, paymentOptions) //создание процесса платежа
-                .subscribe(paymentListener) // подписка на события процесса
-                .start() // запуск процесса
+TinkoffAcquiring.initPayment(token, paymentOptions) // создание процесса платежа
+                .subscribe(paymentListener)         // подписка на события процесса
+                .start()                            // запуск процесса
 ```
-
 
 ### Структура
 SDK состоит из следующих модулей:
@@ -237,6 +247,11 @@ SDK состоит из следующих модулей:
 Является базовым модулем для работы с Tinkoff Acquiring API. Модуль реализует протокол взаимодействия с сервером и позволяет не осуществлять прямых обращений в API. Не зависит от Android SDK и может использоваться в standalone Java приложениях.
 
 Основной класс модуля - **AcquiringSdk** - предоставляет интерфейс для взаимодействия с Tinkoff Acquiring API. Для работы необходимы ключи и пароль продавца (см. **Подготовка к работе**).
+
+Подключение:
+```groovy
+implementation 'ru.tinkoff.acquiring:core:$latestVersion'
+```
 
 #### UI
 Содержит интерфейс, необходимый для приема платежей через мобильное приложение.
@@ -254,17 +269,20 @@ SDK состоит из следующих модулей:
 #### Sample
 Содержит пример интеграции Tinkoff Acquiring SDK и модуля сканирования Card-IO в мобильное приложение по продаже книг.
 
+### Proguard
+```
+-keep class ru.tinkoff.acquiring.sdk.localization.** { *; }
+```
+
 ### Поддержка
-- Просьба, по возникающим вопросам обращаться на [oplata@tinkoff.ru][support-email]
+- По возникающим вопросам просьба обращаться на [oplata@tinkoff.ru][support-email]
 - Баги и feature-реквесты можно направлять в раздел [issues][issues]
 
 [search.maven]: http://search.maven.org/#search|ga|1|ru.tinkoff.acquiring.ui
 [build-config]: https://developer.android.com/studio/build/index.html
 [support-email]: mailto:oplata@tinkoff.ru
-[issues]: https://github.com/TinkoffCreditSystems/tinkoff-asdk-android/issues
+[issues]: https://github.com/TinkoffCreditSystems/AcquiringSdkAndroid/issues
 [acquiring]: https://www.tinkoff.ru/business/internet-acquiring/
-[payform-class-javadoc]: http://tinkoffcreditsystems.github.io/tinkoff-asdk-android/javadoc/ru/tinkoff/acquiring/sdk/PayFormActivity.html
-[javadoc]: http://tinkoffcreditsystems.github.io/tinkoff-asdk-android/javadoc/
-[img-pay]: http://tinkoffcreditsystems.github.io/tinkoff-asdk-android/res/pay2.png
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
 [google-pay-brand]: https://developers.google.com/pay/api/android/guides/brand-guidelines
+[full-doc]: https://github.com/TinkoffCreditSystems/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
