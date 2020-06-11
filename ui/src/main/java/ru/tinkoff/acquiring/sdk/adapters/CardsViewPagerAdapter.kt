@@ -133,7 +133,12 @@ internal class CardsViewPagerAdapter(
                 }
                 enterCardView = editCard
 
-                val viewState = detachedViews?.get(detachedViews?.keyAt(0) ?: 0)
+                val viewState = if (detachedViews!!.size() > 0) {
+                    detachedViews?.get(detachedViews?.keyAt(0) ?: 0)
+                } else {
+                    null
+                }
+
                 if (viewState != null) {
                     inflatedView.restoreHierarchyState(viewState)
                 }
