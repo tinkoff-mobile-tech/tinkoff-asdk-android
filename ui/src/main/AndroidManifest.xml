@@ -21,10 +21,6 @@
         android:allowBackup="false"
         android:supportsRtl="true">
 
-        <meta-data
-            android:name="com.google.android.gms.wallet.api.enabled"
-            android:value="true" />
-
         <activity
             android:name=".ui.activities.PaymentActivity"
             android:screenOrientation="unspecified"
