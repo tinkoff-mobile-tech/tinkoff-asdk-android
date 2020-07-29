@@ -40,7 +40,7 @@
 
         <activity
             android:name=".ui.activities.StaticQrActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme" />
 
         <activity
