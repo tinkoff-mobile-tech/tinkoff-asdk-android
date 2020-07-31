@@ -24,6 +24,7 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 
 /**
@@ -49,7 +50,13 @@ internal open class BaseAcquiringViewModel(val sdk: AcquiringSdk) : ViewModel() 
         loadState.value = LoadedState
         when (throwable) {
             is NetworkException -> changeScreenState(ErrorScreenState(AsdkLocalization.resources.payDialogErrorNetwork!!))
-            is AcquiringApiException -> changeScreenState(ErrorScreenState(AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
+            is AcquiringApiException -> {
+                val errorCode = throwable.response?.errorCode
+                if (errorCode != null && (AcquiringApi.errorCodesFallback.contains(errorCode) ||
+                        AcquiringApi.errorCodesForUserShowing.contains(errorCode))) {
+                    changeScreenState(ErrorScreenState(resolveErrorMessage(throwable)))
+                } else changeScreenState(FinishWithErrorScreenState(throwable))
+            }
             else -> changeScreenState(FinishWithErrorScreenState(throwable))
         }
     }
@@ -63,6 +70,16 @@ internal open class BaseAcquiringViewModel(val sdk: AcquiringSdk) : ViewModel() 
             is Screen -> screenChangeEvent.value = SingleEvent(newScreenState)
             is LoadState -> loadState.value = newScreenState
             else -> screenState.value = newScreenState
+        }
+    }
+
+    private fun resolveErrorMessage(apiException: AcquiringApiException): String {
+        val fallbackMessage = AsdkLocalization.resources.payDialogErrorFallbackMessage!!
+        val errorCode = apiException.response?.errorCode
+        return if (errorCode != null && AcquiringApi.errorCodesForUserShowing.contains(errorCode)) {
+            apiException.response?.message ?: fallbackMessage
+        } else {
+            fallbackMessage
         }
     }
 }

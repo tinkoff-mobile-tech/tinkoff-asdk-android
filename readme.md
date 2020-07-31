@@ -76,7 +76,7 @@ tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_RE
 ```
 Результат вызова метода вернется в **onActivityResult**:
 - при успешном платеже (_Activity.RESULT_OK_) возвращается _TinkoffAcquiring.EXTRA_PAYMENT_ID_ - идентификатор платежа типа Long, и опционально _TinkoffAcquiring.EXTRA_CARD_ID_ - id карты, с которой проводился платеж, тип String
-- при неуспешном платеже (_TinkoffAcquiring.RESULT_ERROR_) возвращается ошибка _TinkoffAcquiring.EXTRA_ERROR_ типа Throwable
+- при неуспешном платеже (_TinkoffAcquiring.RESULT_ERROR_) возвращается ошибка _TinkoffAcquiring.EXTRA_ERROR_ типа Throwable (подробнее о возвращаемых ошибках в [документации][full-doc])
 
 Можно передать данные чека, указав параметр **receipt** в методе **PaymentOptions**#_orderOptions_ и передать дополнительные параметры **additionalData**. Эти объекты при их наличии будут переданы на сервер с помощью метода [**API Init**][init-documentation], где можно посмотреть их детальное описание.
 
@@ -126,7 +126,7 @@ tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTA
 ```
 Результат вызова метода вернется в **onActivityResult**:
 - при успешной привязке (_Activity.RESULT_OK_) возвращается _TinkoffAcquiring.EXTRA_CARD_ID_ - id карты, которая была привязана, тип String
-- при неуспешной привязке (_TinkoffAcquiring.RESULT_ERROR_) возвращается ошибка _TinkoffAcquiring.EXTRA_ERROR_ типа Throwable
+- при неуспешной привязке (_TinkoffAcquiring.RESULT_ERROR_) возвращается ошибка _TinkoffAcquiring.EXTRA_ERROR_ типа Throwable (подробнее о возвращаемых ошибках в [документации][full-doc])
 
 
 ### Google Pay

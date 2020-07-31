@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.adapters.CardListAdapter
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
@@ -88,6 +89,10 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
                 notificationDialog = NotificationDialog(this@SavedCardsActivity).apply {
                     show()
                     showSuccess(localization.addCardDialogSuccessCardAdded)
+                }
+            } else if (resultCode == TinkoffAcquiring.RESULT_ERROR) {
+                showErrorScreen(localization.payDialogErrorFallbackMessage!!) {
+                    viewModel.createEvent(ErrorButtonClickedEvent)
                 }
             }
         }
@@ -222,13 +227,11 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         when (screenState) {
             is ErrorButtonClickedEvent -> loadCards()
             is FinishWithErrorScreenState -> showErrorScreen(localization.payDialogErrorFallbackMessage!!)
-            is ErrorScreenState -> showError(screenState.message)
-        }
-    }
-
-    private fun showError(message: String) {
-        showErrorScreen(message) {
-            viewModel.createEvent(ErrorButtonClickedEvent)
+            is ErrorScreenState -> {
+                showErrorScreen(screenState.message) {
+                    viewModel.createEvent(ErrorButtonClickedEvent)
+                }
+            }
         }
     }
 
