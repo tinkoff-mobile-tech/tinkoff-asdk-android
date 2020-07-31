@@ -25,6 +25,7 @@ import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
@@ -46,6 +47,19 @@ class TinkoffAcquiring(
         private val publicKey: String
 ) {
     private val sdk = AcquiringSdk(terminalKey, password, publicKey)
+
+    /**
+     * Создает платежную сессию. Для проведения оплаты с помощью привязанной карты.
+     * Включает в себя инициирование нового платежа и подтверждение платежа.
+     * Процесс асинхронный
+     *
+     * @param attachedCard   привязанная карта
+     * @param paymentOptions настройки платежной сессии
+     * @return объект для проведения оплаты
+     */
+    fun initPayment(attachedCard: AttachedCard, paymentOptions: PaymentOptions): PaymentProcess {
+        return PaymentProcess(sdk).createPaymentProcess(attachedCard, paymentOptions)
+    }
 
     /**
      * Создает платежную сессию. Для проведения оплаты с помощью карты.

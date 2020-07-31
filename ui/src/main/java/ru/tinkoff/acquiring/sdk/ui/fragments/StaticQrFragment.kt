@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.ui.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.net.Uri
@@ -36,7 +37,9 @@ import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.ScreenState
+import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.viewmodel.StaticQrViewModel
 
@@ -64,14 +67,20 @@ internal class StaticQrFragment : BaseAcquiringFragment() {
         val webViewContainer = qrWebView.parent as View
         val webViewContainerPaddings = webViewContainer.paddingLeft + webViewContainer.paddingRight
 
+        val screenScale = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            getScreenScale().x
+        } else {
+            getScreenScale().y
+        }
+
         qrWebView.run {
             setPadding(0, 0, 0, 0)
-            setInitialScale(getScreenScale().x / 2 - webViewContainerPaddings)
+            setInitialScale(screenScale / 2 - webViewContainerPaddings)
             isVerticalScrollBarEnabled = false
         }
 
         val parent = view.findViewById<View>(R.id.acq_static_qr_parent)
-        parent.layoutParams.height = getScreenScale().x + webViewContainerPaddings + content.height + contentPaddings
+        parent.layoutParams.height = screenScale + webViewContainerPaddings + content.height + contentPaddings
         parent.requestLayout()
 
         titleTextView = view.findViewById(R.id.acq_static_qr_tv)
@@ -99,7 +108,10 @@ internal class StaticQrFragment : BaseAcquiringFragment() {
 
         titleTextView.text = AsdkLocalization.resources.qrStaticTitle
 
-        viewModel.getStaticQr()
+        val isErrorShowing = viewModel.screenStateLiveData.value is ErrorScreenState
+        if (!isErrorShowing && viewModel.staticQrResultLiveData.value.isNullOrEmpty()) {
+            viewModel.getStaticQr()
+        }
     }
 
     private fun getScreenScale(): Point {
@@ -112,22 +124,29 @@ internal class StaticQrFragment : BaseAcquiringFragment() {
     private fun observeLiveData() {
         viewModel.run {
             staticQrLinkResultLiveData.observe(viewLifecycleOwner, Observer { handleQrLinkResult(it) })
-            staticQrResultLiveData.observe(viewLifecycleOwner, Observer { handleQrResult(it) })
             screenStateLiveData.observe(viewLifecycleOwner, Observer { handleScreenState(it) })
+            staticQrResultLiveData.observe(viewLifecycleOwner, Observer {
+                if (viewModel.screenStateLiveData.value !is ErrorScreenState) {
+                    handleQrResult(it)
+                }
+            })
         }
     }
 
-    private fun handleQrLinkResult(url: String) {
+    private fun handleQrLinkResult(event: SingleEvent<String?>) {
         progressDialog?.dismiss()
 
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        startActivity(intent)
+        event.getValueIfNotHandled()?.let { url ->
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
+        }
     }
 
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is ErrorButtonClickedEvent -> viewModel.getStaticQr()
+            is ErrorScreenState -> progressDialog?.dismiss()
         }
     }
 

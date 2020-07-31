@@ -34,7 +34,9 @@ internal class StaticQrActivity : TransparentActivity() {
 
         viewModel = provideViewModel(StaticQrViewModel::class.java) as StaticQrViewModel
 
-        showFragment(StaticQrFragment())
+        if (savedInstanceState == null) {
+            showFragment(StaticQrFragment())
+        }
         observeLiveData()
     }
 
@@ -49,9 +51,10 @@ internal class StaticQrActivity : TransparentActivity() {
         when (screenState) {
             is ErrorScreenState -> {
                 showErrorScreen(screenState.message) {
-                    viewModel.getStaticQr()
+                    viewModel.createEvent(ErrorButtonClickedEvent)
                 }
             }
+            is ErrorButtonClickedEvent -> viewModel.getStaticQr()
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
         }
     }
