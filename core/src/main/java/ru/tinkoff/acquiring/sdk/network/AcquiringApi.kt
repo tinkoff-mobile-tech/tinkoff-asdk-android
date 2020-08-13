@@ -43,11 +43,27 @@ object AcquiringApi {
     const val COMPLETE_3DS_METHOD_V2 = "Complete3DSMethodv2"
 
     const val API_ERROR_CODE_3DSV2_NOT_SUPPORTED = "106"
-    const val API_ERROR_CODE_ACQUIRING_EXCEPTION = "3"
 
     const val RECURRING_TYPE_KEY = "recurringType"
     const val RECURRING_TYPE_VALUE = "12"
     const val FAIL_MAPI_SESSION_ID = "failMapiSessionId"
+
+    /**
+     * Коды ошибок, сообщение которых можно показать конечным пользователям
+     */
+    val errorCodesForUserShowing = listOf("53", "206", "224", "225", "252", "99", "101",
+            "1006", "1012", "1013", "1014", "1030", "1033", "1034", "1035", "1036", "1037", "1038",
+            "1039", "1040", "1041", "1042", "1043", "1051", "1054", "1057", "1065", "1082", "1089", "1091", "1096")
+
+    /**
+     * Коды ошибок, вызванные временными неполадками системы
+     */
+    val errorCodesFallback = listOf("9999", "231", "3")
+
+    /**
+     * Коды ошибок при привязке карты
+     */
+    val errorCodesAttachedCard = listOf("3", "6")
 
     internal const val STREAM_BUFFER_SIZE = 4096
     internal const val API_REQUEST_METHOD_POST = "POST"

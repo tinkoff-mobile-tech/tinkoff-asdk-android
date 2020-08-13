@@ -19,19 +19,22 @@ package ru.tinkoff.acquiring.sdk.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 
 internal class StaticQrViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk) {
 
-    private val staticQrLinkResult: MutableLiveData<String> = MutableLiveData()
+    private val staticQrLinkResult: MutableLiveData<SingleEvent<String?>> = MutableLiveData()
     private val staticQrResult: MutableLiveData<String> = MutableLiveData()
 
-    val staticQrLinkResultLiveData: LiveData<String> = staticQrLinkResult
+    val staticQrLinkResultLiveData: LiveData<SingleEvent<String?>> = staticQrLinkResult
     val staticQrResultLiveData: LiveData<String> = staticQrResult
 
     fun getStaticQr() {
+        changeScreenState(DefaultScreenState)
         changeScreenState(LoadingState)
 
         val request = sdk.getStaticQr {
@@ -52,7 +55,7 @@ internal class StaticQrViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk
 
         coroutine.call(request,
                 onSuccess = { response ->
-                    staticQrLinkResult.value = response.data
+                    staticQrLinkResult.value = SingleEvent(response.data)
                 })
     }
 }

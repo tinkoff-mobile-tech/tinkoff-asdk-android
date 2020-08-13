@@ -34,6 +34,7 @@ import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
+import java.lang.IllegalStateException
 import java.util.*
 
 /**
@@ -64,7 +65,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
     private var sdkState: AsdkState? = null
     private var error: Throwable? = null
 
-    private var isChargeVasRejected = false
+    private var isChargeWasRejected = false
     private var rejectedPaymentId: Long? = null
 
     /**
@@ -166,12 +167,16 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
             paymentSource is GooglePay || state == PaymentState.THREE_DS_V2_REJECTED -> {
                 callFinishAuthorizeRequest(paymentId, paymentSource, email)
             }
-            else -> callCheck3DsVersion(paymentId, paymentSource as CardSource, email)
+            paymentSource is CardSource -> callCheck3DsVersion(paymentId, paymentSource, email)
+            else -> {
+                error = IllegalStateException("Unsupported payment source. Use AttachedCard, CardData or GooglePay source")
+                sendToListener(PaymentState.ERROR)
+            }
         }
     }
 
     private fun callInitRequest(request: InitRequest) {
-        if (isChargeVasRejected && rejectedPaymentId != null) {
+        if (isChargeWasRejected && rejectedPaymentId != null) {
             request.data = modifyRejectedData(request)
         }
 
@@ -269,7 +274,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
                         paymentResult = PaymentResult(it.paymentId, paymentSource.cardId)
                         sendToListener(PaymentState.SUCCESS)
                     } else {
-                        isChargeVasRejected = true
+                        isChargeWasRejected = true
                         rejectedPaymentId = it.paymentId
                         sdkState = RejectedState(payInfo.cardId!!)
                         sendToListener(PaymentState.CHARGE_REJECTED)
@@ -314,7 +319,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
         val data = request.data?.toMutableMap() ?: mutableMapOf()
         data.putAll(map)
-        isChargeVasRejected = false
+        isChargeWasRejected = false
 
         return data.toMap()
     }
