@@ -34,6 +34,7 @@ import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
+import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 
 /**
@@ -147,7 +148,13 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     }
 
     private fun openStaticQrScreen() {
-        SampleApplication.tinkoffAcquiring.openStaticQrScreen(this, AsdkSource(Language.RU), STATIC_QR_REQUEST_CODE)
+        val options = FeaturesOptions().apply {
+            darkThemeMode = settings.resolveDarkThemeMode()
+            theme = settings.resolveAttachCardStyle()
+            localizationSource = AsdkSource(Language.RU)
+        }
+
+        SampleApplication.tinkoffAcquiring.openStaticQrScreen(this, options, STATIC_QR_REQUEST_CODE)
     }
 
     companion object {

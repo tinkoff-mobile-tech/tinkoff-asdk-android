@@ -16,7 +16,6 @@
   -->
 
 <resources>
-
     <color name="acq_colorMain">#1C1C1E</color>
     <color name="acq_colorMainDark">#333333</color>
     <color name="acq_colorShadow">@android:color/transparent</color>
