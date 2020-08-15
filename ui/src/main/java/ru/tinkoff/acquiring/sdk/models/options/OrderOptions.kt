@@ -32,7 +32,7 @@ import ru.tinkoff.acquiring.sdk.utils.readParcelMap
 class OrderOptions() : Options, Parcelable {
 
     /**
-     * Номер заказа в системе продавца
+     * Номер заказа в системе продавца. Максимальная длина - 20 символов
      */
     lateinit var orderId: String
 
@@ -47,12 +47,12 @@ class OrderOptions() : Options, Parcelable {
     var recurrentPayment: Boolean = false
 
     /**
-     * Наименоварие товара/заказа
+     * Наименоварие заказа
      */
     var title: String? = null
 
     /**
-     * Описание товара/заказа
+     * Описание заказа, максимальная длина - 250 символов
      */
     var description: String? = null
 

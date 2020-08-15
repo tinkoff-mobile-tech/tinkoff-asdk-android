@@ -16,17 +16,28 @@
 
 package ru.tinkoff.acquiring.sdk.ui.customview
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.TimeInterpolator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Point
 import android.util.AttributeSet
-import android.view.*
+import android.view.MotionEvent
+import android.view.VelocityTracker
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.keyboard.SecureKeyboard
@@ -53,6 +64,7 @@ internal class BottomContainer @JvmOverloads constructor(
     private var layoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var velocityTracker: VelocityTracker? = null
     private var initAnimation: AnimatorSet? = null
+    private var scrollableView: TextView? = null
     private var background: FrameLayout? = null
     private var isFullScreenOpened = false
     private var isScrollDisabled = true
@@ -71,6 +83,8 @@ internal class BottomContainer @JvmOverloads constructor(
 
     private var touchPoint1: Float = 0f
     private var touchPoint2: Float = 0f
+
+    private var isNestedScrollOccurs = false
 
     private var isSystemKeyboardOpened = false
     private var isCustomKeyboardOpened = false
@@ -93,6 +107,7 @@ internal class BottomContainer @JvmOverloads constructor(
 
         setBackgroundResource(R.drawable.acq_top_rounded_background)
 
+        scrollableView = findViewById(R.id.acq_payment_tv_order_description)
         background = (this.parent as View).findViewById(R.id.acq_activity_background_layout)
         background?.apply {
             visibility = View.GONE
@@ -187,21 +202,37 @@ internal class BottomContainer @JvmOverloads constructor(
     override fun onInterceptTouchEvent(motionEvent: MotionEvent): Boolean {
         return when (motionEvent.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                touchPoint1 = motionEvent.y
-                deltaY = this.y - motionEvent.rawY
-                velocityTracker?.clear()
-                velocityTracker = VelocityTracker.obtain()
-                velocityTracker?.addMovement(motionEvent)
-                super.onInterceptTouchEvent(motionEvent)
-            }
-            MotionEvent.ACTION_MOVE -> {
-                touchPoint2 = motionEvent.y
-                val distance = touchPoint1 - touchPoint2
-                if (distance.absoluteValue >= scrollDistance && isMovingEnabled) {
-                    true
+                val canScroll = scrollableView?.canScrollVertically(1) == true ||
+                        scrollableView?.canScrollVertically(-1) == true
+
+                if (isScrollableViewTouch(motionEvent.x, motionEvent.y) && canScroll) {
+                    isNestedScrollOccurs = true
+                    false
                 } else {
+                    touchPoint1 = motionEvent.y
+                    deltaY = this.y - motionEvent.rawY
+                    velocityTracker?.clear()
+                    velocityTracker = VelocityTracker.obtain()
+                    velocityTracker?.addMovement(motionEvent)
                     super.onInterceptTouchEvent(motionEvent)
                 }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (isNestedScrollOccurs) {
+                    false
+                } else {
+                    touchPoint2 = motionEvent.y
+                    val distance = touchPoint1 - touchPoint2
+                    if (distance.absoluteValue >= scrollDistance && isMovingEnabled) {
+                        true
+                    } else {
+                        super.onInterceptTouchEvent(motionEvent)
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                isNestedScrollOccurs = false
+                super.onInterceptTouchEvent(motionEvent)
             }
             else -> super.onInterceptTouchEvent(motionEvent)
         }
@@ -359,6 +390,34 @@ internal class BottomContainer @JvmOverloads constructor(
         }
 
         return childHeight
+    }
+
+    private fun getPositionInParent(child: View?): IntArray {
+        if (child == null) {
+            return intArrayOf(0, 0)
+        }
+
+        val relativePosition = intArrayOf(child.left, child.top)
+        var currentParent = child.parent as ViewGroup
+
+        while (currentParent !== this) {
+            relativePosition[0] += currentParent.left
+            relativePosition[1] += currentParent.top
+            currentParent = currentParent.parent as ViewGroup
+        }
+        return relativePosition
+    }
+
+    private fun isScrollableViewTouch(x: Float, y: Float) : Boolean {
+        val scrollViewPosition = getPositionInParent(scrollableView)
+
+        val viewX = scrollViewPosition[0]
+        val viewY = scrollViewPosition[1]
+
+        val boundRight = viewX + (scrollableView?.width ?: 0)
+        val boundBottom = viewY + (scrollableView?.height ?: 0)
+
+        return x > viewX && x < boundRight && y > viewY && y < boundBottom
     }
 
     private fun resizeScrollContainer() {
