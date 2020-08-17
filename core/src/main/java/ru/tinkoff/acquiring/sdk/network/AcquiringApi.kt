@@ -58,7 +58,7 @@ object AcquiringApi {
     /**
      * Коды ошибок, вызванные временными неполадками системы
      */
-    val errorCodesFallback = listOf("9999", "231", "3")
+    val errorCodesFallback = listOf("9999", "231", "3", "3001")
 
     /**
      * Коды ошибок при привязке карты
