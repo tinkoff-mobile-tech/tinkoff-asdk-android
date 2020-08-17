@@ -143,11 +143,11 @@ class TinkoffAcquiring(
     }
 
     /**
-     * Запуск экрана Acquiring SDK для открытия экрана сохраненных карт
+     * Запуск экрана Acquiring SDK для просмотра сохраненных карт
      *
-     * @param activity         контекст для запуска экрана
+     * @param activity          контекст для запуска экрана
      * @param savedCardsOptions настройки экрана сохраненных карт
-     * @param requestCode      код для получения результата, по завершению работы экрана Acquiring SDK
+     * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK
      */
     fun openSavedCardsScreen(activity: FragmentActivity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
         savedCardsOptions.setTerminalParams(terminalKey, password, publicKey)
