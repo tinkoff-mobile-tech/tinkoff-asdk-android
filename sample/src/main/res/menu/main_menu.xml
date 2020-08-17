@@ -31,8 +31,8 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/menu_action_about"
-        android:title="@string/activity_title_about"
+        android:id="@+id/menu_action_saved_cards"
+        android:title="@string/activity_title_saved_cards"
         app:showAsAction="never"/>
 
     <item
@@ -43,6 +43,11 @@
     <item
         android:id="@+id/menu_action_settings"
         android:title="@string/activity_title_settings"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_action_about"
+        android:title="@string/activity_title_about"
         app:showAsAction="never"/>
 
 </menu>

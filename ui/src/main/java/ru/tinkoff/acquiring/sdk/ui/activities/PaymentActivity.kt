@@ -20,7 +20,19 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.Observer
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankScreenState
+import ru.tinkoff.acquiring.sdk.models.DefaultState
+import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
+import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
+import ru.tinkoff.acquiring.sdk.models.Screen
+import ru.tinkoff.acquiring.sdk.models.ScreenState
+import ru.tinkoff.acquiring.sdk.models.SingleEvent
+import ru.tinkoff.acquiring.sdk.models.ThreeDsDataCollectScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.ui.fragments.PaymentFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
@@ -99,6 +111,7 @@ internal class PaymentActivity : TransparentActivity() {
 
     private fun showError(message: String) {
         showErrorScreen(message) {
+            hideErrorScreen()
             paymentViewModel.createEvent(ErrorButtonClickedEvent)
         }
     }
