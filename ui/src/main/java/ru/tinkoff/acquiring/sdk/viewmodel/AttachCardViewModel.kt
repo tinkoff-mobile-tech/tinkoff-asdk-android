@@ -22,7 +22,12 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.LoopConfirmationScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.result.AttachCardResult
@@ -94,7 +99,8 @@ internal class AttachCardViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(s
                     if (it is AcquiringApiException) {
                         if (it.response != null && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
                             changeScreenState(LoadedState)
-                            changeScreenState(ErrorScreenState(AsdkLocalization.resources.addCardErrorCardAlreadyAttached!!))
+                            changeScreenState(ErrorScreenState(AsdkLocalization.resources.addCardErrorErrorAttached
+                                    ?: AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
                         } else handleException(it)
                     } else handleException(it)
                 }

@@ -20,12 +20,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +35,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
+import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
 import ru.tinkoff.acquiring.sdk.models.LoadState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
@@ -93,17 +96,11 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         }
     }
 
-    protected fun showFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.acq_activity_fl_container, fragment)
-                .commit()
-    }
-
-    protected fun showErrorScreen(message: String, onButtonClick: (() -> Unit)? = null) {
+    protected open fun showErrorScreen(message: String, buttonText: String? = null, onButtonClick: (() -> Unit)? = null) {
         val errorView = findViewById<View>(R.id.acq_error_ll_container)
         val messageTextView = errorView?.findViewById<TextView>(R.id.acq_error_tv_message)
         val button = errorView?.findViewById<Button>(R.id.acq_error_btn_try_again)
-        button?.text = AsdkLocalization.resources.commonMessageTryAgain
+        button?.text = buttonText ?: AsdkLocalization.resources.commonMessageTryAgain
 
         content = findViewById(R.id.acq_content)
         content?.visibility = when (resources.configuration.orientation) {
@@ -118,11 +115,22 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
             button?.visibility = View.GONE
         } else {
             button?.setOnClickListener {
-                content?.visibility = View.VISIBLE
-                errorView.visibility = View.GONE
                 onButtonClick.invoke()
             }
         }
+    }
+
+    protected fun hideErrorScreen() {
+        val errorView = findViewById<View>(R.id.acq_error_ll_container)
+        content = findViewById(R.id.acq_content)
+        content?.visibility = View.VISIBLE
+        errorView.visibility = View.GONE
+    }
+
+    protected fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.acq_activity_fl_container, fragment)
+                .commit()
     }
 
     protected fun provideViewModel(clazz: Class<out ViewModel>): ViewModel {
@@ -157,5 +165,24 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     protected open fun finishWithError(throwable: Throwable) {
         setErrorResult(throwable)
         finish()
+    }
+
+    protected fun resolveThemeMode(mode: DarkThemeMode) {
+        AppCompatDelegate.setDefaultNightMode(
+                when (mode) {
+                    DarkThemeMode.DISABLED -> AppCompatDelegate.MODE_NIGHT_NO
+                    DarkThemeMode.ENABLED -> AppCompatDelegate.MODE_NIGHT_YES
+                    DarkThemeMode.AUTO -> {
+                        when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
+                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                            }
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+                                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                            }
+                            else -> AppCompatDelegate.MODE_NIGHT_NO
+                        }
+                    }
+                })
     }
 }

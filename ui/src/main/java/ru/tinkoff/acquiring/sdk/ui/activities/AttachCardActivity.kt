@@ -19,7 +19,9 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.LoopConfirmationScreenState
 import ru.tinkoff.acquiring.sdk.models.Screen
 import ru.tinkoff.acquiring.sdk.models.ScreenState
@@ -67,6 +69,7 @@ internal class AttachCardActivity : TransparentActivity() {
             is ErrorScreenState -> {
                 if (supportFragmentManager.findFragmentById(R.id.acq_activity_fl_container) !is LoopConfirmationFragment) {
                     showErrorScreen(screenState.message) {
+                        hideErrorScreen()
                         attachCardViewModel.createEvent(ErrorButtonClickedEvent)
                     }
                 }

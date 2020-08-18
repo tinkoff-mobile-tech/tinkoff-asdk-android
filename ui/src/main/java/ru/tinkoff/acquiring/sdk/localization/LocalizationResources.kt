@@ -116,11 +116,17 @@ internal class LocalizationResources {
     @SerializedName("AddCard.Error.CardAlreadyAttached")
     var addCardErrorCardAlreadyAttached: String? = null
 
+    @SerializedName("AddCard.Error.ErrorAttached")
+    var addCardErrorErrorAttached: String? = null
+
     @SerializedName("CardList.Title")
     var cardListTitle: String? = null
 
     @SerializedName("CardList.CardFormat")
     var cardListCardFormat: String? = null
+
+    @SerializedName("CardList.EmptyList")
+    var cardListEmptyList: String? = null
 
     @SerializedName("CardList.Delete")
     var cardListDelete: String? = null

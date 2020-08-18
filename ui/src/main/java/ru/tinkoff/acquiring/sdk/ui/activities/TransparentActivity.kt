@@ -24,12 +24,10 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
-import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
 import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
@@ -179,25 +177,6 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         } else {
             bottomContainer.hide()
         }
-    }
-
-    private fun resolveThemeMode(mode: DarkThemeMode) {
-        AppCompatDelegate.setDefaultNightMode(
-                when (mode) {
-                    DarkThemeMode.DISABLED -> AppCompatDelegate.MODE_NIGHT_NO
-                    DarkThemeMode.ENABLED -> AppCompatDelegate.MODE_NIGHT_YES
-                    DarkThemeMode.AUTO -> {
-                        when {
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
-                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                            }
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
-                                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                            }
-                            else -> AppCompatDelegate.MODE_NIGHT_NO
-                        }
-                    }
-                })
     }
 
     companion object {

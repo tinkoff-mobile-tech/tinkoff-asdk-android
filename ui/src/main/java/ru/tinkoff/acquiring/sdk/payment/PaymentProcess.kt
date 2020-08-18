@@ -299,7 +299,6 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         return sdk.init {
             orderId = order.orderId
             amount = order.amount.coins
-            payForm = order.title
             description = order.description
             chargeFlag = order.recurrentPayment
             recurrent = order.recurrentPayment

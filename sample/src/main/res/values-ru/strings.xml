@@ -25,6 +25,7 @@
     <string name="activity_title_static_qr">Принять оплату QR</string>
     <string name="activity_title_settings">Настройки</string>
     <string name="activity_title_payment_result">Подтверждение</string>
+    <string name="activity_title_saved_cards">Сохраненные карты</string>
 
     <string name="author">Автор</string>
     <string name="year">Год выпуска</string>

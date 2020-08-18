@@ -27,11 +27,19 @@ import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.adapters.CardListAdapter
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.ScreenState
+import ru.tinkoff.acquiring.sdk.models.SingleEvent
+import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.viewmodel.SavedCardsViewModel
@@ -44,7 +52,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     private lateinit var deletingBottomContainer: BottomContainer
     private lateinit var cardListView: ListView
 
-    private lateinit var paymentOptions: PaymentOptions
+    private lateinit var savedCardsOptions: SavedCardsOptions
     private lateinit var localization: LocalizationResources
     private lateinit var cardsAdapter: CardListAdapter
     private lateinit var viewModel: SavedCardsViewModel
@@ -58,10 +66,12 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.acq_activity_saved_cards)
 
         localization = AsdkLocalization.resources
-        paymentOptions = options as PaymentOptions
+        savedCardsOptions = options as SavedCardsOptions
+
+        resolveThemeMode(savedCardsOptions.features.darkThemeMode)
+        setContentView(R.layout.acq_activity_saved_cards)
 
         savedInstanceState?.let {
             isDeletingDialogShowing = it.getBoolean(STATE_DELETING_DIALOG_SHOWING)
@@ -92,6 +102,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
                 }
             } else if (resultCode == TinkoffAcquiring.RESULT_ERROR) {
                 showErrorScreen(localization.payDialogErrorFallbackMessage!!) {
+                    hideErrorScreen()
                     viewModel.createEvent(ErrorButtonClickedEvent)
                 }
             }
@@ -181,12 +192,12 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
 
     private fun openAttachActivity() {
         val options = AttachCardOptions().setOptions {
-            setTerminalParams(paymentOptions.terminalKey, paymentOptions.password, paymentOptions.publicKey)
+            setTerminalParams(savedCardsOptions.terminalKey, savedCardsOptions.password, savedCardsOptions.publicKey)
             customerOptions {
-                checkType = paymentOptions.customer.checkType
-                customerKey = paymentOptions.customer.customerKey
+                checkType = savedCardsOptions.customer.checkType
+                customerKey = savedCardsOptions.customer.customerKey
             }
-            features = paymentOptions.features
+            features = savedCardsOptions.features
         }
         val intent = createIntent(this, options, AttachCardActivity::class.java)
         startActivityForResult(intent, ATTACH_CARD_REQUEST_CODE)
@@ -196,20 +207,31 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         with(viewModel) {
             loadStateLiveData.observe(this@SavedCardsActivity, Observer { handleLoadState(it) })
             screenStateLiveData.observe(this@SavedCardsActivity, Observer { handleScreenState(it) })
-            cardsResultLiveData.observe(this@SavedCardsActivity, Observer {
-                cardsAdapter.setCards(it)
-            })
-            deleteCardEventLiveData.observe(this@SavedCardsActivity, Observer {
-                it.getValueIfNotHandled()?.let {
-                    loadCards()
-                    setCardsChangedResult()
-                    notificationDialog = NotificationDialog(this@SavedCardsActivity).apply {
-                        show()
-                        showSuccess(String.format(localization.addCardDialogSuccessCardDeleted!!,
-                                cardsAdapter.getLastPanNumbers(deletingCard!!.pan!!)))
-                    }
-                }
-            })
+            cardsResultLiveData.observe(this@SavedCardsActivity, Observer { handleCards(it) })
+            deleteCardEventLiveData.observe(this@SavedCardsActivity, Observer { handleDeleteCardEvent(it) })
+        }
+    }
+
+    private fun handleCards(cardsList: List<Card>) {
+        if (cardsList.isNotEmpty()) {
+            hideErrorScreen()
+            cardsAdapter.setCards(cardsList)
+        } else {
+            showErrorScreen(localization.cardListEmptyList ?: "", localization.addCardAttachmentTitle) {
+                openAttachActivity()
+            }
+        }
+    }
+
+    private fun handleDeleteCardEvent(event: SingleEvent<CardStatus>) {
+        event.getValueIfNotHandled()?.let {
+            loadCards()
+            setCardsChangedResult()
+            notificationDialog = NotificationDialog(this@SavedCardsActivity).apply {
+                show()
+                showSuccess(String.format(localization.addCardDialogSuccessCardDeleted!!,
+                        cardsAdapter.getLastPanNumbers(deletingCard!!.pan!!)))
+            }
         }
     }
 
@@ -220,15 +242,21 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     }
 
     private fun loadCards() {
-        viewModel.getCardList(paymentOptions.customer.customerKey)
+        viewModel.getCardList(savedCardsOptions.customer.customerKey)
     }
 
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is ErrorButtonClickedEvent -> loadCards()
-            is FinishWithErrorScreenState -> showErrorScreen(localization.payDialogErrorFallbackMessage!!)
+            is FinishWithErrorScreenState -> {
+                if (screenState.error is AcquiringApiException &&
+                        screenState.error.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND) {
+                    showErrorScreen(localization.cardListEmptyList ?: "")
+                } else finishWithError(screenState.error)
+            }
             is ErrorScreenState -> {
                 showErrorScreen(screenState.message) {
+                    hideErrorScreen()
                     viewModel.createEvent(ErrorButtonClickedEvent)
                 }
             }
@@ -241,7 +269,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
             setMessage(localization.cardListDialogDeleteMessage)
             setPositiveButton(localization.cardListDelete) { dialog, _ ->
                 dialog.dismiss()
-                viewModel.deleteCard(card.cardId!!, paymentOptions.customer.customerKey)
+                viewModel.deleteCard(card.cardId!!, savedCardsOptions.customer.customerKey)
                 deletingBottomContainer.hide()
                 isDeletingDialogShowing = false
             }

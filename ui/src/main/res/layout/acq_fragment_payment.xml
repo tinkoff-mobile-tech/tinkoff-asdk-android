@@ -67,8 +67,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="?acqViewHorizontalOffset"
             android:layout_marginRight="?acqViewHorizontalOffset"
-            android:ellipsize="end"
-            android:maxLines="1"
             tools:text="Книга Том 1" />
 
         <TextView
@@ -78,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="?acqViewHorizontalOffset"
             android:layout_marginRight="?acqViewHorizontalOffset"
-            android:ellipsize="end" />
+            android:scrollbars="vertical"/>
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/acq_payment_viewpager"

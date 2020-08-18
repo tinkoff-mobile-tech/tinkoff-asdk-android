@@ -49,7 +49,7 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
     var customerKey: String? = null
 
     /**
-     * Краткое описание
+     * Краткое описание заказа, макс. длина 250 символов
      */
     var description: String? = null
 

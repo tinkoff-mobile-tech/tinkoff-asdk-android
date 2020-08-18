@@ -34,7 +34,9 @@ import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
+import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 
 /**
  * @author Mariya Chernyadieva
@@ -81,6 +83,10 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 openAttachCardScreen()
                 true
             }
+            R.id.menu_action_saved_cards -> {
+                openSavedCardsScreen()
+                true
+            }
             R.id.menu_action_about -> {
                 AboutActivity.start(this)
                 true
@@ -109,6 +115,11 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                     RESULT_OK -> PaymentResultActivity.start(this, data?.getStringExtra(EXTRA_CARD_ID)!!)
                     RESULT_CANCELED -> Toast.makeText(this, R.string.attachment_cancelled, Toast.LENGTH_SHORT).show()
                     RESULT_ERROR -> Toast.makeText(this, R.string.attachment_failed, Toast.LENGTH_SHORT).show()
+                }
+            }
+            SAVED_CARDS_REQUEST_CODE -> {
+                if (resultCode == RESULT_ERROR) {
+                    Toast.makeText(this, R.string.error_title, Toast.LENGTH_SHORT).show()
                 }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
@@ -147,12 +158,40 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     }
 
     private fun openStaticQrScreen() {
-        SampleApplication.tinkoffAcquiring.openStaticQrScreen(this, AsdkSource(Language.RU), STATIC_QR_REQUEST_CODE)
+        val options = FeaturesOptions().apply {
+            darkThemeMode = settings.resolveDarkThemeMode()
+            theme = settings.resolveAttachCardStyle()
+            localizationSource = AsdkSource(Language.RU)
+        }
+
+        SampleApplication.tinkoffAcquiring.openStaticQrScreen(this, options, STATIC_QR_REQUEST_CODE)
+    }
+
+    private fun openSavedCardsScreen() {
+        val settings = SettingsSdkManager(this)
+        val params = SessionParams[settings.terminalKey]
+
+        val options = SavedCardsOptions().setOptions {
+            customerOptions {
+                customerKey = params.customerKey
+                checkType = settings.checkType
+                email = params.customerEmail
+            }
+            featuresOptions {
+                useSecureKeyboard = settings.isCustomKeyboardEnabled
+                cameraCardScanner = settings.cameraScanner
+                darkThemeMode = settings.resolveDarkThemeMode()
+                theme = settings.resolveAttachCardStyle()
+            }
+        }
+
+        SampleApplication.tinkoffAcquiring.openSavedCardsScreen(this, options, SAVED_CARDS_REQUEST_CODE)
     }
 
     companion object {
 
         private const val ATTACH_CARD_REQUEST_CODE = 11
         private const val STATIC_QR_REQUEST_CODE = 12
+        private const val SAVED_CARDS_REQUEST_CODE = 13
     }
 }

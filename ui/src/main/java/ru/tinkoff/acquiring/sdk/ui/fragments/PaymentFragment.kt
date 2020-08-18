@@ -19,6 +19,7 @@ package ru.tinkoff.acquiring.sdk.ui.fragments
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -28,13 +29,18 @@ import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.method.ScrollingMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -49,8 +55,15 @@ import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner.Companion.REQUEST_CARD_
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.DefaultState
+import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.ScreenState
+import ru.tinkoff.acquiring.sdk.models.SelectCardAndPayState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
@@ -148,7 +161,8 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
                 override fun onClick() {
                     hideSystemKeyboard()
                     emailEditText.clearFocus()
-                    val intent = BaseAcquiringActivity.createIntent(requireActivity(), paymentOptions, SavedCardsActivity::class.java)
+                    val options = getSavedCardOptions()
+                    val intent = BaseAcquiringActivity.createIntent(requireActivity(), options, SavedCardsActivity::class.java)
                     startActivityForResult(intent, CARD_LIST_REQUEST_CODE)
                 }
             })
@@ -165,6 +179,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         return view
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -192,9 +207,18 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             }
 
             paymentOptions.order.run {
-                orderDescription.text = description
                 amountTextView.text = modifySpan(amount.toHumanReadableString())
+                orderTitle.visibility = if (title.isNullOrBlank()) View.GONE else View.VISIBLE
+                orderDescription.visibility = if (description.isNullOrBlank()) View.GONE else View.VISIBLE
                 orderTitle.text = title
+                orderDescription.text = description
+            }
+
+            orderDescription.movementMethod = ScrollingMovementMethod()
+            orderDescription.setOnTouchListener { _, _ ->
+                val canScroll = orderDescription.canScrollVertically(1) || orderDescription.canScrollVertically(-1)
+                orderDescription.parent.requestDisallowInterceptTouchEvent(canScroll)
+                false
             }
 
             if (paymentOptions.features.fpsEnabled) {
@@ -377,6 +401,14 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
                 rejectedDialogDismissed = true
             }
         }.show()
+    }
+
+    private fun getSavedCardOptions(): SavedCardsOptions {
+        return SavedCardsOptions().setOptions {
+            setTerminalParams(paymentOptions.terminalKey, paymentOptions.password, paymentOptions.publicKey)
+            customer = paymentOptions.customer
+            features = paymentOptions.features
+        }
     }
 
     private fun createTextChangeListener(): TextWatcher {

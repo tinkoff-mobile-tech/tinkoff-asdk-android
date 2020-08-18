@@ -31,7 +31,6 @@
     <color name="acq_colorShadow">#F1F1F1</color>
     <color name="acq_colorCardBackground">@color/acq_colorMain</color>
     <color name="acq_colorDarkHint">#9299A2</color>
-    <color name="acq_colorQrMessage">#000000</color>
     <color name="acq_colorQrBackground">#F6F7F8</color>
     <color name="acq_colorFpsBackground">#0F0738</color>
 

@@ -1,3 +1,13 @@
+## 2.0.3
+
+#### Fixed
+Fixed error, when a long order title was set
+Added support dark theme for static qr screen
+#### Changes
+Made order description view scrollable
+#### Additions
+Added method `openSavedCardsScreen` for open saved cards screen as independent screen
+
 ## 2.0.2
 
 #### Fixed

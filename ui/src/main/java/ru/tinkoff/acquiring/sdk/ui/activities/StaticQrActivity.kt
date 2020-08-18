@@ -19,7 +19,12 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.LoadState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.ui.fragments.StaticQrFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.StaticQrViewModel
 
@@ -51,6 +56,7 @@ internal class StaticQrActivity : TransparentActivity() {
         when (screenState) {
             is ErrorScreenState -> {
                 showErrorScreen(screenState.message) {
+                    hideErrorScreen()
                     viewModel.createEvent(ErrorButtonClickedEvent)
                 }
             }

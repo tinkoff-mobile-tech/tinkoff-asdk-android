@@ -28,7 +28,7 @@ import ru.tinkoff.acquiring.sdk.utils.readParcelMap
 class CustomerOptions() : Options, Parcelable {
 
     /**
-     * Идентификатор покупателя в системе продавца
+     * Идентификатор покупателя в системе продавца. Максимальная длина - 36 символов
      */
     lateinit var customerKey: String
 
