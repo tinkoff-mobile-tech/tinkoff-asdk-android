@@ -17,13 +17,13 @@
 package ru.tinkoff.acquiring.sdk.ui.fragments
 
 import android.os.Bundle
-import android.util.Patterns
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
+import java.util.regex.Pattern
 
 /**
  * @author Mariya Chernyadieva
@@ -31,6 +31,10 @@ import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 internal open class BaseAcquiringFragment : Fragment() {
 
     protected lateinit var localization: LocalizationResources
+
+    companion object {
+        private const val EMAIL_PATTERN = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -51,7 +55,7 @@ internal open class BaseAcquiringFragment : Fragment() {
             }
         }
 
-        if (email != null && (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
+        if (email != null && (email.isEmpty() || !Pattern.compile(EMAIL_PATTERN).matcher(email).matches())) {
             Toast.makeText(
                     requireActivity(),
                     AsdkLocalization.resources.payDialogValidationInvalidEmail,
