@@ -3,7 +3,14 @@ import org.junit.Test
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.models.enums.*
+import ru.tinkoff.acquiring.sdk.models.enums.AgentSign
+import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
+import ru.tinkoff.acquiring.sdk.models.enums.CheckType
+import ru.tinkoff.acquiring.sdk.models.enums.PaymentMethod
+import ru.tinkoff.acquiring.sdk.models.enums.PaymentObject
+import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
+import ru.tinkoff.acquiring.sdk.models.enums.Tax
+import ru.tinkoff.acquiring.sdk.models.enums.Taxation
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.utils.TestPaymentData
 import ru.tinkoff.acquiring.sdk.utils.TestPaymentData.TEST_CARD_EXPIRY_DATE
@@ -30,7 +37,7 @@ class ApiSdkUnitTest {
     @Test
     fun initTest() {
         val testTotalAmount: Long = 8000
-        val testPhone = "88005553535"
+        val testPhone = "+78005553535"
         val testShopCode = "code"
         val testItemPrice = 2000L
         val testQuantity = 1.0
@@ -64,7 +71,7 @@ class ApiSdkUnitTest {
                         operatorInn = "7710140679"
                     }
                     supplierInfo {
-                        phones = arrayOf("88001007755", "+74959565555")
+                        phones = arrayOf("+78001007755", "+74959565555")
                         name = "СПАО Ингосстрах"
                         inn = "7705042179"
                     }
@@ -167,7 +174,7 @@ class ApiSdkUnitTest {
     @Test
     fun chargeTest() {
         var testRebillId = findRebillIdInList()
-        val paymentIdInit = callInit(true)
+        var paymentIdInit = callInit(true)
 
         if (testRebillId == null) {
             sdk.finishAuthorize {
@@ -180,6 +187,7 @@ class ApiSdkUnitTest {
                 sendEmail = false
             }.execute({
                 testRebillId = findRebillIdInList()
+                paymentIdInit = callInit(true)
             }, {
                 println("Got exception finishAuthorize: $it")
                 Assert.fail(it.message)
@@ -265,7 +273,7 @@ class ApiSdkUnitTest {
                     testCardId = it.cardId
                     println("Test card was attached: cardId = ${it.cardId}")
                 }, {
-                    if (it is AcquiringApiException && it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_ACQUIRING_EXCEPTION) {
+                    if (it is AcquiringApiException && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
                         println("Test card already attached")
                     } else {
                         println("Got exception in attachCard call: $it")
@@ -294,7 +302,7 @@ class ApiSdkUnitTest {
 
         sdk.init {
             amount = 2000
-            orderId = randomOrderId
+            orderId = abs(Random().nextInt()).toString()
             chargeFlag = isRecurrent
             customerKey = TEST_CUSTOMER_KEY
             payForm = TEST_PAY_FORM

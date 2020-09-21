@@ -19,7 +19,12 @@ package ru.tinkoff.acquiring.sdk.payment
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankState
+import ru.tinkoff.acquiring.sdk.models.CollectDataState
+import ru.tinkoff.acquiring.sdk.models.PaymentSource
+import ru.tinkoff.acquiring.sdk.models.RejectedState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
@@ -31,10 +36,10 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FAIL_MAPI_SESSION_ID
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_KEY
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_VALUE
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
+import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
-import java.lang.IllegalStateException
 import java.util.*
 
 /**
@@ -163,7 +168,9 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
     private fun finishPayment(paymentId: Long, paymentSource: PaymentSource, email: String? = null) {
         when {
-            paymentSource is AttachedCard && initRequest?.recurrent == true -> callChargeRequest(paymentId, paymentSource)
+            paymentSource is AttachedCard && initRequest?.recurrent == true && paymentSource.rebillId != null -> {
+                callChargeRequest(paymentId, paymentSource)
+            }
             paymentSource is GooglePay || state == PaymentState.THREE_DS_V2_REJECTED -> {
                 callFinishAuthorizeRequest(paymentId, paymentSource, email)
             }
@@ -274,10 +281,20 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
                         paymentResult = PaymentResult(it.paymentId, paymentSource.cardId)
                         sendToListener(PaymentState.SUCCESS)
                     } else {
+                        error = IllegalStateException("Unknown charge state with error code: ${payInfo.errorCode}")
+                        sendToListener(PaymentState.ERROR)
+                    }
+                },
+                onFailure = {
+                    if (it is AcquiringApiException && it.response != null &&
+                            it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CHARGE_REJECTED) {
+                        val payInfo = (it.response as ChargeResponse).getPaymentInfo()
                         isChargeWasRejected = true
-                        rejectedPaymentId = it.paymentId
+                        rejectedPaymentId = payInfo.paymentId
                         sdkState = RejectedState(payInfo.cardId!!)
                         sendToListener(PaymentState.CHARGE_REJECTED)
+                    } else {
+                        handleException(it)
                     }
                 })
     }
@@ -318,7 +335,6 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
         val data = request.data?.toMutableMap() ?: mutableMapOf()
         data.putAll(map)
-        isChargeWasRejected = false
 
         return data.toMap()
     }

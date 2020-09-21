@@ -21,9 +21,9 @@ package ru.tinkoff.acquiring.sdk.utils
  */
 object TestPaymentData {
 
-    const val TEST_PASS = "5l9v23g7hlhqchyb"
+    const val TEST_PASS = "12345678"
     const val TEST_TERMINAL_KEY = "TestSDK"
-    const val TEST_CUSTOMER_KEY = "user-key"
+    const val TEST_CUSTOMER_KEY = "user-key-test"
     const val TEST_PAY_FORM = "Checkout"
     const val TEST_CUSTOMER_EMAIL = "testCustomerKey1@gmail.com"
     const val TEST_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5Yg3RyEkszggDVMDHCAG\n" +

@@ -1,3 +1,12 @@
+## 2.0.4
+
+#### Fixed
+Fixed handling when rejection charge payment
+#### Changes
+Changed regex for email validation
+#### Additions
+Added JvmOverloads annotation for openPaymentScreen method
+
 ## 2.0.3
 
 #### Fixed
