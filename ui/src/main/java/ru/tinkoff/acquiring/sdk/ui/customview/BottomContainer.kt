@@ -83,6 +83,7 @@ internal class BottomContainer @JvmOverloads constructor(
 
     private var touchPoint1: Float = 0f
     private var touchPoint2: Float = 0f
+    private var distance: Float = 0f
 
     private var isNestedScrollOccurs = false
 
@@ -202,6 +203,7 @@ internal class BottomContainer @JvmOverloads constructor(
     override fun onInterceptTouchEvent(motionEvent: MotionEvent): Boolean {
         return when (motionEvent.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                isNestedScrollOccurs = false
                 val canScroll = scrollableView?.canScrollVertically(1) == true ||
                         scrollableView?.canScrollVertically(-1) == true
 
@@ -222,7 +224,7 @@ internal class BottomContainer @JvmOverloads constructor(
                     false
                 } else {
                     touchPoint2 = motionEvent.y
-                    val distance = touchPoint1 - touchPoint2
+                    distance = touchPoint1 - touchPoint2
                     if (distance.absoluteValue >= scrollDistance && isMovingEnabled) {
                         true
                     } else {
@@ -247,18 +249,13 @@ internal class BottomContainer @JvmOverloads constructor(
                     val velocity = (velocityTracker?.yVelocity) ?: 0f
                     val velocityThreshold = 1000
                     val isMoving = velocity.absoluteValue > velocityThreshold
-                    val isUpDirection = velocity < 0
+                    val isUpDirection = distance > 0
 
                     val duration = calculateDuration(velocity)
                     when {
-                        (isMoving && !isUpDirection) -> hide(duration)
-                        else -> {
-                            if (isExpanded) {
-                                moveToPosition(expandedPositionY)
-                            } else {
-                                moveToPosition(initialPositionY.toFloat())
-                            }
-                        }
+                        (isMoving && !isUpDirection) || this.y > centerScreen * 1.3 -> hide(duration)
+                        isExpanded -> moveToPosition(expandedPositionY)
+                        else -> moveToPosition(initialPositionY.toFloat())
                     }
                 }
 
@@ -398,12 +395,12 @@ internal class BottomContainer @JvmOverloads constructor(
         }
 
         val relativePosition = intArrayOf(child.left, child.top)
-        var currentParent = child.parent as ViewGroup
+        var currentParent = child.parent as ViewGroup?
 
-        while (currentParent !== this) {
+        while (currentParent != null && currentParent !== this) {
             relativePosition[0] += currentParent.left
             relativePosition[1] += currentParent.top
-            currentParent = currentParent.parent as ViewGroup
+            currentParent = currentParent.parent as ViewGroup?
         }
         return relativePosition
     }
@@ -470,7 +467,7 @@ internal class BottomContainer @JvmOverloads constructor(
 
     private fun calculateDuration(velocity: Float): Long {
         val pxPerSec = (velocity / pixelPerSecond).absoluteValue
-        val isUpDirection = velocity < 0
+        val isUpDirection = distance > 0
         val duration = (10 / pxPerSec.absoluteValue * 100).toLong()
 
         return when {

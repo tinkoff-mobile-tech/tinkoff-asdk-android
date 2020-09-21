@@ -117,6 +117,7 @@ class TinkoffAcquiring(
      * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
      *                    с заданного состояния
      */
+    @JvmOverloads
     fun openPaymentScreen(activity: FragmentActivity, options: PaymentOptions, requestCode: Int,
                           state: AsdkState = DefaultState) {
         if (state is CollectDataState) {

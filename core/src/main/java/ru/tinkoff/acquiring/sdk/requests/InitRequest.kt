@@ -52,6 +52,9 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
      * Краткое описание заказа, макс. длина 250 символов
      */
     var description: String? = null
+        set(value) {
+            field = value?.take(250)
+        }
 
     /**
      * Язык платёжной формы.

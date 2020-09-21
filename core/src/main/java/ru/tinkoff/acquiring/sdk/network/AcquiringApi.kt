@@ -44,6 +44,8 @@ object AcquiringApi {
 
     const val API_ERROR_CODE_3DSV2_NOT_SUPPORTED = "106"
     const val API_ERROR_CODE_CUSTOMER_NOT_FOUND = "7"
+    const val API_ERROR_CODE_CHARGE_REJECTED = "104"
+    const val API_ERROR_CODE_NO_ERROR = "0"
 
     const val RECURRING_TYPE_KEY = "recurringType"
     const val RECURRING_TYPE_VALUE = "12"
@@ -72,8 +74,6 @@ object AcquiringApi {
     internal const val JSON = "application/json"
     internal const val FORM_URL_ENCODED = "application/x-www-form-urlencoded"
     internal const val TIMEOUT = 40000
-
-    internal val performedErrorCodesList = listOf("0", "104")
 
     private const val API_URL_RELEASE_OLD = "https://securepay.tinkoff.ru/rest"
     private const val API_URL_DEBUG_OLD = "https://rest-api-test.tcsbank.ru/rest"

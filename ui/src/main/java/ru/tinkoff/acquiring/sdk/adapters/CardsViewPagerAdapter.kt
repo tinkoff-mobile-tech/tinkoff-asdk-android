@@ -218,7 +218,7 @@ internal class CardsViewPagerAdapter(
             PageViewType.CARD_ITEM -> {
                 val selectedCard = cardList[position]
 
-                if (options.order.recurrentPayment) {
+                if (options.order.recurrentPayment && position != rejectedItem) {
                     AttachedCard(selectedCard.rebillId)
                 } else {
                     val cvv = currentView?.findViewById<EditCard>(R.id.acq_edit_card)?.cardCvc
