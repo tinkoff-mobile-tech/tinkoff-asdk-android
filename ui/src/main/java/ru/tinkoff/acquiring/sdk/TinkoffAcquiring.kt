@@ -16,7 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk
 
-import androidx.fragment.app.FragmentActivity
+import android.app.Activity
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
@@ -118,8 +118,7 @@ class TinkoffAcquiring(
      *                    с заданного состояния
      */
     @JvmOverloads
-    fun openPaymentScreen(activity: FragmentActivity, options: PaymentOptions, requestCode: Int,
-                          state: AsdkState = DefaultState) {
+    fun openPaymentScreen(activity: Activity, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
         if (state is CollectDataState) {
             state.data.putAll(ThreeDsActivity.collectData(activity, state.response))
         } else {
@@ -137,7 +136,7 @@ class TinkoffAcquiring(
      * @param options     настройки привязки карты
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
-    fun openAttachCardScreen(activity: FragmentActivity, options: AttachCardOptions, requestCode: Int) {
+    fun openAttachCardScreen(activity: Activity, options: AttachCardOptions, requestCode: Int) {
         options.setTerminalParams(terminalKey, password, publicKey)
         val intent = BaseAcquiringActivity.createIntent(activity, options, AttachCardActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
@@ -150,7 +149,7 @@ class TinkoffAcquiring(
      * @param savedCardsOptions настройки экрана сохраненных карт
      * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK
      */
-    fun openSavedCardsScreen(activity: FragmentActivity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
+    fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
         savedCardsOptions.setTerminalParams(terminalKey, password, publicKey)
         val intent = BaseAcquiringActivity.createIntent(activity, savedCardsOptions, SavedCardsActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
@@ -163,7 +162,7 @@ class TinkoffAcquiring(
      * @param featuresOptions конфигурация визуального отображения экрана
      * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
      */
-    fun openStaticQrScreen(activity: FragmentActivity, featuresOptions: FeaturesOptions, requestCode: Int) {
+    fun openStaticQrScreen(activity: Activity, featuresOptions: FeaturesOptions, requestCode: Int) {
         val options = BaseAcquiringOptions().apply {
             setTerminalParams(
                     this@TinkoffAcquiring.terminalKey,
@@ -182,7 +181,9 @@ class TinkoffAcquiring(
      * @param localization локализация экрана
      * @param requestCode  код для получения результата, по завершению работы экрана Acquiring SDK
      */
-    fun openStaticQrScreen(activity: FragmentActivity, localization: LocalizationSource, requestCode: Int) {
+    @Deprecated("Replaced with expanded method",
+            ReplaceWith("openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)"))
+    fun openStaticQrScreen(activity: Activity, localization: LocalizationSource, requestCode: Int) {
         openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)
     }
 
