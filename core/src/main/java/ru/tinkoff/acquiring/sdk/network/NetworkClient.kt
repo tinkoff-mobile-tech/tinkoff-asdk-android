@@ -34,7 +34,6 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.TIMEOUT
 import ru.tinkoff.acquiring.sdk.requests.AcquiringRequest
 import ru.tinkoff.acquiring.sdk.requests.FinishAuthorizeRequest
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
-import ru.tinkoff.acquiring.sdk.responses.ErrorResponse
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.serialization.CardStatusSerializer
 import ru.tinkoff.acquiring.sdk.utils.serialization.CardsListDeserializer
@@ -124,8 +123,7 @@ internal class NetworkClient {
             }
         } catch (e: JsonParseException) {
             if (!request.isDisposed()) {
-                val errorResponse = gson.fromJson(response, ErrorResponse::class.java)
-                onFailure(AcquiringApiException(errorResponse, "${errorResponse.message ?: ""} ${errorResponse.details ?: ""}"))
+                onFailure(AcquiringApiException("Invalid response. $response", e))
             }
         } finally {
             closeQuietly(responseReader)
