@@ -107,16 +107,19 @@ class Money private constructor(val coins: Long) : Serializable, Comparable<Mone
         /**
          * Перевод копейки в рубли
          */
+        @JvmStatic
         fun ofRubles(rubles: Long): Money {
             return Money(toCoins(rubles))
         }
 
+        @JvmStatic
         fun ofRubles(value: BigDecimal): Money {
             val precised = value.setScale(PRECISION.toInt(), RoundingMode.HALF_EVEN)
             val coins = precised.multiply(BigDecimal(COINS_IN_RUBLE.toInt(), MathContext(0)))
             return Money(coins.toLong())
         }
 
+        @JvmStatic
         fun ofRubles(rubles: Double): Money {
             return ofRubles(BigDecimal(rubles))
         }
@@ -124,6 +127,7 @@ class Money private constructor(val coins: Long) : Serializable, Comparable<Mone
         /**
          * Перевод рубли в копейки
          */
+        @JvmStatic
         fun ofCoins(coins: Long): Money {
             return Money(coins)
         }
