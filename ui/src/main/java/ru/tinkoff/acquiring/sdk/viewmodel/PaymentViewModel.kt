@@ -20,7 +20,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankScreenState
+import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankState
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.CollectDataState
+import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
+import ru.tinkoff.acquiring.sdk.models.PaymentSource
+import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
+import ru.tinkoff.acquiring.sdk.models.RejectedState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsDataCollectScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
@@ -55,6 +70,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
     fun checkoutAsdkState(state: AsdkState) {
         when (state) {
             is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data))
+            is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
             else -> changeScreenState(PaymentScreenState)
         }
     }
@@ -162,7 +178,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
                     }
                     is RejectedState -> {
                         changeScreenState(LoadedState)
-                        changeScreenState(RejectedCardScreenState(state.cardId))
+                        changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
                     }
                     is CollectDataState -> {
                         changeScreenState(ThreeDsDataCollectScreenState(state.response))

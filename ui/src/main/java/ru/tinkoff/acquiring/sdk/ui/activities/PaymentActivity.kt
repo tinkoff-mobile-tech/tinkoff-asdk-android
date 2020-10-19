@@ -28,6 +28,7 @@ import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
+import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.Screen
 import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
@@ -85,7 +86,10 @@ internal class PaymentActivity : TransparentActivity() {
         screenChangeEvent.getValueIfNotHandled()?.let { screen ->
             when (screen) {
                 is PaymentScreenState -> showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey))
-                is RejectedCardScreenState -> showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey, true, screen.cardId))
+                is RejectedCardScreenState -> {
+                    val state = RejectedState(screen.cardId, screen.rejectedPaymentId)
+                    showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey, state))
+                }
                 is ThreeDsScreenState -> openThreeDs(screen.data)
                 is ThreeDsDataCollectScreenState -> {
                     paymentViewModel.collectedDeviceData = ThreeDsActivity.collectData(this, screen.response)

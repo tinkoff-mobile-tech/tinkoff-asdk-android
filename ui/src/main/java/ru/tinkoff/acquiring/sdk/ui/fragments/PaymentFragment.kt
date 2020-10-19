@@ -57,9 +57,10 @@ import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SelectCardAndPayState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
@@ -100,8 +101,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
     companion object {
         private const val CUSTOMER_KEY = "customer_key"
-        private const val REJECTED = "rejected"
-        private const val REJECTED_CARD_ID = "rejected_card_id"
+        private const val REJECTED_STATE = "rejected_state"
         private const val REJECTED_DIALOG_DISMISSED = "rejected_dialog_dismissed"
 
         private const val STATE_VIEW_PAGER_POSITION = "state_view_pager_position"
@@ -112,11 +112,11 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
         private const val EMAIL_HINT_ANIMATION_DURATION = 200L
 
-        fun newInstance(customerKey: String, rejected: Boolean = false, cardId: String? = null): Fragment {
+        fun newInstance(customerKey: String,
+                        state: RejectedState? = null): Fragment { //TODO refactor custKey
             val args = Bundle()
             args.putString(CUSTOMER_KEY, customerKey)
-            args.putBoolean(REJECTED, rejected)
-            args.putString(REJECTED_CARD_ID, cardId)
+            args.putSerializable(REJECTED_STATE, state)
 
             val fragment = PaymentFragment()
             fragment.arguments = args
@@ -130,7 +130,9 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         cardScanner = CardScanner(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.acq_fragment_payment, container, false)
 
         val amountLabel = view.findViewById<TextView>(R.id.acq_payment_tv_amount_label)
@@ -162,7 +164,9 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
                     hideSystemKeyboard()
                     emailEditText.clearFocus()
                     val options = getSavedCardOptions()
-                    val intent = BaseAcquiringActivity.createIntent(requireActivity(), options, SavedCardsActivity::class.java)
+                    val intent = BaseAcquiringActivity.createIntent(requireActivity(),
+                            options,
+                            SavedCardsActivity::class.java)
                     startActivityForResult(intent, CARD_LIST_REQUEST_CODE)
                 }
             })
@@ -188,65 +192,63 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             viewPagerPosition = it.getInt(STATE_VIEW_PAGER_POSITION)
         }
 
-        requireActivity().run {
-            intent.extras?.let { extras ->
-                setupPaymentOptions(extras)
+        requireActivity().intent.extras?.let { extras ->
+            setupPaymentOptions(extras)
+        }
+
+        requireArguments().let {
+            customerKey = it.getString(CUSTOMER_KEY) ?: ""
+            asdkState = it.getSerializable(REJECTED_STATE) as AsdkState? ?: paymentOptions.asdkState
+        }
+
+        paymentOptions.order.run {
+            amountTextView.text = modifySpan(amount.toHumanReadableString())
+            orderTitle.visibility = if (title.isNullOrBlank()) View.GONE else View.VISIBLE
+            orderDescription.visibility = if (description.isNullOrBlank()) View.GONE else View.VISIBLE
+            orderTitle.text = title
+            orderDescription.text = description
+        }
+
+        orderDescription.movementMethod = ScrollingMovementMethod()
+        orderDescription.setOnTouchListener { _, _ ->
+            val canScroll = orderDescription.canScrollVertically(1) || orderDescription.canScrollVertically(-1)
+            orderDescription.parent.requestDisallowInterceptTouchEvent(canScroll)
+            false
+        }
+
+        setupCardsPager()
+
+        paymentViewModel = ViewModelProvider(requireActivity()).get(PaymentViewModel::class.java)
+        val isErrorShowing = paymentViewModel.screenStateLiveData.value is ErrorScreenState
+        observeLiveData()
+
+        emailHintTextView.visibility = when {
+            emailEditText.visibility != View.VISIBLE -> View.GONE
+            savedInstanceState == null && !paymentOptions.customer.email.isNullOrEmpty() -> {
+                emailEditText.setText(paymentOptions.customer.email)
+                View.VISIBLE
             }
-
-            arguments?.let {
-                customerKey = it.getString(CUSTOMER_KEY) ?: ""
-            }
-
-            emailHintTextView.visibility = when {
-                emailEditText.visibility != View.VISIBLE -> View.GONE
-                savedInstanceState == null && !paymentOptions.customer.email.isNullOrEmpty() -> {
-                    emailEditText.setText(paymentOptions.customer.email)
-                    View.VISIBLE
-                }
-                else -> View.INVISIBLE
-            }
-
-            paymentOptions.order.run {
-                amountTextView.text = modifySpan(amount.toHumanReadableString())
-                orderTitle.visibility = if (title.isNullOrBlank()) View.GONE else View.VISIBLE
-                orderDescription.visibility = if (description.isNullOrBlank()) View.GONE else View.VISIBLE
-                orderTitle.text = title
-                orderDescription.text = description
-            }
-
-            orderDescription.movementMethod = ScrollingMovementMethod()
-            orderDescription.setOnTouchListener { _, _ ->
-                val canScroll = orderDescription.canScrollVertically(1) || orderDescription.canScrollVertically(-1)
-                orderDescription.parent.requestDisallowInterceptTouchEvent(canScroll)
-                false
-            }
-
-            if (paymentOptions.features.fpsEnabled) {
-                setupFpsButton()
-                payButton.text = localization.payPayViaButton
-            } else {
-                orTextView.visibility = View.GONE
-                payButton.text = localization.payPayButton
-            }
-
-            (this as AppCompatActivity).supportActionBar?.title = localization.payScreenTitle
-
-            setupCardsPager()
-
-            paymentViewModel = ViewModelProvider(this).get(PaymentViewModel::class.java)
-            val isErrorShowing = paymentViewModel.screenStateLiveData.value is ErrorScreenState
-            observeLiveData()
-
-            if (paymentViewModel.cardsResultLiveData.value == null ||
-                    !isErrorShowing && arguments?.getBoolean(REJECTED) == false) {
-                loadCards()
-            }
+            else -> View.INVISIBLE
         }
 
         emailHintTextView.text = localization.payEmail
         emailEditText.hint = localization.payEmail
         orTextView.text = localization.payOrText
         fpsButton.findViewById<TextView>(R.id.acq_payment_fps_text).text = localization.payPayWithFpsButton
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = localization.payScreenTitle
+
+        if (paymentOptions.features.fpsEnabled) {
+            setupFpsButton()
+            payButton.text = localization.payPayViaButton
+        } else {
+            orTextView.visibility = View.GONE
+            payButton.text = localization.payPayButton
+        }
+
+        if (paymentViewModel.cardsResultLiveData.value == null &&
+                paymentViewModel.loadStateLiveData.value != LoadingState && !isErrorShowing) {
+            loadCards()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -292,7 +294,6 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
     private fun setupPaymentOptions(extras: Bundle) {
         paymentOptions = extras.getParcelable(BaseAcquiringActivity.EXTRA_OPTIONS)!!
-        asdkState = paymentOptions.asdkState
         cardScanner.cameraCardScanner = paymentOptions.features.cameraCardScanner
     }
 
@@ -349,14 +350,14 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             pagerIndicator.visibility = View.GONE
         }
 
-        arguments?.let {
-            if (it.getBoolean(REJECTED)) {
-                viewPager.currentItem = cardsPagerAdapter.getCardPosition(it.getString(REJECTED_CARD_ID) ?: "0")
-                if (rejectedDialogDismissed) {
-                    cardsPagerAdapter.showRejectedCard(viewPager.currentItem)
-                } else {
+        if (asdkState is RejectedState) {
+            if (!rejectedDialogDismissed) {
+                if (rejectedDialog == null) {
                     showRejectedDialog()
                 }
+            } else {
+                val position = cardsPagerAdapter.getCardPosition((asdkState as RejectedState).cardId)
+                cardsPagerAdapter.showRejectedCard(position)
             }
         }
     }
@@ -367,8 +368,8 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
         if (validateInput(paymentSource, email)) {
             when (val state = asdkState) {
-                is DefaultState -> paymentViewModel.startPayment(paymentOptions, paymentSource, email)
                 is SelectCardAndPayState -> paymentViewModel.finishPayment(state.paymentId, paymentSource, email)
+                else -> paymentViewModel.startPayment(paymentOptions, paymentSource, email)
             }
         }
     }
@@ -396,7 +397,8 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             setTitle(localization.payDialogCvcMessage)
             setCancelable(false)
             setPositiveButton(localization.payDialogCvcAcceptButton) { _, _ ->
-                val position = cardsPagerAdapter.getCardPosition(arguments?.getString(REJECTED_CARD_ID) ?: "0")
+                val position = cardsPagerAdapter.getCardPosition((asdkState as RejectedState).cardId)
+                viewPager.currentItem = position
                 cardsPagerAdapter.showRejectedCard(position)
                 rejectedDialogDismissed = true
             }

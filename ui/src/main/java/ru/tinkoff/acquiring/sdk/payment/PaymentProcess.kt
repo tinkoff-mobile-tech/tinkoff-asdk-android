@@ -82,6 +82,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         this.initRequest = configureInitRequest(paymentOptions)
         this.paymentType = CardPaymentType
         this.email = email
+        this.sdkState = paymentOptions.asdkState
 
         sendToListener(PaymentState.CREATED)
         return this
@@ -183,7 +184,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
     }
 
     private fun callInitRequest(request: InitRequest) {
-        if (isChargeWasRejected && rejectedPaymentId != null) {
+        if (isChargeWasRejected && rejectedPaymentId != null || sdkState is RejectedState) {
             request.data = modifyRejectedData(request)
         }
 
@@ -289,10 +290,15 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
                     if (it is AcquiringApiException && it.response != null &&
                             it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CHARGE_REJECTED) {
                         val payInfo = (it.response as ChargeResponse).getPaymentInfo()
-                        isChargeWasRejected = true
-                        rejectedPaymentId = payInfo.paymentId
-                        sdkState = RejectedState(payInfo.cardId!!)
-                        sendToListener(PaymentState.CHARGE_REJECTED)
+                        if (payInfo.cardId == null && rejectedPaymentId == null) {
+                            error = IllegalStateException("Unknown cardId or paymentId")
+                            sendToListener(PaymentState.ERROR)
+                        } else {
+                            isChargeWasRejected = true
+                            rejectedPaymentId = payInfo.paymentId
+                            sdkState = RejectedState(payInfo.cardId!!, rejectedPaymentId!!)
+                            sendToListener(PaymentState.CHARGE_REJECTED)
+                        }
                     } else {
                         handleException(it)
                     }
@@ -331,7 +337,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
     private fun modifyRejectedData(request: InitRequest): Map<String, String> {
         val map = HashMap<String, String>()
         map[RECURRING_TYPE_KEY] = RECURRING_TYPE_VALUE
-        map[FAIL_MAPI_SESSION_ID] = rejectedPaymentId.toString()
+        map[FAIL_MAPI_SESSION_ID] = rejectedPaymentId?.toString() ?: (sdkState as? RejectedState)?.rejectedPaymentId.toString()
 
         val data = request.data?.toMutableMap() ?: mutableMapOf()
         data.putAll(map)

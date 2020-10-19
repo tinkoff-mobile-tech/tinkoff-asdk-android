@@ -37,7 +37,7 @@ object DefaultState : AsdkState()
  * Состояние отклонения платежа с помощью привязанной карты. Пользователю покажется диалог,
  * потребующий ввести секретный код карты для подтверждения и продолжения оплаты
  */
-class RejectedState(val cardId: String) : AsdkState()
+class RejectedState(val cardId: String, val rejectedPaymentId: Long) : AsdkState()
 
 /**
  * Стандартный сценарий оплаты, но без инициации платежа

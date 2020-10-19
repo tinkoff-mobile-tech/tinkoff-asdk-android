@@ -30,7 +30,7 @@ internal class BrowseSbpBankScreenState(val paymentId: Long, val deepLink: Strin
 
 internal sealed class Screen : ScreenState()
 internal object PaymentScreenState : Screen()
-internal class RejectedCardScreenState(val cardId: String) : Screen()
+internal class RejectedCardScreenState(val cardId: String, val rejectedPaymentId: Long) : Screen()
 internal class ThreeDsScreenState(val data: ThreeDsData) : Screen()
 internal class ThreeDsDataCollectScreenState(val response: Check3dsVersionResponse?) : Screen()
 internal class LoopConfirmationScreenState(val requestKey: String) : Screen()
