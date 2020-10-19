@@ -56,6 +56,7 @@ enum class ResponseStatus {
         private const val TDS_CHECKING_STRING = "3DS_CHECKING"
         private const val TDS_CHECKED_STRING = "3DS_CHECKED"
 
+        @JvmStatic
         fun fromString(stringValue: String): ResponseStatus {
             return when (stringValue) {
                 TDS_CHECKING_STRING -> THREE_DS_CHECKING

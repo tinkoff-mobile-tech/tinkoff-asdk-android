@@ -43,6 +43,11 @@ class ApiSdkUnitTest {
         val testQuantity = 1.0
         val testItemAmount = 4000L
 
+        val dueDate = Calendar.getInstance().apply {
+            set(Calendar.MONTH, this.get(Calendar.MONTH) + 1)
+            set(Calendar.HOUR_OF_DAY, 6)
+        }.time
+
         sdk.init {
             amount = testTotalAmount
             orderId = randomOrderId
@@ -50,6 +55,7 @@ class ApiSdkUnitTest {
             recurrent = false
             customerKey = TEST_CUSTOMER_KEY
             payForm = TEST_PAY_FORM
+            redirectDueDate = dueDate
             receipt {
                 phone = testPhone
                 shopCode = testShopCode
