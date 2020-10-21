@@ -1,3 +1,12 @@
+## 2.1.0
+
+#### Fixed
+#### Changes
+Changed methods signature in TinkoffAcquiring class: from FragmentActivity to Activity
+Added JvmStatic annotation for some static methods
+#### Additions
+Added RedirectDueDate param to Init request
+
 ## 2.0.4
 
 #### Fixed

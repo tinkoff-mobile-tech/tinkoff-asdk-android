@@ -31,6 +31,7 @@ enum class CardStatus(private val literal: Char) {
 
     companion object {
 
+        @JvmStatic
         fun fromChar(literal: Char): CardStatus {
             when (literal) {
                 'A' -> return ACTIVE

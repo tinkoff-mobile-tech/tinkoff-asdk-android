@@ -249,7 +249,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         when (screenState) {
             is ErrorButtonClickedEvent -> loadCards()
             is FinishWithErrorScreenState -> {
-                if (screenState.error is AcquiringApiException &&
+                if (screenState.error is AcquiringApiException && screenState.error.response != null &&
                         screenState.error.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND) {
                     showErrorScreen(localization.cardListEmptyList ?: "")
                 } else finishWithError(screenState.error)
