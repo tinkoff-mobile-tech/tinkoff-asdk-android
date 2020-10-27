@@ -41,6 +41,11 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/menu_action_send_notification"
+        android:title="@string/activity_title_send_notification"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/menu_action_settings"
         android:title="@string/activity_title_settings"
         app:showAsAction="never"/>

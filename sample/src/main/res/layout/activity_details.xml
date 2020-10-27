@@ -116,7 +116,7 @@
 
         <include
             android:id="@+id/btn_google_pay"
-            layout="@layout/googlepay_button"
+            layout="@layout/googlepay_button_white"
             android:visibility="gone"
             tools:visibility="visible" />
 

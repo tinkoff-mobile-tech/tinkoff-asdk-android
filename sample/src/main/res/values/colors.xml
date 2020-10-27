@@ -32,6 +32,7 @@
     <color name="common_yellow_semitransparent">#8cffdd2d</color>
 
     <color name="common_white">#FFFFFF</color>
+    <color name="common_black">#000000</color>
     <color name="common_white_semitransparent">#8CFFFFFF</color>
 
     <color name="custom_colorPrimary">#2E3359</color>
