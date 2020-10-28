@@ -1,3 +1,10 @@
+## 2.1.1
+
+#### Fixed
+#### Changes
+#### Additions
+Added support for payment from notification via GooglePay and Tinkoff Acquiring
+
 ## 2.1.0
 
 #### Fixed
