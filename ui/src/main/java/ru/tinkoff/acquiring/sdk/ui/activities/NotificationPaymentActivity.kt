@@ -38,8 +38,6 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.customview.ResultNotificationView
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
-import kotlin.math.abs
-import kotlin.random.Random
 
 /**
  * @author Mariya Chernyadieva
@@ -63,10 +61,9 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         private const val EXTRA_NOTIFICATION_ID = "notification_id"
         private const val EXTRA_PAYMENT_SYSTEM = "payment_system"
 
-        private val pendingIntentCode: Int
-            get() {
-                return abs(Random(System.nanoTime()).nextInt())
-            }
+        private const val PREF_NAME = "asdk_preferences"
+        private const val PREF_INTENT_COUNTER_KEY = "intent_counter_key"
+        private const val START_COUNTER_VALUE = 0
 
         fun createPendingIntent(context: Context,
                                 options: PaymentOptions,
@@ -89,10 +86,18 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
                 intent.putExtra(EXTRA_PENDING_INTENT, resultPendingIntent)
             }
 
-            return PendingIntent.getActivity(context,
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            var pendingIntentCode = preferences.getInt(PREF_INTENT_COUNTER_KEY, START_COUNTER_VALUE)
+
+            val pendingIntent = PendingIntent.getActivity(context,
                     pendingIntentCode,
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
+
+            pendingIntentCode = if (pendingIntentCode == Int.MAX_VALUE) START_COUNTER_VALUE else pendingIntentCode + 1
+            preferences.edit().putInt(PREF_INTENT_COUNTER_KEY, pendingIntentCode).apply()
+
+            return pendingIntent
         }
     }
 
