@@ -78,7 +78,6 @@ class CustomerOptions() : Options, Parcelable {
     override fun validateRequiredFields() {
         check(::customerKey.isInitialized) { "Customer Key is not set" }
         check(::checkType.isInitialized) { "Check Type is not set" }
-
     }
 
     companion object CREATOR : Parcelable.Creator<CustomerOptions> {

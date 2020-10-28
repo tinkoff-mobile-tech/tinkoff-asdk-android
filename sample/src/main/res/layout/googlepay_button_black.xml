@@ -22,7 +22,7 @@
     android:layout_height="35dp"
     android:layout_marginLeft="6dp"
     android:layout_marginRight="6dp"
-    android:background="@drawable/bg_white_button"
+    android:background="@drawable/bg_black_button"
     android:clickable="true"
     android:contentDescription="@string/googlepay_button_content_description"
     android:focusable="true"

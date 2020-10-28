@@ -114,11 +114,13 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
     var redirectDueDate: Date? = null
         set(value) {
             field = value
-            redirectDueDateFormat = dateFormat.format(value)
+            redirectDueDateFormat = dateFormat.format(value).let {
+                StringBuilder(it).insert(it.length - 2, ":").toString()
+            }
         }
 
     private var redirectDueDateFormat: String? = null
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
     override fun asMap(): MutableMap<String, Any> {
         val map = super.asMap()

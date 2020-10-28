@@ -44,5 +44,7 @@
   "Nfc.Dialog.Disable.Message": "Turn on NFC to scan a card",
   "Qr.Static.Title": "QR code payment",
   "Common.Message.TryAgain": "Try again",
-  "Common.Cancel": "Cancel"
+  "Common.Cancel": "Cancel",
+  "Notification.Message.Success": "Successful payment",
+  "Notification.Message.Error": "Payment error"
 }
