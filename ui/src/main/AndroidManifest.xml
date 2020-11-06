@@ -25,7 +25,7 @@
             android:name=".ui.activities.PaymentActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing" />
 
         <activity
             android:name=".ui.activities.AttachCardActivity"
@@ -52,6 +52,11 @@
             android:name=".ui.activities.ThreeDsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AcquiringTheme.Base" />
+
+        <activity
+            android:name=".ui.activities.NotificationPaymentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AcquiringNotificationTransparentTheme" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

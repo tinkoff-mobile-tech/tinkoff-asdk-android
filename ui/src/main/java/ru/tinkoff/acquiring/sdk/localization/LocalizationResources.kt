@@ -160,4 +160,10 @@ internal class LocalizationResources {
 
     @SerializedName("Common.Cancel")
     var commonCancel: String? = null
+
+    @SerializedName("Notification.Message.Success")
+    var notificationMessageSuccess: String? = null
+
+    @SerializedName("Notification.Message.Error")
+    var notificationMessageError: String? = null
 }

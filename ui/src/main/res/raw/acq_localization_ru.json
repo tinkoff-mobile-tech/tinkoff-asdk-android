@@ -44,5 +44,7 @@
   "Nfc.Dialog.Disable.Message": "Для сканирования карты необходимо включить NFC",
   "Qr.Static.Title": "Оплата по QR-коду",
   "Common.Message.TryAgain": "Повторить попытку",
-  "Common.Cancel": "Отменить"
+  "Common.Cancel": "Отменить",
+  "Notification.Message.Success": "Платеж выполнен успешно",
+  "Notification.Message.Error": "Ошибка оплаты"
 }

@@ -17,10 +17,13 @@
 package ru.tinkoff.acquiring.sdk
 
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
+import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
@@ -33,6 +36,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
+import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.StaticQrActivity
@@ -185,6 +189,101 @@ class TinkoffAcquiring(
             ReplaceWith("openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)"))
     fun openStaticQrScreen(activity: Activity, localization: LocalizationSource, requestCode: Int) {
         openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)
+    }
+
+    /**
+     * Создает PendingIntent для вызова оплаты через GooglePay из уведомления.
+     * Результат оплаты будет обработан в SDK
+     *
+     * @param context         контекст для запуска экрана
+     * @param googlePayParams параметры GooglePay
+     * @param options         настройки платежной сессии
+     * @param notificationId  ID уведомления.
+     *                        Если передан, уведомлене удалится в случае успешной оплаты
+     * @return настроенный PendingIntent
+     */
+    @JvmOverloads
+    fun createGooglePayPendingIntent(context: Context,
+                                     googlePayParams: GooglePayParams,
+                                     options: PaymentOptions,
+                                     notificationId: Int? = null): PendingIntent {
+        options.setTerminalParams(terminalKey, password, publicKey)
+        return NotificationPaymentActivity.createPendingIntent(context,
+                options,
+                null,
+                NotificationPaymentActivity.PaymentMethod.GPAY,
+                notificationId,
+                googlePayParams)
+    }
+
+    /**
+     * Создает PendingIntent для вызова оплаты через экран оплаты Tinkoff из уведомления.
+     * Результат оплаты будет обработан в SDK
+     *
+     * @param context        контекст для запуска экрана
+     * @param options        настройки платежной сессии
+     * @param notificationId ID уведомления.
+     *                       Если передан, уведомлене удалится в случае успешной оплаты
+     * @return настроенный PendingIntent
+     */
+    @JvmOverloads
+    fun createTinkoffPaymentPendingIntent(context: Context, options: PaymentOptions, notificationId: Int? = null): PendingIntent {
+        options.setTerminalParams(terminalKey, password, publicKey)
+        return NotificationPaymentActivity.createPendingIntent(context,
+                options,
+                null,
+                NotificationPaymentActivity.PaymentMethod.TINKOFF,
+                notificationId)
+    }
+
+    /**
+     * Создает PendingIntent для вызова оплаты через GooglePay из уведомления.
+     * Результат вернется в onActivityResult с кодом [requestCode] (успех, ошибка или отмена)
+     *
+     * @param activity        контекст для запуска экрана
+     * @param googlePayParams параметры GooglePay
+     * @param options         настройки платежной сессии
+     * @param requestCode     код для получения результата, по завершению оплаты
+     * @param notificationId  ID уведомления.
+     *                        Если передан, уведомлене удалится в случае успешной оплаты
+     * @return настроенный PendingIntent
+     */
+    @JvmOverloads
+    fun createGooglePayPendingIntentForResult(activity: Activity,
+                                              googlePayParams: GooglePayParams,
+                                              options: PaymentOptions,
+                                              requestCode: Int,
+                                              notificationId: Int? = null): PendingIntent {
+        options.setTerminalParams(terminalKey, password, publicKey)
+        return NotificationPaymentActivity.createPendingIntent(activity,
+                options,
+                requestCode,
+                NotificationPaymentActivity.PaymentMethod.GPAY,
+                notificationId,
+                googlePayParams)
+    }
+
+    /**
+     * Создает PendingIntent для вызова оплаты через экран оплаты Tinkoff из уведомления
+     *
+     * @param activity       контекст для запуска экрана
+     * @param options        настройки платежной сессии
+     * @param requestCode    код для получения результата, по завершению оплаты
+     * @param notificationId ID уведомления.
+     *                       Если передан, уведомлене удалится в случае успешной оплаты
+     * @return настроенный PendingIntent
+     */
+    @JvmOverloads
+    fun createTinkoffPaymentPendingIntentForResult(activity: Activity,
+                                                   options: PaymentOptions,
+                                                   requestCode: Int,
+                                                   notificationId: Int? = null): PendingIntent {
+        options.setTerminalParams(terminalKey, password, publicKey)
+        return NotificationPaymentActivity.createPendingIntent(activity,
+                options,
+                requestCode,
+                NotificationPaymentActivity.PaymentMethod.TINKOFF,
+                notificationId)
     }
 
     companion object {

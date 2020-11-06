@@ -67,5 +67,7 @@
             android:name=".camera.DemoCameraScanActivity"
             android:label="Camera Scan" />
 
+        <service android:name=".service.PaymentNotificationIntentService" />
+
     </application>
 </manifest>

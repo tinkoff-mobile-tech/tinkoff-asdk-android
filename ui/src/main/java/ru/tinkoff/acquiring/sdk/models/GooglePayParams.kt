@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models
 
 import androidx.annotation.IntDef
 import com.google.android.gms.wallet.WalletConstants
+import java.io.Serializable
 
 /**
  * Параметры, передающиеся для конфигурации Google Pay
@@ -38,7 +39,8 @@ class GooglePayParams(
         val isPhoneRequired: Boolean = false,
         @GooglePayEnvironment
         val environment: Int = WalletConstants.ENVIRONMENT_TEST
-) {
+) : Serializable {
+
     companion object {
         const val CURRENCY_CODE = "RUB"
     }
