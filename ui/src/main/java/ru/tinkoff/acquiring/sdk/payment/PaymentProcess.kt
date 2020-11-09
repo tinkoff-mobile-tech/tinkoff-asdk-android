@@ -78,6 +78,8 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
      * @return сконфигурированный объект для проведения оплаты
      */
     fun createPaymentProcess(paymentSource: PaymentSource, paymentOptions: PaymentOptions, email: String? = null): PaymentProcess {
+        paymentOptions.validateRequiredFields()
+
         this.paymentSource = paymentSource
         this.initRequest = configureInitRequest(paymentOptions)
         this.paymentType = CardPaymentType
@@ -107,6 +109,8 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
      * @return сконфигурированный объект для проведения оплаты
      */
     fun createSbpPaymentProcess(paymentOptions: PaymentOptions): PaymentProcess {
+        paymentOptions.validateRequiredFields()
+
         this.initRequest = configureInitRequest(paymentOptions)
         this.paymentType = SbpPaymentType
 

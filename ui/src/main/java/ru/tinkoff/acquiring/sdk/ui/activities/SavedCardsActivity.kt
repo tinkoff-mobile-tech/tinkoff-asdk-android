@@ -57,6 +57,8 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     private lateinit var cardsAdapter: CardListAdapter
     private lateinit var viewModel: SavedCardsViewModel
 
+    private lateinit var customerKey: String
+
     private var deletingConfirmDialog: AlertDialog? = null
     private var notificationDialog: NotificationDialog? = null
 
@@ -84,7 +86,12 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         viewModel = provideViewModel(SavedCardsViewModel::class.java) as SavedCardsViewModel
         observeLiveData()
 
-        loadCards()
+        if (savedCardsOptions.customer.customerKey != null) {
+            customerKey = savedCardsOptions.customer.customerKey!!
+            loadCards()
+        } else {
+            showErrorScreen(localization.cardListEmptyList ?: "")
+        }
 
         if (isDeletingDialogShowing && deletingCard != null) {
             showDeletingConfirmDialog(deletingCard!!)
@@ -242,7 +249,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     }
 
     private fun loadCards() {
-        viewModel.getCardList(savedCardsOptions.customer.customerKey)
+        viewModel.getCardList(customerKey)
     }
 
     private fun handleScreenState(screenState: ScreenState) {
@@ -269,7 +276,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
             setMessage(localization.cardListDialogDeleteMessage)
             setPositiveButton(localization.cardListDelete) { dialog, _ ->
                 dialog.dismiss()
-                viewModel.deleteCard(card.cardId!!, savedCardsOptions.customer.customerKey)
+                viewModel.deleteCard(card.cardId!!, customerKey)
                 deletingBottomContainer.hide()
                 isDeletingDialogShowing = false
             }

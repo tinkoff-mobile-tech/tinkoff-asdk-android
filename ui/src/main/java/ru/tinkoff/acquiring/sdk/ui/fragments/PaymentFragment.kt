@@ -81,7 +81,6 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     private lateinit var paymentViewModel: PaymentViewModel
     private lateinit var paymentOptions: PaymentOptions
     private lateinit var cardScanner: CardScanner
-    private lateinit var customerKey: String
     private lateinit var asdkState: AsdkState
 
     private lateinit var emailHintTextView: TextView
@@ -95,6 +94,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     private lateinit var payButton: Button
     private lateinit var viewPager: ViewPager
 
+    private var customerKey: String? = null
     private var rejectedDialog: AlertDialog? = null
     private var rejectedDialogDismissed = false
     private var viewPagerPosition = FIRST_POSITION
@@ -112,8 +112,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
         private const val EMAIL_HINT_ANIMATION_DURATION = 200L
 
-        fun newInstance(customerKey: String,
-                        state: RejectedState? = null): Fragment { //TODO refactor custKey
+        fun newInstance(customerKey: String?, state: RejectedState? = null): Fragment {
             val args = Bundle()
             args.putString(CUSTOMER_KEY, customerKey)
             args.putSerializable(REJECTED_STATE, state)
@@ -197,7 +196,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         }
 
         requireArguments().let {
-            customerKey = it.getString(CUSTOMER_KEY) ?: ""
+            customerKey = it.getString(CUSTOMER_KEY)
             asdkState = it.getSerializable(REJECTED_STATE) as AsdkState? ?: paymentOptions.asdkState
         }
 

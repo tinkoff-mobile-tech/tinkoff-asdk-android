@@ -75,36 +75,41 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
         }
     }
 
-    fun getCardList(handleErrorInSdk: Boolean, customerKey: String, recurrentPayment: Boolean) {
+    fun getCardList(handleErrorInSdk: Boolean, customerKey: String?, recurrentPayment: Boolean) {
         changeScreenState(DefaultScreenState)
-        changeScreenState(LoadingState)
 
-        val request = sdk.getCardList {
-            this.customerKey = customerKey
-        }
+        if (customerKey == null) {
+            cardsResult.value = listOf()
+        } else {
+            changeScreenState(LoadingState)
 
-        coroutine.call(request,
-                onSuccess = {
-                    val activeCards = it.cards.filter { card ->
-                        if (recurrentPayment) {
-                            card.status == CardStatus.ACTIVE && !card.rebillId.isNullOrEmpty()
-                        } else {
-                            card.status == CardStatus.ACTIVE
+            val request = sdk.getCardList {
+                this.customerKey = customerKey
+            }
+
+            coroutine.call(request,
+                    onSuccess = {
+                        val activeCards = it.cards.filter { card ->
+                            if (recurrentPayment) {
+                                card.status == CardStatus.ACTIVE && !card.rebillId.isNullOrEmpty()
+                            } else {
+                                card.status == CardStatus.ACTIVE
+                            }
                         }
-                    }
-                    cardsResult.value = activeCards
-                    changeScreenState(LoadedState)
-                },
-                onFailure = {
-                    if (handleErrorInSdk) {
+                        cardsResult.value = activeCards
                         changeScreenState(LoadedState)
-                        cardsResult.value = mutableListOf()
-                    } else {
-                        coroutine.runWithDelay(800) {
-                            changeScreenState(FinishWithErrorScreenState(it))
+                    },
+                    onFailure = {
+                        if (handleErrorInSdk) {
+                            changeScreenState(LoadedState)
+                            cardsResult.value = mutableListOf()
+                        } else {
+                            coroutine.runWithDelay(800) {
+                                changeScreenState(FinishWithErrorScreenState(it))
+                            }
                         }
-                    }
-                })
+                    })
+        }
     }
 
     fun startPayment(paymentOptions: PaymentOptions, paymentSource: PaymentSource, email: String? = null) {

@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
 import ru.tinkoff.acquiring.sdk.models.LoadState
@@ -61,7 +62,10 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
 
         const val EXTRA_OPTIONS = "options"
 
+        @Throws(AcquiringSdkException::class)
         fun createIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*> ): Intent {
+            options.validateRequiredFields()
+
             val intent = Intent(context, cls)
             intent.putExtra(EXTRA_OPTIONS, options)
             return intent

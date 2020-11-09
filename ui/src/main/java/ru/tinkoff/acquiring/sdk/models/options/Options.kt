@@ -16,10 +16,20 @@
 
 package ru.tinkoff.acquiring.sdk.models.options
 
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
+
 /**
  * @author Mariya Chernyadieva
  */
-internal interface Options {
+abstract class Options {
 
-    fun validateRequiredFields()
+    internal abstract fun validateRequiredFields()
+
+    @Throws(AcquiringSdkException::class)
+    internal fun check(condition: Boolean, lazyMessage: () -> Any) {
+        if (!condition) {
+            val message = lazyMessage()
+            throw AcquiringSdkException(IllegalStateException(message.toString()))
+        }
+    }
 }

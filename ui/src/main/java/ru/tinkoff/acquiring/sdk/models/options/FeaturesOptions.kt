@@ -29,7 +29,7 @@ import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
  *
  * @author Mariya Chernyadieva
  */
-class FeaturesOptions() : Options, Parcelable {
+class FeaturesOptions() : Options(), Parcelable {
 
     /**
      * Тема экрана

@@ -156,8 +156,8 @@ internal class AttachCardFragment : BaseAcquiringFragment(), EditCardScanButtonC
 
     private fun processAttach() {
         val customerOptions = attachCardOptions.customer
-        val customerKey = customerOptions.customerKey
-        val checkType = attachCardOptions.customer.checkType
+        val customerKey = customerOptions.customerKey!!
+        val checkType = attachCardOptions.customer.checkType!!
         val data = customerOptions.data
         val pan = editCard.cardNumber
         val expireDate = editCard.cardDate

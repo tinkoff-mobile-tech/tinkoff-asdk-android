@@ -2,6 +2,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.options.CustomerOptions
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 
@@ -46,7 +47,7 @@ abstract class BaseCardsOptions<T : Parcelable>() :
         return 0
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(AcquiringSdkException::class)
     override fun validateRequiredFields() {
         super.validateRequiredFields()
         check(::customer.isInitialized) { "Customer Options is not set" }

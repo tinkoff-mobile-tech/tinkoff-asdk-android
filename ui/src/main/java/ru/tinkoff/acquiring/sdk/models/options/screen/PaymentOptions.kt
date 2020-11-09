@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.options.CustomerOptions
@@ -39,7 +40,7 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
     /**
      * Данные покупателя
      */
-    lateinit var customer: CustomerOptions
+    var customer: CustomerOptions = CustomerOptions()
 
     /**
      * Состояние платёжного экрана Acquiring SDK
@@ -76,11 +77,10 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
         return 0
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(AcquiringSdkException::class)
     override fun validateRequiredFields() {
         super.validateRequiredFields()
         check(::order.isInitialized) { "Order Options is not set" }
-        check(::customer.isInitialized) { "Customer Options is not set" }
         order.validateRequiredFields()
         customer.validateRequiredFields()
     }
