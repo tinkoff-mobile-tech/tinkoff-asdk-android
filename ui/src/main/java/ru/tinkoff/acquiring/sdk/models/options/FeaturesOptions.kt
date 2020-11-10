@@ -25,7 +25,7 @@ import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
 
 /**
- * Настройки для конфигурирования визуального отображения и функций экрана оплаты
+ * Настройки для конфигурирования визуального отображения и функций экранов SDK
  *
  * @author Mariya Chernyadieva
  */
@@ -68,6 +68,14 @@ class FeaturesOptions() : Options(), Parcelable {
      */
     var fpsEnabled: Boolean = false
 
+    /**
+     * Идентификатор карты в системе банка.
+     * Если передан - в списке карт на экране оплаты отобразится первой карта с этим cardId.
+     * Если не передан, или в списке нет карты с таким cardId -
+     * список карт будет отображаться по-умолчанию
+     */
+    var selectedCardId: String? = null
+
     private constructor(parcel: Parcel) : this() {
         parcel.run {
             theme = readInt()
@@ -77,6 +85,7 @@ class FeaturesOptions() : Options(), Parcelable {
             handleCardListErrorInSdk = readByte().toInt() != 0
             darkThemeMode = DarkThemeMode.valueOf(readString() ?: DarkThemeMode.AUTO.name)
             fpsEnabled = readByte().toInt() != 0
+            selectedCardId = readString()
         }
     }
 
@@ -89,6 +98,7 @@ class FeaturesOptions() : Options(), Parcelable {
             writeByte((if (handleCardListErrorInSdk) 1 else 0).toByte())
             writeString(darkThemeMode.name)
             writeByte((if (fpsEnabled) 1 else 0).toByte())
+            writeString(selectedCardId)
         }
     }
 

@@ -343,7 +343,15 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     }
 
     private fun handleCardsResult(cards: List<Card>) {
-        cardsPagerAdapter.cardList = cards.toMutableList()
+        val cardsList = cards.toMutableList()
+        paymentOptions.features.selectedCardId?.let {cardId ->
+            val selectedCard = cardsList.find { it.cardId == cardId }
+            if (selectedCard != null && cardsList.remove(selectedCard)) {
+                cardsList.add(0, selectedCard)
+            }
+        }
+
+        cardsPagerAdapter.cardList = cardsList
         viewPager.setCurrentItem(viewPagerPosition, false)
         if (cards.isEmpty()) {
             pagerIndicator.visibility = View.GONE

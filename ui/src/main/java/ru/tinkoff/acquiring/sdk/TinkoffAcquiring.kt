@@ -69,6 +69,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun initPayment(attachedCard: AttachedCard, paymentOptions: PaymentOptions): PaymentProcess {
+        paymentOptions.setTerminalParams(terminalKey, password, publicKey)
         return PaymentProcess(sdk).createPaymentProcess(attachedCard, paymentOptions)
     }
 
@@ -82,6 +83,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun initPayment(cardData: CardData, paymentOptions: PaymentOptions): PaymentProcess {
+        paymentOptions.setTerminalParams(terminalKey, password, publicKey)
         return PaymentProcess(sdk).createPaymentProcess(cardData, paymentOptions)
     }
 
@@ -95,6 +97,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun initPayment(googlePayToken: String, paymentOptions: PaymentOptions): PaymentProcess {
+        paymentOptions.setTerminalParams(terminalKey, password, publicKey)
         return PaymentProcess(sdk).createPaymentProcess(GooglePay(googlePayToken), paymentOptions)
     }
 
