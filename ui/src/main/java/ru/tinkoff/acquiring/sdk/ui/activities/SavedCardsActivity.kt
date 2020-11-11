@@ -244,7 +244,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
 
     private fun setCardsChangedResult() {
         val intent = Intent()
-        intent.putExtra(RESULT_CARDS_CHANGED, true)
+        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, true)
         setResult(Activity.RESULT_OK, intent)
     }
 
@@ -293,8 +293,6 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     }
 
     companion object {
-
-        const val RESULT_CARDS_CHANGED = "cards_changed"
 
         private const val STATE_DELETING_DIALOG_SHOWING = "state_dialog"
         private const val STATE_BOTTOM_CONTAINER_SHOWING = "state_bottom_container"

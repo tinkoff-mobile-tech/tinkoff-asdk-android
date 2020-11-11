@@ -19,6 +19,8 @@ package ru.tinkoff.acquiring.sdk
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import androidx.fragment.app.Fragment
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
@@ -118,7 +120,7 @@ class TinkoffAcquiring(
     /**
      * Запуск экрана Acquiring SDK для проведения оплаты
      *
-     * @param activity    контекст для запуска экрана
+     * @param activity    контекст для запуска экрана из Activity
      * @param options     настройки платежной сессии
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
@@ -130,55 +132,111 @@ class TinkoffAcquiring(
             state.data.putAll(ThreeDsActivity.collectData(activity, state.response))
         } else {
             options.asdkState = state
-            options.setTerminalParams(terminalKey, password, publicKey)
-            val intent = BaseAcquiringActivity.createIntent(activity, options, PaymentActivity::class.java)
+            val intent = prepareIntent(activity, options, PaymentActivity::class.java)
             activity.startActivityForResult(intent, requestCode)
+        }
+    }
+
+    /**
+     * Запуск экрана Acquiring SDK для проведения оплаты
+     *
+     * @param fragment    контекст для запуска экрана из Fragment
+     * @param options     настройки платежной сессии
+     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
+     * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
+     *                    с заданного состояния
+     */
+    @JvmOverloads
+    fun openPaymentScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
+        if (state is CollectDataState) {
+            state.data.putAll(ThreeDsActivity.collectData(fragment.requireContext(), state.response))
+        } else {
+            options.asdkState = state
+            val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)
+            fragment.startActivityForResult(intent, requestCode)
         }
     }
 
     /**
      * Запуск экрана Acquiring SDK для привязки новой карты
      *
-     * @param activity    контекст для запуска экрана
+     * @param activity    контекст для запуска экрана из Activity
      * @param options     настройки привязки карты
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
     fun openAttachCardScreen(activity: Activity, options: AttachCardOptions, requestCode: Int) {
-        options.setTerminalParams(terminalKey, password, publicKey)
-        val intent = BaseAcquiringActivity.createIntent(activity, options, AttachCardActivity::class.java)
+        val intent = prepareIntent(activity, options, AttachCardActivity::class.java)
+        activity.startActivityForResult(intent, requestCode)
+    }
+
+    /**
+     * Запуск экрана Acquiring SDK для привязки новой карты
+     *
+     * @param fragment    контекст для запуска экрана из Fragment
+     * @param options     настройки привязки карты
+     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
+     */
+    fun openAttachCardScreen(fragment: Fragment, options: AttachCardOptions, requestCode: Int) {
+        val intent = prepareIntent(fragment.requireContext(), options, AttachCardActivity::class.java)
+        fragment.startActivityForResult(intent, requestCode)
+    }
+
+    /**
+     * Запуск экрана Acquiring SDK для просмотра сохраненных карт
+     *
+     * @param activity          контекст для запуска экрана из Activity
+     * @param savedCardsOptions настройки экрана сохраненных карт
+     * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK.
+     *                          В случае удаления/добавления карты на экране, возвращается intent с
+     *                          параметром по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
+     */
+    fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
+        val intent = prepareIntent(activity, savedCardsOptions, SavedCardsActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
     }
 
     /**
      * Запуск экрана Acquiring SDK для просмотра сохраненных карт
      *
-     * @param activity          контекст для запуска экрана
+     * @param fragment          контекст для запуска экрана из Fragment
      * @param savedCardsOptions настройки экрана сохраненных карт
-     * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK
+     * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK.
+     *                          В случае удаления/добавления карты на экране, возвращается intent с
+     *                          параметром по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
      */
-    fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
-        savedCardsOptions.setTerminalParams(terminalKey, password, publicKey)
-        val intent = BaseAcquiringActivity.createIntent(activity, savedCardsOptions, SavedCardsActivity::class.java)
+    fun openSavedCardsScreen(fragment: Fragment, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
+        val intent = prepareIntent(fragment.requireContext(), savedCardsOptions, SavedCardsActivity::class.java)
+        fragment.startActivityForResult(intent, requestCode)
+    }
+
+    /**
+     * Запуск экрана с отображением QR кода для оплаты покупателем
+     *
+     * @param activity        контекст для запуска экрана из Activity
+     * @param featuresOptions конфигурация визуального отображения экрана
+     * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
+     */
+    fun openStaticQrScreen(activity: Activity, featuresOptions: FeaturesOptions, requestCode: Int) {
+        val options = BaseAcquiringOptions().apply {
+            features = featuresOptions
+        }
+        val intent = prepareIntent(activity, options, StaticQrActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
     }
 
     /**
      * Запуск экрана с отображением QR кода для оплаты покупателем
      *
-     * @param activity        контекст для запуска экрана
+     * @param fragment        контекст для запуска экрана из Fragment
      * @param featuresOptions конфигурация визуального отображения экрана
      * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
      */
-    fun openStaticQrScreen(activity: Activity, featuresOptions: FeaturesOptions, requestCode: Int) {
+    fun openStaticQrScreen(fragment: Fragment, featuresOptions: FeaturesOptions, requestCode: Int) {
         val options = BaseAcquiringOptions().apply {
-            setTerminalParams(
-                    this@TinkoffAcquiring.terminalKey,
-                    this@TinkoffAcquiring.password,
-                    this@TinkoffAcquiring.publicKey)
             features = featuresOptions
         }
-        val intent = BaseAcquiringActivity.createIntent(activity, options, StaticQrActivity::class.java)
-        activity.startActivityForResult(intent, requestCode)
+        val intent = prepareIntent(fragment.requireContext(), options, StaticQrActivity::class.java)
+        fragment.startActivityForResult(intent, requestCode)
     }
 
     /**
@@ -289,11 +347,18 @@ class TinkoffAcquiring(
                 notificationId)
     }
 
+    private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
+        options.setTerminalParams(terminalKey, password, publicKey)
+        return BaseAcquiringActivity.createIntent(context, options, cls)
+    }
+
     companion object {
 
         const val RESULT_ERROR = 500
         const val EXTRA_ERROR = "extra_error"
         const val EXTRA_CARD_ID = "extra_card_id"
         const val EXTRA_PAYMENT_ID = "extra_payment_id"
+
+        const val EXTRA_CARD_LIST_CHANGED = "extra_cards_changed"
     }
 }

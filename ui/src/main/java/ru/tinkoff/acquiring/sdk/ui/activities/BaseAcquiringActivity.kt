@@ -63,7 +63,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         const val EXTRA_OPTIONS = "options"
 
         @Throws(AcquiringSdkException::class)
-        fun createIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*> ): Intent {
+        fun createIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
             options.validateRequiredFields()
 
             val intent = Intent(context, cls)

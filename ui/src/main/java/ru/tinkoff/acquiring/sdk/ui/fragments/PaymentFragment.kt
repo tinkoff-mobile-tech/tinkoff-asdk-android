@@ -48,6 +48,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.adapters.CardsViewPagerAdapter
 import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner.Companion.REQUEST_CAMERA_CARD_SCAN
 import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
@@ -270,7 +271,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             }
             CARD_LIST_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.getBooleanExtra(SavedCardsActivity.RESULT_CARDS_CHANGED, false)) {
+                    if (data.getBooleanExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, false)) {
                         viewPagerPosition = FIRST_POSITION
                         loadCards()
                     }
