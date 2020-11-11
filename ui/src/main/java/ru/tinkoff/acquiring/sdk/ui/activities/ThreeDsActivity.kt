@@ -20,7 +20,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Bundle
 import android.view.View
@@ -31,8 +30,10 @@ import androidx.lifecycle.Observer
 import org.json.JSONObject
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.ScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
@@ -42,8 +43,7 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION_V2
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.utils.Base64
 import ru.tinkoff.acquiring.sdk.utils.getTimeZoneOffsetInMinutes
-import ru.tinkoff.acquiring.sdk.viewmodel.*
-import java.lang.IllegalStateException
+import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
 import java.net.URLEncoder
 import java.util.*
 
@@ -122,7 +122,6 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
         wvThreeDs = findViewById(R.id.acq_3ds_wv)
         wvThreeDs.run {
-            visibility = View.GONE
             webViewClient = ThreeDsWebViewClient()
             settings.domStorageEnabled = true
             settings.javaScriptEnabled = true
@@ -150,15 +149,6 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
         val intent = Intent()
         intent.putExtra(ERROR_DATA, throwable)
         setResult(RESULT_ERROR, intent)
-    }
-
-    override fun handleLoadState(loadState: LoadState) {
-        when (loadState) {
-            is LoadingState -> {
-                progressBar?.visibility = View.VISIBLE
-                content?.visibility = View.INVISIBLE
-            }
-        }
     }
 
     private fun observeLiveData() {
@@ -217,12 +207,6 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
         private var canceled = false
 
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            super.onPageStarted(view, url, favicon)
-            content?.visibility = View.INVISIBLE
-            progressBar?.visibility = View.VISIBLE
-        }
-
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
 
@@ -241,9 +225,6 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
                 if (!canceled) {
                     requestState()
                 }
-            } else {
-                progressBar?.visibility = View.GONE
-                view.visibility = View.VISIBLE
             }
         }
     }
