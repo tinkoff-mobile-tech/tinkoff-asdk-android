@@ -64,7 +64,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
                 finishWithError(data?.getSerializableExtra(ThreeDsActivity.ERROR_DATA) as Throwable)
             } else {
                 setResult(Activity.RESULT_CANCELED)
-                hideActivity()
+                bottomContainer.hide()
             }
         } else {
             supportFragmentManager
@@ -84,17 +84,17 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     }
 
     override fun onBackPressed() {
-        hideActivity()
+        bottomContainer.hide()
     }
 
     override fun finishWithSuccess(result: AsdkResult) {
         setSuccessResult(result)
-        hideActivity()
+        bottomContainer.hide()
     }
 
     override fun finishWithError(throwable: Throwable) {
         setErrorResult(throwable)
-        hideActivity()
+        bottomContainer.hide()
     }
 
     protected fun initViews() {
@@ -169,14 +169,6 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-    }
-
-    private fun hideActivity() {
-        if (viewType == FULL_SCREEN_INDEX || orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            finish()
-        } else {
-            bottomContainer.hide()
-        }
     }
 
     companion object {
