@@ -354,9 +354,8 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
         cardsPagerAdapter.cardList = cardsList
         viewPager.setCurrentItem(viewPagerPosition, false)
-        if (cards.isEmpty()) {
-            pagerIndicator.visibility = View.GONE
-        }
+        pagerIndicator.reattach()
+        pagerIndicator.visibility = if (cards.isEmpty()) View.GONE else View.VISIBLE
 
         if (asdkState is RejectedState) {
             if (!rejectedDialogDismissed) {

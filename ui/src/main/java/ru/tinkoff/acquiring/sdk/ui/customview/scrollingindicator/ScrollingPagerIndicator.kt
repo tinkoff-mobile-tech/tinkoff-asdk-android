@@ -19,7 +19,11 @@ package ru.tinkoff.acquiring.sdk.ui.customview.scrollingindicator
 import android.animation.ArgbEvaluator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.SparseArray
@@ -210,8 +214,12 @@ internal class ScrollingPagerIndicator @JvmOverloads constructor(
         if (position != 0 && (position < 0 || position >= itemCount)) {
             throw IndexOutOfBoundsException("Position must be [0, adapter.getItemCount()]")
         }
+        setPlusSelected(false)
         if (itemCount == 0) {
             return
+        }
+        if (position == itemCount - 1) {
+            setPlusSelected(true)
         }
         adjustFramePosition(0f, position)
         updateScaleInIdleState(position)
