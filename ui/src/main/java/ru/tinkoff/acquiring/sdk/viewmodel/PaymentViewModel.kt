@@ -21,12 +21,13 @@ import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankScreenState
-import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
@@ -127,7 +128,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
         paymentProcess.createFinishProcess(paymentId, paymentSource, email).subscribe(paymentListener).start()
     }
 
-    fun requestPaymentState(paymentId: Long?) {
+    fun requestPaymentState(paymentId: Long) {
         val request = sdk.getState {
             this.paymentId = paymentId
         }
@@ -144,6 +145,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
                         ResponseStatus.FORM_SHOWED -> {
                             requestPaymentStateCount = 0
                             changeScreenState(LoadedState)
+                            changeScreenState(FpsBankFormShowedScreenState(paymentId))
                         }
                         else -> {
                             if (requestPaymentStateCount == 1) {
@@ -189,9 +191,9 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
                         changeScreenState(ThreeDsDataCollectScreenState(state.response))
                         state.data.putAll(collectedDeviceData)
                     }
-                    is BrowseSbpBankState -> {
+                    is BrowseFpsBankState -> {
                         changeScreenState(LoadedState)
-                        changeScreenState(BrowseSbpBankScreenState(state.paymentId, state.deepLink))
+                        changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink))
                     }
                 }
             }

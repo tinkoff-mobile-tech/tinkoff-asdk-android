@@ -20,7 +20,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.RejectedState
@@ -210,7 +210,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
         coroutine.call(request,
                 onSuccess = { response ->
-                    sdkState = BrowseSbpBankState(paymentId, response.data!!)
+                    sdkState = BrowseFpsBankState(paymentId, response.data!!)
                     sendToListener(PaymentState.BROWSE_SBP_BANK)
                 }
         )
