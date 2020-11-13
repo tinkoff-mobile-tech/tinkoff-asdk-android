@@ -359,12 +359,9 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
         if (asdkState is RejectedState) {
             if (!rejectedDialogDismissed) {
-                if (rejectedDialog == null) {
-                    showRejectedDialog()
-                }
+                if (rejectedDialog == null) showRejectedDialog()
             } else {
-                val position = cardsPagerAdapter.getCardPosition((asdkState as RejectedState).cardId)
-                cardsPagerAdapter.showRejectedCard(position)
+                showRejectedCard()
             }
         }
     }
@@ -404,12 +401,16 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             setTitle(localization.payDialogCvcMessage)
             setCancelable(false)
             setPositiveButton(localization.payDialogCvcAcceptButton) { _, _ ->
-                val position = cardsPagerAdapter.getCardPosition((asdkState as RejectedState).cardId)
-                viewPager.currentItem = position
-                cardsPagerAdapter.showRejectedCard(position)
+                showRejectedCard()
                 rejectedDialogDismissed = true
             }
         }.show()
+    }
+
+    private fun showRejectedCard() {
+        val position = cardsPagerAdapter.getCardPosition((asdkState as RejectedState).cardId)
+        viewPager.currentItem = position ?: 0
+        cardsPagerAdapter.setRejectedCard(position)
     }
 
     private fun getSavedCardOptions(): SavedCardsOptions {
