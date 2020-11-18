@@ -20,7 +20,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
-import ru.tinkoff.acquiring.sdk.models.*
+import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.CollectDataState
+import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
+import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
+import ru.tinkoff.acquiring.sdk.models.PaymentSource
+import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
+import ru.tinkoff.acquiring.sdk.models.RejectedState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsDataCollectScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
@@ -55,40 +71,46 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
     fun checkoutAsdkState(state: AsdkState) {
         when (state) {
             is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data))
+            is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
             else -> changeScreenState(PaymentScreenState)
         }
     }
 
-    fun getCardList(handleErrorInSdk: Boolean, customerKey: String, recurrentPayment: Boolean) {
+    fun getCardList(handleErrorInSdk: Boolean, customerKey: String?, recurrentPayment: Boolean) {
         changeScreenState(DefaultScreenState)
-        changeScreenState(LoadingState)
 
-        val request = sdk.getCardList {
-            this.customerKey = customerKey
-        }
+        if (customerKey == null) {
+            cardsResult.value = listOf()
+        } else {
+            changeScreenState(LoadingState)
 
-        coroutine.call(request,
-                onSuccess = {
-                    val activeCards = it.cards.filter { card ->
-                        if (recurrentPayment) {
-                            card.status == CardStatus.ACTIVE && !card.rebillId.isNullOrEmpty()
-                        } else {
-                            card.status == CardStatus.ACTIVE
+            val request = sdk.getCardList {
+                this.customerKey = customerKey
+            }
+
+            coroutine.call(request,
+                    onSuccess = {
+                        val activeCards = it.cards.filter { card ->
+                            if (recurrentPayment) {
+                                card.status == CardStatus.ACTIVE && !card.rebillId.isNullOrEmpty()
+                            } else {
+                                card.status == CardStatus.ACTIVE
+                            }
                         }
-                    }
-                    cardsResult.value = activeCards
-                    changeScreenState(LoadedState)
-                },
-                onFailure = {
-                    if (handleErrorInSdk) {
+                        cardsResult.value = activeCards
                         changeScreenState(LoadedState)
-                        cardsResult.value = mutableListOf()
-                    } else {
-                        coroutine.runWithDelay(800) {
-                            changeScreenState(FinishWithErrorScreenState(it))
+                    },
+                    onFailure = {
+                        if (handleErrorInSdk) {
+                            changeScreenState(LoadedState)
+                            cardsResult.value = mutableListOf()
+                        } else {
+                            coroutine.runWithDelay(800) {
+                                changeScreenState(FinishWithErrorScreenState(it))
+                            }
                         }
-                    }
-                })
+                    })
+        }
     }
 
     fun startPayment(paymentOptions: PaymentOptions, paymentSource: PaymentSource, email: String? = null) {
@@ -106,7 +128,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
         paymentProcess.createFinishProcess(paymentId, paymentSource, email).subscribe(paymentListener).start()
     }
 
-    fun requestPaymentState(paymentId: Long?) {
+    fun requestPaymentState(paymentId: Long) {
         val request = sdk.getState {
             this.paymentId = paymentId
         }
@@ -123,6 +145,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
                         ResponseStatus.FORM_SHOWED -> {
                             requestPaymentStateCount = 0
                             changeScreenState(LoadedState)
+                            changeScreenState(FpsBankFormShowedScreenState(paymentId))
                         }
                         else -> {
                             if (requestPaymentStateCount == 1) {
@@ -162,15 +185,15 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
                     }
                     is RejectedState -> {
                         changeScreenState(LoadedState)
-                        changeScreenState(RejectedCardScreenState(state.cardId))
+                        changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
                     }
                     is CollectDataState -> {
                         changeScreenState(ThreeDsDataCollectScreenState(state.response))
                         state.data.putAll(collectedDeviceData)
                     }
-                    is BrowseSbpBankState -> {
+                    is BrowseFpsBankState -> {
                         changeScreenState(LoadedState)
-                        changeScreenState(BrowseSbpBankScreenState(state.paymentId, state.deepLink))
+                        changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink))
                     }
                 }
             }

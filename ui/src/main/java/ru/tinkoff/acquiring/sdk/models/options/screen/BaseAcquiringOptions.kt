@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.Options
 
@@ -26,7 +27,7 @@ import ru.tinkoff.acquiring.sdk.models.options.Options
  *
  * @author Mariya Chernyadieva
  */
-open class BaseAcquiringOptions() : Parcelable, Options {
+open class BaseAcquiringOptions() : Options(), Parcelable  {
 
     lateinit var terminalKey: String
         private set
@@ -58,6 +59,7 @@ open class BaseAcquiringOptions() : Parcelable, Options {
         }
     }
 
+    @Throws(AcquiringSdkException::class)
     override fun validateRequiredFields() {
         check(terminalKey.isNotEmpty()) { "Terminal Key should not be empty" }
         check(password.isNotEmpty()) { "Password should not be empty" }

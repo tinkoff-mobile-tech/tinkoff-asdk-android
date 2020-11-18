@@ -228,17 +228,17 @@ internal class CardsViewPagerAdapter(
         }
     }
 
-    fun getCardPosition(cardId: String): Int {
+    fun getCardPosition(cardId: String): Int? {
         cardList.forEachIndexed { index, card ->
             if (card.cardId == cardId) {
                 return index
             }
         }
-        return 0
+        return null
     }
 
-    fun showRejectedCard(position: Int) {
-        rejectedItem = position
+    fun setRejectedCard(position: Int?) {
+        rejectedItem = position ?: -1
         notifyDataSetChanged()
     }
 

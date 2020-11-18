@@ -11,7 +11,7 @@ import android.os.Parcelable
 class SavedCardsOptions : BaseCardsOptions<SavedCardsOptions>, Parcelable {
 
     constructor() : super()
-    constructor(parcel: Parcel) : super(parcel)
+    private constructor(parcel: Parcel) : super(parcel)
 
     override fun setOptions(options: SavedCardsOptions.() -> Unit): SavedCardsOptions {
         return SavedCardsOptions().apply(options)

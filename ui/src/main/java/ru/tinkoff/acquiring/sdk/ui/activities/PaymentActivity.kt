@@ -21,13 +21,15 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.BrowseSbpBankScreenState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
+import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.Screen
 import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
@@ -62,10 +64,18 @@ internal class PaymentActivity : TransparentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val screenState = paymentViewModel.screenStateLiveData.value
+        if (screenState is FpsBankFormShowedScreenState) {
+            paymentViewModel.requestPaymentState(screenState.paymentId)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SBP_BANK_REQUEST_CODE) {
             val screenState = paymentViewModel.screenStateLiveData.value
-            if (screenState is BrowseSbpBankScreenState) {
+            if (screenState is BrowseFpsBankScreenState) {
                 paymentViewModel.requestPaymentState(screenState.paymentId)
             }
         }
@@ -85,7 +95,10 @@ internal class PaymentActivity : TransparentActivity() {
         screenChangeEvent.getValueIfNotHandled()?.let { screen ->
             when (screen) {
                 is PaymentScreenState -> showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey))
-                is RejectedCardScreenState -> showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey, true, screen.cardId))
+                is RejectedCardScreenState -> {
+                    val state = RejectedState(screen.cardId, screen.rejectedPaymentId)
+                    showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey, state))
+                }
                 is ThreeDsScreenState -> openThreeDs(screen.data)
                 is ThreeDsDataCollectScreenState -> {
                     paymentViewModel.collectedDeviceData = ThreeDsActivity.collectData(this, screen.response)
@@ -99,7 +112,7 @@ internal class PaymentActivity : TransparentActivity() {
         when (screenState) {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> showError(screenState.message)
-            is BrowseSbpBankScreenState -> openDeepLink(screenState.deepLink)
+            is BrowseFpsBankScreenState -> openDeepLink(screenState.deepLink)
         }
     }
 

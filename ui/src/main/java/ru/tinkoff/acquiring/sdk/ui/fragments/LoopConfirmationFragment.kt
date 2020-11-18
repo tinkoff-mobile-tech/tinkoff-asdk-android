@@ -80,18 +80,14 @@ internal class LoopConfirmationFragment : BaseAcquiringFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        requireActivity().run {
-            attachCardViewModel = ViewModelProvider(this).get(AttachCardViewModel::class.java)
-            observeLiveData()
-
-            arguments?.let {
-                requestKey = it.getString(REQUEST_KEY)!!
-            }
-        }
+        attachCardViewModel = ViewModelProvider(requireActivity()).get(AttachCardViewModel::class.java)
+        requestKey = requireArguments().getString(REQUEST_KEY)!!
 
         checkButton.text = localization.confirmationLoopCheckButton
         amountEditText.hint = localization.confirmationLoopAmount
         titleTextView.text = localization.confirmationLoopDescription
+
+        observeLiveData()
     }
 
     private fun observeLiveData() {

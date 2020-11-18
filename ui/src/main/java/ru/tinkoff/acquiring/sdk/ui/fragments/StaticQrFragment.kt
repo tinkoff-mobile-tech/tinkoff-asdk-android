@@ -93,10 +93,8 @@ internal class StaticQrFragment : BaseAcquiringFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        requireActivity().run {
-            viewModel = ViewModelProvider(this).get(StaticQrViewModel::class.java)
-            observeLiveData()
-        }
+        viewModel = ViewModelProvider(requireActivity()).get(StaticQrViewModel::class.java)
+        observeLiveData()
 
         shareButton.setOnClickListener {
             progressDialog = NotificationDialog(requireContext()).apply {

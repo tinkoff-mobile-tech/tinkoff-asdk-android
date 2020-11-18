@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models.options
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.utils.readParcelMap
 
 /**
@@ -25,17 +26,17 @@ import ru.tinkoff.acquiring.sdk.utils.readParcelMap
  *
  * @author Mariya Chernyadieva
  */
-class CustomerOptions() : Options, Parcelable {
+class CustomerOptions() : Options(), Parcelable {
 
     /**
      * Идентификатор покупателя в системе продавца. Максимальная длина - 36 символов
      */
-    lateinit var customerKey: String
+    var customerKey: String? = null
 
     /**
-     * Тип привязки карты
+     * Тип привязки карты. Обязателен, если передается [customerKey]
      */
-    lateinit var checkType: String
+    var checkType: String? = null
 
     /**
      * Email, на который будет отправлена квитанция об оплате
@@ -54,8 +55,8 @@ class CustomerOptions() : Options, Parcelable {
 
     private constructor(parcel: Parcel) : this() {
         parcel.run {
-            customerKey = readString() ?: ""
-            checkType = readString() ?: ""
+            customerKey = readString()
+            checkType = readString()
             email = readString()
             data = readParcelMap(String::class.java)
         }
@@ -74,10 +75,11 @@ class CustomerOptions() : Options, Parcelable {
         return 0
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(AcquiringSdkException::class)
     override fun validateRequiredFields() {
-        check(::customerKey.isInitialized) { "Customer Key is not set" }
-        check(::checkType.isInitialized) { "Check Type is not set" }
+        check(if (customerKey == null) true else checkType != null) {
+            "Check Type is required, when Customer Key was set"
+        }
     }
 
     companion object CREATOR : Parcelable.Creator<CustomerOptions> {
