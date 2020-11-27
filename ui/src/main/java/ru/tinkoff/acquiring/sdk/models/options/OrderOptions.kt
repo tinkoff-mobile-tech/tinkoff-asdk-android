@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models.options
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.Receipt
 import ru.tinkoff.acquiring.sdk.models.Shop
 import ru.tinkoff.acquiring.sdk.utils.Money
@@ -29,7 +30,7 @@ import ru.tinkoff.acquiring.sdk.utils.readParcelMap
  *
  * @author Mariya Chernyadieva
  */
-class OrderOptions() : Options, Parcelable {
+class OrderOptions() : Options(), Parcelable {
 
     /**
      * Номер заказа в системе продавца. Максимальная длина - 20 символов
@@ -113,12 +114,12 @@ class OrderOptions() : Options, Parcelable {
         return 0
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(AcquiringSdkException::class)
     override fun validateRequiredFields() {
         check(::orderId.isInitialized) { "Order Id is not set" }
         check(::amount.isInitialized) { "Amount is not set" }
         check(orderId.isNotEmpty()) { "Order Id should not be empty" }
-        check(amount.coins != 0L) { "Amount value is 0" }
+        check(amount.coins > 0L) { "Amount value cannot be less than 0" }
     }
 
     companion object CREATOR : Parcelable.Creator<OrderOptions> {

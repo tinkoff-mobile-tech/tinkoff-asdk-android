@@ -1,3 +1,18 @@
+## 2.2.0
+
+#### Fixed
+Fixed processing of rejected recurrent payment without payment screen
+Fixed bug with card list on payment screen when network was reconnected
+Removed content hiding when loading 3DS
+#### Changes
+Added the ability to open payment screen without a required customer key param
+Made screens hidding slower, if has attribute acqScreenViewType fullscreen
+Dont show another card in list as rejected, if rejected cardId is not found in list
+#### Additions
+Added ability to start payment screen with specific cardId
+Added the ability to open SDK screens from fragment
+Added additional check payment status via fast payment system
+
 ## 2.1.1
 
 #### Fixed

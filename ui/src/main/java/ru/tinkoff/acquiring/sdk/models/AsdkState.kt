@@ -37,7 +37,7 @@ object DefaultState : AsdkState()
  * Состояние отклонения платежа с помощью привязанной карты. Пользователю покажется диалог,
  * потребующий ввести секретный код карты для подтверждения и продолжения оплаты
  */
-class RejectedState(val cardId: String) : AsdkState()
+class RejectedState(val cardId: String, val rejectedPaymentId: Long) : AsdkState()
 
 /**
  * Стандартный сценарий оплаты, но без инициации платежа
@@ -61,4 +61,4 @@ class CollectDataState(val response: Check3dsVersionResponse?) : AsdkState() {
  * Состояние открытия приложения (или выбора приложения), зарегистрированного для обработки ссылки
  * Системы быстрых платежей, в котором произойдет оплата
  */
-class BrowseSbpBankState(val paymentId: Long, val deepLink: String) : AsdkState()
+class BrowseFpsBankState(val paymentId: Long, val deepLink: String) : AsdkState()

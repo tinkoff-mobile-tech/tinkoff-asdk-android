@@ -65,12 +65,15 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         private const val PREF_INTENT_COUNTER_KEY = "intent_counter_key"
         private const val START_COUNTER_VALUE = 0
 
+        @Throws(AcquiringSdkException::class)
         fun createPendingIntent(context: Context,
                                 options: PaymentOptions,
                                 requestCode: Int?,
                                 paymentMethod: PaymentMethod,
                                 notificationId: Int? = null,
                                 googlePayParams: GooglePayParams? = null): PendingIntent {
+            options.validateRequiredFields()
+
             val intent = Intent(context, NotificationPaymentActivity::class.java).apply {
                 putExtra(EXTRA_GOOGLE_PARAMS, googlePayParams)
                 putExtra(EXTRA_PAYMENT_OPTIONS, options)

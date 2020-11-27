@@ -57,6 +57,8 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     private lateinit var cardsAdapter: CardListAdapter
     private lateinit var viewModel: SavedCardsViewModel
 
+    private lateinit var customerKey: String
+
     private var deletingConfirmDialog: AlertDialog? = null
     private var notificationDialog: NotificationDialog? = null
 
@@ -84,7 +86,12 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         viewModel = provideViewModel(SavedCardsViewModel::class.java) as SavedCardsViewModel
         observeLiveData()
 
-        loadCards()
+        if (savedCardsOptions.customer.customerKey != null) {
+            customerKey = savedCardsOptions.customer.customerKey!!
+            loadCards()
+        } else {
+            showErrorScreen(localization.cardListEmptyList ?: "")
+        }
 
         if (isDeletingDialogShowing && deletingCard != null) {
             showDeletingConfirmDialog(deletingCard!!)
@@ -237,12 +244,12 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
 
     private fun setCardsChangedResult() {
         val intent = Intent()
-        intent.putExtra(RESULT_CARDS_CHANGED, true)
+        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, true)
         setResult(Activity.RESULT_OK, intent)
     }
 
     private fun loadCards() {
-        viewModel.getCardList(savedCardsOptions.customer.customerKey)
+        viewModel.getCardList(customerKey)
     }
 
     private fun handleScreenState(screenState: ScreenState) {
@@ -269,7 +276,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
             setMessage(localization.cardListDialogDeleteMessage)
             setPositiveButton(localization.cardListDelete) { dialog, _ ->
                 dialog.dismiss()
-                viewModel.deleteCard(card.cardId!!, savedCardsOptions.customer.customerKey)
+                viewModel.deleteCard(card.cardId!!, customerKey)
                 deletingBottomContainer.hide()
                 isDeletingDialogShowing = false
             }
@@ -286,8 +293,6 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     }
 
     companion object {
-
-        const val RESULT_CARDS_CHANGED = "cards_changed"
 
         private const val STATE_DELETING_DIALOG_SHOWING = "state_dialog"
         private const val STATE_BOTTOM_CONTAINER_SHOWING = "state_bottom_container"

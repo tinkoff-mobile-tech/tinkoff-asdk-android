@@ -280,6 +280,8 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 ### Proguard
 ```
 -keep class ru.tinkoff.acquiring.sdk.localization.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.requests.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.models.** { *; }
 ```
 
 ### Поддержка

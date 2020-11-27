@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 
 /**
  * Настройки экрана привязки карты
@@ -27,10 +28,18 @@ import android.os.Parcelable
 class AttachCardOptions : BaseCardsOptions<AttachCardOptions>, Parcelable {
 
     constructor() : super()
-    constructor(parcel: Parcel) : super(parcel)
+    private constructor(parcel: Parcel) : super(parcel)
 
     override fun setOptions(options: AttachCardOptions.() -> Unit): AttachCardOptions {
         return AttachCardOptions().apply(options)
+    }
+
+    @Throws(AcquiringSdkException::class)
+    override fun validateRequiredFields() {
+        super.validateRequiredFields()
+        check(customer.customerKey != null) { "Customer Key is required" }
+        check(customer.checkType != null) { "Check Type is required" }
+        customer.validateRequiredFields()
     }
 
     companion object CREATOR : Parcelable.Creator<AttachCardOptions> {

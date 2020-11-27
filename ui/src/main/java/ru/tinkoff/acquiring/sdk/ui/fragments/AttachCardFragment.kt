@@ -93,31 +93,30 @@ internal class AttachCardFragment : BaseAcquiringFragment(), EditCardScanButtonC
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        requireActivity().run {
-            intent.extras?.let { extras ->
-                attachCardOptions = extras.getParcelable(BaseAcquiringActivity.EXTRA_OPTIONS)!!
-                cardScanner.cameraCardScanner = attachCardOptions.features.cameraCardScanner
+        requireActivity().intent.extras?.let { extras ->
+            attachCardOptions = extras.getParcelable(BaseAcquiringActivity.EXTRA_OPTIONS)!!
+            cardScanner.cameraCardScanner = attachCardOptions.features.cameraCardScanner
 
-                editCard.run {
-                    cardNumberHint = localization.payCardPanHint ?: ""
-                    cardDateHint = localization.payCardExpireDateHint ?: ""
-                    cardCvcHint = localization.payCardCvcHint ?: ""
-                    useSecureKeyboard = attachCardOptions.features.useSecureKeyboard
-                    isScanButtonVisible = cardScanner.cardScanAvailable
-                    requestFocus()
-                }
-
-                (this as AppCompatActivity).supportActionBar?.title =  localization.addCardScreenTitle
-                attachButton.text = localization.addCardAddCardButton
-                attachTitle.text = localization.addCardTitle
+            editCard.run {
+                cardNumberHint = localization.payCardPanHint ?: ""
+                cardDateHint = localization.payCardExpireDateHint ?: ""
+                cardCvcHint = localization.payCardCvcHint ?: ""
+                useSecureKeyboard = attachCardOptions.features.useSecureKeyboard
+                isScanButtonVisible = cardScanner.cardScanAvailable
+                requestFocus()
             }
-            attachCardViewModel = ViewModelProvider(this).get(AttachCardViewModel::class.java)
-            val isErrorShowing = attachCardViewModel.screenStateLiveData.value is ErrorScreenState
-            observeLiveData()
 
-            if (!isErrorShowing) {
-                attachCardViewModel.showCardInput()
-            }
+            (requireActivity() as AppCompatActivity).supportActionBar?.title = localization.addCardScreenTitle
+            attachButton.text = localization.addCardAddCardButton
+            attachTitle.text = localization.addCardTitle
+        }
+
+        attachCardViewModel = ViewModelProvider(requireActivity()).get(AttachCardViewModel::class.java)
+        val isErrorShowing = attachCardViewModel.screenStateLiveData.value is ErrorScreenState
+        observeLiveData()
+
+        if (!isErrorShowing) {
+            attachCardViewModel.showCardInput()
         }
     }
 
@@ -157,8 +156,8 @@ internal class AttachCardFragment : BaseAcquiringFragment(), EditCardScanButtonC
 
     private fun processAttach() {
         val customerOptions = attachCardOptions.customer
-        val customerKey = customerOptions.customerKey
-        val checkType = attachCardOptions.customer.checkType
+        val customerKey = customerOptions.customerKey!!
+        val checkType = attachCardOptions.customer.checkType!!
         val data = customerOptions.data
         val pan = editCard.cardNumber
         val expireDate = editCard.cardDate
