@@ -108,9 +108,13 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
                     showSuccess(localization.addCardDialogSuccessCardAdded)
                 }
             } else if (resultCode == TinkoffAcquiring.RESULT_ERROR) {
-                showErrorScreen(localization.payDialogErrorFallbackMessage!!) {
-                    hideErrorScreen()
-                    viewModel.createEvent(ErrorButtonClickedEvent)
+                if (savedCardsOptions.features.handleErrorsInSdk) {
+                    showErrorScreen(localization.payDialogErrorFallbackMessage!!) {
+                        hideErrorScreen()
+                        viewModel.createEvent(ErrorButtonClickedEvent)
+                    }
+                } else {
+                    finishWithError(data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as Throwable)
                 }
             }
         }
@@ -255,16 +259,15 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is ErrorButtonClickedEvent -> loadCards()
-            is FinishWithErrorScreenState -> {
-                if (screenState.error is AcquiringApiException && screenState.error.response != null &&
-                        screenState.error.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND) {
-                    showErrorScreen(localization.cardListEmptyList ?: "")
-                } else finishWithError(screenState.error)
-            }
+            is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> {
-                showErrorScreen(screenState.message) {
-                    hideErrorScreen()
-                    viewModel.createEvent(ErrorButtonClickedEvent)
+                if (screenState.message == localization.cardListEmptyList ?: "") {
+                    showErrorScreen(screenState.message)
+                } else {
+                    showErrorScreen(screenState.message) {
+                        hideErrorScreen()
+                        viewModel.createEvent(ErrorButtonClickedEvent)
+                    }
                 }
             }
         }

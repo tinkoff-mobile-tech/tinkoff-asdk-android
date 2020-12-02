@@ -30,7 +30,7 @@ import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 /**
  * @author Mariya Chernyadieva
  */
-internal open class BaseAcquiringViewModel(val sdk: AcquiringSdk) : ViewModel() {
+internal open class BaseAcquiringViewModel(val handleErrorsInSdk: Boolean, val sdk: AcquiringSdk) : ViewModel() {
 
     protected val coroutine = CoroutineManager(exceptionHandler = { handleException(it) })
     private val loadState: MutableLiveData<LoadState> = MutableLiveData()
@@ -51,10 +51,12 @@ internal open class BaseAcquiringViewModel(val sdk: AcquiringSdk) : ViewModel() 
         when (throwable) {
             is NetworkException -> changeScreenState(ErrorScreenState(AsdkLocalization.resources.payDialogErrorNetwork!!))
             is AcquiringApiException -> {
-                val errorCode = throwable.response?.errorCode
-                if (errorCode != null && (AcquiringApi.errorCodesFallback.contains(errorCode) ||
-                        AcquiringApi.errorCodesForUserShowing.contains(errorCode))) {
-                    changeScreenState(ErrorScreenState(resolveErrorMessage(throwable)))
+                if (handleErrorsInSdk) {
+                    val errorCode = throwable.response?.errorCode
+                    if (errorCode != null && (AcquiringApi.errorCodesFallback.contains(errorCode) ||
+                                    AcquiringApi.errorCodesForUserShowing.contains(errorCode))) {
+                        changeScreenState(ErrorScreenState(resolveErrorMessage(throwable)))
+                    } else changeScreenState(FinishWithErrorScreenState(throwable))
                 } else changeScreenState(FinishWithErrorScreenState(throwable))
             }
             else -> changeScreenState(FinishWithErrorScreenState(throwable))

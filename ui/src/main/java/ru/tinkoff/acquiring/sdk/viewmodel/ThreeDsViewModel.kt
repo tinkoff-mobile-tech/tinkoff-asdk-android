@@ -27,7 +27,7 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.AttachCardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 
-internal class ThreeDsViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk) {
+internal class ThreeDsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
 
     private val asdkResult: MutableLiveData<AsdkResult> = MutableLiveData()
     val resultLiveData: LiveData<AsdkResult> = asdkResult

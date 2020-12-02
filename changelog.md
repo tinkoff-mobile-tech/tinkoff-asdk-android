@@ -1,3 +1,11 @@
+## 2.2.1
+
+#### Fixed
+#### Changes
+#### Additions
+Added the option to set optional email
+Added the option for handle API exceptions in SDK or return in application
+
 ## 2.2.0
 
 #### Fixed
