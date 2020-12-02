@@ -36,10 +36,11 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 /**
  * @author Mariya Chernyadieva
  */
-internal class AttachCardViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk) {
+internal class AttachCardViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
 
     private lateinit var cardData: CardData
     private val attachCardResult: MutableLiveData<AttachCardResult> = MutableLiveData()
+    private val needHandleErrorsInSdk = handleErrorsInSdk
     val attachCardResultLiveData: LiveData<AttachCardResult> = attachCardResult
 
     fun showCardInput() {
@@ -96,7 +97,7 @@ internal class AttachCardViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(s
                     changeScreenState(LoadedState)
                 },
                 onFailure = {
-                    if (it is AcquiringApiException) {
+                    if (needHandleErrorsInSdk && it is AcquiringApiException) {
                         if (it.response != null && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
                             changeScreenState(LoadedState)
                             changeScreenState(ErrorScreenState(AsdkLocalization.resources.addCardErrorErrorAttached

@@ -23,15 +23,15 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 /**
  * @author Mariya Chernyadieva
  */
-internal class ViewModelProviderFactory(val sdk: AcquiringSdk) : ViewModelProvider.NewInstanceFactory() {
+internal class ViewModelProviderFactory(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : ViewModelProvider.NewInstanceFactory() {
 
     private val viewModelCollection: Map<Class<out ViewModel>, BaseAcquiringViewModel> = mapOf(
-            BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(sdk),
-            PaymentViewModel::class.java to PaymentViewModel(sdk),
-            AttachCardViewModel::class.java to AttachCardViewModel(sdk),
-            StaticQrViewModel::class.java to StaticQrViewModel(sdk),
-            ThreeDsViewModel::class.java to ThreeDsViewModel(sdk),
-            SavedCardsViewModel::class.java to SavedCardsViewModel(sdk))
+            BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(handleErrorsInSdk, sdk),
+            PaymentViewModel::class.java to PaymentViewModel(handleErrorsInSdk, sdk),
+            AttachCardViewModel::class.java to AttachCardViewModel(handleErrorsInSdk, sdk),
+            StaticQrViewModel::class.java to StaticQrViewModel(handleErrorsInSdk, sdk),
+            ThreeDsViewModel::class.java to ThreeDsViewModel(handleErrorsInSdk, sdk),
+            SavedCardsViewModel::class.java to SavedCardsViewModel(handleErrorsInSdk, sdk))
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

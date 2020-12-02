@@ -19,17 +19,20 @@ package ru.tinkoff.acquiring.sdk.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 
 /**
  * @author Mariya Chernyadieva
  */
-internal class SavedCardsViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk) {
+internal class SavedCardsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
 
+    private val needHandleErrorsInSdk = handleErrorsInSdk
     private val deleteCardEvent: MutableLiveData<SingleEvent<CardStatus>> = MutableLiveData()
     private var cardsResult: MutableLiveData<List<Card>> = MutableLiveData()
 
@@ -51,6 +54,16 @@ internal class SavedCardsViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(s
                     }
                     cardsResult.value = activeCards
                     changeScreenState(LoadedState)
+                },
+                onFailure = {
+                    val apiError = it as? AcquiringApiException
+                    if (needHandleErrorsInSdk && apiError != null && it.response != null &&
+                            it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND) {
+                        changeScreenState(LoadedState)
+                        changeScreenState(ErrorScreenState(AsdkLocalization.resources.cardListEmptyList ?: ""))
+                    } else {
+                        handleException(it)
+                    }
                 })
     }
 
