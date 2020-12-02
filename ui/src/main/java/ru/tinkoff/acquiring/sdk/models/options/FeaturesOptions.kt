@@ -85,6 +85,12 @@ class FeaturesOptions() : Options(), Parcelable {
      */
     var handleErrorsInSdk: Boolean = true
 
+    /**
+     * Должен ли покупатель обязательно вводить email для оплаты.
+     * Если установлен false - покупатель может оставить поле email пустым
+     */
+    var emailRequired: Boolean = true
+
     private constructor(parcel: Parcel) : this() {
         parcel.run {
             theme = readInt()
@@ -96,6 +102,7 @@ class FeaturesOptions() : Options(), Parcelable {
             fpsEnabled = readByte().toInt() != 0
             selectedCardId = readString()
             handleErrorsInSdk = readByte().toInt() != 0
+            emailRequired = readByte().toInt() != 0
         }
     }
 
@@ -110,6 +117,7 @@ class FeaturesOptions() : Options(), Parcelable {
             writeByte((if (fpsEnabled) 1 else 0).toByte())
             writeString(selectedCardId)
             writeByte((if (handleErrorsInSdk) 1 else 0).toByte())
+            writeByte((if (emailRequired) 1 else 0).toByte())
         }
     }
 

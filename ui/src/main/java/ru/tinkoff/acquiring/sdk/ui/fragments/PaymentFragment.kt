@@ -367,7 +367,14 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     }
 
     private fun processCardPayment() {
-        val email = if (emailEditText.visibility == View.VISIBLE) emailEditText.text.toString() else null
+        val emailRequired = paymentOptions.features.emailRequired
+        val emailText = emailEditText.text.toString()
+        val email = when {
+            emailEditText.visibility != View.VISIBLE -> null
+            emailRequired || (!emailRequired && emailText.isNotBlank()) -> emailText
+            else -> null
+        }
+
         val paymentSource = cardsPagerAdapter.getSelectedPaymentSource(viewPager.currentItem)
 
         if (validateInput(paymentSource, email)) {
