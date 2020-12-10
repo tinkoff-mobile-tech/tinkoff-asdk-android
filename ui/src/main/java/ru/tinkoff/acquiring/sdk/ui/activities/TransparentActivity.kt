@@ -28,6 +28,8 @@ import androidx.appcompat.widget.Toolbar
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
+import ru.tinkoff.acquiring.sdk.models.LoadState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
@@ -84,7 +86,9 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     }
 
     override fun onBackPressed() {
-        bottomContainer.hide()
+        if (bottomContainer.isEnabled) {
+            bottomContainer.hide()
+        }
     }
 
     override fun finishWithSuccess(result: AsdkResult) {
@@ -95,6 +99,11 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     override fun finishWithError(throwable: Throwable) {
         setErrorResult(throwable)
         bottomContainer.hide()
+    }
+
+    override fun handleLoadState(loadState: LoadState) {
+        super.handleLoadState(loadState)
+        bottomContainer.isEnabled = loadState is LoadedState
     }
 
     protected fun initViews() {
