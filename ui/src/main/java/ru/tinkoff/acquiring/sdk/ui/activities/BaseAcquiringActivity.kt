@@ -138,7 +138,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     }
 
     protected fun provideViewModel(clazz: Class<out ViewModel>): ViewModel {
-        return ViewModelProvider(this, ViewModelProviderFactory(sdk))[clazz]
+        return ViewModelProvider(this, ViewModelProviderFactory(options.features.handleErrorsInSdk, sdk))[clazz]
     }
 
     protected open fun setSuccessResult(result: AsdkResult) {

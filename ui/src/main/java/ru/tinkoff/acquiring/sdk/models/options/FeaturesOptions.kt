@@ -76,6 +76,21 @@ class FeaturesOptions() : Options(), Parcelable {
      */
     var selectedCardId: String? = null
 
+    /**
+     * Обрабатывать возможные ошибки в SDK.
+     * Если установлен true, SDK будет обрабатывать некоторые ошибки с API Acquiring самостоятельно,
+     * если false - все ошибки будут возвращаться в вызываемый код, а экран SDK закрываться.
+     * Коды ошибок, которые может обработать SDK самостоятельно, указаны в классе
+     * [ru.tinkoff.acquiring.sdk.network.AcquiringApi]
+     */
+    var handleErrorsInSdk: Boolean = true
+
+    /**
+     * Должен ли покупатель обязательно вводить email для оплаты.
+     * Если установлен false - покупатель может оставить поле email пустым
+     */
+    var emailRequired: Boolean = true
+
     private constructor(parcel: Parcel) : this() {
         parcel.run {
             theme = readInt()
@@ -86,6 +101,8 @@ class FeaturesOptions() : Options(), Parcelable {
             darkThemeMode = DarkThemeMode.valueOf(readString() ?: DarkThemeMode.AUTO.name)
             fpsEnabled = readByte().toInt() != 0
             selectedCardId = readString()
+            handleErrorsInSdk = readByte().toInt() != 0
+            emailRequired = readByte().toInt() != 0
         }
     }
 
@@ -99,6 +116,8 @@ class FeaturesOptions() : Options(), Parcelable {
             writeString(darkThemeMode.name)
             writeByte((if (fpsEnabled) 1 else 0).toByte())
             writeString(selectedCardId)
+            writeByte((if (handleErrorsInSdk) 1 else 0).toByte())
+            writeByte((if (emailRequired) 1 else 0).toByte())
         }
     }
 

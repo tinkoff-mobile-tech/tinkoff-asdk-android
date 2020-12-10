@@ -25,7 +25,7 @@ import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 
-internal class StaticQrViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk) {
+internal class StaticQrViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
 
     private val staticQrLinkResult: MutableLiveData<SingleEvent<String?>> = MutableLiveData()
     private val staticQrResult: MutableLiveData<String> = MutableLiveData()

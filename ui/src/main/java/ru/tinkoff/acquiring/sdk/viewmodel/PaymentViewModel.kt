@@ -48,7 +48,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 /**
  * @author Mariya Chernyadieva
  */
-internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk) {
+internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
 
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     private var cardsResult: MutableLiveData<List<Card>> = MutableLiveData()
@@ -106,6 +106,7 @@ internal class PaymentViewModel(sdk: AcquiringSdk) : BaseAcquiringViewModel(sdk)
                             cardsResult.value = mutableListOf()
                         } else {
                             coroutine.runWithDelay(800) {
+                                changeScreenState(LoadedState)
                                 changeScreenState(FinishWithErrorScreenState(it))
                             }
                         }
