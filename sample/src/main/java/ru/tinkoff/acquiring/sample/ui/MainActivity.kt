@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     private lateinit var adapter: BooksListAdapter
     private lateinit var settings: SettingsSdkManager
     private val priceNotificationReceiver = PriceNotificationReceiver()
+    private var selectedCardIdForDemo: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,8 +148,12 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 }
             }
             SAVED_CARDS_REQUEST_CODE -> {
-                if (resultCode == RESULT_ERROR) {
-                    Toast.makeText(this, R.string.error_title, Toast.LENGTH_SHORT).show()
+                val selectedCardId = data?.getStringExtra(EXTRA_CARD_ID)
+                selectedCardIdForDemo = selectedCardId
+
+                when (resultCode) {
+                    RESULT_OK -> Toast.makeText(this, "Выбранная карта: CardId=$selectedCardId", Toast.LENGTH_SHORT).show()
+                    RESULT_ERROR -> Toast.makeText(this, R.string.error_title, Toast.LENGTH_SHORT).show()
                 }
             }
             NOTIFICATION_PAYMENT_REQUEST_CODE -> {
@@ -228,6 +233,8 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 cameraCardScanner = settings.cameraScanner
                 darkThemeMode = settings.resolveDarkThemeMode()
                 theme = settings.resolveAttachCardStyle()
+                userCanSelectCard = true
+                selectedCardId = selectedCardIdForDemo
             }
         }
 

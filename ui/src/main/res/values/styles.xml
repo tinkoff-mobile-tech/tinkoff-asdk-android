@@ -37,6 +37,7 @@
         <item name="acqScreenTitleLayoutStyle">@style/AcquiringScreenTitleLayoutStyle</item>
         <item name="acqScreenTitleStyle">@style/AcquiringScreenTitleStyle</item>
         <item name="acqOrderTitleStyle">@style/AcquiringOrderTitleStyle</item>
+        <item name="acqCardListTitleStyle">@style/AcquiringCardListTitleStyle</item>
         <item name="acqOrderDescriptionStyle">@style/AcquiringOrderDescriptionStyle</item>
         <item name="acqPaySecureIconStyle">@style/AcquiringPaySecureIconStyle</item>
         <item name="acqSubmitAmountDescriptionStyle">@style/AcquiringSubmitAmountDescriptionStyle
@@ -82,7 +83,7 @@
     </style>
 
     <style name="AcqToolbarTitleStyle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">@dimen/acq_extra_large_text_size</item>
     </style>
 
     <style name="AcquiringSavedCardsAddCardStyle">
@@ -146,6 +147,11 @@
     <style name="AcquiringOrderTitleStyle" parent="AcquiringTitleTextStyle">
         <item name="android:textSize">@dimen/acq_medium_text_size</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AcquiringCardListTitleStyle" parent="AcquiringScreenTitleStyle">
+        <item name="android:textSize">@dimen/acq_extra_large_text_size</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="AcquiringOrderDescriptionStyle">

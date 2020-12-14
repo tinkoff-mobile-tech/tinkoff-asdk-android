@@ -169,6 +169,11 @@ internal class BottomContainer @JvmOverloads constructor(
         this.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
     }
 
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        background?.isEnabled = enabled
+    }
+
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         if (changed) {

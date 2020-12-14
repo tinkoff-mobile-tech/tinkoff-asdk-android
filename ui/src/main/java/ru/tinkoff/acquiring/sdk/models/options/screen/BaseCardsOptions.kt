@@ -11,8 +11,7 @@ import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
  *
  * @author Mariya Chernyadieva
  */
-abstract class BaseCardsOptions<T : Parcelable>() :
-        BaseAcquiringOptions(), Parcelable {
+abstract class BaseCardsOptions<T : Parcelable>() : BaseAcquiringOptions(), Parcelable {
 
     /**
      * Данные покупателя

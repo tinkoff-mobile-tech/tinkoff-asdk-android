@@ -16,6 +16,8 @@
 
 package ru.tinkoff.acquiring.sdk.utils
 
+import java.math.BigInteger
+import java.net.Inet6Address
 import java.net.NetworkInterface
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -28,7 +30,11 @@ internal fun getIpAddress(): String {
         NetworkInterface.getNetworkInterfaces().iterator().forEach { network ->
             network.inetAddresses.iterator().forEach { address ->
                 if (!address.isLoopbackAddress) {
-                    return address.hostAddress
+                    return if (address is Inet6Address) {
+                        address.formatIpv6Address()
+                    } else {
+                        address.hostAddress
+                    }
                 }
             }
         }
@@ -41,5 +47,17 @@ internal fun getIpAddress(): String {
 internal fun getTimeZoneOffsetInMinutes(): String {
     val offsetMills = TimeZone.getDefault().rawOffset
     return "${TimeUnit.MILLISECONDS.toMinutes(offsetMills.toLong())}"
+}
+
+internal fun Inet6Address.formatIpv6Address(): String {
+    val list = BigInteger(1, this.address).toString(16).chunked(4)
+    var result = ""
+    list.forEachIndexed { index, s ->
+        result += s
+        if (index != list.lastIndex) {
+            result += ":"
+        }
+    }
+    return result
 }
 

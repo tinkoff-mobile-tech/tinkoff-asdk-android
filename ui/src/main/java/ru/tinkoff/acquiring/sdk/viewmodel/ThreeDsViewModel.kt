@@ -24,7 +24,7 @@ import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
-import ru.tinkoff.acquiring.sdk.models.result.AttachCardResult
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 
 internal class ThreeDsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
@@ -61,7 +61,7 @@ internal class ThreeDsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
         coroutine.call(request,
                 onSuccess = { response ->
                     if (response.status == ResponseStatus.COMPLETED) {
-                        asdkResult.value = AttachCardResult(response.cardId)
+                        asdkResult.value = CardResult(response.cardId)
                     } else {
                         val throwable = AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))
                         handleException(throwable)

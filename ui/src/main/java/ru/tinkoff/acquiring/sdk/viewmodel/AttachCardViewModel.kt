@@ -30,7 +30,7 @@ import ru.tinkoff.acquiring.sdk.models.LoopConfirmationScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
-import ru.tinkoff.acquiring.sdk.models.result.AttachCardResult
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 
 /**
@@ -39,9 +39,9 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 internal class AttachCardViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
 
     private lateinit var cardData: CardData
-    private val attachCardResult: MutableLiveData<AttachCardResult> = MutableLiveData()
+    private val attachCardResult: MutableLiveData<CardResult> = MutableLiveData()
     private val needHandleErrorsInSdk = handleErrorsInSdk
-    val attachCardResultLiveData: LiveData<AttachCardResult> = attachCardResult
+    val attachCardResultLiveData: LiveData<CardResult> = attachCardResult
 
     fun showCardInput() {
         changeScreenState(DefaultScreenState)
@@ -71,7 +71,7 @@ internal class AttachCardViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
 
         coroutine.call(request,
                 onSuccess = {
-                    attachCardResult.value = AttachCardResult(it.cardId)
+                    attachCardResult.value = CardResult(it.cardId)
                     changeScreenState(LoadedState)
                 })
     }
@@ -88,7 +88,7 @@ internal class AttachCardViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
                     when (it.status) {
                         ResponseStatus.THREE_DS_CHECKING -> changeScreenState(ThreeDsScreenState(it.getThreeDsData()))
                         ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
-                        null -> attachCardResult.value = AttachCardResult(it.cardId)
+                        null -> attachCardResult.value = CardResult(it.cardId)
                         else -> {
                             val throwable = AcquiringSdkException(IllegalStateException("ResponseStatus = ${it.status}"))
                             handleException(throwable)

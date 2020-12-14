@@ -19,4 +19,4 @@ package ru.tinkoff.acquiring.sdk.models.result
 /**
  * @author Mariya Chernyadieva
  */
-internal class AttachCardResult(var cardId: String? = null) : AsdkResult
+internal class CardResult(var cardId: String? = null) : AsdkResult

@@ -36,6 +36,7 @@
   "CardList.EmptyList": "You have no saved cards",
   "CardList.Delete": "Delete",
   "CardList.DeleteCard": "Delete card",
+  "CardList.SelectCard": "Select card for payment",
   "CardList.Dialog.Delete.TitleFormat": "Deleting card *%s",
   "CardList.Dialog.Delete.Message": "Are you sure you want to delete the saved card?",
   "Nfc.Description": "Bring the card to the back of the phone",

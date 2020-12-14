@@ -36,6 +36,7 @@
   "CardList.EmptyList": "Нет сохраненных карт",
   "CardList.Delete": "Удалить",
   "CardList.DeleteCard": "Удалить карту",
+  "CardList.SelectCard": "Выберите карту для оплаты",
   "CardList.Dialog.Delete.TitleFormat": "Удаление карты *%s",
   "CardList.Dialog.Delete.Message": "Вы уверены что хотите удалить сохраненную карту?",
   "Nfc.Description": "Поднесите карту\nк задней крышке телефона",
