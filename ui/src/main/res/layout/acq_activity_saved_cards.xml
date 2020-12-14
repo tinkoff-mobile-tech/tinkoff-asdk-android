@@ -40,6 +40,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/acq_select_card_title"
+                style="?acqCardListTitleStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/acq_card_list_title_margin"
+                tools:text="Выберите карту для оплаты"/>
+
             <ListView
                 android:id="@+id/acq_card_list"
                 android:layout_width="match_parent"

@@ -24,15 +24,17 @@ import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.dpToPx
 
-internal class Shadow(private val context: Context, isDarkMode: Boolean = false) : Drawable() {
+internal class Shadow(
+        private val context: Context,
+        isDarkMode: Boolean = false,
+        @ColorInt
+        var backgroundColor: Int = R.color.acq_colorCardBackground
+) : Drawable() {
 
     @ColorInt
     var shadowColor = 0
     var shadowRadius = 0f
     var backgroundRadius = 0f
-
-    @ColorInt
-    var backgroundColor = 0
 
     private var shadowPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -40,15 +42,13 @@ internal class Shadow(private val context: Context, isDarkMode: Boolean = false)
 
     init {
         val colorRes = if (isDarkMode) android.R.color.transparent else R.color.acq_colorShadow
-        shadowColor = ContextCompat.getColor(context, colorRes)
 
         shadowColor = ContextCompat.getColor(context, colorRes)
         shadowRadius = if (isDarkMode) 0f else context.resources.getDimension(R.dimen.acq_shadow_radius)
         backgroundRadius = context.resources.getDimension(R.dimen.acq_card_radius)
-        backgroundColor = ContextCompat.getColor(context, R.color.acq_colorCardBackground)
 
         shadowPaint.color = Color.WHITE
-        backgroundPaint.color = backgroundColor
+        backgroundPaint.color = ContextCompat.getColor(context, backgroundColor)
         shadowPaint.setShadowLayer(shadowRadius, 0f, 0f, shadowColor)
     }
 
@@ -115,6 +115,7 @@ internal class Shadow(private val context: Context, isDarkMode: Boolean = false)
 
     override fun setAlpha(alpha: Int) {
         shadowPaint.alpha = alpha
+        backgroundPaint.alpha = alpha
         invalidateSelf()
     }
 
@@ -124,6 +125,7 @@ internal class Shadow(private val context: Context, isDarkMode: Boolean = false)
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         shadowPaint.colorFilter = colorFilter
+        backgroundPaint.colorFilter = colorFilter
         invalidateSelf()
     }
 }

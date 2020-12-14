@@ -39,7 +39,7 @@ internal class SavedCardsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
     val deleteCardEventLiveData: LiveData<SingleEvent<CardStatus>> = deleteCardEvent
     val cardsResultLiveData: LiveData<List<Card>> = cardsResult
 
-    fun getCardList(customerKey: String) {
+    fun getCardList(customerKey: String, recurrentOnly: Boolean) {
         changeScreenState(DefaultScreenState)
         changeScreenState(LoadingState)
 
@@ -49,8 +49,11 @@ internal class SavedCardsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
 
         coroutine.call(request,
                 onSuccess = {
-                    val activeCards = it.cards.filter { card ->
+                    var activeCards = it.cards.filter { card ->
                         card.status == CardStatus.ACTIVE
+                    }
+                    if (recurrentOnly) {
+                        activeCards = activeCards.filter { card -> !card.rebillId.isNullOrBlank() }
                     }
                     cardsResult.value = activeCards
                     changeScreenState(LoadedState)

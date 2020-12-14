@@ -27,6 +27,7 @@
     <dimen name="acq_item_card_logo_height">26dp</dimen>
     <dimen name="acq_shadow_radius">8dp</dimen>
     <dimen name="acq_edit_card_height">96dp</dimen>
+    <dimen name="acq_extra_large_text_size">20sp</dimen>
     <dimen name="acq_large_text_size">17sp</dimen>
     <dimen name="acq_medium_text_size">15sp</dimen>
     <dimen name="acq_small_text_size">13sp</dimen>
@@ -59,4 +60,5 @@
     <dimen name="acq_or_text_margin">14dp</dimen>
     <dimen name="acq_static_qr_bg_padding">16dp</dimen>
     <dimen name="acq_static_qr_bottom_padding">8dp</dimen>
+    <dimen name="acq_card_list_title_margin">24dp</dimen>
 </resources>

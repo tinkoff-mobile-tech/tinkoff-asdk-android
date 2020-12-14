@@ -32,6 +32,7 @@
     <attr name="acqScreenTitleLayoutStyle" format="reference" />
     <attr name="acqScreenTitleStyle" format="reference" />
     <attr name="acqOrderTitleStyle" format="reference" />
+    <attr name="acqCardListTitleStyle" format="reference" />
     <attr name="acqOrderDescriptionStyle" format="reference" />
     <attr name="acqPaySecureIconStyle" format="reference" />
 

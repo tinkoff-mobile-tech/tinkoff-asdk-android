@@ -96,6 +96,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     private lateinit var viewPager: ViewPager
 
     private var customerKey: String? = null
+    private var selectedCardId: String? = null
     private var rejectedDialog: AlertDialog? = null
     private var rejectedDialogDismissed = false
     private var viewPagerPosition = FIRST_POSITION
@@ -106,6 +107,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         private const val REJECTED_DIALOG_DISMISSED = "rejected_dialog_dismissed"
 
         private const val STATE_VIEW_PAGER_POSITION = "state_view_pager_position"
+        private const val STATE_SELECTED_CARD_ID = "state_selected_card_id"
 
         private const val CARD_LIST_REQUEST_CODE = 209
 
@@ -187,11 +189,6 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        savedInstanceState?.let {
-            rejectedDialogDismissed = it.getBoolean(REJECTED_DIALOG_DISMISSED)
-            viewPagerPosition = it.getInt(STATE_VIEW_PAGER_POSITION)
-        }
-
         requireActivity().intent.extras?.let { extras ->
             setupPaymentOptions(extras)
         }
@@ -199,6 +196,14 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         requireArguments().let {
             customerKey = it.getString(CUSTOMER_KEY)
             asdkState = it.getSerializable(REJECTED_STATE) as AsdkState? ?: paymentOptions.asdkState
+        }
+
+        selectedCardId = paymentOptions.features.selectedCardId
+
+        savedInstanceState?.let {
+            rejectedDialogDismissed = it.getBoolean(REJECTED_DIALOG_DISMISSED)
+            viewPagerPosition = it.getInt(STATE_VIEW_PAGER_POSITION)
+            selectedCardId = it.getString(STATE_SELECTED_CARD_ID)
         }
 
         paymentOptions.order.run {
@@ -256,6 +261,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         outState.run {
             putInt(STATE_VIEW_PAGER_POSITION, viewPager.currentItem)
             putBoolean(REJECTED_DIALOG_DISMISSED, rejectedDialogDismissed)
+            putString(STATE_SELECTED_CARD_ID, selectedCardId)
         }
     }
 
@@ -271,7 +277,10 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             }
             CARD_LIST_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.getBooleanExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, false)) {
+                    val newCardId = data.getStringExtra(TinkoffAcquiring.EXTRA_CARD_ID)
+                    val cardListChanged = data.getBooleanExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, false)
+                    if (cardListChanged || selectedCardId != newCardId) {
+                        selectedCardId = newCardId
                         viewPagerPosition = FIRST_POSITION
                         loadCards()
                     }
@@ -345,11 +354,9 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
     private fun handleCardsResult(cards: List<Card>) {
         val cardsList = cards.toMutableList()
-        paymentOptions.features.selectedCardId?.let {cardId ->
-            val selectedCard = cardsList.find { it.cardId == cardId }
+            val selectedCard = cardsList.find { it.cardId == selectedCardId }
             if (selectedCard != null && cardsList.remove(selectedCard)) {
                 cardsList.add(0, selectedCard)
-            }
         }
 
         cardsPagerAdapter.cardList = cardsList
@@ -424,7 +431,10 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         return SavedCardsOptions().setOptions {
             setTerminalParams(paymentOptions.terminalKey, paymentOptions.password, paymentOptions.publicKey)
             customer = paymentOptions.customer
-            features = paymentOptions.features
+            features = paymentOptions.features.apply {
+                showOnlyRecurrentCards = paymentOptions.order.recurrentPayment
+                this@PaymentFragment.selectedCardId?.let { selectedCardId = it }
+            }
         }
     }
 
