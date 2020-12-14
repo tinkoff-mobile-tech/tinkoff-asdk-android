@@ -1,3 +1,13 @@
+## 2.2.2
+
+#### Fixed
+#### Changes
+Disabled closing SDK screens while payment or attaching process is running
+Changed format ipv6 address for 3DS
+#### Additions
+Added support to select card on the card list
+Added the param to show only recurrent cards
+
 ## 2.2.1
 
 #### Fixed
