@@ -31,7 +31,8 @@ internal class ViewModelProviderFactory(handleErrorsInSdk: Boolean, sdk: Acquiri
             AttachCardViewModel::class.java to AttachCardViewModel(handleErrorsInSdk, sdk),
             StaticQrViewModel::class.java to StaticQrViewModel(handleErrorsInSdk, sdk),
             ThreeDsViewModel::class.java to ThreeDsViewModel(handleErrorsInSdk, sdk),
-            SavedCardsViewModel::class.java to SavedCardsViewModel(handleErrorsInSdk, sdk))
+            SavedCardsViewModel::class.java to SavedCardsViewModel(handleErrorsInSdk, sdk),
+            NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(handleErrorsInSdk, sdk))
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

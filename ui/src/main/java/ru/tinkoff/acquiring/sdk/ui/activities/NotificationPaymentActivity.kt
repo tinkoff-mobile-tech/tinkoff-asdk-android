@@ -23,6 +23,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
@@ -30,24 +32,34 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
+import ru.tinkoff.acquiring.sdk.models.LoadState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
+import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
-import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.customview.ResultNotificationView
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
+import ru.tinkoff.acquiring.sdk.viewmodel.NotificationPaymentViewModel
+import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
 
 /**
  * @author Mariya Chernyadieva
  */
 internal class NotificationPaymentActivity : AppCompatActivity() {
 
-    private var paymentProcess: PaymentProcess? = null
+    private lateinit var paymentOptions: PaymentOptions
+    private lateinit var viewModel: NotificationPaymentViewModel
+
+    private var notificationDialog: NotificationDialog? = null
     private var progressDialog: NotificationDialog? = null
     private var resultIntent: PendingIntent? = null
-    private lateinit var paymentOptions: PaymentOptions
+
+    private var isDialogShowing = false
+    private var dialogType: DialogType? = null
+    private var dialogMessage = ""
 
     companion object {
         private const val GOOGLE_PAY_REQUEST_CODE = 789
@@ -64,6 +76,10 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         private const val PREF_NAME = "asdk_preferences"
         private const val PREF_INTENT_COUNTER_KEY = "intent_counter_key"
         private const val START_COUNTER_VALUE = 0
+
+        private const val STATE_DIALOG_SHOWING = "state_dialog_showing"
+        private const val STATE_DIALOG_TYPE = "state_dialog_type"
+        private const val STATE_DIALOG_MESSAGE = "state_dialog_message"
 
         @Throws(AcquiringSdkException::class)
         fun createPendingIntent(context: Context,
@@ -107,13 +123,39 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        savedInstanceState?.let {
+            isDialogShowing = it.getBoolean(STATE_DIALOG_SHOWING)
+            dialogType = it.getSerializable(STATE_DIALOG_TYPE) as DialogType?
+            dialogMessage = it.getString(STATE_DIALOG_MESSAGE, "")
+        }
+
         paymentOptions = intent.getParcelableExtra(EXTRA_PAYMENT_OPTIONS) as PaymentOptions
         resultIntent = intent.getParcelableExtra(EXTRA_PENDING_INTENT) as PendingIntent?
 
         AsdkLocalization.init(this, paymentOptions.features.localizationSource)
 
+        val sdk = AcquiringSdk(paymentOptions.terminalKey, paymentOptions.password, paymentOptions.publicKey)
+        viewModel = ViewModelProvider(this,
+                ViewModelProviderFactory(paymentOptions.features.handleErrorsInSdk,
+                        sdk))[NotificationPaymentViewModel::class.java]
+
         sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
-        initPaymentScreen()
+
+        if (savedInstanceState == null) {
+            initPaymentScreen()
+        }
+
+        initDialogs()
+        observeLiveData()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.run {
+            putBoolean(STATE_DIALOG_SHOWING, isDialogShowing)
+            putSerializable(STATE_DIALOG_TYPE, dialogType)
+            putString(STATE_DIALOG_MESSAGE, dialogMessage)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,9 +180,17 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        paymentProcess?.unsubscribe()
-        paymentProcess?.stop()
         progressDialog?.dismiss()
+        notificationDialog?.dismiss()
+    }
+
+    private fun observeLiveData() {
+        with(viewModel) {
+            loadStateLiveData.observe(this@NotificationPaymentActivity, Observer { handleLoadState(it) })
+            paymentResultLiveData.observe(this@NotificationPaymentActivity, Observer { handleSuccessResult(it) })
+            errorLiveData.observe(this@NotificationPaymentActivity, Observer { handleErrorResult(it) })
+            uiEventLiveData.observe(this@NotificationPaymentActivity, Observer { handleUiEvent(it) })
+        }
     }
 
     private fun initPaymentScreen() {
@@ -176,13 +226,27 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         startActivityForResult(intent, TINKOFF_PAY_REQUEST_CODE)
     }
 
+    private fun handleUiEvent(event: SingleEvent<AsdkState>) {
+        event.getValueIfNotHandled()?.let {
+            paymentOptions.apply { asdkState = it }
+            showTinkoffPay()
+        }
+    }
+
+    private fun handleLoadState(loadState: LoadState) {
+        when (loadState) {
+            is LoadingState -> progressDialog?.show()
+            is LoadedState -> progressDialog?.dismiss()
+        }
+    }
+
     private fun handleGooglePayResult(data: Intent?) {
         if (data != null) {
             val token = GooglePayHelper.getGooglePayToken(data)
             if (token == null) {
                 handleErrorResult(AcquiringSdkException(IllegalStateException("Invalid Google Pay result. Token is null")))
             } else {
-                processPayment(token)
+                viewModel.initPayment(token, paymentOptions)
             }
         } else {
             handleErrorResult(AcquiringSdkException(IllegalStateException("Invalid Google Pay result")))
@@ -192,52 +256,13 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
     private fun handleTinkoffPayResult(data: Intent?) {
         val paymentId = data?.getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, 0)
         val cardId = data?.getStringExtra(TinkoffAcquiring.EXTRA_CARD_ID)
-        handleSuccessResult(paymentId, cardId)
-    }
-
-    private fun processPayment(token: String) {
-        progressDialog = NotificationDialog(this).apply {
-            showProgress()
-            setCancelable(false)
-            show()
-        }
-
-        val sdk = AcquiringSdk(paymentOptions.terminalKey,
-                paymentOptions.password,
-                paymentOptions.publicKey)
-
-        paymentProcess = PaymentProcess(sdk).createPaymentProcess(GooglePay(token), paymentOptions)
-                .subscribe(object : PaymentListenerAdapter() {
-                    override fun onSuccess(paymentId: Long, cardId: String?) {
-                        progressDialog?.dismiss()
-                        handleSuccessResult(paymentId, cardId)
-                    }
-
-                    override fun onUiNeeded(state: AsdkState) {
-                        progressDialog?.dismiss()
-                        paymentOptions.asdkState = state
-                        showTinkoffPay()
-                    }
-
-                    override fun onError(throwable: Throwable) {
-                        progressDialog?.dismiss()
-                        handleErrorResult(throwable)
-                    }
-                }).start()
+        handleSuccessResult(PaymentResult(paymentId, cardId))
     }
 
     private fun tryToRemoveNotification() {
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, DEFAULT_NOTIFICATION_ID)
         if (notificationId != DEFAULT_NOTIFICATION_ID) {
             NotificationManagerCompat.from(this).cancel(notificationId)
-        }
-    }
-
-    private fun onDialogHide(hide : () -> Unit): ResultNotificationView.ResultNotificationViewListener {
-        return object : ResultNotificationView.ResultNotificationViewListener {
-            override fun onHide() {
-                hide()
-            }
         }
     }
 
@@ -256,45 +281,79 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         }
     }
 
-    private fun showErrorDialog(error: Throwable?) {
-        NotificationDialog(this).apply {
-            showError(getErrorMessage(error))
+    private fun initDialogs() {
+        progressDialog = NotificationDialog(this).apply {
+            showProgress()
+            setCancelable(false)
+        }
+
+        notificationDialog = NotificationDialog(this).apply {
             addListener(onDialogHide { finish() })
-        }.show()
+        }
+
+        if (isDialogShowing) {
+            when (dialogType) {
+                DialogType.ERROR -> showErrorDialog(dialogMessage)
+                DialogType.SUCCESS -> showSuccessDialog()
+            }
+        }
+    }
+
+    private fun showErrorDialog(message: String) {
+        dialogType = DialogType.ERROR
+        dialogMessage = message
+
+        notificationDialog?.apply {
+            showError(message)
+        }?.show()
     }
 
     private fun showSuccessDialog() {
-        NotificationDialog(this).apply {
+        dialogType = DialogType.SUCCESS
+
+        notificationDialog?.apply {
             showSuccess(AsdkLocalization.resources.notificationMessageSuccess ?: "")
-            addListener(onDialogHide { finish() })
-        }.show()
+        }?.show()
+    }
+
+    private fun onDialogHide(hide: () -> Unit): ResultNotificationView.ResultNotificationViewListener {
+        return object : ResultNotificationView.ResultNotificationViewListener {
+            override fun onAction() {
+                isDialogShowing = true
+            }
+
+            override fun onHide() {
+                isDialogShowing = false
+                hide()
+            }
+        }
     }
 
     private fun handleErrorResult(error: Throwable?) {
         if (resultIntent == null) {
-            showErrorDialog(error)
+            showErrorDialog(getErrorMessage(error))
         } else {
             val intent = Intent()
             intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, error)
             try {
                 resultIntent!!.send(this, TinkoffAcquiring.RESULT_ERROR, intent)
             } catch (e: PendingIntent.CanceledException) {
-                showErrorDialog(error)
+                showErrorDialog(getErrorMessage(error))
             } finally {
                 finish()
             }
         }
     }
 
-    private fun handleSuccessResult(paymentId: Long?, cardId: String?) {
+    private fun handleSuccessResult(paymentResult: PaymentResult) {
         tryToRemoveNotification()
 
         if (resultIntent == null) {
             showSuccessDialog()
         } else {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, cardId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentResult.paymentId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, paymentResult.cardId)
             try {
                 resultIntent!!.send(this, Activity.RESULT_OK, intent)
             } catch (e: PendingIntent.CanceledException) {
@@ -313,6 +372,10 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         } finally {
             finish()
         }
+    }
+
+    private enum class DialogType {
+        ERROR, SUCCESS
     }
 
     enum class PaymentMethod {
