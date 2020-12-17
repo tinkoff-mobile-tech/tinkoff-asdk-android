@@ -188,7 +188,9 @@ class TinkoffAcquiring(
      * @param savedCardsOptions настройки экрана сохраненных карт
      * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK.
      *                          В случае удаления/добавления карты на экране, возвращается intent с
-     *                          параметром по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
+     *                          параметром Boolean по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
+     *                          В случае выбора покупателем приоритетной карты, возвращается intent
+     *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
      */
     fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
         val intent = prepareIntent(activity, savedCardsOptions, SavedCardsActivity::class.java)
@@ -202,7 +204,9 @@ class TinkoffAcquiring(
      * @param savedCardsOptions настройки экрана сохраненных карт
      * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK.
      *                          В случае удаления/добавления карты на экране, возвращается intent с
-     *                          параметром по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
+     *                          параметром Boolean по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
+     *                          В случае выбора покупателем приоритетной карты, возвращается intent
+     *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
      */
     fun openSavedCardsScreen(fragment: Fragment, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
         val intent = prepareIntent(fragment.requireContext(), savedCardsOptions, SavedCardsActivity::class.java)

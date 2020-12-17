@@ -134,6 +134,9 @@ internal class LocalizationResources {
     @SerializedName("CardList.DeleteCard")
     var cardListDeleteCard: String? = null
 
+    @SerializedName("CardList.SelectCard")
+    var cardListSelectCard: String? = null
+
     @SerializedName("CardList.Dialog.Delete.TitleFormat")
     var cardListDialogDeleteTitleFormat: String? = null
 

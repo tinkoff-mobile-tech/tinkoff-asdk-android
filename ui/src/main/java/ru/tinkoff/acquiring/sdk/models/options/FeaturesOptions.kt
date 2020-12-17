@@ -70,11 +70,27 @@ class FeaturesOptions() : Options(), Parcelable {
 
     /**
      * Идентификатор карты в системе банка.
-     * Если передан - в списке карт на экране оплаты отобразится первой карта с этим cardId.
+     * Если передан на экран оплаты - в списке карт на экране отобразится первой карта с этим cardId.
+     * Если передан на экран списка карт - в списке карт отобразится выбранная карта.
      * Если не передан, или в списке нет карты с таким cardId -
      * список карт будет отображаться по-умолчанию
      */
     var selectedCardId: String? = null
+
+    /**
+     * Возможность выбрать приоритетную карту для оплаты.
+     * Если установлен true - пользователь может выбирать приоритетную карту на экране списка карт,
+     * в onActivityResult вернется cardId выбранной карты по ключу
+     * [ru.tinkoff.acquiring.sdk.TinkoffAcquiring.EXTRA_CARD_ID]
+     * Если установнен false - пользователю недоступен выбор карты на экране списка карт,
+     * в onActivityResult вернется null
+     */
+    var userCanSelectCard: Boolean = false
+
+    /**
+     * Показывать на экране списка карт только те карты, которые привязаны как рекуррентные
+     */
+    var showOnlyRecurrentCards: Boolean = false
 
     /**
      * Обрабатывать возможные ошибки в SDK.
@@ -103,6 +119,8 @@ class FeaturesOptions() : Options(), Parcelable {
             selectedCardId = readString()
             handleErrorsInSdk = readByte().toInt() != 0
             emailRequired = readByte().toInt() != 0
+            userCanSelectCard = readByte().toInt() != 0
+            showOnlyRecurrentCards = readByte().toInt() != 0
         }
     }
 
@@ -118,6 +136,8 @@ class FeaturesOptions() : Options(), Parcelable {
             writeString(selectedCardId)
             writeByte((if (handleErrorsInSdk) 1 else 0).toByte())
             writeByte((if (emailRequired) 1 else 0).toByte())
+            writeByte((if (userCanSelectCard) 1 else 0).toByte())
+            writeByte((if (showOnlyRecurrentCards) 1 else 0).toByte())
         }
     }
 

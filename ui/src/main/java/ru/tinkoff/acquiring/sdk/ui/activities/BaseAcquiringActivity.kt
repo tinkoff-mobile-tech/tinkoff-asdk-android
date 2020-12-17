@@ -42,7 +42,7 @@ import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
-import ru.tinkoff.acquiring.sdk.models.result.AttachCardResult
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
 
@@ -149,7 +149,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                 intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, result.paymentId)
                 intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
             }
-            is AttachCardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
+            is CardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
         }
 
         setResult(Activity.RESULT_OK, intent)

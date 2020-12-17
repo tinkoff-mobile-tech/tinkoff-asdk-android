@@ -30,12 +30,15 @@ import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.ui.customview.Shadow
 import ru.tinkoff.acquiring.sdk.utils.CardSystemIconsHolder
 
+
 /**
  * @author Mariya Chernyadieva
  */
 internal class CardListAdapter(private val context: Context): BaseAdapter() {
 
+    private var selectedCardId: String? = null
     var moreClickListener: OnMoreIconClickListener? = null
+    var cardSelectListener: CardSelectListener? = null
 
     private var cards = mutableListOf<Card>()
     private val iconsHolder: CardSystemIconsHolder = CardSystemIconsHolder(context)
@@ -48,10 +51,15 @@ internal class CardListAdapter(private val context: Context): BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view: View? = convertView
+        val cardSelected = cards[position].cardId == selectedCardId
 
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.acq_item_card_list, parent, false)
-            view!!.findViewById<View>(R.id.acq_item_card_background).background = Shadow(context, isDarkMode)
+        }
+        view!!.findViewById<View>(R.id.acq_item_card_background).background = if (cardSelected) {
+            Shadow(context, isDarkMode, R.color.acq_colorSelectedCardBackground).apply { shadowRadius = 0f }
+        } else {
+            Shadow(context, isDarkMode, R.color.acq_colorCardBackground)
         }
 
         val cardImage = view.findViewById<ImageView>(R.id.acq_item_card_logo)
@@ -62,9 +70,19 @@ internal class CardListAdapter(private val context: Context): BaseAdapter() {
         cardNumber.text = makeTextNumber(cards[position].pan!!)
         cardDate.text = makeCardDate(cards[position].expDate!!)
         val iconMore = view.findViewById<ImageView>(R.id.acq_item_card_more)
+
         iconMore.setOnClickListener {
             moreClickListener?.onMoreIconClick(cards[position])
         }
+
+        cardSelectListener?.let { listener ->
+            view.setOnClickListener {
+                selectedCardId = cards[position].cardId
+                listener.onCardSelected(cards[position])
+                notifyDataSetChanged()
+            }
+        }
+
         return view
     }
 
@@ -85,6 +103,11 @@ internal class CardListAdapter(private val context: Context): BaseAdapter() {
         notifyDataSetChanged()
     }
 
+    fun setSelectedCard(cardId: String) {
+        this.selectedCardId = cardId
+        notifyDataSetChanged()
+    }
+
     fun getLastPanNumbers(number: String): String {
         return number.substring(number.length - 4, number.length)
     }
@@ -100,5 +123,10 @@ internal class CardListAdapter(private val context: Context): BaseAdapter() {
     interface OnMoreIconClickListener {
 
         fun onMoreIconClick(card: Card)
+    }
+
+    interface CardSelectListener {
+
+        fun onCardSelected(card: Card)
     }
 }

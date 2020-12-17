@@ -171,6 +171,7 @@ open class PayableActivity : AppCompatActivity() {
                         fpsEnabled = settings.isFpsEnabled
                         darkThemeMode = settings.resolveDarkThemeMode()
                         theme = settings.resolvePaymentStyle()
+                        userCanSelectCard = true
                     }
                 }
     }
