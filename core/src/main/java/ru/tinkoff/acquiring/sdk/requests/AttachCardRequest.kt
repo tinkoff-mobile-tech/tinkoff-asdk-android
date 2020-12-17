@@ -70,6 +70,9 @@ class AttachCardRequest : AcquiringRequest<AttachCardResponse>(ATTACH_CARD_METHO
         requestKey.validate(REQUEST_KEY)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (AttachCardResponse) -> Unit, onFailure: (Exception) -> Unit) {
         encodedCardData = cardData?.encode(publicKey)
         super.performRequest(this, AttachCardResponse::class.java, onSuccess, onFailure)

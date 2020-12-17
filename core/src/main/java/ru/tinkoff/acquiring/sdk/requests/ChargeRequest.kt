@@ -51,6 +51,9 @@ class ChargeRequest : AcquiringRequest<ChargeResponse>(CHARGE_METHOD) {
         rebillId.validate(REBILL_ID)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (ChargeResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, ChargeResponse::class.java, onSuccess, onFailure)
     }

@@ -25,7 +25,8 @@ import java.security.PublicKey
 
 /**
  * Класс позволяет конфигурировать SDK и осуществлять взаимодействие с Tinkoff Acquiring API.
- * Методы осуществляют обращение к API
+ * Методы осуществляют обращение к API.
+ * Вызов методов выполняется синхронно
  *
  * @param terminalKey ключ терминала. Выдается после подключения к Tinkoff Acquiring
  * @param password    пароль от терминала. Выдается вместе с terminalKey

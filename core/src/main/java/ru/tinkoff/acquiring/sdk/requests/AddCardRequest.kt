@@ -50,6 +50,9 @@ class AddCardRequest : AcquiringRequest<AddCardResponse>(ADD_CARD_METHOD) {
         checkType.validate(CHECK_TYPE)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (AddCardResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, AddCardResponse::class.java, onSuccess, onFailure)
     }

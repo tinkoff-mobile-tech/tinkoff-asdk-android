@@ -54,6 +54,9 @@ class Check3dsVersionRequest : AcquiringRequest<Check3dsVersionResponse>(CHECK_3
         encodedCardData.validate(CARD_DATA)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (Check3dsVersionResponse) -> Unit, onFailure: (Exception) -> Unit) {
         fillPaymentData()
         super.performRequest(this, Check3dsVersionResponse::class.java, onSuccess, onFailure)
