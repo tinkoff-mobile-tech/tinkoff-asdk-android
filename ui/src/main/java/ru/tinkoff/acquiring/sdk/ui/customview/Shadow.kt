@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.dpToPx
@@ -27,7 +28,7 @@ import ru.tinkoff.acquiring.sdk.ui.customview.editcard.dpToPx
 internal class Shadow(
         private val context: Context,
         isDarkMode: Boolean = false,
-        @ColorInt
+        @ColorRes
         var backgroundColor: Int = R.color.acq_colorCardBackground
 ) : Drawable() {
 

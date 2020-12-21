@@ -39,6 +39,7 @@ import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
@@ -67,6 +68,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     private var isDeletingDialogShowing = false
     private var isDeletingBottomContainerShowed = false
     private var isErrorOccurred = false
+    private var isCardListChanged = false
     private var deletingCard: Card? = null
     private var selectedCardId: String? = null
 
@@ -108,7 +110,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         if (requestCode == ATTACH_CARD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 loadCards()
-                setCardsChangedResult()
+                isCardListChanged = true
                 notificationDialog = NotificationDialog(this@SavedCardsActivity).apply {
                     show()
                     showSuccess(localization.addCardDialogSuccessCardAdded)
@@ -163,6 +165,16 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         }
     }
 
+    override fun setSuccessResult(result: AsdkResult) {
+        val intent = Intent()
+
+        val cardResult = result as CardResult
+        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, cardResult.cardId)
+        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, isCardListChanged)
+
+        setResult(Activity.RESULT_OK, intent)
+    }
+
     override fun setErrorResult(throwable: Throwable) {
         val intent = Intent()
         intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
@@ -213,9 +225,13 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         }
 
         val addCardTextView = findViewById<TextView>(R.id.acq_add_card)
-        addCardTextView.text = localization.addCardAttachmentTitle
-        addCardTextView.setOnClickListener {
-            openAttachActivity()
+        if (options.features.showOnlyRecurrentCards) {
+            addCardTextView.visibility = View.GONE
+        } else {
+            addCardTextView.text = localization.addCardAttachmentTitle
+            addCardTextView.setOnClickListener {
+                openAttachActivity()
+            }
         }
 
         val deleteCardTextView = findViewById<TextView>(R.id.acq_delete_card)
@@ -271,6 +287,8 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
             selectedCardId?.let { cardId ->
                 if (cardsList.any { it.cardId == cardId }) {
                     cardsAdapter.setSelectedCard(cardId)
+                } else {
+                    selectedCardId = null
                 }
             }
         } else {
@@ -283,19 +301,13 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
     private fun handleDeleteCardEvent(event: SingleEvent<CardStatus>) {
         event.getValueIfNotHandled()?.let {
             loadCards()
-            setCardsChangedResult()
+            isCardListChanged = true
             notificationDialog = NotificationDialog(this@SavedCardsActivity).apply {
                 show()
                 showSuccess(String.format(localization.addCardDialogSuccessCardDeleted!!,
                         cardsAdapter.getLastPanNumbers(deletingCard!!.pan!!)))
             }
         }
-    }
-
-    private fun setCardsChangedResult() {
-        val intent = Intent()
-        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, true)
-        setResult(Activity.RESULT_OK, intent)
     }
 
     private fun loadCards() {
@@ -316,6 +328,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
                     }
                 }
             }
+            else -> Unit
         }
     }
 

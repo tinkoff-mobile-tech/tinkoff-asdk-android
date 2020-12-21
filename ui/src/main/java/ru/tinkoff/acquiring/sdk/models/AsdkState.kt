@@ -45,6 +45,11 @@ class RejectedState(val cardId: String, val rejectedPaymentId: Long) : AsdkState
 class SelectCardAndPayState(val paymentId: Long) : AsdkState()
 
 /**
+ * Сценарий оплаты через Систему быстрых платежей
+ */
+object FpsState : AsdkState()
+
+/**
  * Состояние проверки 3DS. На экране пользователю будет предложено пройти подтверждение платежа
  * по технологии 3D-Secure
  */

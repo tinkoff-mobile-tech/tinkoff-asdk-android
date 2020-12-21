@@ -110,6 +110,9 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
         }
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (FinishAuthorizeResponse) -> Unit, onFailure: (Exception) -> Unit) {
         fillPaymentData()
         super.performRequest(this, FinishAuthorizeResponse::class.java, onSuccess, onFailure)

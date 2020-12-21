@@ -46,6 +46,9 @@ class FinishAuthorizeResponse(
         @SerializedName("Amount")
         val amount: Long? = null,
 
+        @SerializedName("RebillId")
+        val rebillId: String? = null,
+
         @SerializedName("ACSUrl")
         val acsUrl: String? = null,
 

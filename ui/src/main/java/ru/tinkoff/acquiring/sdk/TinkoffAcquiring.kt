@@ -23,6 +23,7 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
@@ -155,6 +156,28 @@ class TinkoffAcquiring(
             val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)
             fragment.startActivityForResult(intent, requestCode)
         }
+    }
+
+    /**
+     * Запуск SDK для оплаты через Систему быстрых платежей
+     *
+     * @param activity    контекст для запуска экрана из Activity
+     * @param options     настройки платежной сессии
+     * @param requestCode код для получения результата, по завершению работы SDK
+     */
+    fun payWithSbp(activity: Activity, options: PaymentOptions, requestCode: Int) {
+        openPaymentScreen(activity, options, requestCode, FpsState)
+    }
+
+    /**
+     * Запуск SDK для оплаты через Систему быстрых платежей
+     *
+     * @param fragment    контекст для запуска экрана из Fragment
+     * @param options     настройки платежной сессии
+     * @param requestCode код для получения результата, по завершению работы SDK
+     */
+    fun payWithSbp(fragment: Fragment, options: PaymentOptions, requestCode: Int) {
+        openPaymentScreen(fragment, options, requestCode, FpsState)
     }
 
     /**
@@ -362,6 +385,7 @@ class TinkoffAcquiring(
         const val EXTRA_ERROR = "extra_error"
         const val EXTRA_CARD_ID = "extra_card_id"
         const val EXTRA_PAYMENT_ID = "extra_payment_id"
+        const val EXTRA_REBILL_ID = "extra_rebill_id"
 
         const val EXTRA_CARD_LIST_CHANGED = "extra_cards_changed"
     }

@@ -51,6 +51,9 @@ class GetQrRequest : AcquiringRequest<GetQrResponse>(GET_QR_METHOD) {
         dataType.validate(DATA_TYPE)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (GetQrResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, GetQrResponse::class.java, onSuccess, onFailure)
     }

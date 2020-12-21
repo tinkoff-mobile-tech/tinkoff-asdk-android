@@ -23,11 +23,13 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
+import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
@@ -72,6 +74,8 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
         when (state) {
             is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data))
             is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
+            is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink))
+            is FpsState -> changeScreenState(FpsScreenState)
             else -> changeScreenState(PaymentScreenState)
         }
     }
@@ -121,7 +125,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
 
     fun startFpsPayment(paymentOptions: PaymentOptions) {
         changeScreenState(LoadingState)
-        paymentProcess.createSbpPaymentProcess(paymentOptions).subscribe(createPaymentListener()).start()
+        paymentProcess.createSbpPaymentProcess(paymentOptions).subscribe(paymentListener).start()
     }
 
     fun finishPayment(paymentId: Long, paymentSource: PaymentSource, email: String? = null) {
@@ -171,9 +175,9 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
     private fun createPaymentListener(): PaymentListener {
         return object : PaymentListenerAdapter() {
 
-            override fun onSuccess(paymentId: Long, cardId: String?) {
+            override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
                 changeScreenState(LoadedState)
-                paymentResult.value = PaymentResult(paymentId, cardId)
+                paymentResult.value = PaymentResult(paymentId, cardId, rebillId)
             }
 
             override fun onUiNeeded(state: AsdkState) {

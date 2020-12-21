@@ -43,6 +43,9 @@ class GetCardListRequest : AcquiringRequest<GetCardListResponse>(GET_CARD_LIST_M
         customerKey.validate(CUSTOMER_KEY)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (GetCardListResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, GetCardListResponse::class.java, onSuccess, onFailure)
     }

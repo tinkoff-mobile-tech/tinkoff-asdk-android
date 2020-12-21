@@ -50,6 +50,9 @@ class SubmitRandomAmountRequest : AcquiringRequest<SubmitRandomAmountResponse>(S
         amount.validate(AMOUNT)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (SubmitRandomAmountResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, SubmitRandomAmountResponse::class.java, onSuccess, onFailure)
     }

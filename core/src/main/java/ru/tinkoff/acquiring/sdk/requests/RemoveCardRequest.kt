@@ -50,6 +50,9 @@ class RemoveCardRequest : AcquiringRequest<RemoveCardResponse>(REMOVE_CARD_METHO
         customerKey.validate(CUSTOMER_KEY)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (RemoveCardResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, RemoveCardResponse::class.java, onSuccess, onFailure)
     }
