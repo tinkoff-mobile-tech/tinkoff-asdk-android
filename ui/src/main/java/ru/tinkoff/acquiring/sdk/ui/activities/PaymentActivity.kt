@@ -16,7 +16,6 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,13 +24,13 @@ import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
-import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState

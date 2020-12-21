@@ -190,7 +190,7 @@ open class PayableActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onSuccess(paymentId: Long, cardId: String?) {
+            override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
                 hideProgressDialog()
                 onSuccessPayment()
             }

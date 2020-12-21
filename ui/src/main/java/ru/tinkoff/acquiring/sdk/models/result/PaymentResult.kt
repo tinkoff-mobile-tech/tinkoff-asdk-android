@@ -21,5 +21,6 @@ package ru.tinkoff.acquiring.sdk.models.result
  */
 internal class PaymentResult(
         var paymentId: Long? = null,
-        var cardId: String? = null
+        var cardId: String? = null,
+        var rebillId: String? = null
 ): AsdkResult

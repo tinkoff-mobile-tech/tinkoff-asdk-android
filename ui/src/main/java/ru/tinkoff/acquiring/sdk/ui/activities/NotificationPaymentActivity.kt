@@ -256,7 +256,8 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
     private fun handleTinkoffPayResult(data: Intent?) {
         val paymentId = data?.getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, 0)
         val cardId = data?.getStringExtra(TinkoffAcquiring.EXTRA_CARD_ID)
-        handleSuccessResult(PaymentResult(paymentId, cardId))
+        val rebillId = data?.getStringExtra(TinkoffAcquiring.EXTRA_REBILL_ID)
+        handleSuccessResult(PaymentResult(paymentId, cardId, rebillId))
     }
 
     private fun tryToRemoveNotification() {
@@ -354,6 +355,7 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
             val intent = Intent()
             intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentResult.paymentId)
             intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, paymentResult.cardId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, paymentResult.rebillId)
             try {
                 resultIntent!!.send(this, Activity.RESULT_OK, intent)
             } catch (e: PendingIntent.CanceledException) {

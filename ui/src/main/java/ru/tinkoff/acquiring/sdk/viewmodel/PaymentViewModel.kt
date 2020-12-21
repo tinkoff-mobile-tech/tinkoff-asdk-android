@@ -175,9 +175,9 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
     private fun createPaymentListener(): PaymentListener {
         return object : PaymentListenerAdapter() {
 
-            override fun onSuccess(paymentId: Long, cardId: String?) {
+            override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
                 changeScreenState(LoadedState)
-                paymentResult.value = PaymentResult(paymentId, cardId)
+                paymentResult.value = PaymentResult(paymentId, cardId, rebillId)
             }
 
             override fun onUiNeeded(state: AsdkState) {

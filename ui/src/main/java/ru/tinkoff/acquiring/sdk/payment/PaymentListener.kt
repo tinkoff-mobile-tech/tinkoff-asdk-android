@@ -30,9 +30,11 @@ interface PaymentListener {
      *
      * @param paymentId уникальный идентификатор транзакции в системе банка
      * @param cardId    идентификатор карты в системе банка. Значение, отличное от null,
-     * возвращается в случае, если платеж совершался с использованием привязанной карты
+     *                  возвращается в случае, если платеж совершался с использованием привязанной карты
+     * @param rebillId  идентификатор рекуррентного платежа. Значение, отличное от null,
+     *                  возвращается в случае, если совершался рекуррентный платеж
      */
-    fun onSuccess(paymentId: Long, cardId: String? = null)
+    fun onSuccess(paymentId: Long, cardId: String? = null, rebillId: String? = null)
 
     /**
      * В процессе оплаты возникла необходимость показать экран Acquiring SDK.
@@ -59,7 +61,7 @@ interface PaymentListener {
  */
 abstract class PaymentListenerAdapter : PaymentListener {
 
-    override fun onSuccess(paymentId: Long, cardId: String?) = Unit
+    override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) = Unit
 
     override fun onUiNeeded(state: AsdkState) = Unit
 

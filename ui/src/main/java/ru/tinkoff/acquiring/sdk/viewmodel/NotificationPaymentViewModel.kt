@@ -40,9 +40,9 @@ internal class NotificationPaymentViewModel(handleErrorsInSdk: Boolean, sdk: Acq
 
         paymentProcess = PaymentProcess(sdk).createPaymentProcess(GooglePay(token), paymentOptions)
                 .subscribe(object : PaymentListenerAdapter() {
-                    override fun onSuccess(paymentId: Long, cardId: String?) {
+                    override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
                         changeScreenState(LoadedState)
-                        paymentResult.value = PaymentResult(paymentId, cardId)
+                        paymentResult.value = PaymentResult(paymentId, cardId, rebillId)
                     }
 
                     override fun onUiNeeded(state: AsdkState) {
