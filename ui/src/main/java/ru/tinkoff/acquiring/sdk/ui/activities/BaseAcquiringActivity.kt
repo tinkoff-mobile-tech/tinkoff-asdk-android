@@ -171,6 +171,11 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         finish()
     }
 
+    protected fun finishWithCancel() {
+        setResult(Activity.RESULT_CANCELED)
+        finish()
+    }
+
     protected fun resolveThemeMode(mode: DarkThemeMode) {
         AppCompatDelegate.setDefaultNightMode(
                 when (mode) {

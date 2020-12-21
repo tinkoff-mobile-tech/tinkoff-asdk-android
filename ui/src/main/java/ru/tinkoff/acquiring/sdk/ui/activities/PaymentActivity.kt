@@ -16,17 +16,25 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
+import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsScreenState
+import ru.tinkoff.acquiring.sdk.models.LoadState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
+import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedState
@@ -36,6 +44,7 @@ import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsDataCollectScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.fragments.PaymentFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
 
@@ -48,13 +57,20 @@ internal class PaymentActivity : TransparentActivity() {
     private lateinit var paymentOptions: PaymentOptions
     private var asdkState: AsdkState = DefaultState
 
+    private val progressDialog: NotificationDialog by lazy {
+        NotificationDialog(this).apply { showProgress() }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initViews()
-
         paymentOptions = options as PaymentOptions
         asdkState = paymentOptions.asdkState
+
+        initViews()
+        if (asdkState is BrowseFpsBankState || asdkState is FpsState) {
+            bottomContainer.visibility = View.GONE
+        }
 
         paymentViewModel = provideViewModel(PaymentViewModel::class.java) as PaymentViewModel
         observeLiveData()
@@ -74,12 +90,22 @@ internal class PaymentActivity : TransparentActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SBP_BANK_REQUEST_CODE) {
-            val screenState = paymentViewModel.screenStateLiveData.value
+            val screenState = paymentViewModel.screenChangeEventLiveData.value?.value
             if (screenState is BrowseFpsBankScreenState) {
                 paymentViewModel.requestPaymentState(screenState.paymentId)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun handleLoadState(loadState: LoadState) {
+        super.handleLoadState(loadState)
+        if (asdkState is FpsState) {
+            when (loadState) {
+                is LoadingState -> progressDialog.show()
+                is LoadedState -> progressDialog.dismiss()
+            }
+        }
     }
 
     private fun observeLiveData() {
@@ -103,6 +129,9 @@ internal class PaymentActivity : TransparentActivity() {
                 is ThreeDsDataCollectScreenState -> {
                     paymentViewModel.collectedDeviceData = ThreeDsActivity.collectData(this, screen.response)
                 }
+                is BrowseFpsBankScreenState -> openDeepLink(screen.deepLink)
+                is FpsScreenState -> paymentViewModel.startFpsPayment(paymentOptions)
+                is FpsBankFormShowedScreenState -> if (asdkState is FpsState) finishWithCancel()
                 else -> Unit
             }
         }
@@ -112,7 +141,7 @@ internal class PaymentActivity : TransparentActivity() {
         when (screenState) {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> showError(screenState.message)
-            is BrowseFpsBankScreenState -> openDeepLink(screenState.deepLink)
+            else -> Unit
         }
     }
 

@@ -20,16 +20,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center"
     android:padding="16dp">
-
-    <ImageView
-        android:id="@+id/iv_book_cover"
-        style="@style/BookCoverImageView"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/cover_1"
-        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -58,12 +50,11 @@
             android:textAppearance="@style/BookPriceText"
             tools:text="Цена: 100500 тенге" />
 
-        <TextView
-            android:id="@+id/tv_delete"
-            style="@style/GreyButton"
-            android:layout_marginTop="8dp"
-            android:text="@string/delete" />
-
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_delete"
+        style="@style/GreyButton"
+        android:text="@string/delete" />
 
 </LinearLayout>

@@ -100,7 +100,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">@style/BookTitle</item>
-        <item name="android:layout_marginTop">16dp</item>
     </style>
 
     <style name="BookAnnotationTextView" parent="BookListItem">
@@ -124,9 +123,8 @@
     <style name="PriceBottomLayer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_vertical</item>
+        <item name="android:gravity">center_vertical|right</item>
         <item name="android:background">?colorPrimary</item>
-        <item name="android:padding">16dp</item>
     </style>
 
     <style name="PriceWhiteTextView">

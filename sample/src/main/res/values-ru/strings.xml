@@ -33,7 +33,7 @@
     <string name="year">Год выпуска</string>
     <string name="book_details">ПОДРОБНЕЕ</string>
     <string name="book_price">%1$s ₽</string>
-    <string name="book_price_total">Итого: %1$s ₽</string>
+    <string name="book_price_total">%1$s ₽</string>
     <string name="add_to_cart">В корзину</string>
     <string name="buy_now">Купить</string>
     <string name="pay">Оплатить</string>
@@ -44,6 +44,8 @@
     <string name="payment_result_success">Покупка на сумму %1$s ₽\nпрошла успешно</string>
     <string name="attachment_result_success">Привязка карты с ID=%1$s\nпрошла успешно</string>
     <string name="version">Tinkoff Acquiring SDK v%1$s(%2$d)</string>
+    <string name="pay_with">Оплатить через</string>
+    <string name="buy_with_card">Оплатить по карте</string>
 
     <string name="payment_failed">Невозможно совершить оплату</string>
     <string name="payment_cancelled">Оплата была отменена</string>

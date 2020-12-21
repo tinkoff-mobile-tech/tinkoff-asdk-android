@@ -39,7 +39,7 @@ import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
  */
 internal open class TransparentActivity : BaseAcquiringActivity() {
 
-    private lateinit var bottomContainer: BottomContainer
+    protected lateinit var bottomContainer: BottomContainer
     private var toolbar: Toolbar? = null
 
     private lateinit var localization: LocalizationResources

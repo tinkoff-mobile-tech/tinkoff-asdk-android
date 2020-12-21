@@ -56,9 +56,15 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
         emptyCartTextView = findViewById(R.id.tv_empty_cart)
         listViewCartItems = findViewById(R.id.lv_cart_items)
 
-        buttonPay = findViewById(R.id.btn_pay)
+        buttonPay = findViewById(R.id.card_pay)
         buttonPay.setOnClickListener {
             initPayment()
+        }
+
+        val sbpButton = findViewById<View>(R.id.btn_fps_pay)
+        sbpButton.visibility = if (settings.isFpsEnabled) View.VISIBLE else View.GONE
+        sbpButton.setOnClickListener {
+            startSbpPayment()
         }
 
         checkCartEmpty()

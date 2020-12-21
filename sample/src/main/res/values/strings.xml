@@ -32,7 +32,7 @@
     <string name="year">Year</string>
     <string name="book_details">DETAILS</string>
     <string name="book_price">%1$s ₽</string>
-    <string name="book_price_total">Total: %1$s ₽</string>
+    <string name="book_price_total">%1$s ₽</string>
     <string name="add_to_cart">Add to cart</string>
     <string name="buy_now">Buy</string>
     <string name="pay">Pay</string>
@@ -43,6 +43,8 @@
     <string name="payment_result_success">Total payment for %1$s ₽\nhas been successful</string>
     <string name="attachment_result_success">Attachment card with ID=%1$s\nhas been successful</string>
     <string name="version">Tinkoff Acquiring SDK v%1$s(%2$d)</string>
+    <string name="pay_with">Pay with</string>
+    <string name="buy_with_card">Pay with card</string>
 
     <string name="payment_failed">Payment failed. Try later.</string>
     <string name="payment_cancelled">Payment canceled</string>

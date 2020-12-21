@@ -66,7 +66,6 @@ class CartListAdapter(
 
         private var textViewPrice: TextView = view.findViewById(R.id.tv_book_price)
         private var textViewTitle: TextView = view.findViewById(R.id.tv_book_title)
-        private var imageViewCover: ImageView = view.findViewById(R.id.iv_book_cover)
 
         private lateinit var cartEntry: Cart.CartEntry
 
@@ -81,7 +80,6 @@ class CartListAdapter(
 
         fun fillWith(cartEntry: Cart.CartEntry, book: Book) {
             this.cartEntry = cartEntry
-            imageViewCover.setImageResource(book.coverDrawableId)
             textViewTitle.text = book.title
             val count = cartEntry.count
             if (count > 1) {
