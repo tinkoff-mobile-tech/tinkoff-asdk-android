@@ -46,6 +46,7 @@
     <string name="version">Tinkoff Acquiring SDK v%1$s(%2$d)</string>
     <string name="pay_with">Оплатить через</string>
     <string name="buy_with_card">Оплатить по карте</string>
+    <string name="total_sum">Итого к оплате:</string>
 
     <string name="payment_failed">Невозможно совершить оплату</string>
     <string name="payment_cancelled">Оплата была отменена</string>

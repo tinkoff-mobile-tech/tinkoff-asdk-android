@@ -62,7 +62,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="Итого к оплате:"
+                    android:text="@string/total_sum"
                     android:textColor="@color/common_black" />
 
                 <TextView
