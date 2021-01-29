@@ -55,7 +55,7 @@
 
         <activity
             android:name=".ui.activities.NotificationPaymentActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
             android:theme="@style/AcquiringNotificationTransparentTheme" />
 
         <meta-data

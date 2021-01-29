@@ -43,6 +43,9 @@ class GetAddCardStateRequest : AcquiringRequest<GetAddCardStateResponse>(GET_ADD
         requestKey.validate(REQUEST_KEY)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (GetAddCardStateResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, GetAddCardStateResponse::class.java, onSuccess, onFailure)
     }

@@ -147,6 +147,9 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
         amount.validate(AMOUNT)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (InitResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, InitResponse::class.java, onSuccess, onFailure)
     }

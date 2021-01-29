@@ -148,6 +148,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
             is PaymentResult -> {
                 intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, result.paymentId)
                 intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
+                intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
             }
             is CardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
         }
@@ -168,6 +169,11 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
 
     protected open fun finishWithError(throwable: Throwable) {
         setErrorResult(throwable)
+        finish()
+    }
+
+    protected fun finishWithCancel() {
+        setResult(Activity.RESULT_CANCELED)
         finish()
     }
 

@@ -45,6 +45,9 @@ class GetStaticQrRequest : AcquiringRequest<GetStaticQrResponse>(GET_STATIC_QR_M
         data.validate(DATA)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (GetStaticQrResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, GetStaticQrResponse::class.java, onSuccess, onFailure)
     }

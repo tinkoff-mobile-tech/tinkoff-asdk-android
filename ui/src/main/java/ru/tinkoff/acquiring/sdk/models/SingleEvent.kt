@@ -19,7 +19,7 @@ package ru.tinkoff.acquiring.sdk.models
 /**
  * @author Mariya Chernyadieva
  */
-internal class SingleEvent<out T>(private val value: T) {
+internal class SingleEvent<out T>(val value: T) {
 
     private var hasBeenHandled = false
 

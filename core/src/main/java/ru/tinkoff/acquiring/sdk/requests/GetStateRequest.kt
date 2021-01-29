@@ -43,6 +43,9 @@ class GetStateRequest : AcquiringRequest<GetStateResponse>(GET_STATE_METHOD) {
         paymentId.validate(PAYMENT_ID)
     }
 
+    /**
+     * Синхронный вызов метода API
+     */
     override fun execute(onSuccess: (GetStateResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, GetStateResponse::class.java, onSuccess, onFailure)
     }

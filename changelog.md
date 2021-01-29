@@ -1,3 +1,14 @@
+## 2.3.0
+
+#### Fixed
+Fixed returned data from saved screen when card list was changed. Also disabled "Attach card" button,
+if screen was opened with recurrent cards only
+#### Changes
+#### Additions
+Added method for pay with Fast payment system from application, outside SDK payment screen
+Added returned param rebillId from FinishAuthorize request and returned from SDK
+Added support changed orientation for NotificationPaymentActivity
+
 ## 2.2.2
 
 #### Fixed

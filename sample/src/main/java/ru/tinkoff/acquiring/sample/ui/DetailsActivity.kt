@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -74,6 +75,12 @@ class DetailsActivity : PayableActivity() {
         val buttonBuy = findViewById<TextView>(R.id.btn_buy_now)
         buttonBuy.setOnClickListener {
             initPayment()
+        }
+
+        val sbpButton = findViewById<View>(R.id.btn_fps_pay)
+        sbpButton.visibility = if (settings.isFpsEnabled) View.VISIBLE else View.GONE
+        sbpButton.setOnClickListener {
+            startSbpPayment()
         }
 
         if (settings.isGooglePayEnabled) {

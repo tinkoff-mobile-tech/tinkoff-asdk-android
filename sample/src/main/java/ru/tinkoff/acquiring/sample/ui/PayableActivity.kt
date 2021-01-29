@@ -37,6 +37,7 @@ import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
+import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import java.util.*
@@ -124,6 +125,10 @@ open class PayableActivity : AppCompatActivity() {
         tinkoffAcquiring.openPaymentScreen(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
     }
 
+    protected fun startSbpPayment() {
+        tinkoffAcquiring.payWithSbp(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
+    }
+
     protected fun setupGooglePay() {
         val googlePayButton = findViewById<View>(R.id.btn_google_pay)
 
@@ -179,7 +184,13 @@ open class PayableActivity : AppCompatActivity() {
     private fun createPaymentListener(): PaymentListener {
         return object : PaymentListenerAdapter() {
 
-            override fun onSuccess(paymentId: Long, cardId: String?) {
+            override fun onStatusChanged(state: PaymentState?) {
+                if (state == PaymentState.STARTED) {
+                    showProgressDialog()
+                }
+            }
+
+            override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
                 hideProgressDialog()
                 onSuccessPayment()
             }
@@ -215,7 +226,6 @@ open class PayableActivity : AppCompatActivity() {
             if (token == null) {
                 showErrorDialog()
             } else {
-                showProgressDialog()
                 SampleApplication.paymentProcess = tinkoffAcquiring
                         .initPayment(token, createPaymentOptions())
                         .subscribe(paymentListener)

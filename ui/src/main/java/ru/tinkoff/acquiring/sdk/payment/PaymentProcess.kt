@@ -159,7 +159,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
     private fun sendToListener(state: PaymentState?) {
         this.state = state
         when (state) {
-            PaymentState.SUCCESS -> listener?.onSuccess(paymentResult!!.paymentId!!, paymentResult!!.cardId)
+            PaymentState.SUCCESS -> listener?.onSuccess(paymentResult!!.paymentId!!, paymentResult!!.cardId, paymentResult!!.rebillId)
             PaymentState.ERROR -> listener?.onError(error!!)
             PaymentState.CHARGE_REJECTED, PaymentState.THREE_DS_NEEDED, PaymentState.BROWSE_SBP_BANK -> listener?.onUiNeeded(sdkState!!)
             PaymentState.THREE_DS_DATA_COLLECTING -> {
@@ -267,7 +267,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
                         sdkState = ThreeDsState(threeDsData)
                         sendToListener(PaymentState.THREE_DS_NEEDED)
                     } else {
-                        paymentResult = PaymentResult(response.paymentId, cardId)
+                        paymentResult = PaymentResult(response.paymentId, cardId, response.rebillId)
                         sendToListener(PaymentState.SUCCESS)
                     }
                 })
@@ -283,7 +283,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
                 onSuccess = {
                     val payInfo = it.getPaymentInfo()
                     if (payInfo.isSuccess) {
-                        paymentResult = PaymentResult(it.paymentId, paymentSource.cardId)
+                        paymentResult = PaymentResult(it.paymentId, paymentSource.cardId, chargeRequest.rebillId)
                         sendToListener(PaymentState.SUCCESS)
                     } else {
                         error = IllegalStateException("Unknown charge state with error code: ${payInfo.errorCode}")

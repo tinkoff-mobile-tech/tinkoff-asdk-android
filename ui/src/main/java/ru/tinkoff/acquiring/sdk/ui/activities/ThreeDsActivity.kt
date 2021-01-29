@@ -214,8 +214,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
                 if (url.contains(it)) {
                     canceled = true
                     (view.context as Activity).run {
-                        setResult(Activity.RESULT_CANCELED)
-                        finish()
+                        finishWithCancel()
                     }
                 }
             }
