@@ -66,7 +66,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
                 finishWithError(data?.getSerializableExtra(ThreeDsActivity.ERROR_DATA) as Throwable)
             } else {
                 setResult(Activity.RESULT_CANCELED)
-                bottomContainer.hide()
+                closeActivity()
             }
         } else {
             supportFragmentManager
@@ -87,18 +87,18 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
 
     override fun onBackPressed() {
         if (bottomContainer.isEnabled) {
-            bottomContainer.hide()
+            closeActivity()
         }
     }
 
     override fun finishWithSuccess(result: AsdkResult) {
         setSuccessResult(result)
-        bottomContainer.hide()
+        closeActivity()
     }
 
     override fun finishWithError(throwable: Throwable) {
         setErrorResult(throwable)
-        bottomContainer.hide()
+        closeActivity()
     }
 
     override fun handleLoadState(loadState: LoadState) {
@@ -178,6 +178,14 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+    }
+
+    private fun closeActivity() {
+        if (viewType == EXPANDED_INDEX) {
+            bottomContainer.hide()
+        } else {
+            finish()
+        }
     }
 
     companion object {
