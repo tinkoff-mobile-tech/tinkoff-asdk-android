@@ -92,16 +92,25 @@ class DetailsActivity : PayableActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.details_menu, menu)
+
+        if (!settings.isFpsEnabled) {
+            menu.findItem(R.id.menu_action_dynamic_qr).isVisible = false
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_action_cart) {
-            CartActivity.start(this)
-            return true
+        return when (item.itemId) {
+            R.id.menu_action_cart -> {
+                CartActivity.start(this)
+                true
+            }
+            R.id.menu_action_dynamic_qr -> {
+                openDynamicQrScreen()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-
-        return super.onOptionsItemSelected(item)
     }
 
     private fun fillViews() {
