@@ -121,6 +121,7 @@
 
     <style name="AcquiringCardItemsStyle">
         <item name="android:padding">@dimen/acq_item_card_background_padding</item>
+        <item name="android:layout_marginTop">@dimen/acq_order_description_margin</item>
     </style>
 
     <style name="AcquiringEditCardStyle">
@@ -157,7 +158,6 @@
     <style name="AcquiringOrderDescriptionStyle">
         <item name="android:textSize">@dimen/acq_medium_text_size</item>
         <item name="android:maxLines">3</item>
-        <item name="android:layout_marginBottom">@dimen/acq_order_description_margin</item>
     </style>
 
     <style name="AcquiringEditTextStyle" parent="Widget.AppCompat.EditText">

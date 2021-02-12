@@ -17,39 +17,44 @@
 package ru.tinkoff.acquiring.sdk.ui.activities
 
 import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
-import ru.tinkoff.acquiring.sdk.models.LoadState
-import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.ScreenState
+import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.ui.fragments.DynamicQrFragment
 import ru.tinkoff.acquiring.sdk.ui.fragments.StaticQrFragment
-import ru.tinkoff.acquiring.sdk.viewmodel.StaticQrViewModel
+import ru.tinkoff.acquiring.sdk.viewmodel.QrViewModel
 
-internal class StaticQrActivity : TransparentActivity() {
+internal class QrCodeActivity : TransparentActivity() {
 
-    private lateinit var viewModel: StaticQrViewModel
+    private lateinit var viewModel: QrViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         initViews()
 
-        viewModel = provideViewModel(StaticQrViewModel::class.java) as StaticQrViewModel
+        viewModel = provideViewModel(QrViewModel::class.java) as QrViewModel
 
         if (savedInstanceState == null) {
-            showFragment(StaticQrFragment())
+            val isStaticQrPayment = options !is PaymentOptions
+            showFragment(if (isStaticQrPayment) StaticQrFragment() else DynamicQrFragment())
         }
         observeLiveData()
     }
 
     private fun observeLiveData() {
         viewModel.run {
-            loadStateLiveData.observe(this@StaticQrActivity, Observer { handleLoadState(it) })
-            screenStateLiveData.observe(this@StaticQrActivity, Observer { handleScreenState(it) })
+            screenStateLiveData.observe(this@QrCodeActivity, Observer { handleScreenState(it) })
+            paymentResultLiveData.observe(this@QrCodeActivity, Observer { handlePaymentResult(it) })
         }
+    }
+
+    private fun handlePaymentResult(paymentId: Long) {
+        finishWithSuccess(PaymentResult(paymentId))
     }
 
     private fun handleScreenState(screenState: ScreenState) {
@@ -62,15 +67,6 @@ internal class StaticQrActivity : TransparentActivity() {
             }
             is ErrorButtonClickedEvent -> viewModel.getStaticQr()
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
-        }
-    }
-
-    override fun handleLoadState(loadState: LoadState) {
-        when (loadState) {
-            is LoadingState -> {
-                progressBar?.visibility = View.VISIBLE
-                content?.visibility = View.INVISIBLE
-            }
         }
     }
 }

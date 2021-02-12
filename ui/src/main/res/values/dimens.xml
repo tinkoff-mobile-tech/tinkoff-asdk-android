@@ -59,6 +59,7 @@
     <dimen name="acq_email_hint_margin">16dp</dimen>
     <dimen name="acq_or_text_margin">14dp</dimen>
     <dimen name="acq_static_qr_bg_padding">16dp</dimen>
-    <dimen name="acq_static_qr_bottom_padding">8dp</dimen>
+    <dimen name="acq_qr_bottom_padding">8dp</dimen>
+    <dimen name="acq_qr_share_margin">16dp</dimen>
     <dimen name="acq_card_list_title_margin">24dp</dimen>
 </resources>

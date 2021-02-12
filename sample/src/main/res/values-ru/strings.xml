@@ -22,7 +22,8 @@
     <string name="activity_title_cart">Корзина</string>
     <string name="activity_title_attach_card">Привязать карту</string>
     <string name="activity_title_about">О программе</string>
-    <string name="activity_title_static_qr">Принять оплату QR</string>
+    <string name="activity_title_static_qr">Открыть статический QR код</string>
+    <string name="activity_title_dynamic_qr">Принять оплату QR</string>
     <string name="activity_title_settings">Настройки</string>
     <string name="activity_title_payment_result">Подтверждение</string>
     <string name="activity_title_saved_cards">Сохраненные карты</string>

@@ -24,4 +24,9 @@
         android:icon="@drawable/cart"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/menu_action_dynamic_qr"
+        android:title="@string/activity_title_dynamic_qr"
+        app:showAsAction="never"/>
+
 </menu>

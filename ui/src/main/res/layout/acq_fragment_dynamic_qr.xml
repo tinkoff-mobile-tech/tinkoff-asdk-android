@@ -25,7 +25,7 @@
     <LinearLayout
         android:id="@+id/acq_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="?acqViewHorizontalOffset"
         android:layout_marginRight="?acqViewHorizontalOffset"
         android:orientation="vertical"
@@ -43,22 +43,51 @@
             tools:ignore="UseCompoundDrawables">
 
             <TextView
-                android:id="@+id/acq_static_qr_tv"
-                style="?acqStaticQrMessageStyle"
+                android:id="@+id/acq_qr_tv_amount_label"
+                style="?acqScreenTitleStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="visible"
-                tools:text="Оплата по QR-коду" />
+                tools:text="Оплата на сумму" />
+
+            <TextView
+                android:id="@+id/acq_qr_tv_amount"
+                style="?acqScreenTitleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:visibility="visible"
+                tools:text="5 800,87 ₽" />
 
             <ImageView
                 android:id="@+id/acq_qr_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/acq_qr_share_margin"
                 app:srcCompat="@drawable/acq_ic_share"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/acq_qr_tv_order_title"
+            style="?acqOrderTitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="?acqViewHorizontalOffset"
+            android:layout_marginRight="?acqViewHorizontalOffset"
+            tools:text="Книга Том 1" />
+
+        <TextView
+            android:id="@+id/acq_qr_tv_order_description"
+            style="?acqOrderDescriptionStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="?acqViewHorizontalOffset"
+            android:layout_marginRight="?acqViewHorizontalOffset"
+            android:scrollbars="vertical"
+            tools:text="Описание"/>
 
         <include layout="@layout/acq_qr_webview" />
 

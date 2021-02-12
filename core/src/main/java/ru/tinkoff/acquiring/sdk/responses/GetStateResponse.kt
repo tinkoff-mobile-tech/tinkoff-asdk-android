@@ -25,6 +25,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
  * @param orderId   номер заказа в системе продавца
  * @param paymentId уникальный идентификатор транзакции в системе банка
  * @param status    статус транзакции
+ * @param amount    сумма заказа в копейках
  *
  * @author Mariya Chernyadieva
  */
@@ -36,6 +37,9 @@ class GetStateResponse(
         val paymentId: Long? = null,
 
         @SerializedName("Status")
-        val status: ResponseStatus? = null
+        val status: ResponseStatus? = null,
+
+        @SerializedName("Amount")
+        val amount: Long? = null
 
 ) : AcquiringResponse()

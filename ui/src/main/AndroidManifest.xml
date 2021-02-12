@@ -39,7 +39,7 @@
             android:theme="@style/AcquiringNfcTheme" />
 
         <activity
-            android:name=".ui.activities.StaticQrActivity"
+            android:name=".ui.activities.QrCodeActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme" />
 
