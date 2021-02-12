@@ -1,3 +1,12 @@
+## 2.3.1
+
+#### Fixed
+#### Changes
+Edited closing screens when acqScreenViewType
+#### Additions
+Added param Amount to GetState response
+Added screen with dynamic qr code
+
 ## 2.3.0
 
 #### Fixed
