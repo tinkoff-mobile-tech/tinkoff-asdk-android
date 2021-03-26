@@ -93,7 +93,7 @@ open class PayableActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode)
+            PAYMENT_REQUEST_CODE, DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode)
             GOOGLE_PAY_REQUEST_CODE -> handleGooglePayResult(resultCode, data)
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
@@ -123,6 +123,10 @@ open class PayableActivity : AppCompatActivity() {
 
     protected fun initPayment() {
         tinkoffAcquiring.openPaymentScreen(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
+    }
+
+    protected fun openDynamicQrScreen() {
+        tinkoffAcquiring.openDynamicQrScreen(this, createPaymentOptions(), DYNAMIC_QR_PAYMENT_REQUEST_CODE)
     }
 
     protected fun startSbpPayment() {
@@ -275,6 +279,7 @@ open class PayableActivity : AppCompatActivity() {
     companion object {
 
         const val PAYMENT_REQUEST_CODE = 1
+        const val DYNAMIC_QR_PAYMENT_REQUEST_CODE = 2
         const val GOOGLE_PAY_REQUEST_CODE = 5
 
         private const val STATE_PAYMENT_AMOUNT = "payment_amount"

@@ -212,13 +212,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             orderDescription.visibility = if (description.isNullOrBlank()) View.GONE else View.VISIBLE
             orderTitle.text = title
             orderDescription.text = description
-        }
-
-        orderDescription.movementMethod = ScrollingMovementMethod()
-        orderDescription.setOnTouchListener { _, _ ->
-            val canScroll = orderDescription.canScrollVertically(1) || orderDescription.canScrollVertically(-1)
-            orderDescription.parent.requestDisallowInterceptTouchEvent(canScroll)
-            false
+            orderDescription.resolveScroll()
         }
 
         setupCardsPager()
@@ -395,19 +389,6 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     private fun hideSystemKeyboard() {
         (requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager)
                 .hideSoftInputFromWindow(this.requireView().applicationWindowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-    }
-
-    private fun modifySpan(amount: String): CharSequence {
-        val amountSpan = SpannableString(amount)
-        val commaIndex = amount.indexOf(",")
-
-        return if (commaIndex < 0) {
-            amount
-        } else {
-            val coinsColor = ContextCompat.getColor(requireContext(), R.color.acq_colorCoins)
-            amountSpan.setSpan(ForegroundColorSpan(coinsColor), commaIndex + 1, amount.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            amountSpan
-        }
     }
 
     private fun showRejectedDialog() {

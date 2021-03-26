@@ -16,9 +16,17 @@
 
 package ru.tinkoff.acquiring.sdk.ui.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.ScrollingMovementMethod
+import android.text.style.ForegroundColorSpan
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
@@ -64,5 +72,28 @@ internal open class BaseAcquiringFragment : Fragment() {
             return false
         }
         return true
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    protected fun TextView.resolveScroll() {
+        movementMethod = ScrollingMovementMethod()
+        setOnTouchListener { _, _ ->
+            val canScroll = canScrollVertically(1) || canScrollVertically(-1)
+            parent.requestDisallowInterceptTouchEvent(canScroll)
+            false
+        }
+    }
+
+    protected fun modifySpan(amount: String): CharSequence {
+        val amountSpan = SpannableString(amount)
+        val commaIndex = amount.indexOf(",")
+
+        return if (commaIndex < 0) {
+            amount
+        } else {
+            val coinsColor = ContextCompat.getColor(requireContext(), R.color.acq_colorCoins)
+            amountSpan.setSpan(ForegroundColorSpan(coinsColor), commaIndex + 1, amount.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            amountSpan
+        }
     }
 }

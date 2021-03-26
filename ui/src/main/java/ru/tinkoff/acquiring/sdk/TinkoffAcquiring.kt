@@ -42,7 +42,7 @@ import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.StaticQrActivity
+import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 /**
@@ -122,7 +122,7 @@ class TinkoffAcquiring(
      * Запуск экрана Acquiring SDK для проведения оплаты
      *
      * @param activity    контекст для запуска экрана из Activity
-     * @param options     настройки платежной сессии
+     * @param options     настройки платежной сессии и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
      *                    с заданного состояния
@@ -142,7 +142,7 @@ class TinkoffAcquiring(
      * Запуск экрана Acquiring SDK для проведения оплаты
      *
      * @param fragment    контекст для запуска экрана из Fragment
-     * @param options     настройки платежной сессии
+     * @param options     настройки платежной сессии и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
      *                    с заданного состояния
@@ -184,7 +184,7 @@ class TinkoffAcquiring(
      * Запуск экрана Acquiring SDK для привязки новой карты
      *
      * @param activity    контекст для запуска экрана из Activity
-     * @param options     настройки привязки карты
+     * @param options     настройки привязки карты и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
     fun openAttachCardScreen(activity: Activity, options: AttachCardOptions, requestCode: Int) {
@@ -196,7 +196,7 @@ class TinkoffAcquiring(
      * Запуск экрана Acquiring SDK для привязки новой карты
      *
      * @param fragment    контекст для запуска экрана из Fragment
-     * @param options     настройки привязки карты
+     * @param options     настройки привязки карты и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
     fun openAttachCardScreen(fragment: Fragment, options: AttachCardOptions, requestCode: Int) {
@@ -239,6 +239,30 @@ class TinkoffAcquiring(
     /**
      * Запуск экрана с отображением QR кода для оплаты покупателем
      *
+     * @param activity    контекст для запуска экрана из Activity
+     * @param options     настройки платежной сессии и визуального отображения экрана
+     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
+     */
+    fun openDynamicQrScreen(activity: Activity, options: PaymentOptions, requestCode: Int) {
+        val intent = prepareIntent(activity, options, QrCodeActivity::class.java)
+        activity.startActivityForResult(intent, requestCode)
+    }
+
+    /**
+     * Запуск экрана с отображением QR кода для оплаты покупателем
+     *
+     * @param fragment    контекст для запуска экрана из Fragment
+     * @param options     настройки платежной сессии и визуального отображения экрана
+     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
+     */
+    fun openDynamicQrScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int) {
+        val intent = prepareIntent(fragment.requireContext(), options, QrCodeActivity::class.java)
+        fragment.startActivityForResult(intent, requestCode)
+    }
+
+    /**
+     * Запуск экрана с отображением QR кода для оплаты покупателем
+     *
      * @param activity        контекст для запуска экрана из Activity
      * @param featuresOptions конфигурация визуального отображения экрана
      * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
@@ -247,7 +271,7 @@ class TinkoffAcquiring(
         val options = BaseAcquiringOptions().apply {
             features = featuresOptions
         }
-        val intent = prepareIntent(activity, options, StaticQrActivity::class.java)
+        val intent = prepareIntent(activity, options, QrCodeActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -262,7 +286,7 @@ class TinkoffAcquiring(
         val options = BaseAcquiringOptions().apply {
             features = featuresOptions
         }
-        val intent = prepareIntent(fragment.requireContext(), options, StaticQrActivity::class.java)
+        val intent = prepareIntent(fragment.requireContext(), options, QrCodeActivity::class.java)
         fragment.startActivityForResult(intent, requestCode)
     }
 

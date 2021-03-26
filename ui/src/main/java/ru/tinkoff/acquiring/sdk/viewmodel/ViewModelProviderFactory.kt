@@ -29,7 +29,7 @@ internal class ViewModelProviderFactory(handleErrorsInSdk: Boolean, sdk: Acquiri
             BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(handleErrorsInSdk, sdk),
             PaymentViewModel::class.java to PaymentViewModel(handleErrorsInSdk, sdk),
             AttachCardViewModel::class.java to AttachCardViewModel(handleErrorsInSdk, sdk),
-            StaticQrViewModel::class.java to StaticQrViewModel(handleErrorsInSdk, sdk),
+            QrViewModel::class.java to QrViewModel(handleErrorsInSdk, sdk),
             ThreeDsViewModel::class.java to ThreeDsViewModel(handleErrorsInSdk, sdk),
             SavedCardsViewModel::class.java to SavedCardsViewModel(handleErrorsInSdk, sdk),
             NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(handleErrorsInSdk, sdk))
