@@ -47,5 +47,12 @@
   "Common.Message.TryAgain": "Повторить попытку",
   "Common.Cancel": "Отменить",
   "Notification.Message.Success": "Платеж выполнен успешно",
-  "Notification.Message.Error": "Ошибка оплаты"
+  "Notification.Message.Error": "Ошибка оплаты",
+  "SbpWidget.Title": "Выберите банк",
+  "SbpWidget.Description": "Мы откроем приложение этого банка\nдля подтверждения оплаты",
+  "SbpWidget.Button": "Продолжить",
+  "SbpWidget.AppsNotFound.Title": "Не найдено ни одного банковского приложения",
+  "SbpWidget.AppsNotFound.Description": "Для оплаты через СБП необходимо иметь установленными банковские приложения",
+  "SbpWidget.AppsNotFound.Button": "Понятно",
+  "SbpWidget.AppsNotFound.ButtonBrowser": "Информация на сайте сбп"
 }

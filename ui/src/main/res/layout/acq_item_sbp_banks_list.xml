@@ -16,55 +16,47 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:background="?android:selectableItemBackground"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical">
+    android:layout_width="match_parent">
 
     <LinearLayout
-        android:id="@+id/acq_item_card_background"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/acq_edit_card_height"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/acq_sbp_banks_list_item_height"
         android:layout_marginLeft="?acqViewHorizontalOffset"
         android:layout_marginRight="?acqViewHorizontalOffset"
-        android:gravity="center_vertical"
+        android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:padding="@dimen/acq_item_card_background_padding"
+        android:paddingBottom="@dimen/acq_sbp_banks_list_margin"
+        android:paddingTop="@dimen/acq_sbp_banks_list_margin"
         tools:ignore="UselessParent">
 
         <ImageView
-            android:id="@+id/acq_item_card_logo"
-            android:layout_width="@dimen/acq_item_card_logo_width"
-            android:layout_height="@dimen/acq_item_card_logo_height"
-            android:layout_marginEnd="12dp"
+            android:id="@+id/acq_item_sbp_bank_logo"
+            android:layout_height="@dimen/acq_notification_icon_size"
+            android:layout_marginEnd="@dimen/acq_sbp_banks_list_item_icon_margin"
+            android:layout_width="@dimen/acq_notification_icon_size"
             android:scaleType="fitCenter"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/acq_ic_visa_blue" />
+            tools:src="@drawable/acq_icon_done" />
 
         <TextView
-            android:id="@+id/acq_item_card_number"
+            android:id="@+id/acq_item_sbp_bank_number"
             style="?acqSavedCardsItemCardDataStyle"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            tools:text="Карта*0777" />
-
-        <TextView
-            android:id="@+id/acq_item_card_date"
-            style="?acqSavedCardsItemCardDataStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            tools:text="12/20" />
+            android:layout_width="0dp"
+            tools:text="Банк 1" />
 
         <ImageView
-            android:id="@+id/acq_item_card_more"
-            android:layout_width="@dimen/acq_icon_more_width"
-            android:layout_height="@dimen/acq_icon_more_height"
+            android:id="@+id/acq_item_sbp_bank_checkmark"
             android:layout_gravity="center"
-            android:tint="@color/acq_colorText"
-            android:layout_marginTop="1dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/acq_sbp_banks_list_margin"
+            android:layout_width="wrap_content"
             android:scaleType="centerInside"
-            android:src="@drawable/acq_icon_more"
+            android:src="@drawable/acq_ic_checkmark"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 </RelativeLayout>

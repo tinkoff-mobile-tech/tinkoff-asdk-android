@@ -47,5 +47,12 @@
   "Common.Message.TryAgain": "Try again",
   "Common.Cancel": "Cancel",
   "Notification.Message.Success": "Successful payment",
-  "Notification.Message.Error": "Payment error"
+  "Notification.Message.Error": "Payment error",
+  "SbpWidget.Title": "Select bank",
+  "SbpWidget.Description": "We will open the application of this bank\nto confirm payment",
+  "SbpWidget.Button": "Continue",
+  "SbpWidget.AppsNotFound.Title": "Banking applications not found",
+  "SbpWidget.AppsNotFound.Description": "To pay via FPS, you must have installed banking application",
+  "SbpWidget.AppsNotFound.Button": "OK",
+  "SbpWidget.AppsNotFound.ButtonBrowser": "Information on the FPS website"
 }

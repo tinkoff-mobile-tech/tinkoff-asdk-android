@@ -29,7 +29,7 @@
         <selector>
             <item android:state_enabled="false">
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/acq_colorButtonPressed" />
+                    <solid android:color="@color/acq_colorButtonDisable" />
                     <corners android:radius="@dimen/acq_button_radius" />
                 </shape>
             </item>

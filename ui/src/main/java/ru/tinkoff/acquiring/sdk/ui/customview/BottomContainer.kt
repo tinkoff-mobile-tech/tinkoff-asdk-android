@@ -37,7 +37,6 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.keyboard.SecureKeyboard
@@ -64,7 +63,7 @@ internal class BottomContainer @JvmOverloads constructor(
     private var layoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var velocityTracker: VelocityTracker? = null
     private var initAnimation: AnimatorSet? = null
-    private var scrollableView: TextView? = null
+    private var scrollableView: View? = null
     private var background: FrameLayout? = null
     private var isFullScreenOpened = false
     private var isScrollDisabled = true
@@ -108,7 +107,7 @@ internal class BottomContainer @JvmOverloads constructor(
 
         setBackgroundResource(R.drawable.acq_top_rounded_background)
 
-        scrollableView = findViewById(R.id.acq_payment_tv_order_description)
+        scrollableView = findViewById(R.id.acq_payment_tv_order_description) ?: findViewById(R.id.acq_sbp_banks_list)
         background = (this.parent as View).findViewById(R.id.acq_activity_background_layout)
         background?.apply {
             visibility = View.GONE
@@ -182,8 +181,8 @@ internal class BottomContainer @JvmOverloads constructor(
             }
             if (showInitAnimation) {
                 if (initialPositionY <= topPositionY) {
-                    openFullScreen()
-                    showInitAnimation = false
+                    initialPositionY = statusBarHeight
+                    show()
                 } else {
                     show()
                 }

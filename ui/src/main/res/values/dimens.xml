@@ -62,4 +62,11 @@
     <dimen name="acq_qr_bottom_padding">8dp</dimen>
     <dimen name="acq_qr_share_margin">16dp</dimen>
     <dimen name="acq_card_list_title_margin">24dp</dimen>
+    <dimen name="acq_sbp_banks_list_item_height">56dp</dimen>
+    <dimen name="acq_sbp_banks_list_margin">8dp</dimen>
+    <dimen name="acq_sbp_banks_list_item_icon_margin">16dp</dimen>
+    <dimen name="acq_sbp_apps_not_found_margin">30dp</dimen>
+    <dimen name="acq_sbp_apps_not_found_browser_button_margin">28dp</dimen>
+    <dimen name="acq_sbp_apps_not_found_button_margin">35dp</dimen>
+    <dimen name="acq_sbp_apps_not_found_desc_margin">8dp</dimen>
 </resources>

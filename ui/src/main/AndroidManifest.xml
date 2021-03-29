@@ -58,6 +58,11 @@
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringNotificationTransparentTheme" />
 
+        <activity
+            android:name=".ui.activities.BankChooseActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringNotificationTransparentTheme" />
+
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
