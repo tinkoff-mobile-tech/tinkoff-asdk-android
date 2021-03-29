@@ -19,7 +19,7 @@ package ru.tinkoff.acquiring.sdk.requests
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.utils.CryptoUtils
-import ru.tinkoff.acquiring.sdk.utils.Disposable
+import ru.tinkoff.acquiring.sdk.utils.Request
 import java.security.PublicKey
 import java.util.*
 
@@ -28,7 +28,7 @@ import java.util.*
  *
  * @author Mariya Chernyadieva
  */
-abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Disposable {
+abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Request<R> {
 
     internal lateinit var terminalKey: String
     internal lateinit var password: String
@@ -43,8 +43,6 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
 
 
     protected abstract fun validate()
-
-    abstract fun execute(onSuccess: (R) -> Unit, onFailure: (Exception) -> Unit)
 
     override fun isDisposed(): Boolean {
         return disposed

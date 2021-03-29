@@ -23,13 +23,13 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
-import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsScreenState
+import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
@@ -74,7 +74,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
         when (state) {
             is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data))
             is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
-            is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink))
+            is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
             is FpsState -> changeScreenState(FpsScreenState)
             else -> changeScreenState(PaymentScreenState)
         }
@@ -198,7 +198,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
                     }
                     is BrowseFpsBankState -> {
                         changeScreenState(LoadedState)
-                        changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink))
+                        changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
                     }
                 }
             }

@@ -22,7 +22,7 @@
     <color name="acq_colorBrandGray">#3e4757</color>
     <color name="acq_colorButton">#FFDD2D</color>
     <color name="acq_colorButtonPressed">#55ffdd2d</color>
-    <color name="acq_colorButtonDisable">#cccccc</color>
+    <color name="acq_colorButtonDisable">#F6F7F8</color>
     <color name="acq_colorTitle">#000000</color>
     <color name="acq_colorText">#333333</color>
     <color name="acq_colorHint">#C7C9CC</color>

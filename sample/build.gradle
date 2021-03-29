@@ -13,7 +13,6 @@ android {
         targetSdkVersion compileSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
-
     }
     buildTypes {
         release {

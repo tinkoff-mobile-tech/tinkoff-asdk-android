@@ -38,6 +38,8 @@
 
     <attr name="acqSubmitAmountDescriptionStyle" format="reference" />
     <attr name="acqSubmitAmountEditTextStyle" format="reference" />
+    <attr name="acqSbpBanksNotFoundTitle" format="reference" />
+    <attr name="acqSbpBanksDescriptions" format="reference" />
 
     <attr name="acqViewHorizontalOffset" format="dimension" />
 

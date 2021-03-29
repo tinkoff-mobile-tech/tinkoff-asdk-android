@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,60 +14,66 @@
   ~  limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/acq_content"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="?acqViewHorizontalOffset"
-        android:layout_marginRight="?acqViewHorizontalOffset"
-        android:focusableInTouchMode="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/acq_attach_ll_title_header"
-            style="?acqScreenTitleLayoutStyle"
+            android:id="@+id/acq_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="?acqViewHorizontalOffset"
             android:layout_marginRight="?acqViewHorizontalOffset"
-            android:orientation="horizontal"
-            android:visibility="visible">
+            android:focusableInTouchMode="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/acq_attach_tv_label"
-                style="?acqScreenTitleStyle"
+            <LinearLayout
+                android:id="@+id/acq_attach_ll_title_header"
+                style="?acqScreenTitleLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="?acqViewHorizontalOffset"
+                android:layout_marginRight="?acqViewHorizontalOffset"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/acq_attach_tv_label"
+                    style="?acqScreenTitleStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    tools:text="Привязать карту" />
+
+            </LinearLayout>
+
+            <include layout="@layout/acq_item_card" />
+
+            <Button
+                android:id="@+id/acq_attach_btn_attach"
+                style="?acqButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="?acqViewHorizontalOffset"
+                android:layout_marginRight="?acqViewHorizontalOffset"
                 android:visibility="visible"
-                tools:text="Привязать карту" />
+                tools:text="Attach" />
 
         </LinearLayout>
 
-        <include layout="@layout/acq_item_card" />
+        <include
+            layout="@layout/acq_error_message_with_button"
+            tools:visibility="gone" />
 
-        <Button
-            android:id="@+id/acq_attach_btn_attach"
-            style="?acqButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="?acqViewHorizontalOffset"
-            android:layout_marginRight="?acqViewHorizontalOffset"
-            android:visibility="visible"
-            tools:text="Attach" />
-
-    </LinearLayout>
-
-    <include
-        layout="@layout/acq_error_message_with_button"
-        tools:visibility="gone" />
-
-    <include
-        layout="@layout/acq_progress_bar"
-        tools:visibility="visible" />
-</FrameLayout>
+        <include
+            layout="@layout/acq_progress_bar"
+            tools:visibility="visible" />
+    </FrameLayout>
+</ScrollView>

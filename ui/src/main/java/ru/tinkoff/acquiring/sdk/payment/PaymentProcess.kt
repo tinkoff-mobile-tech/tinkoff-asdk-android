@@ -20,8 +20,11 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
+import ru.tinkoff.acquiring.sdk.models.LoadedState
+import ru.tinkoff.acquiring.sdk.models.NspkRequest
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
@@ -173,7 +176,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
     private fun finishPayment(paymentId: Long, paymentSource: PaymentSource, email: String? = null) {
         when {
-            paymentSource is AttachedCard && initRequest?.recurrent == true && paymentSource.rebillId != null -> {
+            paymentSource is AttachedCard && paymentSource.rebillId != null -> {
                 callChargeRequest(paymentId, paymentSource)
             }
             paymentSource is GooglePay || state == PaymentState.THREE_DS_V2_REJECTED -> {
@@ -210,8 +213,16 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
         coroutine.call(request,
                 onSuccess = { response ->
-                    sdkState = BrowseFpsBankState(paymentId, response.data!!)
-                    sendToListener(PaymentState.BROWSE_SBP_BANK)
+                    coroutine.call(NspkRequest(),
+                            onSuccess = { nspk ->
+                                sdkState = BrowseFpsBankState(paymentId, response.data!!, nspk.banks)
+                                sendToListener(PaymentState.BROWSE_SBP_BANK)
+                            },
+                            onFailure = {
+                                sdkState = BrowseFpsBankState(paymentId, response.data!!, null)
+                                sendToListener(PaymentState.BROWSE_SBP_BANK)
+                            })
+
                 }
         )
     }

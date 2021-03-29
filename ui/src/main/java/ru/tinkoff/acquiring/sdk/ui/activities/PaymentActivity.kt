@@ -21,6 +21,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
+import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
@@ -88,13 +90,31 @@ internal class PaymentActivity : TransparentActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == SBP_BANK_REQUEST_CODE) {
-            val screenState = paymentViewModel.screenChangeEventLiveData.value?.value
-            if (screenState is BrowseFpsBankScreenState) {
-                paymentViewModel.requestPaymentState(screenState.paymentId)
+        when (requestCode) {
+            SBP_BANK_REQUEST_CODE -> {
+                val screenState = paymentViewModel.screenChangeEventLiveData.value?.value
+                if (screenState is BrowseFpsBankScreenState) {
+                    paymentViewModel.requestPaymentState(screenState.paymentId)
+                }
+            }
+            SBP_BANK_CHOOSE_REQUEST_CODE -> {
+                if (data == null && asdkState is FpsState) {
+                    finishWithCancel()
+                } else {
+                    data?.getStringExtra(EXTRA_SBP_BANK_PACKAGE_NAME)?.let { packageName ->
+                        openDeepLinkInBank(packageName)
+                    }
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (progressDialog.isShowing) {
+            progressDialog.dismiss()
+        }
     }
 
     override fun handleLoadState(loadState: LoadState) {
@@ -128,9 +148,8 @@ internal class PaymentActivity : TransparentActivity() {
                 is ThreeDsDataCollectScreenState -> {
                     paymentViewModel.collectedDeviceData = ThreeDsActivity.collectData(this, screen.response)
                 }
-                is BrowseFpsBankScreenState -> openDeepLink(screen.deepLink)
+                is BrowseFpsBankScreenState -> openBankChooser(screen.deepLink, screen.banks)
                 is FpsScreenState -> paymentViewModel.startFpsPayment(paymentOptions)
-                is FpsBankFormShowedScreenState -> if (asdkState is FpsState) finishWithCancel()
                 else -> Unit
             }
         }
@@ -139,14 +158,38 @@ internal class PaymentActivity : TransparentActivity() {
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
-            is ErrorScreenState -> showError(screenState.message)
+            is ErrorScreenState -> {
+                if (asdkState is FpsState) {
+                    finishWithError(AcquiringSdkException(NetworkException(screenState.message)))
+                } else {
+                    showError(screenState.message)
+                }
+            }
+            is FpsBankFormShowedScreenState -> if (asdkState is FpsState) finishWithCancel()
             else -> Unit
         }
     }
 
-    private fun openDeepLink(deepLink: String) {
-        val intent = Intent(Intent.ACTION_VIEW)
+    private fun openBankChooser(deepLink: String, banks: Set<Any?>?) {
+        var intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(deepLink)
+
+        if (!banks.isNullOrEmpty()) {
+            val activities = packageManager.queryIntentActivities(intent, 0)
+            val supportedBanks = activities.filter { banks.contains(it.activityInfo.packageName) }
+                    .map { it.activityInfo.packageName }
+            intent = BankChooseActivity.createIntent(this, options, supportedBanks, deepLink)
+            startActivityForResult(intent, SBP_BANK_CHOOSE_REQUEST_CODE)
+        } else {
+            startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
+        }
+    }
+
+    private fun openDeepLinkInBank(packageName: String) {
+        val payload = (paymentViewModel.screenChangeEventLiveData.value?.value as BrowseFpsBankScreenState).deepLink
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(payload)
+        intent.setPackage(packageName)
         startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
     }
 
@@ -159,5 +202,8 @@ internal class PaymentActivity : TransparentActivity() {
 
     companion object {
         private const val SBP_BANK_REQUEST_CODE = 112
+        private const val SBP_BANK_CHOOSE_REQUEST_CODE = 113
+
+        internal const val EXTRA_SBP_BANK_PACKAGE_NAME = "sbp_bank_package_name"
     }
 }

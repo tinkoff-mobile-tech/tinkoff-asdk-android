@@ -1,0 +1,50 @@
+<!--
+  ~ Copyright © 2020 Tinkoff Bank
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="180dp"
+    android:viewportWidth="180"
+    android:viewportHeight="180">
+    <path
+        android:pathData="M67.377,155.679L52.25,153.497C47.712,152.837 44.554,148.622 45.207,144.084L51.297,101.897C51.364,101.387 51.845,101.027 52.355,101.102C52.865,101.177 53.224,101.649 53.149,102.159L47.067,144.354C46.557,147.872 49.002,151.134 52.512,151.637L68.255,153.909L67.377,155.679ZM70.88,148.622L66.687,148.022C66.177,147.947 65.817,147.467 65.892,146.957C65.967,146.447 66.439,146.087 66.957,146.162L71.757,146.859L70.88,148.622ZM137.817,32.642L138.882,25.299C139.385,21.789 136.947,18.519 133.429,18.017L73.04,9.309C69.53,8.799 66.267,11.237 65.757,14.754L61.79,42.287C61.715,42.797 61.235,43.157 60.725,43.082C60.215,43.007 59.854,42.527 59.929,42.017L63.905,14.484C64.557,9.947 68.772,6.797 73.31,7.449L133.7,16.157C138.237,16.817 141.387,21.032 140.734,25.569L139.685,32.867L137.817,32.642Z"
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M139.674,32.853L149.266,33.993L129.143,172.45L63.316,163.818L67.366,155.665L112.621,162.19C117.158,162.842 121.381,159.693 122.033,155.155L139.674,32.853ZM137.806,32.627L120.174,154.885C119.671,158.403 116.409,160.84 112.891,160.338L68.243,153.895L70.868,148.608L95.986,152.23C96.504,152.305 96.976,151.953 97.051,151.443C97.126,150.925 96.773,150.452 96.256,150.377L71.746,146.845L128.978,31.578L137.806,32.627Z"
+        android:fillColor="#FFDC2D"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M89.553,21.255L107.112,23.788C107.624,23.861 108.1,23.505 108.174,22.997C108.247,22.489 107.891,22.013 107.379,21.939L89.82,19.407C89.308,19.333 88.832,19.689 88.758,20.197C88.685,20.705 89.041,21.181 89.553,21.255Z"
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M113.02,24.639L115.198,24.953C115.71,25.027 116.186,24.67 116.259,24.163C116.332,23.655 115.977,23.178 115.465,23.105L113.286,22.791C112.774,22.717 112.299,23.073 112.225,23.581C112.152,24.089 112.508,24.565 113.02,24.639Z"
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M57.726,61.877L73.048,46.607L82.633,56.222L67.348,71.462L82.633,86.702L73.048,96.324L57.726,81.054L42.404,96.324L32.818,86.702L48.103,71.462L32.818,56.222L42.404,46.607L57.726,61.877Z"
+        android:fillColor="#FFDC2D"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M34.104,64.188C34.503,63.788 35.151,63.787 35.551,64.186L42.12,70.733C42.313,70.925 42.421,71.186 42.421,71.457C42.421,71.729 42.313,71.99 42.121,72.182L32.836,81.444C32.436,81.843 31.788,81.842 31.39,81.442C30.991,81.042 30.992,80.395 31.391,79.996L39.95,71.458L34.107,65.634C33.707,65.236 33.706,64.588 34.104,64.188Z"
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"/>
+    <path
+        android:pathData="M84.254,60.606C83.855,60.206 83.208,60.206 82.808,60.604L72.66,70.729C72.468,70.921 72.36,71.182 72.36,71.453C72.36,71.725 72.468,71.985 72.66,72.177L77.445,76.955C77.845,77.354 78.492,77.353 78.891,76.953C79.29,76.554 79.29,75.906 78.89,75.507L74.83,71.454L84.253,62.053C84.653,61.653 84.653,61.006 84.254,60.606Z"
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"/>
+</vector>

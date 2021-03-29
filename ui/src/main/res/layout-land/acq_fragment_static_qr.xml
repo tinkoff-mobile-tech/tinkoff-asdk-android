@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,60 +14,65 @@
   ~  limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/acq_qr_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/acq_content"
+    <FrameLayout
+        android:id="@+id/acq_qr_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="?acqViewHorizontalOffset"
-        android:layout_marginRight="?acqViewHorizontalOffset"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/acq_qr_bottom_padding">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            style="?acqScreenTitleLayoutStyle"
+            android:id="@+id/acq_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="?acqViewHorizontalOffset"
             android:layout_marginRight="?acqViewHorizontalOffset"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            tools:ignore="UseCompoundDrawables">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/acq_qr_bottom_padding">
 
-            <TextView
-                android:id="@+id/acq_static_qr_tv"
-                style="?acqStaticQrMessageStyle"
-                android:layout_width="0dp"
+            <LinearLayout
+                style="?acqScreenTitleLayoutStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginLeft="?acqViewHorizontalOffset"
+                android:layout_marginRight="?acqViewHorizontalOffset"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:visibility="visible"
-                tools:text="Оплата по QR-коду" />
+                tools:ignore="UseCompoundDrawables">
 
-            <ImageView
-                android:id="@+id/acq_qr_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/acq_ic_share"
-                tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/acq_static_qr_tv"
+                    style="?acqStaticQrMessageStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible"
+                    tools:text="Оплата по QR-коду" />
+
+                <ImageView
+                    android:id="@+id/acq_qr_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/acq_ic_share"
+                    tools:ignore="ContentDescription" />
+
+            </LinearLayout>
+
+            <include layout="@layout/acq_qr_webview" />
 
         </LinearLayout>
 
-        <include layout="@layout/acq_qr_webview" />
+        <include
+            layout="@layout/acq_error_message_with_button"
+            tools:visibility="gone" />
 
-    </LinearLayout>
-
-    <include
-        layout="@layout/acq_error_message_with_button"
-        tools:visibility="gone" />
-
-    <include
-        layout="@layout/acq_progress_bar"
-        tools:visibility="visible" />
-</FrameLayout>
+        <include
+            layout="@layout/acq_progress_bar"
+            tools:visibility="visible" />
+    </FrameLayout>
+</ScrollView>
