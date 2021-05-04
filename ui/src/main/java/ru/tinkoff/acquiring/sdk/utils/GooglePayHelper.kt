@@ -28,7 +28,9 @@ import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import org.json.JSONArray
 import org.json.JSONObject
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
+import java.lang.IllegalStateException
 import java.math.BigDecimal
 
 /**
@@ -117,9 +119,13 @@ class GooglePayHelper(private val params: GooglePayParams) {
     }
 
     private fun getAllowedCardAuthMethods(): JSONArray {
-        return JSONArray()
-                .put("PAN_ONLY")
-                .put("CRYPTOGRAM_3DS")
+        check(params.cardAuthMethods.isNotEmpty()) { "Param cardAuthMethods can not be empty" }
+
+        val array = JSONArray()
+        params.cardAuthMethods.forEach {
+            array.put(it.name)
+        }
+        return array
     }
 
     private fun getAllowedCardNetworks(): JSONArray {

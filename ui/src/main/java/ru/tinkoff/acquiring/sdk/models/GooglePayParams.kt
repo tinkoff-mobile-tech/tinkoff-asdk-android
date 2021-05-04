@@ -30,15 +30,17 @@ import java.io.Serializable
  *                          установив isAddressRequired = true
  * @param environment       Значение параметра указывает, в каком режиме работает сервер –
  *                          рабочем или тестовом. По-умолчанию задан тестовый режим
+ * @param cardAuthMethods   Методы аутентификации карты [CardAuthMethod]
  *
  * @author Mariya Chernyadieva
  */
-class GooglePayParams(
+class GooglePayParams @JvmOverloads constructor(
         val terminalKey: String,
         val isAddressRequired: Boolean = false,
         val isPhoneRequired: Boolean = false,
         @GooglePayEnvironment
-        val environment: Int = WalletConstants.ENVIRONMENT_TEST
+        val environment: Int = WalletConstants.ENVIRONMENT_TEST,
+        val cardAuthMethods: List<CardAuthMethod> = listOf(CardAuthMethod.PAN_ONLY, CardAuthMethod.CRYPTOGRAM_3DS)
 ) : Serializable {
 
     companion object {
@@ -48,4 +50,17 @@ class GooglePayParams(
     @IntDef(WalletConstants.ENVIRONMENT_TEST, WalletConstants.ENVIRONMENT_PRODUCTION)
     @Retention(AnnotationRetention.SOURCE)
     annotation class GooglePayEnvironment
+
+    /**
+     * Методы аутентификации карты.
+     *
+     * PAN_ONLY - Метод аутентификации связан с платежными картами, хранящимися в учетной записи Google покупателя.
+     * Платежные данные содержат номер лицевого счета (PAN) с указанием месяца и года окончания
+     *
+     * CRYPTOGRAM_3DS - Метод аутентификации связан с картами, хранящимися как токены устройств Android.
+     * Данные возвращенного платежа включают криптограмму 3-D Secure (3DS), созданную на устройстве
+     */
+    enum class CardAuthMethod {
+        PAN_ONLY, CRYPTOGRAM_3DS
+    }
 }

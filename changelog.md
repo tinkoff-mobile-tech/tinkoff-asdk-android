@@ -1,3 +1,10 @@
+## 2.3.3
+
+#### Fixed
+#### Changes
+#### Additions
+Added the ability to specify allowed card auth methods for Google Pay
+
 ## 2.3.2
 
 #### Fixed
