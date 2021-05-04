@@ -169,4 +169,25 @@ internal class LocalizationResources {
 
     @SerializedName("Notification.Message.Error")
     var notificationMessageError: String? = null
+
+    @SerializedName("SbpWidget.Title")
+    var sbpWidgetTitle: String? = null
+
+    @SerializedName("SbpWidget.Description")
+    var sbpWidgetDescription: String? = null
+
+    @SerializedName("SbpWidget.Button")
+    var sbpWidgetButton: String? = null
+
+    @SerializedName("SbpWidget.AppsNotFound.Title")
+    var sbpWidgetAppsNotFoundTitle: String? = null
+
+    @SerializedName("SbpWidget.AppsNotFound.Description")
+    var sbpWidgetAppsNotFoundDescription: String? = null
+
+    @SerializedName("SbpWidget.AppsNotFound.Button")
+    var sbpWidgetAppsNotFoundButton: String? = null
+
+    @SerializedName("SbpWidget.AppsNotFound.ButtonBrowser")
+    var sbpWidgetAppsNotFoundButtonBrowser: String? = null
 }

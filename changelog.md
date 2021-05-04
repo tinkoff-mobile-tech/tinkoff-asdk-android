@@ -1,3 +1,10 @@
+## 2.3.2
+
+#### Fixed
+#### Changes
+#### Additions
+Added chooser widget for banks with support FPS
+
 ## 2.3.1
 
 #### Fixed

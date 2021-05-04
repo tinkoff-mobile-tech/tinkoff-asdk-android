@@ -16,10 +16,13 @@
 
 package ru.tinkoff.acquiring.sdk.utils
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
-import ru.tinkoff.acquiring.sdk.requests.AcquiringRequest
-import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * @author Mariya Chernyadieva
@@ -31,7 +34,7 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
     private val coroutineScope = CoroutineScope(Dispatchers.Main + coroutineExceptionHandler + job)
     private val disposableSet = hashSetOf<Disposable>()
 
-    fun <R : AcquiringResponse> call(request: AcquiringRequest<R>, onSuccess: (R) -> Unit, onFailure: ((Exception) -> Unit)? = null) {
+    fun <R> call(request: Request<R>, onSuccess: (R) -> Unit, onFailure: ((Exception) -> Unit)? = null) {
         disposableSet.add(request)
 
         doOnBackground {

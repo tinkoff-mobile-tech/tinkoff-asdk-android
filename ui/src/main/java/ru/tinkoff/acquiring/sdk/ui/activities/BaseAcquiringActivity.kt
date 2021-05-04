@@ -42,8 +42,10 @@ import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
+import ru.tinkoff.acquiring.sdk.models.result.BankChooseResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_PACKAGE_NAME
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
 
 /**
@@ -151,6 +153,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                 intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
             }
             is CardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
+            is BankChooseResult -> intent.putExtra(EXTRA_SBP_BANK_PACKAGE_NAME, result.packageName)
         }
 
         setResult(Activity.RESULT_OK, intent)

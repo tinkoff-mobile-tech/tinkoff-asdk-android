@@ -40,7 +40,6 @@ import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
 internal open class TransparentActivity : BaseAcquiringActivity() {
 
     protected lateinit var bottomContainer: BottomContainer
-    private var toolbar: Toolbar? = null
 
     private lateinit var localization: LocalizationResources
     private var showBottomView = true
@@ -106,7 +105,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         bottomContainer.isEnabled = loadState is LoadedState
     }
 
-    protected fun initViews() {
+    protected fun initViews(fullScreenMode: Boolean = false) {
         val optionsTheme = options.features.theme
         var activityTheme = R.style.AcquiringTheme
         if (optionsTheme != 0) activityTheme = optionsTheme
@@ -117,7 +116,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
             getInt(FULL_SCREEN_INDEX, EXPANDED_INDEX)
         }
 
-        if (viewType == FULL_SCREEN_INDEX && activityTheme == R.style.AcquiringTheme) {
+        if ((viewType == FULL_SCREEN_INDEX || fullScreenMode) && activityTheme == R.style.AcquiringTheme) {
             setTheme(R.style.AcquiringTheme_Base)
         }
 
@@ -138,19 +137,19 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
             }
         })
 
-        showBottomView = showBottomView && viewType == EXPANDED_INDEX && orientation == Configuration.ORIENTATION_PORTRAIT
+        showBottomView = showBottomView && (viewType == EXPANDED_INDEX && !fullScreenMode) && orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            when (viewType) {
-                EXPANDED_INDEX -> {
+            when  {
+                viewType == EXPANDED_INDEX && !fullScreenMode -> {
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     setupTranslucentStatusBar()
                 }
-                FULL_SCREEN_INDEX -> setupToolbar()
+                viewType == FULL_SCREEN_INDEX || fullScreenMode -> setupToolbar()
             }
         }
 
-        bottomContainer.containerState = if (viewType == EXPANDED_INDEX && orientation == Configuration.ORIENTATION_PORTRAIT) {
+        bottomContainer.containerState = if ((viewType == EXPANDED_INDEX && !fullScreenMode) && orientation == Configuration.ORIENTATION_PORTRAIT) {
             BottomContainer.STATE_SHOWED
         } else {
             BottomContainer.STATE_FULLSCREEN
@@ -173,15 +172,15 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     }
 
     private fun setupToolbar() {
-        toolbar = findViewById(R.id.acq_toolbar)
-        toolbar?.visibility = View.VISIBLE
+        val toolbar = findViewById<Toolbar>(R.id.acq_toolbar)
+        toolbar.visibility = View.VISIBLE
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 
     private fun closeActivity() {
-        if (viewType == EXPANDED_INDEX) {
+        if (viewType == EXPANDED_INDEX && bottomContainer.containerState != BottomContainer.STATE_FULLSCREEN) {
             bottomContainer.hide()
         } else {
             finish()

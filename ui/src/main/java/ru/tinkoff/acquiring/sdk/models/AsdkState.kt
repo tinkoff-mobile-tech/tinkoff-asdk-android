@@ -66,4 +66,4 @@ class CollectDataState(val response: Check3dsVersionResponse?) : AsdkState() {
  * Состояние открытия приложения (или выбора приложения), зарегистрированного для обработки ссылки
  * Системы быстрых платежей, в котором произойдет оплата
  */
-class BrowseFpsBankState(val paymentId: Long, val deepLink: String) : AsdkState()
+class BrowseFpsBankState(val paymentId: Long, val deepLink: String, val banks: Set<Any?>?) : AsdkState()
