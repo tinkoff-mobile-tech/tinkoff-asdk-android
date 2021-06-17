@@ -134,7 +134,7 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
 
         AsdkLocalization.init(this, paymentOptions.features.localizationSource)
 
-        val sdk = AcquiringSdk(paymentOptions.terminalKey, paymentOptions.password, paymentOptions.publicKey)
+        val sdk = AcquiringSdk(paymentOptions.terminalKey, paymentOptions.publicKey)
         viewModel = ViewModelProvider(this,
                 ViewModelProviderFactory(paymentOptions.features.handleErrorsInSdk,
                         sdk))[NotificationPaymentViewModel::class.java]

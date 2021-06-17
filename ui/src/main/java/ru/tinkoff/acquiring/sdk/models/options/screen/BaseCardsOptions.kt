@@ -22,7 +22,6 @@ abstract class BaseCardsOptions<T : Parcelable>() : BaseAcquiringOptions(), Parc
         parcel.run {
             setTerminalParams(
                     terminalKey = readString() ?: "",
-                    password = readString() ?: "",
                     publicKey = readString() ?: ""
             )
             customer = readParcelable(CustomerOptions::class.java.classLoader)!!
@@ -35,7 +34,6 @@ abstract class BaseCardsOptions<T : Parcelable>() : BaseAcquiringOptions(), Parc
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.run {
             writeString(terminalKey)
-            writeString(password)
             writeString(publicKey)
             writeParcelable(customer, flags)
             writeParcelable(features, flags)

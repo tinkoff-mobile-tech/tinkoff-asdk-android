@@ -17,7 +17,6 @@
 package ru.tinkoff.acquiring.sdk.utils
 
 import java.security.InvalidKeyException
-import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.security.PublicKey
 import javax.crypto.BadPaddingException
@@ -29,24 +28,6 @@ import javax.crypto.NoSuchPaddingException
  * @author Mariya Chernyadieva
  */
 internal object CryptoUtils {
-
-    fun sha256(string: String): String {
-        try {
-            val digest = MessageDigest.getInstance("SHA-256")
-            val hash = digest.digest(string.toByteArray(charset("UTF-8")))
-            val hexString = StringBuffer()
-
-            for (i in hash.indices) {
-                val hex = Integer.toHexString(0xff and hash[i].toInt())
-                if (hex.length == 1) hexString.append('0')
-                hexString.append(hex)
-            }
-
-            return hexString.toString()
-        } catch (ex: Exception) {
-            throw RuntimeException(ex)
-        }
-    }
 
     fun encryptRsa(string: String, publicKey: PublicKey): ByteArray {
         try {

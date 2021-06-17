@@ -23,9 +23,9 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
+import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
@@ -41,15 +41,14 @@ import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
+import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
  *
  * @param terminalKey ключ терминала. Выдается после подключения к Tinkoff Acquiring
- * @param password    пароль терминала. Выдается вместе с terminalKey
  * @param publicKey   экземпляр PublicKey созданный из публичного ключа, выдаваемого вместе с
  *                    terminalKey
  *
@@ -57,10 +56,9 @@ import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
  */
 class TinkoffAcquiring(
         private val terminalKey: String,
-        private val password: String,
         private val publicKey: String
 ) {
-    private val sdk = AcquiringSdk(terminalKey, password, publicKey)
+    private val sdk = AcquiringSdk(terminalKey, publicKey)
 
     /**
      * Создает платежную сессию. Для проведения оплаты с помощью привязанной карты.
@@ -72,7 +70,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun initPayment(attachedCard: AttachedCard, paymentOptions: PaymentOptions): PaymentProcess {
-        paymentOptions.setTerminalParams(terminalKey, password, publicKey)
+        paymentOptions.setTerminalParams(terminalKey, publicKey)
         return PaymentProcess(sdk).createPaymentProcess(attachedCard, paymentOptions)
     }
 
@@ -86,7 +84,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun initPayment(cardData: CardData, paymentOptions: PaymentOptions): PaymentProcess {
-        paymentOptions.setTerminalParams(terminalKey, password, publicKey)
+        paymentOptions.setTerminalParams(terminalKey, publicKey)
         return PaymentProcess(sdk).createPaymentProcess(cardData, paymentOptions)
     }
 
@@ -100,7 +98,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun initPayment(googlePayToken: String, paymentOptions: PaymentOptions): PaymentProcess {
-        paymentOptions.setTerminalParams(terminalKey, password, publicKey)
+        paymentOptions.setTerminalParams(terminalKey, publicKey)
         return PaymentProcess(sdk).createPaymentProcess(GooglePay(googlePayToken), paymentOptions)
     }
 
@@ -319,7 +317,7 @@ class TinkoffAcquiring(
                                      googlePayParams: GooglePayParams,
                                      options: PaymentOptions,
                                      notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, password, publicKey)
+        options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(context,
                 options,
                 null,
@@ -340,7 +338,7 @@ class TinkoffAcquiring(
      */
     @JvmOverloads
     fun createTinkoffPaymentPendingIntent(context: Context, options: PaymentOptions, notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, password, publicKey)
+        options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(context,
                 options,
                 null,
@@ -366,7 +364,7 @@ class TinkoffAcquiring(
                                               options: PaymentOptions,
                                               requestCode: Int,
                                               notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, password, publicKey)
+        options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(activity,
                 options,
                 requestCode,
@@ -390,7 +388,7 @@ class TinkoffAcquiring(
                                                    options: PaymentOptions,
                                                    requestCode: Int,
                                                    notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, password, publicKey)
+        options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(activity,
                 options,
                 requestCode,
@@ -399,7 +397,7 @@ class TinkoffAcquiring(
     }
 
     private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
-        options.setTerminalParams(terminalKey, password, publicKey)
+        options.setTerminalParams(terminalKey, publicKey)
         return BaseAcquiringActivity.createIntent(context, options, cls)
     }
 

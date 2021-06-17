@@ -79,7 +79,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
 
         intent.extras?.let { extras ->
             options = extras.getParcelable(EXTRA_OPTIONS)!!
-            sdk = AcquiringSdk(options.terminalKey, options.password, options.publicKey)
+            sdk = AcquiringSdk(options.terminalKey, options.publicKey)
             AsdkLocalization.init(this, options.features.localizationSource)
         }
     }

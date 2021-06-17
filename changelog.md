@@ -1,3 +1,10 @@
+## 2.4.0
+
+#### Fixed
+#### Changes
+Sdk does not accept *password* parameter now due to security reasons
+#### Additions
+
 ## 2.3.3
 
 #### Fixed

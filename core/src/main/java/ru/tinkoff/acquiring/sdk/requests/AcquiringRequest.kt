@@ -18,7 +18,6 @@ package ru.tinkoff.acquiring.sdk.requests
 
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
-import ru.tinkoff.acquiring.sdk.utils.CryptoUtils
 import ru.tinkoff.acquiring.sdk.utils.Request
 import java.security.PublicKey
 import java.util.*
@@ -31,9 +30,7 @@ import java.util.*
 abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Request<R> {
 
     internal lateinit var terminalKey: String
-    internal lateinit var password: String
     internal lateinit var publicKey: PublicKey
-    private var token: String? = null
     @Volatile
     private var disposed = false
     private val ignoredFieldsSet: HashSet<String> = hashSetOf(DATA, RECEIPT, RECEIPTS, SHOPS)
@@ -56,7 +53,6 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         val map = HashMap<String, Any>()
 
         map.putIfNotNull(TERMINAL_KEY, terminalKey)
-        map.putIfNotNull(TOKEN, token)
 
         return map
     }
@@ -66,7 +62,6 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
                                                          onSuccess: (R) -> Unit,
                                                          onFailure: (Exception) -> Unit) {
         request.validate()
-        request.apply { token = makeToken(request) }
         val client = NetworkClient()
         client.call(request, responseClass, onSuccess, onFailure)
     }
@@ -88,33 +83,11 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         }
     }
 
-    private fun makeToken(request: AcquiringRequest<R>): String {
-        val parameters = request.asMap()
-
-        parameters.remove(TOKEN)
-        parameters[PASSWORD_KEY] = password
-
-        val sortedKeys = ArrayList(parameters.keys)
-        sortedKeys.sort()
-
-        val builder = StringBuilder()
-        val ignoredKes = request.tokenIgnoreFields
-        for (key in sortedKeys) {
-            if (!ignoredKes.contains(key)) {
-                builder.append(parameters[key])
-            }
-        }
-
-        return CryptoUtils.sha256(builder.toString())
-    }
-
     internal companion object {
 
         const val TERMINAL_KEY = "TerminalKey"
-        const val PASSWORD_KEY = "Password"
         const val PAYMENT_ID = "PaymentId"
         const val SEND_EMAIL = "SendEmail"
-        const val TOKEN = "Token"
         const val EMAIL = "InfoEmail"
         const val CARD_DATA = "CardData"
         const val LANGUAGE = "Language"
