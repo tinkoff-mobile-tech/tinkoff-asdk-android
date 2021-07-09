@@ -51,7 +51,6 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
         parcel.run {
             setTerminalParams(
                     terminalKey = readString() ?: "",
-                    password = readString() ?: "",
                     publicKey = readString() ?: ""
             )
             order = readParcelable(OrderOptions::class.java.classLoader)!!
@@ -64,7 +63,6 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.run {
             writeString(terminalKey)
-            writeString(password)
             writeString(publicKey)
             writeParcelable(order, flags)
             writeParcelable(customer, flags)

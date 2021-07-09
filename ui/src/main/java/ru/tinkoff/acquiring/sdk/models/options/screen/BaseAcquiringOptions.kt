@@ -31,8 +31,6 @@ open class BaseAcquiringOptions() : Options(), Parcelable  {
 
     lateinit var terminalKey: String
         private set
-    lateinit var password: String
-        private set
     lateinit var publicKey: String
         private set
 
@@ -44,7 +42,6 @@ open class BaseAcquiringOptions() : Options(), Parcelable  {
     private constructor(parcel: Parcel) : this() {
         parcel.run {
             terminalKey = readString() ?: ""
-            password = readString() ?: ""
             publicKey = readString() ?: ""
             features = readParcelable(FeaturesOptions::class.java.classLoader)!!
         }
@@ -53,7 +50,6 @@ open class BaseAcquiringOptions() : Options(), Parcelable  {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.run {
             writeString(terminalKey)
-            writeString(password)
             writeString(publicKey)
             writeParcelable(features, flags)
         }
@@ -62,13 +58,11 @@ open class BaseAcquiringOptions() : Options(), Parcelable  {
     @Throws(AcquiringSdkException::class)
     override fun validateRequiredFields() {
         check(terminalKey.isNotEmpty()) { "Terminal Key should not be empty" }
-        check(password.isNotEmpty()) { "Password should not be empty" }
         check(publicKey.isNotEmpty()) { "Public Key should not be empty" }
     }
 
-    fun setTerminalParams(terminalKey: String, password: String, publicKey: String) {
+    fun setTerminalParams(terminalKey: String, publicKey: String) {
         this.terminalKey = terminalKey
-        this.password = password
         this.publicKey = publicKey
     }
 

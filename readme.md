@@ -34,7 +34,6 @@ implementation 'ru.tinkoff.acquiring:cardio:$latestVersion'
 ### Подготовка к работе
 Для начала работы с SDK вам понадобятся:
 * Terminal key
-* Пароль
 * Public key
 
 Которые выдаются после подключения к [Интернет-Эквайрингу][acquiring].
@@ -72,7 +71,7 @@ val paymentOptions =
             }
         }
 
-val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY") // создание объекта для взаимодействия с SDK и передача данных продавца
+val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY") // создание объекта для взаимодействия с SDK и передача данных продавца
 tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE)
 ```
 Результат вызова метода вернется в **onActivityResult**:
@@ -97,7 +96,7 @@ val paymentOptions =
             }
         }
 
-val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
+val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY")
 tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE)
 ```
 [1] _Рекуррентный платеж_ может производиться для дальнейшего списания средств с сохраненной карты, без ввода ее реквизитов. Эта возможность, например, может использоваться для осуществления платежей по подписке.
@@ -122,7 +121,7 @@ val attachCardOptions =
             }
         }
 
-val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
+val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY")
 tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTACH_CARD_REQUEST_CODE)
 ```
 Результат вызова метода вернется в **onActivityResult**:
@@ -180,7 +179,7 @@ fun handleGooglePayResult(resultCode: Int, data: Intent?) {
     
         val token = GooglePayHelper.getGooglePayToken(data) // получаем токен Google Pay из Intent
         
-        val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PASSWORD", "PUBLIC_KEY")
+        val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY")
         tinkoffAcquiring.initPayment(token, paymentOptions) // вызывов метода совершения платежа
                 .subscribe(paymentListener)                 // подписываемся на события в процессе оплаты
                 .start()                                    // запуск процесса оплаты
@@ -253,7 +252,7 @@ SDK состоит из следующих модулей:
 #### Core
 Является базовым модулем для работы с Tinkoff Acquiring API. Модуль реализует протокол взаимодействия с сервером и позволяет не осуществлять прямых обращений в API. Не зависит от Android SDK и может использоваться в standalone Java приложениях.
 
-Основной класс модуля - **AcquiringSdk** - предоставляет интерфейс для взаимодействия с Tinkoff Acquiring API. Для работы необходимы ключи и пароль продавца (см. **Подготовка к работе**).
+Основной класс модуля - **AcquiringSdk** - предоставляет интерфейс для взаимодействия с Tinkoff Acquiring API. Для работы необходимы ключи продавца (см. **Подготовка к работе**).
 
 Подключение:
 ```groovy

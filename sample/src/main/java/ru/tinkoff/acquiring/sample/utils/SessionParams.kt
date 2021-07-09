@@ -24,7 +24,6 @@ import java.util.*
  */
 class SessionParams(
         val terminalKey: String,
-        val password: String,
         val publicKey: String,
         val customerKey: String,
         val customerEmail: String) {
@@ -38,7 +37,6 @@ class SessionParams(
         private const val SDK_TERMINAL_ID = "TestSDK"
         private const val NON_3DS_TERMINAL_ID = "sdkNon3DS"
 
-        private const val PASSWORD = "12345678"
         private const val PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5Yg3RyEkszggDVMDHCAG\n" +
                 "zJm0mYpYT53BpasrsKdby8iaWJVACj8ueR0Wj3Tu2BY64HdIoZFvG0v7UqSFztE/\n" +
                 "zUvnznbXVYguaUcnRdwao9gLUQO2I/097SHF9r++BYI0t6EtbbcWbfi755A1EWfu\n" +
@@ -48,11 +46,11 @@ class SessionParams(
                 "jwIDAQAB"
 
         val TEST_SDK = SessionParams(
-                SDK_TERMINAL_ID, PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL
+                SDK_TERMINAL_ID, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL
         )
 
         val NON_3DS = SessionParams(
-                NON_3DS_TERMINAL_ID, PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL
+                NON_3DS_TERMINAL_ID, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL
         )
 
         val DEFAULT = TEST_SDK

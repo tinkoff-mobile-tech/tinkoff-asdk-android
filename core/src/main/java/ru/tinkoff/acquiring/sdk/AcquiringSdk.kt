@@ -29,7 +29,6 @@ import java.security.PublicKey
  * Вызов методов выполняется синхронно
  *
  * @param terminalKey ключ терминала. Выдается после подключения к Tinkoff Acquiring
- * @param password    пароль от терминала. Выдается вместе с terminalKey
  * @param publicKey   экземпляр PublicKey созданный из публичного ключа, выдаваемого вместе с
  *                    terminalKey
  *
@@ -37,15 +36,14 @@ import java.security.PublicKey
  */
 class AcquiringSdk(
         private val terminalKey: String,
-        private val password: String,
         private val publicKey: PublicKey
 ) {
 
-    constructor(terminalKey: String, password: String, publicKey: String) :
-            this(terminalKey, password, StringKeyCreator(publicKey))
+    constructor(terminalKey: String, publicKey: String) :
+            this(terminalKey, StringKeyCreator(publicKey))
 
-    constructor(terminalKey: String, password: String, keyCreator: KeyCreator) :
-            this(terminalKey, password, keyCreator.create())
+    constructor(terminalKey: String, keyCreator: KeyCreator) :
+            this(terminalKey, keyCreator.create())
 
 
     /**
@@ -54,7 +52,6 @@ class AcquiringSdk(
     fun init(request: InitRequest.() -> Unit): InitRequest {
         return InitRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -64,7 +61,6 @@ class AcquiringSdk(
     fun check3DsVersion(request: Check3dsVersionRequest.() -> Unit): Check3dsVersionRequest {
         return Check3dsVersionRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
             publicKey = this@AcquiringSdk.publicKey
         }
     }
@@ -75,7 +71,6 @@ class AcquiringSdk(
     fun finishAuthorize(request: FinishAuthorizeRequest.() -> Unit): FinishAuthorizeRequest {
         return FinishAuthorizeRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
             publicKey = this@AcquiringSdk.publicKey
         }
     }
@@ -86,7 +81,6 @@ class AcquiringSdk(
     fun getCardList(request: GetCardListRequest.() -> Unit): GetCardListRequest {
         return GetCardListRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -110,7 +104,6 @@ class AcquiringSdk(
     fun charge(request: ChargeRequest.() -> Unit): ChargeRequest {
         return ChargeRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -120,7 +113,6 @@ class AcquiringSdk(
     fun getQr(request: GetQrRequest.() -> Unit): GetQrRequest {
         return GetQrRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -133,7 +125,6 @@ class AcquiringSdk(
     fun getStaticQr(request: GetStaticQrRequest.() -> Unit): GetStaticQrRequest {
         return GetStaticQrRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -143,7 +134,6 @@ class AcquiringSdk(
     fun getState(request: GetStateRequest.() -> Unit): GetStateRequest {
         return GetStateRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -153,7 +143,6 @@ class AcquiringSdk(
     fun removeCard(request: RemoveCardRequest.() -> Unit): RemoveCardRequest {
         return RemoveCardRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -164,7 +153,6 @@ class AcquiringSdk(
     fun addCard(request: AddCardRequest.() -> Unit): AddCardRequest {
         return AddCardRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -174,7 +162,6 @@ class AcquiringSdk(
     fun attachCard(request: AttachCardRequest.() -> Unit): AttachCardRequest {
         return AttachCardRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
             publicKey = this@AcquiringSdk.publicKey
         }
     }
@@ -185,7 +172,6 @@ class AcquiringSdk(
     fun getAddCardState(request: GetAddCardStateRequest.() -> Unit): GetAddCardStateRequest {
         return GetAddCardStateRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 
@@ -196,7 +182,6 @@ class AcquiringSdk(
     fun submitRandomAmount(request: SubmitRandomAmountRequest.() -> Unit): SubmitRandomAmountRequest {
         return SubmitRandomAmountRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
-            password = this@AcquiringSdk.password
         }
     }
 

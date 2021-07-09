@@ -41,7 +41,6 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
-import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.viewmodel.SavedCardsViewModel
@@ -260,7 +259,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
 
     private fun openAttachActivity() {
         val options = AttachCardOptions().setOptions {
-            setTerminalParams(savedCardsOptions.terminalKey, savedCardsOptions.password, savedCardsOptions.publicKey)
+            setTerminalParams(savedCardsOptions.terminalKey, savedCardsOptions.publicKey)
             customerOptions {
                 checkType = savedCardsOptions.customer.checkType
                 customerKey = savedCardsOptions.customer.customerKey
