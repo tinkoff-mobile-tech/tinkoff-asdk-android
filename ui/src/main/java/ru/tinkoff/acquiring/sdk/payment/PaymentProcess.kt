@@ -110,12 +110,29 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
     /**
      * Создает объект процесса для проведения оплаты с помощью Системы быстрых платежей
      * @return сконфигурированный объект для проведения оплаты
+     *
+     * @see createInitializedSbpPaymentProcess
      */
     fun createSbpPaymentProcess(paymentOptions: PaymentOptions): PaymentProcess {
         paymentOptions.validateRequiredFields()
 
         this.initRequest = configureInitRequest(paymentOptions)
         this.paymentType = SbpPaymentType
+
+        sendToListener(PaymentState.CREATED)
+        return this
+    }
+
+    /**
+     * Создает объект процесса для проведения оплаты с помощью Системы быстрых платежей с использованием
+     * существующего [paymentId].
+     * @return сконфигурированный объект для проведения оплаты
+     *
+     * @see createSbpPaymentProcess
+     */
+    fun createInitializedSbpPaymentProcess(paymentId: Long): PaymentProcess {
+        this.paymentId = paymentId
+        this.paymentType = InitializedSbpPaymentType
 
         sendToListener(PaymentState.CREATED)
         return this
@@ -146,6 +163,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         when (paymentType) {
             SbpPaymentType, CardPaymentType -> callInitRequest(initRequest!!)
             FinishPaymentType -> finishPayment(paymentId!!, paymentSource)
+            InitializedSbpPaymentType -> callGetQr(paymentId!!)
         }
         sendToListener(PaymentState.STARTED)
         return this

@@ -22,5 +22,6 @@ package ru.tinkoff.acquiring.sdk.payment
 internal sealed class PaymentType
 
 internal object SbpPaymentType: PaymentType()
+internal object InitializedSbpPaymentType: PaymentType()
 internal object CardPaymentType : PaymentType()
 internal object FinishPaymentType : PaymentType()
