@@ -179,6 +179,16 @@ class TinkoffAcquiring(
     }
 
     /**
+     * Запуск SDK для оплаты через Систему быстрых платежей
+     *
+     * @param paymentId     уникальный идентификатор транзакции в системе банка,
+     *                      полученный после проведения инициации платежа
+     */
+    fun payWithSbp(paymentId: Long): PaymentProcess {
+        return PaymentProcess(sdk).createInitializedSbpPaymentProcess(paymentId)
+    }
+
+    /**
      * Запуск экрана Acquiring SDK для привязки новой карты
      *
      * @param activity    контекст для запуска экрана из Activity

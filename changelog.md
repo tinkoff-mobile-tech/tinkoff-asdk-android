@@ -1,3 +1,10 @@
+## 2.4.1
+
+#### Fixed
+#### Changes
+#### Additions
+Added ability to make an SBP payment with existing paymentId (TinkoffAcquiring.payWithSbp(paymentId: Long))
+
 ## 2.4.0
 
 #### Fixed
