@@ -1,3 +1,12 @@
+## 2.4.2
+
+#### Fixed
+Fixed a problem during payment when trying to enter new card credentials on device with animations
+scale set to zero
+on device
+#### Changes
+#### Additions
+
 ## 2.4.1
 
 #### Fixed
