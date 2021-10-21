@@ -1161,9 +1161,9 @@ internal class EditCard @JvmOverloads constructor(
             startDelay = 200
             addUpdateListener {
                 val updatedValue = it.animatedValue as Int
-                hintPaint.alpha = if (updatedValue < Color.alpha(textColorHint)) updatedValue else Color.alpha(textColorHint)
-                datePaint.alpha = if (updatedValue < Color.alpha(textColor)) updatedValue else Color.alpha(textColor)
-                cvcPaint.alpha = if (updatedValue < Color.alpha(textColor)) updatedValue else Color.alpha(textColor)
+                setHintAlpha(updatedValue)
+                setDateAlpha(updatedValue)
+                setCvcAlpha(updatedValue)
                 invalidate()
             }
         }
@@ -1172,16 +1172,26 @@ internal class EditCard @JvmOverloads constructor(
             playTogether(cardNumberAlphaAnimator, lastBlockTranslateXAnimator, dateCvcAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
-                    hintPaint.alpha = 0
-                    datePaint.alpha = 0
-                    cvcPaint.alpha = 0
+                    // Setting starting values of delayed animations
+                    setHintAlpha(0)
+                    setDateAlpha(0)
+                    setCvcAlpha(0)
                     lastNumberBlockPositionXMovable = lastNumberBlockPositionX
+
                     switchEditable(EXPIRE_DATE)
                     setCursor(cardDate.length)
                     switchViewState(CARD_NUMBER_ANIMATION_STATE)
                 }
 
                 override fun onAnimationEnd(animation: Animator?) {
+                    // AnimatorSet triggers onAnimationStart callback AFTER the initial tick of inner animations, which
+                    // causes problems when animation scale set to zero on device, hence we manually set target values
+                    // of delayed animations in onAnimationEnd
+                    setHintAlpha(255)
+                    setDateAlpha(255)
+                    setCvcAlpha(255)
+                    lastNumberBlockPositionXMovable = cardNumberOffsetLeft
+
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
@@ -1193,6 +1203,18 @@ internal class EditCard @JvmOverloads constructor(
                 }
             })
         }.start()
+    }
+
+    private fun setHintAlpha(alpha: Int) {
+        hintPaint.alpha = minOf(alpha, Color.alpha(textColorHint))
+    }
+
+    private fun setDateAlpha(alpha: Int) {
+        datePaint.alpha = minOf(alpha, Color.alpha(textColor))
+    }
+
+    private fun setCvcAlpha(alpha: Int) {
+        cvcPaint.alpha = minOf(alpha, Color.alpha(textColor))
     }
 
     private fun showFullCardNumber() {
