@@ -96,7 +96,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
                 val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(), Base64.DEFAULT).trim()
                 val params = "threeDSMethodData=${URLEncoder.encode(dataBase64, "UTF-8")}"
 
-                hiddenWebView.postUrl(response.threeDsMethodUrl, params.toByteArray())
+                hiddenWebView.postUrl(response.threeDsMethodUrl!!, params.toByteArray())
                 threeDSCompInd = THREE_DS_CALLED_FLAG
             }
 
@@ -181,7 +181,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
                     "&TermUrl=${URLEncoder.encode(termUrl, "UTF-8")}"
         }
 
-        wvThreeDs.postUrl(url, params.toByteArray())
+        wvThreeDs.postUrl(url!!, params.toByteArray())
     }
 
     private fun prepareCreqParams(): String {

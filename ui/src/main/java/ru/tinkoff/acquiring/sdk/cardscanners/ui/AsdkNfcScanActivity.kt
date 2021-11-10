@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.cardscanners.ui
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -27,22 +28,35 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.cardscanners.models.AsdkScannedCardData
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
-import ru.tinkoff.core.nfc.BaseNfcActivity
-import ru.tinkoff.core.nfc.ImperfectAlgorithmException
-import ru.tinkoff.core.nfc.MalformedDataException
+import ru.tinkoff.core.components.nfc.NfcHelper
+import ru.tinkoff.core.components.nfc.NfcUtils
 
 /**
  * @author Mariya Chernyadieva
  */
-internal class AsdkNfcScanActivity : BaseNfcActivity() {
+internal class AsdkNfcScanActivity : AppCompatActivity() {
+
+    private lateinit var nfcHelper: NfcHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_activity_nfc)
+
+        nfcHelper = NfcHelper.createAndRegisterObserver(this, object : NfcHelper.Callback {
+            override fun onResult(bundle: Bundle) =
+                onResult(bundle.getString(NfcHelper.CARD_NUMBER)!!, bundle.getString(NfcHelper.EXPIRY_DATE)!!)
+
+            override fun onException(p0: java.lang.Exception?) = onException()
+
+            override fun onNfcNotSupported() = onException()
+
+            override fun onNfcDisabled() = showDialog()
+        })
 
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setupTranslucentStatusBar()
@@ -57,7 +71,7 @@ internal class AsdkNfcScanActivity : BaseNfcActivity() {
         applyBackgroundColor()
     }
 
-    override fun onResult(cardNumber: String, expireDate: String) {
+    private fun onResult(cardNumber: String, expireDate: String) {
         val card = AsdkScannedCardData(cardNumber, expireDate, "")
         val intent = Intent()
         intent.putExtra(EXTRA_CARD, card)
@@ -68,26 +82,6 @@ internal class AsdkNfcScanActivity : BaseNfcActivity() {
     override fun onBackPressed() {
         setResult(Activity.RESULT_CANCELED)
         super.onBackPressed()
-    }
-
-    override fun onException(exception: Exception) {
-        onException()
-    }
-
-    override fun onClarifiedException(ex: MalformedDataException) {
-        onException()
-    }
-
-    override fun onClarifiedException(ex: ImperfectAlgorithmException) {
-        onException()
-    }
-
-    override fun getNfcDisabledDialogMessage(): String {
-        return AsdkLocalization.resources.nfcDialogDisableTitle ?: getString(R.string.acq_nfc_need_enable)
-    }
-
-    override fun getNfcDisabledDialogTitle(): String {
-        return AsdkLocalization.resources.nfcDialogDisableMessage ?: getString(R.string.acq_nfc_is_disable)
     }
 
     private fun setupTranslucentStatusBar() {
@@ -115,10 +109,22 @@ internal class AsdkNfcScanActivity : BaseNfcActivity() {
         finish()
     }
 
+    private fun showDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(AsdkLocalization.resources.nfcDialogDisableMessage ?: getString(R.string.acq_nfc_is_disable))
+            .setMessage(AsdkLocalization.resources.nfcDialogDisableMessage ?: getString(R.string.acq_nfc_is_disable))
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                NfcUtils.openNfcSettingsForResult(this, REQUEST_CODE_SETTINGS)
+            }.setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
+            .show()
+    }
+
     companion object {
 
         const val EXTRA_CARD = "card_extra"
         const val RESULT_ERROR = 256
+
+        const val REQUEST_CODE_SETTINGS = 0
 
         private const val ALPHA_MASK = -0x33000001
     }
