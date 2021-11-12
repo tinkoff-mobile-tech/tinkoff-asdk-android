@@ -83,11 +83,15 @@ object PaymentNotificationManager {
                     PaymentNotificationIntentService::class.java).apply {
                 action = ACTION_SELECT_PRICE + buttonPriceId
             }
+            val flags = when {
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> PendingIntent.FLAG_UPDATE_CURRENT
+                else -> PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            }
             notificationLayout.setOnClickPendingIntent(buttonId, PendingIntent.getService(
                     activity,
                     0,
                     selectPriceIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT))
+                    flags))
         }
 
         val googlePayIntent = getGooglePayIntent(activity,

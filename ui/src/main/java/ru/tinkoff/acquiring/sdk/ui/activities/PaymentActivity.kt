@@ -16,8 +16,10 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -170,11 +172,12 @@ internal class PaymentActivity : TransparentActivity() {
         }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun openBankChooser(deepLink: String, banks: Set<Any?>?) {
         var intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(deepLink)
 
-        if (!banks.isNullOrEmpty()) {
+        if (!banks.isNullOrEmpty() && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             val activities = packageManager.queryIntentActivities(intent, 0)
             val supportedBanks = activities.filter { banks.contains(it.activityInfo.packageName) }
                     .map { it.activityInfo.packageName }

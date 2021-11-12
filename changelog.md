@@ -1,3 +1,10 @@
+## 2.5.0
+
+#### Fixed
+#### Changes
+Android 12 support
+#### Additions
+
 ## 2.4.3
 
 #### Fixed

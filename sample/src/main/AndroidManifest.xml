@@ -37,7 +37,8 @@
         <activity
             android:name=".ui.MainActivity"
             android:alwaysRetainTaskState="true"
-            android:clearTaskOnLaunch="false">
+            android:clearTaskOnLaunch="false"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -20,6 +20,7 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
@@ -99,19 +100,27 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
             }
 
             if (requestCode != null && context is Activity) {
+                val flags = when {
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> PendingIntent.FLAG_UPDATE_CURRENT
+                    else -> PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                }
                 val resultPendingIntent = context.createPendingResult(requestCode,
                         intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT)
+                        flags)
                 intent.putExtra(EXTRA_PENDING_INTENT, resultPendingIntent)
             }
 
             val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             var pendingIntentCode = preferences.getInt(PREF_INTENT_COUNTER_KEY, START_COUNTER_VALUE)
 
+            val flags = when {
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> PendingIntent.FLAG_UPDATE_CURRENT
+                else -> PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            }
             val pendingIntent = PendingIntent.getActivity(context,
                     pendingIntentCode,
                     intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    flags)
 
             pendingIntentCode = if (pendingIntentCode == Int.MAX_VALUE) START_COUNTER_VALUE else pendingIntentCode + 1
             preferences.edit().putInt(PREF_INTENT_COUNTER_KEY, pendingIntentCode).apply()
@@ -129,7 +138,7 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
             dialogMessage = it.getString(STATE_DIALOG_MESSAGE, "")
         }
 
-        paymentOptions = intent.getParcelableExtra(EXTRA_PAYMENT_OPTIONS) as PaymentOptions
+        paymentOptions = intent.getParcelableExtra<PaymentOptions>(EXTRA_PAYMENT_OPTIONS) as PaymentOptions
         resultIntent = intent.getParcelableExtra(EXTRA_PENDING_INTENT) as PendingIntent?
 
         AsdkLocalization.init(this, paymentOptions.features.localizationSource)
@@ -139,7 +148,9 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
                 ViewModelProviderFactory(paymentOptions.features.handleErrorsInSdk,
                         sdk))[NotificationPaymentViewModel::class.java]
 
-        sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+        }
 
         if (savedInstanceState == null) {
             initPaymentScreen()
