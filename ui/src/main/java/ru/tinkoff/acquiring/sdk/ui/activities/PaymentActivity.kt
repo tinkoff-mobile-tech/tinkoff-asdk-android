@@ -23,6 +23,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
@@ -100,7 +101,7 @@ internal class PaymentActivity : TransparentActivity() {
                 }
             }
             SBP_BANK_CHOOSE_REQUEST_CODE -> {
-                if (data == null && asdkState is FpsState) {
+                if (data == null && (asdkState is FpsState || asdkState is BrowseFpsBankState)) {
                     finishWithCancel()
                 } else {
                     data?.getStringExtra(EXTRA_SBP_BANK_PACKAGE_NAME)?.let { packageName ->
@@ -161,31 +162,58 @@ internal class PaymentActivity : TransparentActivity() {
         when (screenState) {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> {
-                if (asdkState is FpsState) {
+                if (asdkState is FpsState || asdkState is BrowseFpsBankState) {
                     finishWithError(AcquiringSdkException(NetworkException(screenState.message)))
                 } else {
                     showError(screenState.message)
                 }
             }
-            is FpsBankFormShowedScreenState -> if (asdkState is FpsState) finishWithCancel()
+            is FpsBankFormShowedScreenState -> {
+                if (asdkState is FpsState || asdkState is BrowseFpsBankState) {
+                    finishWithCancel()
+                }
+            }
             else -> Unit
         }
     }
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun openBankChooser(deepLink: String, banks: Set<Any?>?) {
-        var intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(deepLink)
-
-        if (!banks.isNullOrEmpty() && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            val activities = packageManager.queryIntentActivities(intent, 0)
-            val supportedBanks = activities.filter { banks.contains(it.activityInfo.packageName) }
-                    .map { it.activityInfo.packageName }
-            intent = BankChooseActivity.createIntent(this, options, supportedBanks, deepLink)
+        if (!banks.isNullOrEmpty()) {
+            val supportedBanks = getBankApps(deepLink, banks)
+            val intent = BankChooseActivity.createIntent(this, options, supportedBanks, deepLink)
             startActivityForResult(intent, SBP_BANK_CHOOSE_REQUEST_CODE)
         } else {
-            startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(deepLink)
+            val chooserIntent = Intent.createChooser(intent, getString(R.string.acq_fps_chooser_title))
+            startActivityForResult(chooserIntent, SBP_BANK_REQUEST_CODE)
         }
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun getBankApps(link: String, banks: Set<Any?>): List<String> {
+        // get sbp packages
+        val sbpIntent = Intent(Intent.ACTION_VIEW)
+        sbpIntent.setDataAndNormalize(Uri.parse(link))
+        val sbpPackages = packageManager.queryIntentActivities(sbpIntent, 0)
+                .map { it.activityInfo.packageName }
+
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
+        val browserPackages = packageManager.queryIntentActivities(browserIntent, 0)
+                .map { it.activityInfo.packageName }
+        // filter out browsers
+        val nonBrowserSbpPackages = sbpPackages.filter { it !in browserPackages }
+
+        // get bank packages
+        val bankPackages = packageManager.getInstalledApplications(0)
+                .map { it.packageName }.filter { it in banks }
+
+        // merge two lists
+        return mutableListOf<String>().apply {
+            addAll(nonBrowserSbpPackages)
+            addAll(bankPackages)
+        }.distinct()
     }
 
     private fun openDeepLinkInBank(packageName: String) {

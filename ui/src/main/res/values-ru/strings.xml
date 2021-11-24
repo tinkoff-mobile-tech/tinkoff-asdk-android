@@ -22,4 +22,6 @@
 
     <string name="googlepay_button_content_description">Google Pay</string>
 
+    <string name="acq_fps_chooser_title">Выберите приложение</string>
+
 </resources>
