@@ -21,6 +21,8 @@
 
     <string name="googlepay_button_content_description">Google Pay</string>
 
+    <string name="acq_fps_chooser_title">Choose app</string>
+
     <string name="acq_fps" translatable="false">fps</string>
 
 </resources>

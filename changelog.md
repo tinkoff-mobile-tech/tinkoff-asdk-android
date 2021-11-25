@@ -1,3 +1,14 @@
+## 2.5.1
+
+#### Fixed
+Fixed problem with preserved transparent activity when paying with FPS using existing paymentId
+#### Changes
+Reworked logic of obtaining bank apps available for FPS payment to show all available bank apps
+regardless of default settings
+Changed mode of encoding CReq params with Base64 to NO_PADDING according to 3DS 2.0 requirements
+(https://www.emvco.com/terms-of-use/?u=wp-content/uploads/documents/3DSA_Bulletin_No_07_3rd_Ed_-_Base64_Base64url-Encoding_Final-2021-07-07-1.pdf)
+#### Additions
+
 ## 2.5.0
 
 #### Fixed

@@ -17,6 +17,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.tinkoff.acquiring.sdk">
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" android:host="qr.nspk.ru"/>
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="false"
         android:supportsRtl="true">
