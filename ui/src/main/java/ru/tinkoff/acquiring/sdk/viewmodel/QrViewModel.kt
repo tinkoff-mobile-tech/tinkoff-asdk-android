@@ -19,6 +19,7 @@ package ru.tinkoff.acquiring.sdk.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.BuildConfig
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
@@ -134,6 +135,7 @@ internal class QrViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : Base
             data = order.additionalData
             customerKey = paymentOptions.customer.customerKey
             language = AsdkLocalization.language.name
+            sdkVersion = BuildConfig.VERSION_NAME
         }
     }
 }

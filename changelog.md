@@ -1,3 +1,10 @@
+## 2.5.2
+
+#### Fixed
+#### Changes
+#### Additions
+Send "connection_type" and "sdk_version" in Init request
+
 ## 2.5.1
 
 #### Fixed
