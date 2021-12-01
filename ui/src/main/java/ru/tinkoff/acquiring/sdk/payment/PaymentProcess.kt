@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.payment
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.BuildConfig
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
@@ -364,6 +365,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
             data = order.additionalData
             customerKey = paymentOptions.customer.customerKey
             language = AsdkLocalization.language.name
+            sdkVersion = BuildConfig.VERSION_NAME
         }
     }
 

@@ -119,6 +119,8 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
             }
         }
 
+    var sdkVersion: String? = null
+
     private var redirectDueDateFormat: String? = null
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
@@ -166,10 +168,13 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
         }
 
         dataMap[CHARGE_FLAG] = chargeFlag.toString()
+        dataMap[CONNECTION_TYPE] = CONNECTION_TYPE_MOBILE_SDK
+        sdkVersion?.let { dataMap[SDK_VERSION] = it }
         this[DATA] = dataMap
     }
 
     companion object {
         private const val RECURRENT_FLAG_Y = "Y"
+        private const val CONNECTION_TYPE_MOBILE_SDK = "mobile_sdk"
     }
 }
