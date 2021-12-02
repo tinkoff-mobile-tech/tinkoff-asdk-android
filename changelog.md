@@ -1,3 +1,10 @@
+## 2.5.3
+
+#### Fixed
+#### Changes
+#### Additions
+Changed mode of encoding threeDsMethod params with Base64 to NO_PADDING according to 3DS 2.0 requirements
+
 ## 2.5.2
 
 #### Fixed

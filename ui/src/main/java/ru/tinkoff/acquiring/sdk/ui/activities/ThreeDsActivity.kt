@@ -93,7 +93,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
                     put("threeDSServerTransID", response.serverTransId)
                 }
 
-                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(), Base64.DEFAULT).trim()
+                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(), Base64.NO_PADDING).trim()
                 val params = "threeDSMethodData=${URLEncoder.encode(dataBase64, "UTF-8")}"
 
                 hiddenWebView.postUrl(response.threeDsMethodUrl!!, params.toByteArray())
