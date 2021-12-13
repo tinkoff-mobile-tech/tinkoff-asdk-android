@@ -83,9 +83,9 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
             return intent
         }
 
-        fun collectData(context: Context, response: Check3dsVersionResponse?): MutableMap<String, String> {
+        fun collectData(context: Context, response: Check3dsVersionResponse): MutableMap<String, String> {
             var threeDSCompInd = THREE_DS_NOT_CALLED_FLAG
-            if (response != null) {
+            if (response.threeDsMethodUrl != null) {
                 val hiddenWebView = WebView(context)
 
                 val threeDsMethodData = JSONObject().apply {

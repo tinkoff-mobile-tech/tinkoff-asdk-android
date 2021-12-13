@@ -58,7 +58,7 @@ class ThreeDsState(val data: ThreeDsData) : AsdkState()
 /**
  * Состояние, когда необходимо собрать информацию об устройстве для прохождения 3DS
  */
-class CollectDataState(val response: Check3dsVersionResponse?) : AsdkState() {
+class CollectDataState(val response: Check3dsVersionResponse) : AsdkState() {
     var data: MutableMap<String, String> = mutableMapOf()
 }
 

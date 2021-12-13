@@ -1,3 +1,10 @@
+## 2.5.4
+
+#### Fixed
+Fixed crash during 3DS Method v2.x when `threeDsMethodUrl` is absent
+#### Changes
+#### Additions
+
 ## 2.5.3
 
 #### Fixed
