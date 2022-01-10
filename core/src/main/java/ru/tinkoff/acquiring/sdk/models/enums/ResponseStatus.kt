@@ -40,7 +40,7 @@ enum class ResponseStatus {
     UNKNOWN,
     LOOP_CHECKING,
     COMPLETED,
-    AUTH_FAILED,
+    AUTH_FAIL,
     FORM_SHOWED;
 
     override fun toString(): String {
