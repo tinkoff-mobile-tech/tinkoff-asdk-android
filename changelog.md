@@ -1,3 +1,10 @@
+## 2.5.5
+
+#### Fixed
+Fixed parsing of 3DS check error
+#### Changes
+#### Additions
+
 ## 2.5.4
 
 #### Fixed
