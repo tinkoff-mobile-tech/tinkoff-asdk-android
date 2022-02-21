@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
@@ -129,6 +130,7 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

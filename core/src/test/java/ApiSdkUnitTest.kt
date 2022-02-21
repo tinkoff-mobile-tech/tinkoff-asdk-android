@@ -24,8 +24,10 @@ import kotlin.math.abs
 
 class ApiSdkUnitTest {
 
-    private val sdk: AcquiringSdk = AcquiringSdk(TestPaymentData.TEST_TERMINAL_KEY,
-            TestPaymentData.TEST_PASS, TestPaymentData.TEST_PUBLIC_KEY)
+    private val sdk: AcquiringSdk = AcquiringSdk(
+        TestPaymentData.TEST_TERMINAL_KEY,
+        TestPaymentData.TEST_PUBLIC_KEY
+    )
     private var randomOrderId = "0"
 
     init {
