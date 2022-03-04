@@ -367,7 +367,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         val emailText = emailEditText.text.toString()
         val email = when {
             emailEditText.visibility != View.VISIBLE -> null
-            emailRequired || (!emailRequired && emailText.isNotBlank()) -> emailText
+            emailRequired || (!emailRequired && emailText.isNotBlank()) -> emailText.trim()
             else -> null
         }
 

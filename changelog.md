@@ -1,6 +1,7 @@
 ## 2.5.6
 
 #### Fixed
+User email is trimmed of whitespaces before further processing now
 #### Changes
 Added "MIR" cards support for payments via Google Pay
 #### Additions
