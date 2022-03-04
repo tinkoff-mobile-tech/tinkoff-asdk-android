@@ -132,6 +132,7 @@ class GooglePayHelper(private val params: GooglePayParams) {
         return JSONArray()
                 .put("VISA")
                 .put("MASTERCARD")
+                .put("MIR")
     }
 
     private fun getTokenSpecification(): JSONObject {

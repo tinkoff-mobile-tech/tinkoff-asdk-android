@@ -1,3 +1,10 @@
+## 2.5.6
+
+#### Fixed
+#### Changes
+Added "MIR" cards support for payments via Google Pay
+#### Additions
+
 ## 2.5.5
 
 #### Fixed
