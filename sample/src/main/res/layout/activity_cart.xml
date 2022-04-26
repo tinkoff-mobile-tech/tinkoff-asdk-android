@@ -90,6 +90,17 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
+            <ImageView
+                android:id="@+id/tinkoff_pay_button"
+                android:background="@drawable/bg_black_button"
+                android:src="@drawable/acq_tinkoff_pay_logo_with_text_white"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_margin="8dp"
+                android:padding="12dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
             <include
                 layout="@layout/btn_fps_pay"
                 android:id="@+id/btn_fps_pay" />

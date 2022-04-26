@@ -21,6 +21,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
@@ -37,6 +40,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
@@ -58,7 +62,7 @@ class TinkoffAcquiring(
         private val terminalKey: String,
         private val publicKey: String
 ) {
-    private val sdk = AcquiringSdk(terminalKey, publicKey)
+    val sdk = AcquiringSdk(terminalKey, publicKey)
 
     /**
      * Создает платежную сессию. Для проведения оплаты с помощью привязанной карты.
@@ -186,6 +190,34 @@ class TinkoffAcquiring(
      */
     fun payWithSbp(paymentId: Long): PaymentProcess {
         return PaymentProcess(sdk).createInitializedSbpPaymentProcess(paymentId)
+    }
+
+    /**
+     * Проверка статуса возможности оплата с помощью Tinkoff Pay
+     */
+    fun checkTinkoffPayStatus(
+            onSuccess: (TinkoffPayStatusResponse) -> Unit,
+            onFailure: ((Throwable) -> Unit)? = null
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            sdk.tinkoffPayStatus().execute({
+                launch(Dispatchers.Main) { onSuccess(it) }
+            }, {
+                launch(Dispatchers.Main) { onFailure?.invoke(it) }
+            })
+        }
+    }
+
+    /**
+     * Запуск SDK для оплаты через Tinkoff Pay. У возвращенгого объекта следует указать
+     * слушатель событий с помощью метода [PaymentProcess.subscribe] и вызвать метод
+     * [PaymentProcess.start] для запуска сценария оплаты.
+     *
+     * @param options настройки платежной сессии
+     * @param version версия Tinkoff Pay
+     */
+    fun payWithTinkoffPay(options: PaymentOptions, version: String): PaymentProcess {
+        return PaymentProcess(sdk).createTinkoffPayPaymentProcess(options, version)
     }
 
     /**

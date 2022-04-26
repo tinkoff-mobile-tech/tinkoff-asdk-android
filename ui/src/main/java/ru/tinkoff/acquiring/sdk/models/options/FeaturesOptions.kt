@@ -69,6 +69,11 @@ class FeaturesOptions() : Options(), Parcelable {
     var fpsEnabled: Boolean = false
 
     /**
+     * Включение приема платежа через Tinkoff Pay
+     */
+    var tinkoffPayEnabled: Boolean = true
+
+    /**
      * Идентификатор карты в системе банка.
      * Если передан на экран оплаты - в списке карт на экране отобразится первой карта с этим cardId.
      * Если передан на экран списка карт - в списке карт отобразится выбранная карта.

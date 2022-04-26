@@ -83,6 +83,8 @@ class DetailsActivity : PayableActivity() {
             startSbpPayment()
         }
 
+        setupTinkoffPay()
+
         if (settings.isGooglePayEnabled) {
             setupGooglePay()
         }

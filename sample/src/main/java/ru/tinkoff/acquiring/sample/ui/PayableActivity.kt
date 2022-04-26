@@ -133,6 +133,25 @@ open class PayableActivity : AppCompatActivity() {
         tinkoffAcquiring.payWithSbp(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
     }
 
+    protected fun setupTinkoffPay() {
+        if (!settings.isTinkoffPayEnabled) return
+
+        val tinkoffPayButton = findViewById<View>(R.id.tinkoff_pay_button)
+
+        tinkoffAcquiring.checkTinkoffPayStatus({ status ->
+            if (!status.isTinkoffPayAvailable()) return@checkTinkoffPayStatus
+
+            tinkoffPayButton.visibility = View.VISIBLE
+
+            val version = status.getTinkoffPayVersion()!!
+            tinkoffPayButton.setOnClickListener {
+                tinkoffAcquiring.payWithTinkoffPay(createPaymentOptions(), version)
+                        .subscribe(paymentListener)
+                        .start()
+            }
+        })
+    }
+
     protected fun setupGooglePay() {
         val googlePayButton = findViewById<View>(R.id.btn_google_pay)
 
@@ -178,6 +197,7 @@ open class PayableActivity : AppCompatActivity() {
                         useSecureKeyboard = settings.isCustomKeyboardEnabled
                         cameraCardScanner = settings.cameraScanner
                         fpsEnabled = settings.isFpsEnabled
+                        tinkoffPayEnabled = settings.isTinkoffPayEnabled
                         darkThemeMode = settings.resolveDarkThemeMode()
                         theme = settings.resolvePaymentStyle()
                         userCanSelectCard = true

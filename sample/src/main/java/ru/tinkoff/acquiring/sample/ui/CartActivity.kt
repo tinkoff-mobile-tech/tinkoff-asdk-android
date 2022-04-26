@@ -67,6 +67,8 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
             startSbpPayment()
         }
 
+        setupTinkoffPay()
+
         checkCartEmpty()
     }
 

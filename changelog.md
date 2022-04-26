@@ -4,6 +4,7 @@
 User email is trimmed of whitespaces before further processing now
 #### Changes
 Added "MIR" cards support for payments via Google Pay
+Added payment via Tinkoff Pay
 #### Additions
 
 ## 2.5.5

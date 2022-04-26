@@ -56,6 +56,9 @@
     <dimen name="acq_fps_logo_height">34dp</dimen>
     <dimen name="acq_fps_logo_width_80">80dp</dimen>
     <dimen name="acq_fps_logo_width_36">36dp</dimen>
+    <dimen name="acq_tinkoff_pay_button_height">58dp</dimen>
+    <dimen name="acq_tinkoff_pay_button_padding">12dp</dimen>
+    <dimen name="acq_pay_button_vertical_margin">12dp</dimen>
     <dimen name="acq_email_hint_margin">16dp</dimen>
     <dimen name="acq_or_text_margin">14dp</dimen>
     <dimen name="acq_static_qr_bg_padding">16dp</dimen>

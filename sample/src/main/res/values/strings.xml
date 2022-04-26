@@ -64,6 +64,7 @@
     <string name="settings_title_handle_cards_list_error">Handle cards list error in SDK</string>
     <string name="settings_title_google_pay">GooglePay</string>
     <string name="settings_title_fps">Fast payment system</string>
+    <string name="settings_title_tinkoff_pay">Tinkoff Pay</string>
     <string name="settings_title_terminal_id">Terminal</string>
     <string name="settings_title_style_id">Style</string>
     <string name="settings_title_dark_mode_id">Dark Mode</string>

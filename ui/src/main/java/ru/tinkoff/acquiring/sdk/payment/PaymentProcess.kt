@@ -26,6 +26,7 @@ import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.NspkRequest
+import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
@@ -40,6 +41,7 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FAIL_MAPI_SESSION_ID
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_KEY
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_VALUE
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
+import ru.tinkoff.acquiring.sdk.requests.TinkoffPayLinkRequest
 import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
@@ -76,6 +78,11 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
     private var isChargeWasRejected = false
     private var rejectedPaymentId: Long? = null
+    /**
+     * Версия Tinkoff Pay использующаяся в запросе TinkoffPayLink для получения дилплинка
+     * в приложение Tinkoff. Приходит в ответе TinkoffPayStatus.
+     */
+    private var tinkoffPayVersion: String? = null
 
     /**
      * Создает объект полного процесса - инициация и подтверждение, устанавливает настройки оплаты
@@ -140,6 +147,24 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
     }
 
     /**
+     * Создает объект процесса для проведения оплаты через Tinkoff Pay
+     * @return сконфигурированный объект для проведения оплаты
+     */
+    fun createTinkoffPayPaymentProcess(paymentOptions: PaymentOptions, tinkoffPayVersion: String): PaymentProcess {
+        this.initRequest = configureInitRequest(paymentOptions).apply {
+            data = mutableMapOf<String, String>().also { newData ->
+                data?.let { newData.putAll(it) }
+                newData["TinkoffPayWeb"] = "true"
+            }
+        }
+        this.paymentType = TinkoffPayPaymentType
+        this.tinkoffPayVersion = tinkoffPayVersion
+
+        sendToListener(PaymentState.CREATED)
+        return this
+    }
+
+    /**
      * Позволяет подписаться на события процесса
      * @return сконфигурированный объект для проведения оплаты
      */
@@ -162,7 +187,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
      */
     fun start(): PaymentProcess {
         when (paymentType) {
-            SbpPaymentType, CardPaymentType -> callInitRequest(initRequest!!)
+            SbpPaymentType, CardPaymentType, TinkoffPayPaymentType -> callInitRequest(initRequest!!)
             FinishPaymentType -> finishPayment(paymentId!!, paymentSource)
             InitializedSbpPaymentType -> callGetQr(paymentId!!)
         }
@@ -183,7 +208,8 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         when (state) {
             PaymentState.SUCCESS -> listener?.onSuccess(paymentResult!!.paymentId!!, paymentResult!!.cardId, paymentResult!!.rebillId)
             PaymentState.ERROR -> listener?.onError(error!!)
-            PaymentState.CHARGE_REJECTED, PaymentState.THREE_DS_NEEDED, PaymentState.BROWSE_SBP_BANK -> listener?.onUiNeeded(sdkState!!)
+            PaymentState.CHARGE_REJECTED, PaymentState.THREE_DS_NEEDED, PaymentState.BROWSE_SBP_BANK, PaymentState.OPEN_TINKOFF_PAY_BANK ->
+                listener?.onUiNeeded(sdkState!!)
             PaymentState.THREE_DS_DATA_COLLECTING -> {
                 listener?.onUiNeeded(sdkState!!)
                 collectedDeviceData = (sdkState as CollectDataState).data
@@ -216,10 +242,10 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
         coroutine.call(request,
                 onSuccess = {
-                    if (paymentType == CardPaymentType) {
-                        finishPayment(it.paymentId!!, paymentSource, email)
-                    } else if (paymentType == SbpPaymentType) {
-                        callGetQr(it.paymentId!!)
+                    when (paymentType) {
+                        CardPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
+                        SbpPaymentType -> callGetQr(it.paymentId!!)
+                        TinkoffPayPaymentType -> callTinkoffPayLinkRequest(it.paymentId!!, tinkoffPayVersion!!)
                     }
                 })
     }
@@ -336,6 +362,16 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
                     } else {
                         handleException(it)
                     }
+                })
+    }
+
+    private fun callTinkoffPayLinkRequest(paymentId: Long, version: String) {
+        val request = sdk.tinkoffPayLink(paymentId, version)
+
+        coroutine.call(request,
+                onSuccess = { response ->
+                    sdkState = OpenTinkoffPayBankState(paymentId, response.params!!.redirectUrl)
+                    sendToListener(PaymentState.OPEN_TINKOFF_PAY_BANK)
                 })
     }
 

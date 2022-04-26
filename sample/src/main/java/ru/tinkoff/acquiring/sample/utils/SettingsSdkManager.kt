@@ -54,6 +54,9 @@ class SettingsSdkManager(private val context: Context) {
     val isFpsEnabled: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_fps), false)
 
+    val isTinkoffPayEnabled: Boolean
+        get() = preferences.getBoolean(context.getString(R.string.acq_sp_tinkoff_pay), true)
+
     val checkType: String
         get() {
             val defaultCheckType = context.getString(R.string.acq_sp_check_type_no)

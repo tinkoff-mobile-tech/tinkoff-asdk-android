@@ -70,6 +70,7 @@ object AcquiringApi {
 
     internal const val STREAM_BUFFER_SIZE = 4096
     internal const val API_REQUEST_METHOD_POST = "POST"
+    internal const val API_REQUEST_METHOD_GET = "GET"
 
     internal const val JSON = "application/json"
     internal const val FORM_URL_ENCODED = "application/x-www-form-urlencoded"
@@ -80,7 +81,7 @@ object AcquiringApi {
 
     private const val API_VERSION = "v2"
     private const val API_URL_RELEASE = "https://securepay.tinkoff.ru/$API_VERSION"
-    private const val API_URL_DEBUG = "https://rest-api-test.tcsbank.ru/$API_VERSION"
+    private const val API_URL_DEBUG = "https://rest-api-test.tinkoff.ru/$API_VERSION"
 
     private val oldMethodsList = listOf("Submit3DSAuthorization")
 

@@ -19,6 +19,7 @@ package ru.tinkoff.acquiring.sdk
 import ru.tinkoff.acquiring.sdk.loggers.JavaLogger
 import ru.tinkoff.acquiring.sdk.loggers.Logger
 import ru.tinkoff.acquiring.sdk.requests.*
+import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.utils.keycreators.KeyCreator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.StringKeyCreator
 import java.security.PublicKey
@@ -38,6 +39,8 @@ class AcquiringSdk(
         private val terminalKey: String,
         private val publicKey: PublicKey
 ) {
+
+    var tinkoffPayStatusCache: TinkoffPayStatusCache? = null
 
     constructor(terminalKey: String, publicKey: String) :
             this(terminalKey, StringKeyCreator(publicKey))
@@ -182,6 +185,30 @@ class AcquiringSdk(
     fun submitRandomAmount(request: SubmitRandomAmountRequest.() -> Unit): SubmitRandomAmountRequest {
         return SubmitRandomAmountRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
+        }
+    }
+
+    fun tinkoffPayStatus(request: (TinkoffPayStatusRequest.() -> Unit)? = null): TinkoffPayStatusRequest {
+        return TinkoffPayStatusRequest(this@AcquiringSdk.terminalKey).apply {
+            request?.invoke(this)
+        }
+    }
+
+    fun tinkoffPayLink(paymentId: Long, version: String, request: (TinkoffPayLinkRequest.() -> Unit)? = null): TinkoffPayLinkRequest {
+        return TinkoffPayLinkRequest(paymentId.toString(), version).apply {
+            request?.invoke(this)
+        }
+    }
+
+    class TinkoffPayStatusCache(
+            val status: TinkoffPayStatusResponse,
+            val time: Long) {
+
+        fun isExpired() = System.currentTimeMillis() - time > CACHE_EXPIRE_TIME_MS
+
+        companion object {
+
+            const val CACHE_EXPIRE_TIME_MS = 300_000L
         }
     }
 

@@ -26,7 +26,6 @@ import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.enums.Tax
 import ru.tinkoff.acquiring.sdk.models.enums.Taxation
-import ru.tinkoff.acquiring.sdk.network.AcquiringApi.API_REQUEST_METHOD_POST
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FORM_URL_ENCODED
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.JSON
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.STREAM_BUFFER_SIZE
@@ -73,14 +72,25 @@ internal class NetworkClient {
         try {
             lateinit var connection: HttpURLConnection
 
-            prepareBody(request) { body ->
-                prepareConnection(request) {
-                    connection = it
-                    connection.setRequestProperty("Content-length", body.size.toString())
-                    requestContentStream = connection.outputStream
-                    requestContentStream?.write(body)
+            when (request.httpRequestMethod) {
+                AcquiringApi.API_REQUEST_METHOD_GET -> {
+                    prepareConnection(request) {
+                        connection = it
 
-                    AcquiringSdk.log("=== Sending $API_REQUEST_METHOD_POST request to ${connection.url}")
+                        AcquiringSdk.log("=== Sending ${request.httpRequestMethod} request to ${connection.url}")
+                    }
+                }
+                AcquiringApi.API_REQUEST_METHOD_POST -> {
+                    prepareBody(request) { body ->
+                        prepareConnection(request) {
+                            connection = it
+                            connection.setRequestProperty("Content-length", body.size.toString())
+                            requestContentStream = connection.outputStream
+                            requestContentStream?.write(body)
+
+                            AcquiringSdk.log("=== Sending ${request.httpRequestMethod} request to ${connection.url}")
+                        }
+                    }
                 }
             }
 
@@ -136,10 +146,13 @@ internal class NetworkClient {
         val connection = targetUrl.openConnection() as HttpURLConnection
 
         with(connection) {
-            requestMethod = API_REQUEST_METHOD_POST
+            requestMethod = request.httpRequestMethod
             connectTimeout = TIMEOUT
             readTimeout = TIMEOUT
-            doOutput = true
+            doOutput = when (request.httpRequestMethod) {
+                AcquiringApi.API_REQUEST_METHOD_GET -> false
+                else -> true
+            }
             setRequestProperty("Content-type", if (AcquiringApi.useV1Api(request.apiMethod)) FORM_URL_ENCODED else JSON)
 
             if (request is FinishAuthorizeRequest && request.is3DsVersionV2()) {

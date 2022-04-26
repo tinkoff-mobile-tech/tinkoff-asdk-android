@@ -22,6 +22,7 @@
     <string name="acq_sp_terminal_id" translatable="false">acq_sp_terminal_id</string>
     <string name="acq_sp_android_pay" translatable="false">acq_sp_android_pay</string>
     <string name="acq_sp_fps" translatable="false">acq_sp_fps</string>
+    <string name="acq_sp_tinkoff_pay" translatable="false">acq_sp_tinkoff_pay</string>
     <string name="acq_sp_handle_cards_error" translatable="false">acq_sp_handle_cards_error</string>
 
     <string name="acq_sp_style_id" translatable="false">acq_sp_style_id</string>

@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
@@ -32,6 +33,8 @@ import ru.tinkoff.acquiring.sdk.models.FpsScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankScreenState
+import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
@@ -46,6 +49,7 @@ import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 
 /**
  * @author Mariya Chernyadieva
@@ -54,6 +58,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
 
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     private var cardsResult: MutableLiveData<List<Card>> = MutableLiveData()
+    private var tinkoffPayStatusResult: MutableLiveData<TinkoffPayStatusResponse> = MutableLiveData()
 
     private val paymentListener: PaymentListener = createPaymentListener()
     private val paymentProcess: PaymentProcess = PaymentProcess(sdk)
@@ -62,6 +67,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
 
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
     val cardsResultLiveData: LiveData<List<Card>> = cardsResult
+    val tinkoffPayStatusResultLiveData: LiveData<TinkoffPayStatusResponse> = tinkoffPayStatusResult
 
     var collectedDeviceData: MutableMap<String, String> = mutableMapOf()
 
@@ -76,45 +82,73 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
             is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
             is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
             is FpsState -> changeScreenState(FpsScreenState)
+            is OpenTinkoffPayBankState -> changeScreenState(OpenTinkoffPayBankScreenState(state.paymentId, state.deepLink))
             else -> changeScreenState(PaymentScreenState)
         }
     }
 
-    fun getCardList(handleErrorInSdk: Boolean, customerKey: String?, recurrentPayment: Boolean) {
+    fun loadPaymentData(loadCards: Boolean, handleErrorInSdk: Boolean, customerKey: String?, recurrentPayment: Boolean) {
         changeScreenState(DefaultScreenState)
 
+        coroutine.launchOnMain {
+            changeScreenState(LoadingState)
+
+            val cards = launch {
+                if (loadCards) {
+                    getCardList(handleErrorInSdk, customerKey, recurrentPayment)
+                }
+            }
+            val tinkoffPayStatus = launch { getTinkoffPayStatus() }
+            cards.join()
+            tinkoffPayStatus.join()
+
+            changeScreenState(LoadedState)
+        }
+    }
+
+    private suspend fun getCardList(handleErrorInSdk: Boolean, customerKey: String?, recurrentPayment: Boolean) {
         if (customerKey == null) {
             cardsResult.value = listOf()
         } else {
-            changeScreenState(LoadingState)
-
             val request = sdk.getCardList {
                 this.customerKey = customerKey
             }
 
-            coroutine.call(request,
-                    onSuccess = {
-                        val activeCards = it.cards.filter { card ->
-                            if (recurrentPayment) {
-                                card.status == CardStatus.ACTIVE && !card.rebillId.isNullOrEmpty()
-                            } else {
-                                card.status == CardStatus.ACTIVE
-                            }
-                        }
-                        cardsResult.value = activeCards
-                        changeScreenState(LoadedState)
-                    },
-                    onFailure = {
-                        if (handleErrorInSdk) {
-                            changeScreenState(LoadedState)
-                            cardsResult.value = mutableListOf()
-                        } else {
-                            coroutine.runWithDelay(800) {
-                                changeScreenState(LoadedState)
-                                changeScreenState(FinishWithErrorScreenState(it))
-                            }
-                        }
-                    })
+            try {
+                val result = coroutine.callSuspended(request)
+                val activeCards = result.cards.filter { card ->
+                    if (recurrentPayment) {
+                        card.status == CardStatus.ACTIVE && !card.rebillId.isNullOrEmpty()
+                    } else {
+                        card.status == CardStatus.ACTIVE
+                    }
+                }
+                cardsResult.value = activeCards
+            } catch (e: Throwable) {
+                if (handleErrorInSdk) {
+                    cardsResult.value = mutableListOf()
+                } else {
+                    coroutine.runWithDelay(800) {
+                        changeScreenState(FinishWithErrorScreenState(e))
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun getTinkoffPayStatus() {
+        try {
+            val cached = sdk.tinkoffPayStatusCache
+            tinkoffPayStatusResult.value = when {
+                cached?.isExpired() == false -> cached.status
+                else -> {
+                    val request = sdk.tinkoffPayStatus()
+                    coroutine.callSuspended(request)
+                }
+            }
+        } catch (ignored: Throwable) {
+//            tinkoffPayStatusResult.value = TinkoffPayStatusResponse(TinkoffPayStatusResponse.Params(true, "1.0"))
+            // ignore
         }
     }
 
@@ -126,6 +160,11 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
     fun startFpsPayment(paymentOptions: PaymentOptions) {
         changeScreenState(LoadingState)
         paymentProcess.createSbpPaymentProcess(paymentOptions).subscribe(paymentListener).start()
+    }
+
+    fun startTinkoffPayPayment(paymentOptions: PaymentOptions, tinkoffPayVersion: String) {
+        changeScreenState(LoadingState)
+        paymentProcess.createTinkoffPayPaymentProcess(paymentOptions, tinkoffPayVersion).subscribe(paymentListener).start()
     }
 
     fun finishPayment(paymentId: Long, paymentSource: PaymentSource, email: String? = null) {
@@ -142,7 +181,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
                 onSuccess = { response ->
                     requestPaymentStateCount++
                     when (response.status) {
-                        ResponseStatus.CONFIRMED -> {
+                        ResponseStatus.CONFIRMED, ResponseStatus.AUTHORIZED -> {
                             paymentResult.value = PaymentResult(response.paymentId)
                             requestPaymentStateCount = 0
                             changeScreenState(LoadedState)
@@ -199,6 +238,10 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
                     is BrowseFpsBankState -> {
                         changeScreenState(LoadedState)
                         changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
+                    }
+                    is OpenTinkoffPayBankState -> {
+                        changeScreenState(LoadedState)
+                        changeScreenState(OpenTinkoffPayBankScreenState(state.paymentId, state.deepLink))
                     }
                 }
             }

@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.utils.Request
@@ -28,6 +29,8 @@ import java.util.*
  * @author Mariya Chernyadieva
  */
 abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Request<R> {
+
+    open val httpRequestMethod: String = AcquiringApi.API_REQUEST_METHOD_POST
 
     internal lateinit var terminalKey: String
     internal lateinit var publicKey: PublicKey

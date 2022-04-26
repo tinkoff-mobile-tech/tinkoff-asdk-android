@@ -14,15 +14,26 @@
  *  limitations under the License.
  */
 
-package ru.tinkoff.acquiring.sdk.payment
+package ru.tinkoff.acquiring.sdk.responses
+
+import com.google.gson.annotations.SerializedName
 
 /**
- * @author Mariya Chernyadieva
+ * Ответ на запрос TinkoffPayLink
+ *
+ * @param params Json-объект содержащий дополнительный параметр
  */
-internal sealed class PaymentType
+class TinkoffPayLinkResponse(
+        @SerializedName("Params")
+        val params: Params? = null
 
-internal object SbpPaymentType: PaymentType()
-internal object InitializedSbpPaymentType: PaymentType()
-internal object TinkoffPayPaymentType: PaymentType()
-internal object CardPaymentType : PaymentType()
-internal object FinishPaymentType : PaymentType()
+) : AcquiringResponse() {
+
+    /**
+     * @param redirectUrl URL для перехода в приложение Мобильный Банк
+     */
+    class Params(
+            @SerializedName("RedirectUrl")
+            val redirectUrl: String
+    )
+}
