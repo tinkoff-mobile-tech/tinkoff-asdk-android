@@ -45,9 +45,11 @@ internal class LocalizationResources {
     var payPayViaButton: String? = null
 
     @SerializedName("Pay.PayButton")
+    @Deprecated("Deprecated: use payPayViaButton")
     var payPayButton: String? = null
 
     @SerializedName("Pay.OrText")
+    @Deprecated("Deprecated: 'Or' text is removed from payment screen")
     var payOrText: String? = null
 
     @SerializedName("Pay.PayWithFpsButton")

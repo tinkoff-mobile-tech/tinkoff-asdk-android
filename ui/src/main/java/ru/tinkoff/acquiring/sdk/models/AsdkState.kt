@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.models
 
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import java.io.Serializable
 
@@ -67,3 +68,12 @@ class CollectDataState(val response: Check3dsVersionResponse) : AsdkState() {
  * Системы быстрых платежей, в котором произойдет оплата
  */
 class BrowseFpsBankState(val paymentId: Long, val deepLink: String, val banks: Set<Any?>?) : AsdkState()
+
+/**
+ * Состояние открытия приложения, зарегистрированного для обработки ссылки Tinkoff Pay.
+ *
+ * @param paymentId идентификатор платежа, который можно использовать для запроса статуса платежа с помощью
+ * [AcquiringSdk.getState]
+ * @param deepLink диплинк ведущий на форму оплаты, используется для открытия приложения банка
+ */
+class OpenTinkoffPayBankState(val paymentId: Long, val deepLink: String) : AsdkState()

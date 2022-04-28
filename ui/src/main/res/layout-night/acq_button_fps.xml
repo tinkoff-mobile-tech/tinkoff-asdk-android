@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="?acqViewHorizontalOffset"
+    android:layout_marginTop="@dimen/acq_pay_button_vertical_margin"
     android:layout_marginRight="?acqViewHorizontalOffset"
     android:background="@drawable/acq_button_fps"
     android:gravity="center"

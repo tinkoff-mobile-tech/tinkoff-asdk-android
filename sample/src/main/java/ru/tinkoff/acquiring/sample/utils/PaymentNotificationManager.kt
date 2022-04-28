@@ -160,6 +160,7 @@ object PaymentNotificationManager {
                         useSecureKeyboard = settings.isCustomKeyboardEnabled
                         cameraCardScanner = settings.cameraScanner
                         fpsEnabled = settings.isFpsEnabled
+                        tinkoffPayEnabled = settings.isTinkoffPayEnabled
                         darkThemeMode = settings.resolveDarkThemeMode()
                         theme = settings.resolvePaymentStyle()
                     }

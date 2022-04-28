@@ -20,7 +20,15 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="qr.nspk.ru"/>
+            <data android:scheme="https" android:host="qr.nspk.ru" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" android:host="tinkoff.ru" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" android:host="www.tinkoff.ru" />
         </intent>
     </queries>
 

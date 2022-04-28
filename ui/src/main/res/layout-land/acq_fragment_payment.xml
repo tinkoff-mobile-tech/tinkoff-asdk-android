@@ -126,14 +126,11 @@
                 android:visibility="visible"
                 tools:text="Оплатить" />
 
-            <TextView
-                android:id="@+id/acq_payment_tv_or"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/acq_or_text_margin"
-                android:gravity="center"
-                android:textSize="@dimen/acq_large_text_size"
-                tools:text="или" />
+            <include
+                android:id="@+id/acq_payment_btn_tinkoff_pay"
+                layout="@layout/acq_button_tinkoff_pay"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <include
                 android:id="@+id/acq_payment_btn_fps_pay"

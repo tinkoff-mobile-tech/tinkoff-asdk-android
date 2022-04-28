@@ -21,6 +21,7 @@
     <color name="acq_colorShadow">@android:color/transparent</color>
     <color name="acq_colorCardBackground">@color/acq_colorMainDark</color>
     <color name="acq_colorFpsBackground">#FFFFFF</color>
+    <color name="acq_colorTinkoffPayBackground">#FFFFFF</color>
     <color name="acq_colorSelectedCardBackground">#636363</color>
 
     <color name="acq_colorTitle">#F6F7F8</color>

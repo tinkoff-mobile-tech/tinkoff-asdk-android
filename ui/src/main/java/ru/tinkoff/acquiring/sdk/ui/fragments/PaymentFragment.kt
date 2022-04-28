@@ -24,6 +24,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -62,6 +63,7 @@ import ru.tinkoff.acquiring.sdk.models.SelectCardAndPayState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
+import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.EditCardScanButtonClickListener
@@ -85,7 +87,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
     private lateinit var amountTextView: TextView
     private lateinit var emailEditText: EditText
     private lateinit var orderTitle: TextView
-    private lateinit var orTextView: TextView
+    private lateinit var tinkoffPayButton: View
     private lateinit var fpsButton: View
     private lateinit var payButton: Button
     private lateinit var viewPager: ViewPager
@@ -139,7 +141,6 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         emailHintTextView = view.findViewById(R.id.acq_payment_email_tv_hint)
         orderDescription = view.findViewById(R.id.acq_payment_tv_order_description)
         orderTitle = view.findViewById(R.id.acq_payment_tv_order_title)
-        orTextView = view.findViewById(R.id.acq_payment_tv_or)
         viewPager = view.findViewById(R.id.acq_payment_viewpager)
 
         emailEditText = view.findViewById(R.id.acq_payment_et_email)
@@ -175,6 +176,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             processCardPayment()
         }
 
+        tinkoffPayButton = view.findViewById(R.id.acq_payment_btn_tinkoff_pay)
         fpsButton = view.findViewById(R.id.acq_payment_btn_fps_pay)
 
         return view
@@ -227,21 +229,17 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
 
         emailHintTextView.text = localization.payEmail
         emailEditText.hint = localization.payEmail
-        orTextView.text = localization.payOrText
         fpsButton.findViewById<TextView>(R.id.acq_payment_fps_text).text = localization.payPayWithFpsButton
         (requireActivity() as AppCompatActivity).supportActionBar?.title = localization.payScreenTitle
 
+        payButton.text = localization.payPayViaButton
+
         if (paymentOptions.features.fpsEnabled) {
             setupFpsButton()
-            payButton.text = localization.payPayViaButton
-        } else {
-            orTextView.visibility = View.GONE
-            payButton.text = localization.payPayButton
         }
 
-        if (paymentViewModel.cardsResultLiveData.value == null &&
-                paymentViewModel.loadStateLiveData.value != LoadingState && !isErrorShowing) {
-            loadCards()
+        if (paymentViewModel.loadStateLiveData.value != LoadingState && !isErrorShowing) {
+            loadPaymentData(paymentViewModel.cardsResultLiveData.value == null)
         }
     }
 
@@ -271,7 +269,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
                     if (cardListChanged || selectedCardId != newCardId) {
                         selectedCardId = newCardId
                         viewPagerPosition = FIRST_POSITION
-                        loadCards()
+                        loadPaymentData()
                     }
                 }
             }
@@ -322,22 +320,31 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         }
     }
 
-    private fun loadCards() {
+    private fun setupTinkoffPayButton(version: String) {
+        tinkoffPayButton.visibility = View.VISIBLE
+        tinkoffPayButton.setOnClickListener {
+            hideSystemKeyboard()
+            paymentViewModel.startTinkoffPayPayment(paymentOptions, version)
+        }
+    }
+
+    private fun loadPaymentData(loadCards: Boolean = true) {
         val recurrentPayment = paymentOptions.order.recurrentPayment
         val handleCardsErrorInSdk = paymentOptions.features.handleCardListErrorInSdk
-        paymentViewModel.getCardList(handleCardsErrorInSdk, customerKey, recurrentPayment)
+        paymentViewModel.loadPaymentData(loadCards, handleCardsErrorInSdk, customerKey, recurrentPayment)
     }
 
     private fun observeLiveData() {
         with(paymentViewModel) {
             cardsResultLiveData.observe(viewLifecycleOwner, Observer { handleCardsResult(it) })
             screenStateLiveData.observe(viewLifecycleOwner, Observer { handleScreenState(it) })
+            tinkoffPayStatusResultLiveData.observe(viewLifecycleOwner, Observer { handleTinkoffPayStatusResult(it) })
         }
     }
 
     private fun handleScreenState(screenState: ScreenState) {
         if (screenState is ErrorButtonClickedEvent) {
-            loadCards()
+            loadPaymentData()
         }
     }
 
@@ -362,12 +369,21 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
         }
     }
 
+    private fun handleTinkoffPayStatusResult(status: TinkoffPayStatusResponse) {
+        if (paymentOptions.features.tinkoffPayEnabled && status.isTinkoffPayAvailable()) {
+            val version = status.getTinkoffPayVersion() ?: return
+            // app links are not supported prior to Android API 23
+            if (version == "2.0" && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+            setupTinkoffPayButton(version)
+        }
+    }
+
     private fun processCardPayment() {
         val emailRequired = paymentOptions.features.emailRequired
         val emailText = emailEditText.text.toString()
         val email = when {
             emailEditText.visibility != View.VISIBLE -> null
-            emailRequired || (!emailRequired && emailText.isNotBlank()) -> emailText
+            emailRequired || (!emailRequired && emailText.isNotBlank()) -> emailText.trim()
             else -> null
         }
 

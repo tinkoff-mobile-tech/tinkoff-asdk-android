@@ -29,6 +29,7 @@ enum class PaymentState {
     THREE_DS_V2_REJECTED,
     THREE_DS_NEEDED,
     BROWSE_SBP_BANK,
+    OPEN_TINKOFF_PAY_BANK,
     CHARGE_REJECTED,
     SUCCESS,
     ERROR

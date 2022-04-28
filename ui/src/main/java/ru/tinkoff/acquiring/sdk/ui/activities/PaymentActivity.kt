@@ -19,7 +19,6 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -39,6 +38,8 @@ import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
+import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankScreenState
+import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedState
@@ -51,6 +52,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.fragments.PaymentFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
+import java.lang.IllegalStateException
 
 /**
  * @author Mariya Chernyadieva
@@ -72,7 +74,7 @@ internal class PaymentActivity : TransparentActivity() {
         asdkState = paymentOptions.asdkState
 
         initViews()
-        if (asdkState is BrowseFpsBankState || asdkState is FpsState) {
+        if (asdkState is BrowseFpsBankState || asdkState is FpsState || asdkState is OpenTinkoffPayBankState) {
             bottomContainer.visibility = View.GONE
         }
 
@@ -105,8 +107,14 @@ internal class PaymentActivity : TransparentActivity() {
                     finishWithCancel()
                 } else {
                     data?.getStringExtra(EXTRA_SBP_BANK_PACKAGE_NAME)?.let { packageName ->
-                        openDeepLinkInBank(packageName)
+                        openSbpDeepLinkInBank(packageName)
                     }
+                }
+            }
+            TINKOFF_PAY_REQUEST_CODE -> {
+                val screenState = paymentViewModel.screenChangeEventLiveData.value?.value
+                if (screenState is OpenTinkoffPayBankScreenState) {
+                    paymentViewModel.requestPaymentState(screenState.paymentId)
                 }
             }
         }
@@ -153,6 +161,7 @@ internal class PaymentActivity : TransparentActivity() {
                 }
                 is BrowseFpsBankScreenState -> openBankChooser(screen.deepLink, screen.banks)
                 is FpsScreenState -> paymentViewModel.startFpsPayment(paymentOptions)
+                is OpenTinkoffPayBankScreenState -> openTinkoffPayDeepLinkInBank(screen.deepLink)
                 else -> Unit
             }
         }
@@ -162,7 +171,7 @@ internal class PaymentActivity : TransparentActivity() {
         when (screenState) {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> {
-                if (asdkState is FpsState || asdkState is BrowseFpsBankState) {
+                if (asdkState is FpsState || asdkState is BrowseFpsBankState || asdkState is OpenTinkoffPayBankState) {
                     finishWithError(AcquiringSdkException(NetworkException(screenState.message)))
                 } else {
                     showError(screenState.message)
@@ -216,12 +225,18 @@ internal class PaymentActivity : TransparentActivity() {
         }.distinct()
     }
 
-    private fun openDeepLinkInBank(packageName: String) {
+    private fun openSbpDeepLinkInBank(packageName: String) {
         val payload = (paymentViewModel.screenChangeEventLiveData.value?.value as BrowseFpsBankScreenState).deepLink
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(payload)
         intent.setPackage(packageName)
         startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
+    }
+
+    private fun openTinkoffPayDeepLinkInBank(deepLink: String) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(deepLink)
+        startActivityForResult(intent, TINKOFF_PAY_REQUEST_CODE)
     }
 
     private fun showError(message: String) {
@@ -234,6 +249,7 @@ internal class PaymentActivity : TransparentActivity() {
     companion object {
         private const val SBP_BANK_REQUEST_CODE = 112
         private const val SBP_BANK_CHOOSE_REQUEST_CODE = 113
+        private const val TINKOFF_PAY_REQUEST_CODE = 114
 
         internal const val EXTRA_SBP_BANK_PACKAGE_NAME = "sbp_bank_package_name"
     }

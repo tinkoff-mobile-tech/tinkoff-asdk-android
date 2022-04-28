@@ -46,6 +46,12 @@
         android:title="@string/settings_title_fps"
         app:iconSpaceReserved="false" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/acq_sp_tinkoff_pay"
+        android:title="@string/settings_title_tinkoff_pay"
+        app:iconSpaceReserved="false" />
+
     <ListPreference
         android:key="@string/acq_sp_terminal_id"
         android:title="@string/settings_title_terminal_id"

@@ -21,8 +21,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author Mariya Chernyadieva
@@ -56,6 +61,20 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
         }
     }
 
+    suspend fun <R> callSuspended(request: Request<R>): R {
+        disposableSet.add(request)
+
+        return withContext(IO) {
+            suspendCoroutine<R> { continuation ->
+                request.execute({ result ->
+                    continuation.resume(result)
+                }, { exception ->
+                    continuation.resumeWithException(exception)
+                })
+            }
+        }
+    }
+
     fun cancelAll() {
         disposableSet.forEach {
             it.dispose()
@@ -67,6 +86,12 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
         coroutineScope.launch(Dispatchers.Main) {
             delay(timeMills)
             block.invoke()
+        }
+    }
+
+    fun launchOnMain(block: suspend CoroutineScope.() -> Unit) {
+        coroutineScope.launch(Dispatchers.Main) {
+            block.invoke(this)
         }
     }
 

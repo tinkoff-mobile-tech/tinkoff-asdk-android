@@ -175,10 +175,9 @@ internal class BottomContainer @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        if (changed) {
-            if (initialPositionY == 0) {
-                initialPositionY = height - getChildHeight()
-            }
+        val prevInitialPositionY = initialPositionY
+        initialPositionY = height - getChildHeight()
+        if (prevInitialPositionY != initialPositionY) {
             if (showInitAnimation) {
                 if (initialPositionY <= topPositionY) {
                     initialPositionY = statusBarHeight
@@ -194,7 +193,9 @@ internal class BottomContainer @JvmOverloads constructor(
                         openFullScreen()
                     } else {
                         if (containerState == STATE_SHOWED) {
-                            setToPosition(initialPositionY.toFloat())
+                            if (initAnimation?.isRunning != true) {
+                                setToPosition(initialPositionY.toFloat())
+                            }
                         } else {
                             setToPosition(screenHeight.toFloat())
                         }
@@ -384,13 +385,10 @@ internal class BottomContainer @JvmOverloads constructor(
     }
 
     private fun getChildHeight(): Int {
-        var childHeight = 0
-        for (index in 0 until this.childCount) {
-            val child = this.getChildAt(index)
-            childHeight += child.height
-        }
-
-        return childHeight
+        val widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST)
+        val child = getChildAt(0)
+        child.measure(widthSpec, MeasureSpec.UNSPECIFIED)
+        return child.measuredHeight
     }
 
     private fun getPositionInParent(child: View?): IntArray {

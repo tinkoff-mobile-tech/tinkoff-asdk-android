@@ -33,6 +33,7 @@
     <color name="acq_colorDarkHint">#9299A2</color>
     <color name="acq_colorQrBackground">#F6F7F8</color>
     <color name="acq_colorFpsBackground">#0F0738</color>
+    <color name="acq_colorTinkoffPayBackground">#000000</color>
     <color name="acq_colorSelectedCardBackground">#F1F1F1</color>
     <color name="acq_colorTextInvalid">#F52222</color>
     <color name="acq_colorTextButton">@color/acq_colorText</color>
