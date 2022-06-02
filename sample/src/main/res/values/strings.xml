@@ -60,6 +60,7 @@
     <string name="cart_list_item_count_format">"%1$d Qty "</string>
 
     <string name="settings_title_use_system_keyboard">Use system keyboard</string>
+    <string name="settings_title_validate_expiry_date">Validate expiry date</string>
     <string name="settings_title_recurrent_payment">Recurrent payment</string>
     <string name="settings_title_handle_cards_list_error">Handle cards list error in SDK</string>
     <string name="settings_title_google_pay">GooglePay</string>

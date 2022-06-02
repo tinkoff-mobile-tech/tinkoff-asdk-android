@@ -24,6 +24,11 @@
         app:iconSpaceReserved="false" />
 
     <SwitchPreference
+        android:key="@string/acq_sp_validate_expiry_date"
+        android:title="@string/settings_title_validate_expiry_date"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
         android:key="@string/acq_sp_recurrent_payment"
         android:title="@string/settings_title_recurrent_payment"
         app:iconSpaceReserved="false" />

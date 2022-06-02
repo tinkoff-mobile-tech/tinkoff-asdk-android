@@ -103,6 +103,7 @@ internal class AttachCardFragment : BaseAcquiringFragment(), EditCardScanButtonC
                 cardCvcHint = localization.payCardCvcHint ?: ""
                 useSecureKeyboard = attachCardOptions.features.useSecureKeyboard
                 isScanButtonVisible = cardScanner.cardScanAvailable
+                validateNotExpired = attachCardOptions.features.validateExpiryDate
                 requestFocus()
             }
 

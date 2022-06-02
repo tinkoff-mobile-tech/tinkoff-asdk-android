@@ -125,6 +125,7 @@ internal class CardsViewPagerAdapter(
                     scanButtonClickListener = scanButtonListener
                     isScanButtonVisible = canScanCard
                     useSecureKeyboard = options.features.useSecureKeyboard
+                    validateNotExpired = options.features.validateExpiryDate
 
                     val localization = AsdkLocalization.resources
                     cardNumberHint = localization.payCardPanHint ?: ""
@@ -157,6 +158,7 @@ internal class CardsViewPagerAdapter(
 
                     useSecureKeyboard = options.features.useSecureKeyboard
                     isScanButtonVisible = false
+                    validateNotExpired = options.features.validateExpiryDate
 
                     if (rejectedItem == position) {
                         setMode(EditCard.EditCardMode.EDIT_CVC_ONLY)

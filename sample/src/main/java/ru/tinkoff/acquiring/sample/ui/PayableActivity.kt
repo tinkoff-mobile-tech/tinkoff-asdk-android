@@ -195,6 +195,7 @@ open class PayableActivity : AppCompatActivity() {
                         localizationSource = AsdkSource(Language.RU)
                         handleCardListErrorInSdk = settings.handleCardListErrorInSdk
                         useSecureKeyboard = settings.isCustomKeyboardEnabled
+                        validateExpiryDate = settings.validateExpiryDate
                         cameraCardScanner = settings.cameraScanner
                         fpsEnabled = settings.isFpsEnabled
                         tinkoffPayEnabled = settings.isTinkoffPayEnabled
