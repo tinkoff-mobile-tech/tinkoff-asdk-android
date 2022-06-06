@@ -1,3 +1,10 @@
+## 2.5.7
+
+#### Fixed
+#### Changes
+Added option to disable validation of card expiry date; expiry date is not validated by default
+#### Additions
+
 ## 2.5.6
 
 #### Fixed

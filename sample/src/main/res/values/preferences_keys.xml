@@ -18,6 +18,7 @@
 <resources>
 
     <string name="acq_sp_use_system_keyboard" translatable="false">acq_sp_use_system_keyboard</string>
+    <string name="acq_sp_validate_expiry_date" translatable="false">acq_sp_validate_expiry_date</string>
     <string name="acq_sp_recurrent_payment" translatable="false">acq_sp_recurrent_payment</string>
     <string name="acq_sp_terminal_id" translatable="false">acq_sp_terminal_id</string>
     <string name="acq_sp_android_pay" translatable="false">acq_sp_android_pay</string>

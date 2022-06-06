@@ -38,6 +38,9 @@ class SettingsSdkManager(private val context: Context) {
             return !preferences.getBoolean(key, false)
         }
 
+    val validateExpiryDate: Boolean
+        get() = preferences.getBoolean(context.getString(R.string.acq_sp_validate_expiry_date), false)
+
     val terminalKey: String
         get() {
             val key = context.getString(R.string.acq_sp_terminal_id)
@@ -60,7 +63,8 @@ class SettingsSdkManager(private val context: Context) {
     val checkType: String
         get() {
             val defaultCheckType = context.getString(R.string.acq_sp_check_type_no)
-            return preferences.getString(context.getString(R.string.acq_sp_check_type_id), defaultCheckType) ?: defaultCheckType
+            return preferences.getString(context.getString(R.string.acq_sp_check_type_id), defaultCheckType)
+                    ?: defaultCheckType
         }
 
     val cameraScanner: CameraCardScanner

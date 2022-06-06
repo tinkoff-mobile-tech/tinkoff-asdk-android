@@ -69,8 +69,12 @@ internal object CardValidator {
         } catch (e: NumberFormatException) {
             return false
         }
-
         if (month in 1..12) {
+            return true
+        }
+
+        // disable expiration validation
+        /*if (month in 1..12) {
             val c = Calendar.getInstance()
             val currentYearStr = c.get(Calendar.YEAR).toString().substring(2)
             val currentMonth = c.get(Calendar.MONTH) + 1
@@ -81,7 +85,7 @@ internal object CardValidator {
             if (year > currentYear && year <= currentYear + 20) {
                 return true
             }
-        }
+        }*/
 
         return false
     }

@@ -61,6 +61,7 @@
     <string name="cart_list_item_count_format">"%1$d шт. "</string>
 
     <string name="settings_title_use_system_keyboard">Использовать системную клавиатуру</string>
+    <string name="settings_title_validate_expiry_date">Валидировать срок действия карты</string>
     <string name="settings_title_recurrent_payment">Рекуррентный платёж</string>
     <string name="settings_title_handle_cards_list_error">Обработать ошибки получения списка карт в SDK</string>
     <string name="settings_title_google_pay">GooglePay</string>

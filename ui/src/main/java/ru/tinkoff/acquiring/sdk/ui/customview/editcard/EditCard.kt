@@ -196,6 +196,8 @@ internal class EditCard @JvmOverloads constructor(
             invalidate()
         }
 
+    var validateNotExpired: Boolean = false
+
     private var cursorPosition: Int = 0
     private var editableField: EditCardField = CARD_NUMBER
     private var viewState: Int = FULL_CARD_NUMBER_STATE
@@ -919,7 +921,7 @@ internal class EditCard @JvmOverloads constructor(
     private fun isValid(field: EditCardField): Boolean {
         return when (field) {
             CARD_NUMBER -> CardValidator.validateCardNumber(cardNumber) || checkFlags(FLAG_MASKED_NUMBER)
-            EXPIRE_DATE -> CardValidator.validateExpireDate(cardDate)
+            EXPIRE_DATE -> CardValidator.validateExpireDate(cardDate, validateNotExpired)
             SECURE_CODE -> CardValidator.validateSecurityCode(cardCvc)
         }
     }

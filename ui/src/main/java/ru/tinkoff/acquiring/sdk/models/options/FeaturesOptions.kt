@@ -112,6 +112,14 @@ class FeaturesOptions() : Options(), Parcelable {
      */
     var emailRequired: Boolean = true
 
+    /**
+     * Следует ли при валидации данных карты показывать пользователю ошибку, если введенная
+     * им срок действия карты уже истек.
+     * Если установить в true - пользователь не сможет добавить или провести оплату с помощью
+     * карты с истекшим сроком действия.
+     */
+    var validateExpiryDate: Boolean = false
+
     private constructor(parcel: Parcel) : this() {
         parcel.run {
             theme = readInt()
@@ -126,6 +134,7 @@ class FeaturesOptions() : Options(), Parcelable {
             emailRequired = readByte().toInt() != 0
             userCanSelectCard = readByte().toInt() != 0
             showOnlyRecurrentCards = readByte().toInt() != 0
+            validateExpiryDate = readByte().toInt() != 0
         }
     }
 
@@ -143,6 +152,7 @@ class FeaturesOptions() : Options(), Parcelable {
             writeByte((if (emailRequired) 1 else 0).toByte())
             writeByte((if (userCanSelectCard) 1 else 0).toByte())
             writeByte((if (showOnlyRecurrentCards) 1 else 0).toByte())
+            writeByte((if (validateExpiryDate) 1 else 0).toByte())
         }
     }
 
