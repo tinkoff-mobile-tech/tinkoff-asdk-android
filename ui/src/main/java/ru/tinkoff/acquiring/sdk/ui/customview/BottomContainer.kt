@@ -63,6 +63,7 @@ internal class BottomContainer @JvmOverloads constructor(
     private var layoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var velocityTracker: VelocityTracker? = null
     private var initAnimation: AnimatorSet? = null
+    private var expandAnimation: Animator? = null
     private var scrollableView: View? = null
     private var background: FrameLayout? = null
     private var isFullScreenOpened = false
@@ -187,7 +188,9 @@ internal class BottomContainer @JvmOverloads constructor(
                 }
             } else {
                 if (isExpanded) {
-                    setToPosition(expandedPositionY)
+                    if (expandAnimation?.isRunning != true) {
+                        setToPosition(expandedPositionY)
+                    }
                 } else {
                     if (initialPositionY <= topPositionY || containerState == STATE_FULLSCREEN) {
                         openFullScreen()
@@ -361,7 +364,7 @@ internal class BottomContainer @JvmOverloads constructor(
             return
         }
 
-        getTranslationYAnimator(this, expandedPositionY, MOVING_ANIMATION_DURATION,
+        expandAnimation = getTranslationYAnimator(this, expandedPositionY, MOVING_ANIMATION_DURATION,
                 DecelerateInterpolator())
                 .apply {
                     addListener(object : AnimatorListenerAdapter() {
@@ -370,7 +373,8 @@ internal class BottomContainer @JvmOverloads constructor(
                             resizeScrollContainer()
                         }
                     })
-                }.start()
+                    start()
+                }
     }
 
     fun collapse() {
@@ -424,7 +428,7 @@ internal class BottomContainer @JvmOverloads constructor(
             scrollContainer.layoutParams.height = heightParam
             isScrollDisabled = false
         } else {
-            scrollContainer.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            scrollContainer.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             isScrollDisabled = true
         }
         scrollContainer.requestLayout()

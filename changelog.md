@@ -1,3 +1,10 @@
+## 2.5.9
+
+#### Fixed
+Fixed displaying of dialog with keyboard
+#### Changes
+#### Additions
+
 ## 2.5.8
 
 #### Fixed
