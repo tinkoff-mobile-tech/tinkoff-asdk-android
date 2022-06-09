@@ -385,10 +385,7 @@ internal class BottomContainer @JvmOverloads constructor(
     }
 
     private fun getChildHeight(): Int {
-        val widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST)
-        val child = getChildAt(0)
-        child.measure(widthSpec, MeasureSpec.UNSPECIFIED)
-        return child.measuredHeight
+        return getChildAt(0).height
     }
 
     private fun getPositionInParent(child: View?): IntArray {

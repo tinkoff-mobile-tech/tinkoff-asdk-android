@@ -129,6 +129,7 @@ class FeaturesOptions() : Options(), Parcelable {
             handleCardListErrorInSdk = readByte().toInt() != 0
             darkThemeMode = DarkThemeMode.valueOf(readString() ?: DarkThemeMode.AUTO.name)
             fpsEnabled = readByte().toInt() != 0
+            tinkoffPayEnabled = readByte().toInt() != 0
             selectedCardId = readString()
             handleErrorsInSdk = readByte().toInt() != 0
             emailRequired = readByte().toInt() != 0
@@ -147,6 +148,7 @@ class FeaturesOptions() : Options(), Parcelable {
             writeByte((if (handleCardListErrorInSdk) 1 else 0).toByte())
             writeString(darkThemeMode.name)
             writeByte((if (fpsEnabled) 1 else 0).toByte())
+            writeByte((if (tinkoffPayEnabled) 1 else 0).toByte())
             writeString(selectedCardId)
             writeByte((if (handleErrorsInSdk) 1 else 0).toByte())
             writeByte((if (emailRequired) 1 else 0).toByte())
