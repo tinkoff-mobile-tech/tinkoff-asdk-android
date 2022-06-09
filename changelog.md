@@ -1,3 +1,10 @@
+## 2.5.8
+
+#### Fixed
+Fixed FPS bank selection dialog
+#### Changes
+#### Additions
+
 ## 2.5.7
 
 #### Fixed
