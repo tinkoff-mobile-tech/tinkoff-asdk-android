@@ -321,7 +321,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [build-config]: https://developer.android.com/studio/build/index.html
 [support-email]: mailto:oplata@tinkoff.ru
 [issues]: https://github.com/Tinkoff/AcquiringSdkAndroid/issues
-[acquiring]: https://www.tinkoff.ru/business/internet-acquiring/
+[acquiring]: https://www.tinkoff.ru/kassa/
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
 [google-pay-brand]: https://developers.google.com/pay/api/android/guides/brand-guidelines
 [full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
