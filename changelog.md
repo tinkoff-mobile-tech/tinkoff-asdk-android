@@ -1,3 +1,11 @@
+## 2.5.10
+
+#### Fixed
+Fixed opening of payment dialog on some devices
+#### Changes
+Tinkoff Pay payment form opens in a separate window now
+#### Additions
+
 ## 2.5.9
 
 #### Fixed
