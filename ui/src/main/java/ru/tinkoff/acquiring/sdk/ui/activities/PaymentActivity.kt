@@ -236,6 +236,7 @@ internal class PaymentActivity : TransparentActivity() {
     private fun openTinkoffPayDeepLinkInBank(deepLink: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(deepLink)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivityForResult(intent, TINKOFF_PAY_REQUEST_CODE)
     }
 

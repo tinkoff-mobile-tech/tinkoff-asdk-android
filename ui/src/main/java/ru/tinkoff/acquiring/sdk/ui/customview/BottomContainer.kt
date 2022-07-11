@@ -178,7 +178,7 @@ internal class BottomContainer @JvmOverloads constructor(
         super.onLayout(changed, left, top, right, bottom)
         val prevInitialPositionY = initialPositionY
         initialPositionY = height - getChildHeight()
-        if (prevInitialPositionY != initialPositionY) {
+        if (prevInitialPositionY == 0 || prevInitialPositionY != initialPositionY) {
             if (showInitAnimation) {
                 if (initialPositionY <= topPositionY) {
                     initialPositionY = statusBarHeight
@@ -389,7 +389,13 @@ internal class BottomContainer @JvmOverloads constructor(
     }
 
     private fun getChildHeight(): Int {
-        return getChildAt(0).height
+        var childHeight = 0
+        for (index in 0 until this.childCount) {
+            val child = this.getChildAt(index)
+            childHeight += child.height
+        }
+
+        return childHeight
     }
 
     private fun getPositionInParent(child: View?): IntArray {
