@@ -23,7 +23,7 @@ package ru.tinkoff.acquiring.sdk.models.enums
  */
 enum class ResponseStatus {
     NEW,
-    CANCELLED,
+    CANCELED,
     PREAUTHORIZING,
     FORMSHOWED,
     AUTHORIZING,
@@ -32,10 +32,12 @@ enum class ResponseStatus {
     AUTHORIZED,
     REVERSING,
     REVERSED,
+    PARTIAL_REVERSED,
     CONFIRMING,
     CONFIRMED,
     REFUNDING,
     REFUNDED,
+    PARTIAL_REFUNDED,
     REJECTED,
     UNKNOWN,
     LOOP_CHECKING,

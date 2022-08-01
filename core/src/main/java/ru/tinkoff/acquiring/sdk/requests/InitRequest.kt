@@ -22,12 +22,11 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.INIT_METHOD
 import ru.tinkoff.acquiring.sdk.responses.InitResponse
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * Инициирует новый платеж
  *
- * @author Mariya Chernyadieva
+ * @author Mariya Chernyadieva, Taras Nagorny
  */
 class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
 
@@ -119,6 +118,11 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
             }
         }
 
+    /**
+     * Адрес для получения http нотификаций
+     */
+    var notificationURL: String? = null
+
     var sdkVersion: String? = null
 
     private var redirectDueDateFormat: String? = null
@@ -139,6 +143,7 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
         map.putIfNotNull(RECEIPTS, receipts)
         map.putIfNotNull(SHOPS, shops)
         map.putIfNotNull(REDIRECT_DUE_DATE, redirectDueDateFormat)
+        map.putIfNotNull(NOTIFICATION_URL, notificationURL)
         map.putDataIfNonNull(data)
 
         return map

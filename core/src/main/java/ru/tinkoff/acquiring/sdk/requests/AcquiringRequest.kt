@@ -21,12 +21,11 @@ import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.utils.Request
 import java.security.PublicKey
-import java.util.*
 
 /**
  * Базовый класс создания запроса Acquiring API
  *
- * @author Mariya Chernyadieva
+ * @author Mariya Chernyadieva, Taras Nagorny
  */
 abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Request<R> {
 
@@ -37,6 +36,8 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
     @Volatile
     private var disposed = false
     private val ignoredFieldsSet: HashSet<String> = hashSetOf(DATA, RECEIPT, RECEIPTS, SHOPS)
+
+    public var password: String? = null
 
     internal open val tokenIgnoreFields: HashSet<String>
         get() = ignoredFieldsSet
@@ -56,6 +57,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         val map = HashMap<String, Any>()
 
         map.putIfNotNull(TERMINAL_KEY, terminalKey)
+        map.putIfNotNull(PASSWORD, password)
 
         return map
     }
@@ -89,6 +91,8 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
     internal companion object {
 
         const val TERMINAL_KEY = "TerminalKey"
+        const val PASSWORD = "Password"
+        const val TOKEN = "Token"
         const val PAYMENT_ID = "PaymentId"
         const val SEND_EMAIL = "SendEmail"
         const val EMAIL = "InfoEmail"
@@ -117,6 +121,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val ANDROID_PAY_TOKEN = "EncryptedPaymentData"
         const val DATA_TYPE = "DataType"
         const val REDIRECT_DUE_DATE = "RedirectDueDate"
+        const val NOTIFICATION_URL = "NotificationURL"
         const val IP = "IP"
         const val CONNECTION_TYPE = "connection_type"
         const val SDK_VERSION = "sdk_version"

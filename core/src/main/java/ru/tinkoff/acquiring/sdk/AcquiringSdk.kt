@@ -33,13 +33,12 @@ import java.security.PublicKey
  * @param publicKey   экземпляр PublicKey созданный из публичного ключа, выдаваемого вместе с
  *                    terminalKey
  *
- * @author Mariya Chernyadieva
+ * @author Mariya Chernyadieva, Taras Nagorny
  */
 class AcquiringSdk(
         private val terminalKey: String,
         private val publicKey: PublicKey
 ) {
-
     var tinkoffPayStatusCache: TinkoffPayStatusCache? = null
 
     constructor(terminalKey: String, publicKey: String) :
@@ -106,6 +105,29 @@ class AcquiringSdk(
      */
     fun charge(request: ChargeRequest.() -> Unit): ChargeRequest {
         return ChargeRequest().apply(request).apply {
+            terminalKey = this@AcquiringSdk.terminalKey
+        }
+    }
+
+    /**
+     * Метод подтверждает платеж и списывает ранее заблокированные средства.
+     * Используется при двухстадийной оплате. При одностадийной оплате вызывается автоматически.
+     * Применим к платежу только в статусе AUTHORIZED и только один раз.
+     *
+     * Сумма подтверждения не может быть больше заблокированной.
+     * Если сумма подтверждения меньше заблокированной, будет выполнено частичное подтверждение
+     */
+    fun confirm(request: ConfirmRequest.() -> Unit): ConfirmRequest {
+        return ConfirmRequest().apply(request).apply {
+            terminalKey = this@AcquiringSdk.terminalKey
+        }
+    }
+
+    /**
+     * Метод отменяет платеж
+     */
+    fun cancel(request: CancelRequest.() -> Unit): CancelRequest {
+        return CancelRequest().apply(request).apply {
             terminalKey = this@AcquiringSdk.terminalKey
         }
     }
