@@ -208,7 +208,7 @@ internal class NetworkClient {
     }
 
     private fun <R : AcquiringResponse> enrichWithToken(request: AcquiringRequest<R>): MutableMap<String, Any> {
-        var token = ""
+        val token = StringBuilder()
 
         val params = request.asMap()
         val sortedKeys = params.keys.sorted()
@@ -218,10 +218,10 @@ internal class NetworkClient {
             if (ignore.contains(it))
                 return@forEach
 
-            token += params[it]
+            token.append(params[it])
         }
 
-        params[AcquiringRequest.TOKEN] = token.sha256()
+        params[AcquiringRequest.TOKEN] = token.toString().sha256()
         params.remove(AcquiringRequest.PASSWORD)
 
         return params
