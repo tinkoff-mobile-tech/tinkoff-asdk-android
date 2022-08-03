@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.utils
 
 import java.security.InvalidKeyException
+import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.security.PublicKey
 import javax.crypto.BadPaddingException
@@ -25,7 +26,7 @@ import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 
 /**
- * @author Mariya Chernyadieva
+ * @author Mariya Chernyadieva, Taras Nagorny
  */
 internal object CryptoUtils {
 
@@ -49,5 +50,16 @@ internal object CryptoUtils {
 
     fun encodeBase64(value: ByteArray): String {
         return Base64.encodeToString(value, Base64.DEFAULT).trim()
+    }
+
+    fun String.sha256(): String {
+        return hashString(this)
+    }
+
+    private fun hashString(input: String): String {
+        return MessageDigest
+            .getInstance("SHA-256")
+            .digest(input.toByteArray())
+            .fold("") { str, it -> str + "%02x".format(it) }
     }
 }

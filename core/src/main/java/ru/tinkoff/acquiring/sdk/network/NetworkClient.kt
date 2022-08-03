@@ -34,17 +34,9 @@ import ru.tinkoff.acquiring.sdk.requests.AcquiringRequest
 import ru.tinkoff.acquiring.sdk.requests.FinishAuthorizeRequest
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
-import ru.tinkoff.acquiring.sdk.utils.serialization.CardStatusSerializer
-import ru.tinkoff.acquiring.sdk.utils.serialization.CardsListDeserializer
-import ru.tinkoff.acquiring.sdk.utils.serialization.PaymentStatusSerializer
-import ru.tinkoff.acquiring.sdk.utils.serialization.SerializableExclusionStrategy
-import ru.tinkoff.acquiring.sdk.utils.serialization.TaxSerializer
-import ru.tinkoff.acquiring.sdk.utils.serialization.TaxationSerializer
-import java.io.Closeable
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStream
-import java.io.UnsupportedEncodingException
+import ru.tinkoff.acquiring.sdk.utils.CryptoUtils.sha256
+import ru.tinkoff.acquiring.sdk.utils.serialization.*
+import java.io.*
 import java.lang.reflect.Modifier
 import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_OK
@@ -53,7 +45,7 @@ import java.net.URL
 import java.net.URLEncoder
 
 /**
- * @author Mariya Chernyadieva
+ * @author Mariya Chernyadieva, Taras Nagorny
  */
 internal class NetworkClient {
 
@@ -165,7 +157,7 @@ internal class NetworkClient {
     }
 
     private fun <R : AcquiringResponse> prepareBody(request: AcquiringRequest<R>, onReady: (ByteArray) -> Unit) {
-        val requestBody = formatRequestBody(request.asMap(), request.apiMethod)
+        val requestBody = formatRequestBody(request)
         AcquiringSdk.log("=== Parameters: $requestBody")
 
         onReady(requestBody.toByteArray())
@@ -181,7 +173,7 @@ internal class NetworkClient {
 
     @Throws(MalformedURLException::class)
     private fun prepareURL(apiMethod: String?): URL {
-        if (apiMethod == null || apiMethod.isEmpty()) {
+        if (apiMethod.isNullOrEmpty()) {
             throw IllegalArgumentException(
                     "Cannot prepare URL for request api method is empty or null!"
             )
@@ -194,11 +186,17 @@ internal class NetworkClient {
         return URL(builder.toString())
     }
 
-    private fun formatRequestBody(params: Map<String, Any>?, apiMethod: String): String {
-        if (params == null || params.isEmpty()) {
+    private fun <R : AcquiringResponse> formatRequestBody(request: AcquiringRequest<R>): String {
+        val params = if (request.password != null)
+            enrichWithToken(request)
+        else
+            request.asMap()
+
+        if (params.isEmpty()) {
             return ""
         }
-        return if (AcquiringApi.useV1Api(apiMethod)) {
+
+        return if (AcquiringApi.useV1Api(request.apiMethod)) {
             encodeRequestBody(params)
         } else {
             jsonRequestBody(params)
@@ -207,6 +205,26 @@ internal class NetworkClient {
 
     private fun jsonRequestBody(params: Map<String, Any>): String {
         return gson.toJson(params)
+    }
+
+    private fun <R : AcquiringResponse> enrichWithToken(request: AcquiringRequest<R>): MutableMap<String, Any> {
+        val token = StringBuilder()
+
+        val params = request.asMap()
+        val sortedKeys = params.keys.sorted()
+        val ignore = request.tokenIgnoreFields
+
+        sortedKeys.forEach {
+            if (ignore.contains(it))
+                return@forEach
+
+            token.append(params[it])
+        }
+
+        params[AcquiringRequest.TOKEN] = token.toString().sha256()
+        params.remove(AcquiringRequest.PASSWORD)
+
+        return params
     }
 
     private fun encodeRequestBody(params: Map<String, Any>): String {

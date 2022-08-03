@@ -20,31 +20,31 @@ import com.google.gson.annotations.SerializedName
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 
 /**
- * Ответ на запрос Init
+ * Ответ на запрос Cancel
  *
- * @param amount        сумма списания в копейках
- * @param orderId       номер заказа в системе продавца
- * @param paymentId     уникальный идентификатор транзакции в системе банка
- * @param status        статус транзакции
- * @param paymentURL    ссылка на платежную форму
+ * @param orderId           идентификатор заказа в системе продавца
+ * @param status            статус платежа
+ * @param paymentId         уникальный идентификатор транзакции в системе банка
+ * @param originalAmount    сумма до возврата в копейках
+ * @param newAmount         сумма после возврата в копейках
  *
- * @author Mariya Chernyadieva, Taras Nagorny
+ * @author Taras Nagorny
  */
-class InitResponse(
-
-        @SerializedName("Amount")
-        val amount: Long? = null,
+class CancelResponse(
 
         @SerializedName("OrderId")
         val orderId: String? = null,
 
-        @SerializedName("PaymentId")
-        val paymentId: Long? = null,
-
         @SerializedName("Status")
         val status: ResponseStatus? = null,
 
-        @SerializedName("PaymentURL")
-        val paymentURL: String? = null
+        @SerializedName("PaymentId")
+        val paymentId: Long? = null,
+
+        @SerializedName("OriginalAmount")
+        val originalAmount: Long? = null,
+
+        @SerializedName("NewAmount")
+        val newAmount: Long? = null
 
 ) : AcquiringResponse()
