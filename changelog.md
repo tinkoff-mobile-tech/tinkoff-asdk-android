@@ -1,3 +1,10 @@
+## 2.5.11
+
+#### Fixed
+#### Changes
+#### Additions
+Various improvements in core module for non-Android SDK usages
+
 ## 2.5.10
 
 #### Fixed
