@@ -921,7 +921,9 @@ internal class EditCard @JvmOverloads constructor(
     private fun isValid(field: EditCardField): Boolean {
         return when (field) {
             CARD_NUMBER -> CardValidator.validateCardNumber(cardNumber) || checkFlags(FLAG_MASKED_NUMBER)
-            EXPIRE_DATE -> CardValidator.validateExpireDate(cardDate, validateNotExpired)
+            // В марте 2022 года многие банки продлили сроки действия карт. Валидация истекшего срока действия проводиться не должна. 
+            // Другие сервисы эквайринга не проводят валидацию карт на предмет истекшего срока действия
+            // EXPIRE_DATE -> CardValidator.validateExpireDate(cardDate, validateNotExpired)
             SECURE_CODE -> CardValidator.validateSecurityCode(cardCvc)
         }
     }
