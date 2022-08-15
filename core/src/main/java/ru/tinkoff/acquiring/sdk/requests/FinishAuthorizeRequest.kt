@@ -152,7 +152,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
     }
 
     private fun MutableMap<String, Any>.putDataIfNonNull(data: Map<String, String>?) {
-        if (data != null) {
+        if (!data.isNullOrEmpty()) {
             this[DATA] = data.toMutableMap()
         }
     }

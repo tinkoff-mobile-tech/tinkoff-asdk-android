@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -30,7 +31,11 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 /**
  * @author Mariya Chernyadieva
  */
-internal class SavedCardsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
+internal class SavedCardsViewModel(
+    application: Application,
+    handleErrorsInSdk: Boolean,
+    sdk: AcquiringSdk
+) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
     private val needHandleErrorsInSdk = handleErrorsInSdk
     private val deleteCardEvent: MutableLiveData<SingleEvent<CardStatus>> = MutableLiveData()
@@ -48,26 +53,26 @@ internal class SavedCardsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
         }
 
         coroutine.call(request,
-                onSuccess = {
-                    var activeCards = it.cards.filter { card ->
-                        card.status == CardStatus.ACTIVE
-                    }
-                    if (recurrentOnly) {
-                        activeCards = activeCards.filter { card -> !card.rebillId.isNullOrBlank() }
-                    }
-                    cardsResult.value = activeCards
+            onSuccess = {
+                var activeCards = it.cards.filter { card ->
+                    card.status == CardStatus.ACTIVE
+                }
+                if (recurrentOnly) {
+                    activeCards = activeCards.filter { card -> !card.rebillId.isNullOrBlank() }
+                }
+                cardsResult.value = activeCards
+                changeScreenState(LoadedState)
+            },
+            onFailure = {
+                val apiError = it as? AcquiringApiException
+                if (needHandleErrorsInSdk && apiError != null && it.response != null &&
+                    it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND) {
                     changeScreenState(LoadedState)
-                },
-                onFailure = {
-                    val apiError = it as? AcquiringApiException
-                    if (needHandleErrorsInSdk && apiError != null && it.response != null &&
-                            it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND) {
-                        changeScreenState(LoadedState)
-                        changeScreenState(ErrorScreenState(AsdkLocalization.resources.cardListEmptyList ?: ""))
-                    } else {
-                        handleException(it)
-                    }
-                })
+                    changeScreenState(ErrorScreenState(AsdkLocalization.resources.cardListEmptyList ?: ""))
+                } else {
+                    handleException(it)
+                }
+            })
     }
 
     fun deleteCard(cardId: String, customerKey: String) {
@@ -77,16 +82,16 @@ internal class SavedCardsViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
         }
 
         coroutine.call(request,
-                onSuccess = { response ->
-                    when (response.status) {
-                        CardStatus.DELETED -> {
-                            deleteCardEvent.value = SingleEvent(response.status!!)
-                        }
-                        else -> {
-                            changeScreenState(ErrorScreenState(AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
-                        }
+            onSuccess = { response ->
+                when (response.status) {
+                    CardStatus.DELETED -> {
+                        deleteCardEvent.value = SingleEvent(response.status!!)
                     }
-                    changeScreenState(LoadedState)
-                })
+                    else -> {
+                        changeScreenState(ErrorScreenState(AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
+                    }
+                }
+                changeScreenState(LoadedState)
+            })
     }
 }

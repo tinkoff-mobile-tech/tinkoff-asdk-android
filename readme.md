@@ -23,9 +23,11 @@ Acquiring SDK позволяет интегрировать [Интернет-Э
 Для работы Tinkoff Acquiring SDK необходим Android версии 4.4 и выше (API level 19).
 
 ### Подключение
-Для подключения SDK добавьте в [_build.gradle_][build-config] вашего проекта следующую зависимость:
+Для подключения SDK добавьте в [_build.gradle_][build-config] вашего проекта следующие зависимости:
 ```groovy
 implementation 'ru.tinkoff.acquiring:ui:$latestVersion'
+implementation 'ru.tinkoff.acquiring:threeds-sdk:$latestVersion'
+implementation 'ru.tinkoff.acquiring:threeds-wrapper:$latestVersion'
 ```
 Если вы хотите внедрить сканирование с помощью библиотеки Card-IO, то необходимо добавить в [_build.gradle_][build-config]
 ```groovy
@@ -72,7 +74,7 @@ val paymentOptions =
             }
         }
 
-val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY") // создание объекта для взаимодействия с SDK и передача данных продавца
+val tinkoffAcquiring = TinkoffAcquiring(applicationContext, "TERMINAL_KEY", "PUBLIC_KEY") // создание объекта для взаимодействия с SDK и передача данных продавца
 tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE)
 ```
 Результат вызова метода вернется в **onActivityResult**:
@@ -97,7 +99,7 @@ val paymentOptions =
             }
         }
 
-val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY")
+val tinkoffAcquiring = TinkoffAcquiring(applicationContext, "TERMINAL_KEY", "PUBLIC_KEY")
 tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE)
 ```
 [1] _Рекуррентный платеж_ может производиться для дальнейшего списания средств с сохраненной карты, без ввода ее реквизитов. Эта возможность, например, может использоваться для осуществления платежей по подписке.
@@ -122,7 +124,7 @@ val attachCardOptions =
             }
         }
 
-val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY")
+val tinkoffAcquiring = TinkoffAcquiring(applicationContext, "TERMINAL_KEY", "PUBLIC_KEY")
 tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTACH_CARD_REQUEST_CODE)
 ```
 Результат вызова метода вернется в **onActivityResult**:
@@ -180,7 +182,7 @@ fun handleGooglePayResult(resultCode: Int, data: Intent?) {
     
         val token = GooglePayHelper.getGooglePayToken(data) // получаем токен Google Pay из Intent
         
-        val tinkoffAcquiring = TinkoffAcquiring("TERMINAL_KEY", "PUBLIC_KEY")
+        val tinkoffAcquiring = TinkoffAcquiring(applicationContext, "TERMINAL_KEY", "PUBLIC_KEY")
         tinkoffAcquiring.initPayment(token, paymentOptions) // вызывов метода совершения платежа
                 .subscribe(paymentListener)                 // подписываемся на события в процессе оплаты
                 .start()                                    // запуск процесса оплаты

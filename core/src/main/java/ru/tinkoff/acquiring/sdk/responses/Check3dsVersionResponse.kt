@@ -26,6 +26,8 @@ import com.google.gson.annotations.SerializedName
  *                         обязательный параметр для 3DS второй версии
  * @param threeDsMethodUrl дополнительный параметр для 3DS второй версии, который позволяет
  *                         пройти этап по сбору данных браузера ACS-ом
+ * @param paymentSystem    платежная система, через которую будет проводится оплата, участвует
+ *                         в прохождении 3DS по app-based flow
  *
  * @author Mariya Chernyadieva
  */
@@ -37,6 +39,9 @@ class Check3dsVersionResponse(
         val serverTransId: String? = null,
 
         @SerializedName("ThreeDSMethodURL")
-        val threeDsMethodUrl: String? = null
+        val threeDsMethodUrl: String? = null,
+
+        @SerializedName("PaymentSystem")
+        val paymentSystem: String? = null
 
 ) : AcquiringResponse()

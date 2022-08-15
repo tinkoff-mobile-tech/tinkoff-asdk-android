@@ -80,7 +80,7 @@ internal class AttachCardActivity : TransparentActivity() {
     private fun handleScreenChangeEvent(screenChangeEvent: SingleEvent<Screen>) {
         screenChangeEvent.getValueIfNotHandled()?.let { screen ->
             when (screen) {
-                is ThreeDsScreenState -> openThreeDs(screen.data)
+                is ThreeDsScreenState -> openThreeDs(screen)
                 is LoopConfirmationScreenState -> showFragment(LoopConfirmationFragment.newInstance(screen.requestKey))
             }
         }

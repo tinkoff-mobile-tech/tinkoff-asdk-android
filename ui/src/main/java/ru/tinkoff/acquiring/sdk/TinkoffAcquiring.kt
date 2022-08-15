@@ -59,8 +59,9 @@ import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
  * @author Mariya Chernyadieva
  */
 class TinkoffAcquiring(
-        private val terminalKey: String,
-        private val publicKey: String
+    private val applicationContext: Context,
+    private val terminalKey: String,
+    private val publicKey: String
 ) {
     val sdk = AcquiringSdk(terminalKey, publicKey)
 
@@ -75,7 +76,7 @@ class TinkoffAcquiring(
      */
     fun initPayment(attachedCard: AttachedCard, paymentOptions: PaymentOptions): PaymentProcess {
         paymentOptions.setTerminalParams(terminalKey, publicKey)
-        return PaymentProcess(sdk).createPaymentProcess(attachedCard, paymentOptions)
+        return PaymentProcess(sdk, applicationContext).createPaymentProcess(attachedCard, paymentOptions)
     }
 
     /**
@@ -89,7 +90,7 @@ class TinkoffAcquiring(
      */
     fun initPayment(cardData: CardData, paymentOptions: PaymentOptions): PaymentProcess {
         paymentOptions.setTerminalParams(terminalKey, publicKey)
-        return PaymentProcess(sdk).createPaymentProcess(cardData, paymentOptions)
+        return PaymentProcess(sdk, applicationContext).createPaymentProcess(cardData, paymentOptions)
     }
 
     /**
@@ -103,7 +104,7 @@ class TinkoffAcquiring(
      */
     fun initPayment(googlePayToken: String, paymentOptions: PaymentOptions): PaymentProcess {
         paymentOptions.setTerminalParams(terminalKey, publicKey)
-        return PaymentProcess(sdk).createPaymentProcess(GooglePay(googlePayToken), paymentOptions)
+        return PaymentProcess(sdk, applicationContext).createPaymentProcess(GooglePay(googlePayToken), paymentOptions)
     }
 
     /**
@@ -117,7 +118,7 @@ class TinkoffAcquiring(
      * @return объект для проведения оплаты
      */
     fun finishPayment(paymentId: Long, paymentSource: PaymentSource): PaymentProcess {
-        return PaymentProcess(sdk).createFinishProcess(paymentId, paymentSource)
+        return PaymentProcess(sdk, applicationContext).createFinishProcess(paymentId, paymentSource)
     }
 
     /**
@@ -189,15 +190,15 @@ class TinkoffAcquiring(
      *                      полученный после проведения инициации платежа
      */
     fun payWithSbp(paymentId: Long): PaymentProcess {
-        return PaymentProcess(sdk).createInitializedSbpPaymentProcess(paymentId)
+        return PaymentProcess(sdk, applicationContext).createInitializedSbpPaymentProcess(paymentId)
     }
 
     /**
      * Проверка статуса возможности оплата с помощью Tinkoff Pay
      */
     fun checkTinkoffPayStatus(
-            onSuccess: (TinkoffPayStatusResponse) -> Unit,
-            onFailure: ((Throwable) -> Unit)? = null
+        onSuccess: (TinkoffPayStatusResponse) -> Unit,
+        onFailure: ((Throwable) -> Unit)? = null
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             sdk.tinkoffPayStatus().execute({
@@ -217,7 +218,7 @@ class TinkoffAcquiring(
      * @param version версия Tinkoff Pay
      */
     fun payWithTinkoffPay(options: PaymentOptions, version: String): PaymentProcess {
-        return PaymentProcess(sdk).createTinkoffPayPaymentProcess(options, version)
+        return PaymentProcess(sdk, applicationContext).createTinkoffPayPaymentProcess(options, version)
     }
 
     /**
@@ -338,7 +339,7 @@ class TinkoffAcquiring(
      * @param requestCode  код для получения результата, по завершению работы экрана Acquiring SDK
      */
     @Deprecated("Replaced with expanded method",
-            ReplaceWith("openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)"))
+        ReplaceWith("openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)"))
     fun openStaticQrScreen(activity: Activity, localization: LocalizationSource, requestCode: Int) {
         openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)
     }
@@ -361,11 +362,11 @@ class TinkoffAcquiring(
                                      notificationId: Int? = null): PendingIntent {
         options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(context,
-                options,
-                null,
-                NotificationPaymentActivity.PaymentMethod.GPAY,
-                notificationId,
-                googlePayParams)
+            options,
+            null,
+            NotificationPaymentActivity.PaymentMethod.GPAY,
+            notificationId,
+            googlePayParams)
     }
 
     /**
@@ -382,10 +383,10 @@ class TinkoffAcquiring(
     fun createTinkoffPaymentPendingIntent(context: Context, options: PaymentOptions, notificationId: Int? = null): PendingIntent {
         options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(context,
-                options,
-                null,
-                NotificationPaymentActivity.PaymentMethod.TINKOFF,
-                notificationId)
+            options,
+            null,
+            NotificationPaymentActivity.PaymentMethod.TINKOFF,
+            notificationId)
     }
 
     /**
@@ -432,10 +433,10 @@ class TinkoffAcquiring(
                                                    notificationId: Int? = null): PendingIntent {
         options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(activity,
-                options,
-                requestCode,
-                NotificationPaymentActivity.PaymentMethod.TINKOFF,
-                notificationId)
+            options,
+            requestCode,
+            NotificationPaymentActivity.PaymentMethod.TINKOFF,
+            notificationId)
     }
 
     private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {

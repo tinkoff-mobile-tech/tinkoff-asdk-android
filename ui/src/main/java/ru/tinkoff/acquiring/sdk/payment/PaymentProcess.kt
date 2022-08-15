@@ -16,15 +16,17 @@
 
 package ru.tinkoff.acquiring.sdk.payment
 
+import android.content.Context
+import android.util.Base64
+import com.emvco3ds.sdk.spec.Transaction
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.BuildConfig
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.CollectDataState
-import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.NspkRequest
 import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
@@ -41,19 +43,24 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FAIL_MAPI_SESSION_ID
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_KEY
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_VALUE
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
-import ru.tinkoff.acquiring.sdk.requests.TinkoffPayLinkRequest
 import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
-import java.util.*
+import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
+import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.closeSafe
 
 /**
  * Позволяет создавать и управлять процессом оплаты
  *
  * @author Mariya Chernyadieva
  */
-class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
+class PaymentProcess
+internal constructor(
+    private val sdk: AcquiringSdk,
+    private val context: Context
+) {
 
     /**
      * Возвращает текущее состояние процесса оплаты
@@ -78,6 +85,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
 
     private var isChargeWasRejected = false
     private var rejectedPaymentId: Long? = null
+
     /**
      * Версия Tinkoff Pay использующаяся в запросе TinkoffPayLink для получения дилплинка
      * в приложение Tinkoff. Приходит в ответе TinkoffPayStatus.
@@ -241,13 +249,13 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         }
 
         coroutine.call(request,
-                onSuccess = {
-                    when (paymentType) {
-                        CardPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
-                        SbpPaymentType -> callGetQr(it.paymentId!!)
-                        TinkoffPayPaymentType -> callTinkoffPayLinkRequest(it.paymentId!!, tinkoffPayVersion!!)
-                    }
-                })
+            onSuccess = {
+                when (paymentType) {
+                    CardPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
+                    SbpPaymentType -> callGetQr(it.paymentId!!)
+                    TinkoffPayPaymentType -> callTinkoffPayLinkRequest(it.paymentId!!, tinkoffPayVersion!!)
+                }
+            })
     }
 
     private fun callGetQr(paymentId: Long) {
@@ -257,18 +265,18 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         }
 
         coroutine.call(request,
-                onSuccess = { response ->
-                    coroutine.call(NspkRequest(),
-                            onSuccess = { nspk ->
-                                sdkState = BrowseFpsBankState(paymentId, response.data!!, nspk.banks)
-                                sendToListener(PaymentState.BROWSE_SBP_BANK)
-                            },
-                            onFailure = {
-                                sdkState = BrowseFpsBankState(paymentId, response.data!!, null)
-                                sendToListener(PaymentState.BROWSE_SBP_BANK)
-                            })
+            onSuccess = { response ->
+                coroutine.call(NspkRequest(),
+                    onSuccess = { nspk ->
+                        sdkState = BrowseFpsBankState(paymentId, response.data!!, nspk.banks)
+                        sendToListener(PaymentState.BROWSE_SBP_BANK)
+                    },
+                    onFailure = {
+                        sdkState = BrowseFpsBankState(paymentId, response.data!!, null)
+                        sendToListener(PaymentState.BROWSE_SBP_BANK)
+                    })
 
-                }
+            }
         )
     }
 
@@ -279,28 +287,81 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         }
 
         coroutine.call(check3DsRequest,
-                onSuccess = { response ->
-                    var data: MutableMap<String, String>? = null
-                    if (response.serverTransId != null) {
-                        if (!response.threeDsMethodUrl.isNullOrEmpty()) {
-                            this.check3dsVersionResponse = response
-                        }
-                        sdkState = CollectDataState(response)
-                        sendToListener(PaymentState.THREE_DS_DATA_COLLECTING)
-                        data = mutableMapOf()
-                        this.collectedDeviceData?.let { data.putAll(it) }
+            onSuccess = { response ->
+                val data = mutableMapOf<String, String>()
+                if (response.serverTransId != null) {
+                    if (!response.threeDsMethodUrl.isNullOrEmpty()) {
+                        this.check3dsVersionResponse = response
+                    }
+                    sdkState = CollectDataState(response)
+                    sendToListener(PaymentState.THREE_DS_DATA_COLLECTING)
+                    this.collectedDeviceData?.let { data.putAll(it) }
+                }
+
+                coroutine.launchOnBackground {
+                    val threeDsVersion = response.version
+                    var threeDSWrapper: ThreeDSWrapper? = null
+                    var threeDsTransaction: Transaction? = null
+
+                    if (ThreeDsHelper.isAppBasedFlow(threeDsVersion)) {
+                        threeDSWrapper = ThreeDsHelper.initWrapper(context)
+                        threeDsTransaction = handleThreeDsAppBased(
+                            threeDSWrapper, threeDsVersion!!, response.paymentSystem!!, data) ?: return@launchOnBackground
                     }
 
-                    callFinishAuthorizeRequest(paymentId, paymentSource, email, data, response.version)
-                })
+                    callFinishAuthorizeRequest(paymentId, paymentSource, email, data,
+                        threeDsVersion, threeDSWrapper, threeDsTransaction)
+                }
+            })
+    }
+
+    private fun handleThreeDsAppBased(
+        threeDSWrapper: ThreeDSWrapper,
+        threeDsVersion: String,
+        paymentSystem: String,
+        data: MutableMap<String, String>
+    ): Transaction? {
+        val dsId = ThreeDsHelper.getDsId(paymentSystem)
+        if (dsId == null) {
+            threeDSWrapper.cleanup(context)
+            handleException(AcquiringSdkException(IllegalArgumentException(
+                "Directory server ID for payment system \"$paymentSystem\" can't be found")))
+            return null
+        }
+        var transaction: Transaction? = null
+
+        try {
+            transaction = threeDSWrapper.createTransaction(dsId, threeDsVersion)
+            val authParams = transaction.authenticationRequestParameters
+
+            data["sdkAppID"] = authParams.sdkAppID
+            data["sdkEncData"] = Base64.encodeToString(
+                authParams.deviceData.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+            data["sdkEphemPubKey"] = Base64.encodeToString(
+                authParams.sdkEphemeralPublicKey.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+            data["sdkMaxTimeout"] = ThreeDsHelper.maxTimeout.toString()
+            data["sdkReferenceNumber"] = authParams.sdkReferenceNumber
+            data["sdkTransID"] = authParams.sdkTransactionID
+            data["sdkInterface"] = "03"
+            data["sdkUiType"] = "01,02,03,04,05"
+
+        } catch (e: Throwable) {
+            transaction?.closeSafe()
+            threeDSWrapper.cleanup(context)
+            handleException(e)
+            return null
+        }
+        return transaction
     }
 
     private fun callFinishAuthorizeRequest(
-            paymentId: Long,
-            paymentSource: PaymentSource,
-            email: String? = null,
-            data: Map<String, String>? = null,
-            threeDsVersion: String? = null
+        paymentId: Long,
+        paymentSource: PaymentSource,
+        email: String? = null,
+        data: Map<String, String>? = null,
+        threeDsVersion: String? = null,
+        threeDSWrapper: ThreeDSWrapper? = null,
+        threeDsTransaction: Transaction? = null
     ) {
         val ipAddress = if (data != null) getIpAddress() else null
 
@@ -314,19 +375,18 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         }
 
         coroutine.call(finishRequest,
-                onSuccess = { response ->
-                    val threeDsData = response.getThreeDsData()
-                    val cardId = if (paymentSource is AttachedCard) paymentSource.cardId else null
+            onSuccess = { response ->
+                val threeDsData = response.getThreeDsData(threeDsVersion)
+                val cardId = if (paymentSource is AttachedCard) paymentSource.cardId else null
 
-                    if (threeDsData.isThreeDsNeed) {
-                        threeDsData.version = threeDsVersion
-                        sdkState = ThreeDsState(threeDsData)
-                        sendToListener(PaymentState.THREE_DS_NEEDED)
-                    } else {
-                        paymentResult = PaymentResult(response.paymentId, cardId, response.rebillId)
-                        sendToListener(PaymentState.SUCCESS)
-                    }
-                })
+                if (threeDsData.isThreeDsNeed) {
+                    sdkState = ThreeDsState(threeDsData, threeDSWrapper, threeDsTransaction)
+                    sendToListener(PaymentState.THREE_DS_NEEDED)
+                } else {
+                    paymentResult = PaymentResult(response.paymentId, cardId, response.rebillId)
+                    sendToListener(PaymentState.SUCCESS)
+                }
+            })
     }
 
     private fun callChargeRequest(paymentId: Long, paymentSource: AttachedCard) {
@@ -336,48 +396,48 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
         }
 
         coroutine.call(chargeRequest,
-                onSuccess = {
-                    val payInfo = it.getPaymentInfo()
-                    if (payInfo.isSuccess) {
-                        paymentResult = PaymentResult(it.paymentId, paymentSource.cardId, chargeRequest.rebillId)
-                        sendToListener(PaymentState.SUCCESS)
-                    } else {
-                        error = IllegalStateException("Unknown charge state with error code: ${payInfo.errorCode}")
+            onSuccess = {
+                val payInfo = it.getPaymentInfo()
+                if (payInfo.isSuccess) {
+                    paymentResult = PaymentResult(it.paymentId, paymentSource.cardId, chargeRequest.rebillId)
+                    sendToListener(PaymentState.SUCCESS)
+                } else {
+                    error = IllegalStateException("Unknown charge state with error code: ${payInfo.errorCode}")
+                    sendToListener(PaymentState.ERROR)
+                }
+            },
+            onFailure = {
+                if (it is AcquiringApiException && it.response != null &&
+                    it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CHARGE_REJECTED) {
+                    val payInfo = (it.response as ChargeResponse).getPaymentInfo()
+                    if (payInfo.cardId == null && rejectedPaymentId == null) {
+                        error = IllegalStateException("Unknown cardId or paymentId")
                         sendToListener(PaymentState.ERROR)
-                    }
-                },
-                onFailure = {
-                    if (it is AcquiringApiException && it.response != null &&
-                            it.response!!.errorCode == AcquiringApi.API_ERROR_CODE_CHARGE_REJECTED) {
-                        val payInfo = (it.response as ChargeResponse).getPaymentInfo()
-                        if (payInfo.cardId == null && rejectedPaymentId == null) {
-                            error = IllegalStateException("Unknown cardId or paymentId")
-                            sendToListener(PaymentState.ERROR)
-                        } else {
-                            isChargeWasRejected = true
-                            rejectedPaymentId = payInfo.paymentId
-                            sdkState = RejectedState(payInfo.cardId!!, rejectedPaymentId!!)
-                            sendToListener(PaymentState.CHARGE_REJECTED)
-                        }
                     } else {
-                        handleException(it)
+                        isChargeWasRejected = true
+                        rejectedPaymentId = payInfo.paymentId
+                        sdkState = RejectedState(payInfo.cardId!!, rejectedPaymentId!!)
+                        sendToListener(PaymentState.CHARGE_REJECTED)
                     }
-                })
+                } else {
+                    handleException(it)
+                }
+            })
     }
 
     private fun callTinkoffPayLinkRequest(paymentId: Long, version: String) {
         val request = sdk.tinkoffPayLink(paymentId, version)
 
         coroutine.call(request,
-                onSuccess = { response ->
-                    sdkState = OpenTinkoffPayBankState(paymentId, response.params!!.redirectUrl)
-                    sendToListener(PaymentState.OPEN_TINKOFF_PAY_BANK)
-                })
+            onSuccess = { response ->
+                sdkState = OpenTinkoffPayBankState(paymentId, response.params!!.redirectUrl)
+                sendToListener(PaymentState.OPEN_TINKOFF_PAY_BANK)
+            })
     }
 
     private fun handleException(throwable: Throwable) {
         if (throwable is AcquiringApiException && throwable.response != null &&
-                throwable.response!!.errorCode == AcquiringApi.API_ERROR_CODE_3DSV2_NOT_SUPPORTED) {
+            throwable.response!!.errorCode == AcquiringApi.API_ERROR_CODE_3DSV2_NOT_SUPPORTED) {
             sendToListener(PaymentState.THREE_DS_V2_REJECTED)
             callInitRequest(initRequest!!)
         } else {
@@ -401,7 +461,7 @@ class PaymentProcess internal constructor(private val sdk: AcquiringSdk) {
             data = order.additionalData
             customerKey = paymentOptions.customer.customerKey
             language = AsdkLocalization.language.name
-            sdkVersion = BuildConfig.VERSION_NAME
+            sdkVersion = BuildConfig.ASDK_VERSION_NAME
         }
     }
 

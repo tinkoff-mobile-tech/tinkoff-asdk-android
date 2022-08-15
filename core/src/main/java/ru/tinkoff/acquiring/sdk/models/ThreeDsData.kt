@@ -36,24 +36,35 @@ class ThreeDsData(
 ) : Serializable {
 
     /**
-     *  Уникальный номер заказа в системе платежного шлюза, для проверки 3DS
+     *  Уникальный номер заказа в системе платежного шлюза, для проверки 3DS (3DS 1.x)
      */
     var md: String? = null
 
     /**
-     * Параметр из ответа на запрос оплаты, для проверки 3DS
+     * Параметр из ответа на запрос оплаты, для проверки 3DS (3DS 1.x)
      */
     var paReq: String? = null
 
     /**
-     * Идентификатор транзакции из ответа метода
+     * Идентификатор транзакции из ответа метода (3DS 2.x)
      */
     var tdsServerTransId: String? = null
 
     /**
-     * Идентификатор транзакции, присвоенный ACS
+     * Идентификатор транзакции, присвоенный ACS (3DS 2.x)
      */
     var acsTransId: String? = null
+
+    /**
+     * Идентификатор ACS (3DS 2.1, app-based)
+     */
+    var acsRefNumber: String? = null
+
+    /**
+     * JWT-токен, сфоримарованный ACS для проеведения транзацкии; содержит ACS URL, ACS ephemeral
+     * public key и SDK ephemeral public key (3DS 2.1, app-based)
+     */
+    var acsSignedContent: String? = null
 
     /**
      * Версия протокола 3DS
@@ -90,6 +101,7 @@ class ThreeDsData(
                 "paReq = $paReq, " +
                 "tdsServerTransId = $tdsServerTransId, " +
                 "acsTransId = $acsTransId, " +
+                "acsRefNumber = $acsRefNumber, " +
                 "isThreeDsNeed = $isThreeDsNeed, " +
                 "version = $version;"
     }

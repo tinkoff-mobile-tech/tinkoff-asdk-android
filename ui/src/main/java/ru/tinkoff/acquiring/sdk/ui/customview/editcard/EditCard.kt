@@ -334,7 +334,7 @@ internal class EditCard @JvmOverloads constructor(
         selectionPaint.color = cursorColor
         selectionPaint.alpha = 100
 
-        cardNumberMask = "0".repeat(CardPaymentSystem.getLengthRanges(MAESTRO).max()!!)
+        cardNumberMask = "0".repeat(CardPaymentSystem.getLengthRanges(MAESTRO).maxOrNull()!!)
 
         scanButton?.isVisible = isScanButtonVisible
 
@@ -1528,7 +1528,7 @@ internal class EditCard @JvmOverloads constructor(
 
     private fun updateCardInputFilter() {
         val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
-        cardNumberEditable.filters = arrayOf(InputFilter.LengthFilter(CardPaymentSystem.getLengthRanges(paymentSystem).max()!!))
+        cardNumberEditable.filters = arrayOf(InputFilter.LengthFilter(CardPaymentSystem.getLengthRanges(paymentSystem).maxOrNull()!!))
     }
 
     private fun switchEditable(newEditableField: EditCardField) {

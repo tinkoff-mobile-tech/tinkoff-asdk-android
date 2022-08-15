@@ -33,7 +33,7 @@ class SampleApplication : Application() {
 
         val settings = SettingsSdkManager(this)
         val params = SessionParams[settings.terminalKey]
-        tinkoffAcquiring = TinkoffAcquiring(params.terminalKey, params.publicKey)
+        tinkoffAcquiring = TinkoffAcquiring(this, params.terminalKey, params.publicKey)
         AcquiringSdk.isDeveloperMode = true
         AcquiringSdk.isDebug = true
     }

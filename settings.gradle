@@ -1,1 +1,6 @@
-include ':sample', ':ui', ':core', ':cardio'
+include ':sample',
+        ':core',
+        ':cardio',
+        ':ui',
+        ':threeds-sdk',
+        ':threeds-wrapper'

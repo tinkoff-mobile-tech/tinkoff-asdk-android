@@ -195,14 +195,6 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
         return Base64.encodeToString(creqData.toString().toByteArray(), Base64.NO_PADDING).trim()
     }
 
-    private fun requestState() {
-        if (data.isPayment) {
-            viewModel.requestPaymentState(data.paymentId)
-        } else if (data.isAttaching) {
-            viewModel.requestAddCardState(data.requestKey)
-        }
-    }
-
     private inner class ThreeDsWebViewClient : WebViewClient() {
 
         private var canceled = false
@@ -222,7 +214,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
             if (termUrl == url) {
                 view.visibility = View.INVISIBLE
                 if (!canceled) {
-                    requestState()
+                    viewModel.requestState(data)
                 }
             }
         }

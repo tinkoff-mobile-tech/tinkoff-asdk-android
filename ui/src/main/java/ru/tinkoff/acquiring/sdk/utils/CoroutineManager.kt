@@ -95,13 +95,19 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
         }
     }
 
-    private fun doOnMain(block: () -> Unit) {
+    fun doOnMain(block: () -> Unit) {
         coroutineScope.launch(Dispatchers.Main) {
             block.invoke()
         }
     }
 
-    private fun doOnBackground(block: () -> Unit) {
+    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit) {
+        coroutineScope.launch(IO) {
+            block.invoke(this)
+        }
+    }
+
+    fun doOnBackground(block: () -> Unit) {
         coroutineScope.launch(IO) {
             block.invoke()
         }

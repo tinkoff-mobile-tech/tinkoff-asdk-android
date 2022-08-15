@@ -2,18 +2,19 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: '../gradle/dokka.gradle'
-apply from: '../gradle/versions.gradle'
+apply from: rootProject.file('gradle/versions.gradle')
 apply from: '../gradle/publish.gradle'
 
 android {
-    compileSdkVersion compileSdk
-    buildToolsVersion buildTools
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
-        minSdkVersion minSdk
-        targetSdkVersion targetSdk
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
+        buildConfigField("String", "ASDK_VERSION_NAME", "\"$VERSION_NAME\"")
     }
 
     buildTypes {
@@ -38,6 +39,21 @@ dependencies {
 
     api("com.google.android.gms:play-services-wallet:$googleWalletVersion")
     api project(':core')
+
+    implementation project(':threeds-sdk')
+    implementation project(':threeds-wrapper')
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "com.squareup.okhttp3:okhttp:${okHttpVersion}"
+    implementation "androidx.security:security-crypto:${cryptoVersion}"
+
+    // threeds dependencies
+    implementation "androidx.appcompat:appcompat:${appCompatVersion}"
+    implementation "androidx.constraintlayout:constraintlayout:${constraintLayoutVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.nimbusds:nimbus-jose-jwt:${nimbusVersion}"
+    implementation "org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}"
+    implementation "jp.wasabeef:blurry:${blurryVersion}"
+    implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

@@ -16,10 +16,14 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import com.google.gson.Gson
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.utils.Request
+import java.io.UnsupportedEncodingException
+import java.net.URLEncoder
 import java.security.PublicKey
 
 /**
@@ -29,7 +33,10 @@ import java.security.PublicKey
  */
 abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Request<R> {
 
+    protected val gson: Gson = NetworkClient.createGson()
+
     open val httpRequestMethod: String = AcquiringApi.API_REQUEST_METHOD_POST
+    open val contentType: String = AcquiringApi.JSON
 
     internal lateinit var terminalKey: String
     internal lateinit var publicKey: PublicKey
@@ -88,6 +95,39 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         }
     }
 
+    open fun getRequestBody(): String {
+        val params = asMap()
+        if (params.isEmpty()) return ""
+
+        return when (contentType) {
+            AcquiringApi.FORM_URL_ENCODED -> encodeRequestBody(params)
+            else -> jsonRequestBody(params)
+        }
+    }
+
+    protected open fun jsonRequestBody(params: Map<String, Any>): String {
+        return gson.toJson(params)
+    }
+
+    protected fun encodeRequestBody(params: Map<String, Any>): String {
+        val builder = StringBuilder()
+        for ((key, value1) in params) {
+            try {
+                val value = URLEncoder.encode(value1.toString(), "UTF-8")
+                builder.append(key)
+                builder.append('=')
+                builder.append(value)
+                builder.append('&')
+            } catch (e: UnsupportedEncodingException) {
+                AcquiringSdk.log(e)
+            }
+        }
+
+        builder.setLength(builder.length - 1)
+
+        return builder.toString()
+    }
+
     internal companion object {
 
         const val TERMINAL_KEY = "TerminalKey"
@@ -125,5 +165,8 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val IP = "IP"
         const val CONNECTION_TYPE = "connection_type"
         const val SDK_VERSION = "sdk_version"
+        const val THREE_DS_SERVER_TRANS_ID = "threeDSServerTransID"
+        const val TRANS_STATUS = "transStatus"
+        const val CRES = "cres"
     }
 }

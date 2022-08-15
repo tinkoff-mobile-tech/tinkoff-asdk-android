@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -16,8 +17,11 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 /**
  * @author Mariya Chernyadieva
  */
-internal class NotificationPaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
-        BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
+internal class NotificationPaymentViewModel(
+    application: Application,
+    handleErrorsInSdk: Boolean,
+    sdk: AcquiringSdk
+) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
     private var paymentProcess: PaymentProcess? = null
 
@@ -38,7 +42,7 @@ internal class NotificationPaymentViewModel(handleErrorsInSdk: Boolean, sdk: Acq
     fun initPayment(token: String, paymentOptions: PaymentOptions) {
         changeScreenState(LoadingState)
 
-        paymentProcess = PaymentProcess(sdk).createPaymentProcess(GooglePay(token), paymentOptions)
+        paymentProcess = PaymentProcess(sdk, context).createPaymentProcess(GooglePay(token), paymentOptions)
                 .subscribe(object : PaymentListenerAdapter() {
                     override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
                         changeScreenState(LoadedState)

@@ -16,6 +16,9 @@
 
 package ru.tinkoff.acquiring.sdk.viewmodel
 
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,7 +33,11 @@ import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 /**
  * @author Mariya Chernyadieva
  */
-internal open class BaseAcquiringViewModel(val handleErrorsInSdk: Boolean, val sdk: AcquiringSdk) : ViewModel() {
+internal open class BaseAcquiringViewModel(
+    application: Application,
+    val handleErrorsInSdk: Boolean,
+    val sdk: AcquiringSdk
+) : AndroidViewModel(application) {
 
     protected val coroutine = CoroutineManager(exceptionHandler = { handleException(it) })
     private val loadState: MutableLiveData<LoadState> = MutableLiveData()
@@ -40,6 +47,8 @@ internal open class BaseAcquiringViewModel(val handleErrorsInSdk: Boolean, val s
     val screenChangeEventLiveData: LiveData<SingleEvent<Screen>> = screenChangeEvent
     val screenStateLiveData: LiveData<ScreenState> = screenState
     val loadStateLiveData: LiveData<LoadState> = loadState
+
+    val context: Context get() = getApplication<Application>().applicationContext
 
     override fun onCleared() {
         super.onCleared()

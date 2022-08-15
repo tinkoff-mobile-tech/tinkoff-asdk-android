@@ -29,6 +29,7 @@ import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
@@ -93,7 +94,7 @@ open class PayableActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            PAYMENT_REQUEST_CODE, DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode)
+            PAYMENT_REQUEST_CODE, DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode, data)
             GOOGLE_PAY_REQUEST_CODE -> handleGooglePayResult(resultCode, data)
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
@@ -237,11 +238,14 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun handlePaymentResult(resultCode: Int) {
+    private fun handlePaymentResult(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> onSuccessPayment()
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
-            RESULT_ERROR -> Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
+            RESULT_ERROR -> {
+                Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
+                (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)?.printStackTrace()
+            }
         }
     }
 
