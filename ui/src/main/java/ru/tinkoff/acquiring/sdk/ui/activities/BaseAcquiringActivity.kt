@@ -69,7 +69,9 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
             options.validateRequiredFields()
 
             val intent = Intent(context, cls)
-            intent.putExtra(EXTRA_OPTIONS, options)
+            intent.putExtras(Bundle().apply {
+                putParcelable(EXTRA_OPTIONS, options)
+            })
             return intent
         }
     }

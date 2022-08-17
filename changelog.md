@@ -1,3 +1,10 @@
+## 2.5.12
+
+#### Fixed
+Fixed possible crash during activity recreation on some devices
+#### Changes
+#### Additions
+
 ## 2.5.11
 
 #### Fixed
