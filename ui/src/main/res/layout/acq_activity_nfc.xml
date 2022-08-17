@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +15,16 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/acq_nfc_ll_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/acq_colorNfcBackground"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/acq_nfs_padding_large">
+    android:padding="@dimen/acq_nfs_padding_large"
+    tools:ignore="Overdraw">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,11 +37,11 @@
             android:id="@+id/acq_nfc_tv_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/acq_nfc"
             android:drawablePadding="@dimen/acq_nfs_padding_large"
             android:gravity="center"
             android:textColor="@drawable/acq_nfc_tint_color_pressable"
-            android:textSize="@dimen/acq_large_text_size" />
+            android:textSize="@dimen/acq_large_text_size"
+            app:drawableTopCompat="@drawable/acq_nfc" />
 
     </LinearLayout>
 
