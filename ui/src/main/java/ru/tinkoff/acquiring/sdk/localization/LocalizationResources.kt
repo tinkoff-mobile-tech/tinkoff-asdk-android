@@ -192,4 +192,10 @@ internal class LocalizationResources {
 
     @SerializedName("SbpWidget.AppsNotFound.ButtonBrowser")
     var sbpWidgetAppsNotFoundButtonBrowser: String? = null
+
+    @SerializedName("ThreeDs.Confirmation")
+    var threeDsConfirmation: String? = null
+
+    @SerializedName("ThreeDs.Cancel")
+    var threeDsCancel: String? = null
 }

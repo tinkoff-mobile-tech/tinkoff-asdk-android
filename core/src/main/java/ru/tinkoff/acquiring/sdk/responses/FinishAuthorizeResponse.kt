@@ -28,10 +28,13 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
  * @param orderId          номер заказа в системе продавца
  * @param amount           сумма списания в копейках
  * @param acsUrl           адрес сервера управления доступом, для проверки 3DS
- * @param md               уникальный номер заказа в системе платежного шлюза, для проверки 3DS
- * @param paReq            параметр из ответа на запрос оплаты, для проверки 3DS
- * @param tdsServerTransId идентификатор транзакции 3DS
- * @param acsTransId       идентификатор транзакции 3DS, присвоенный ACS
+ * @param md               уникальный номер заказа в системе платежного шлюза, для проверки 3DS (3DS 1.x)
+ * @param paReq            параметр из ответа на запрос оплаты, для проверки 3DS (3DS 1.x)
+ * @param tdsServerTransId идентификатор транзакции 3DS (3DS 2.x)
+ * @param acsTransId       идентификатор транзакции 3DS, присвоенный ACS (3DS 2.x)
+ * @param acsRefNumber     идентификатор ACS (3DS 2.1, app-based)
+ * @param acsSignedContent JWT-токен, сфоримарованный ACS для проеведения транзацкии; содержит ACS URL, ACS ephemeral
+ *                         public key и SDK ephemeral public key (3DS 2.1, app-based)
  * @param status           статус транзакции
  *
  * @author Mariya Chernyadieva
@@ -64,6 +67,12 @@ class FinishAuthorizeResponse(
         @SerializedName("AcsTransId")
         val acsTransId: String? = null,
 
+        @SerializedName("AcsReferenceNumber")
+        val acsRefNumber: String? = null,
+
+        @SerializedName("AcsSignedContent")
+        val acsSignedContent: String? = null,
+
         @SerializedName("Status")
         val status: ResponseStatus? = null
 
@@ -72,7 +81,7 @@ class FinishAuthorizeResponse(
     @Transient
     private lateinit var threeDsData: ThreeDsData
 
-    fun getThreeDsData(): ThreeDsData {
+    fun getThreeDsData(threeDsVersion: String?): ThreeDsData {
         threeDsData = when (status) {
             ResponseStatus.CONFIRMED, ResponseStatus.AUTHORIZED -> ThreeDsData.EMPTY_THREE_DS_DATA
             ResponseStatus.THREE_DS_CHECKING -> {
@@ -80,11 +89,15 @@ class FinishAuthorizeResponse(
                     ThreeDsData(paymentId, acsUrl).apply {
                         md = this@FinishAuthorizeResponse.md
                         paReq = this@FinishAuthorizeResponse.paReq
+                        version = threeDsVersion
                     }
                 } else if (tdsServerTransId != null && acsTransId != null) {
                     ThreeDsData(paymentId, acsUrl).apply {
                         tdsServerTransId = this@FinishAuthorizeResponse.tdsServerTransId
                         acsTransId = this@FinishAuthorizeResponse.acsTransId
+                        acsRefNumber = this@FinishAuthorizeResponse.acsRefNumber
+                        acsSignedContent = this@FinishAuthorizeResponse.acsSignedContent
+                        version = threeDsVersion
                     }
                 } else throw AcquiringSdkException(IllegalStateException("Invalid 3DS params"))
             }

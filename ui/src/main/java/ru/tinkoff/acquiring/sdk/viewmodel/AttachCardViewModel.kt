@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -36,7 +37,11 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 /**
  * @author Mariya Chernyadieva
  */
-internal class AttachCardViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
+internal class AttachCardViewModel(
+    application: Application,
+    handleErrorsInSdk: Boolean,
+    sdk: AcquiringSdk
+) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
     private lateinit var cardData: CardData
     private val attachCardResult: MutableLiveData<CardResult> = MutableLiveData()
@@ -86,7 +91,7 @@ internal class AttachCardViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk
         coroutine.call(attachCardRequest,
                 onSuccess = {
                     when (it.status) {
-                        ResponseStatus.THREE_DS_CHECKING -> changeScreenState(ThreeDsScreenState(it.getThreeDsData()))
+                        ResponseStatus.THREE_DS_CHECKING -> changeScreenState(ThreeDsScreenState(it.getThreeDsData(), null, null))
                         ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
                         null -> attachCardResult.value = CardResult(it.cardId)
                         else -> {

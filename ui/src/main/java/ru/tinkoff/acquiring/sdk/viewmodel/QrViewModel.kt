@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -30,7 +31,11 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
 
-internal class QrViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
+internal class QrViewModel(
+    application: Application,
+    handleErrorsInSdk: Boolean,
+    sdk: AcquiringSdk
+) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
     private val qrLinkResult: MutableLiveData<SingleEvent<String?>> = MutableLiveData()
     private val qrImageResult: MutableLiveData<String> = MutableLiveData()
@@ -135,7 +140,7 @@ internal class QrViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : Base
             data = order.additionalData
             customerKey = paymentOptions.customer.customerKey
             language = AsdkLocalization.language.name
-            sdkVersion = BuildConfig.VERSION_NAME
+            sdkVersion = BuildConfig.ASDK_VERSION_NAME
         }
     }
 }

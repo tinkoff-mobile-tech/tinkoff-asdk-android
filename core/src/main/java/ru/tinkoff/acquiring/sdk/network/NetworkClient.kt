@@ -34,7 +34,6 @@ import ru.tinkoff.acquiring.sdk.requests.AcquiringRequest
 import ru.tinkoff.acquiring.sdk.requests.FinishAuthorizeRequest
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
-import ru.tinkoff.acquiring.sdk.utils.CryptoUtils.sha256
 import ru.tinkoff.acquiring.sdk.utils.serialization.*
 import java.io.*
 import java.lang.reflect.Modifier
@@ -145,7 +144,7 @@ internal class NetworkClient {
                 AcquiringApi.API_REQUEST_METHOD_GET -> false
                 else -> true
             }
-            setRequestProperty("Content-type", if (AcquiringApi.useV1Api(request.apiMethod)) FORM_URL_ENCODED else JSON)
+            setRequestProperty("Content-type", request.contentType)
 
             if (request is FinishAuthorizeRequest && request.is3DsVersionV2()) {
                 setRequestProperty("User-Agent", System.getProperty("http.agent"))
@@ -157,7 +156,7 @@ internal class NetworkClient {
     }
 
     private fun <R : AcquiringResponse> prepareBody(request: AcquiringRequest<R>, onReady: (ByteArray) -> Unit) {
-        val requestBody = formatRequestBody(request)
+        val requestBody = request.getRequestBody()
         AcquiringSdk.log("=== Parameters: $requestBody")
 
         onReady(requestBody.toByteArray())
@@ -186,66 +185,6 @@ internal class NetworkClient {
         return URL(builder.toString())
     }
 
-    private fun <R : AcquiringResponse> formatRequestBody(request: AcquiringRequest<R>): String {
-        val params = if (request.password != null)
-            enrichWithToken(request)
-        else
-            request.asMap()
-
-        if (params.isEmpty()) {
-            return ""
-        }
-
-        return if (AcquiringApi.useV1Api(request.apiMethod)) {
-            encodeRequestBody(params)
-        } else {
-            jsonRequestBody(params)
-        }
-    }
-
-    private fun jsonRequestBody(params: Map<String, Any>): String {
-        return gson.toJson(params)
-    }
-
-    private fun <R : AcquiringResponse> enrichWithToken(request: AcquiringRequest<R>): MutableMap<String, Any> {
-        val token = StringBuilder()
-
-        val params = request.asMap()
-        val sortedKeys = params.keys.sorted()
-        val ignore = request.tokenIgnoreFields
-
-        sortedKeys.forEach {
-            if (ignore.contains(it))
-                return@forEach
-
-            token.append(params[it])
-        }
-
-        params[AcquiringRequest.TOKEN] = token.toString().sha256()
-        params.remove(AcquiringRequest.PASSWORD)
-
-        return params
-    }
-
-    private fun encodeRequestBody(params: Map<String, Any>): String {
-        val builder = StringBuilder()
-        for ((key, value1) in params) {
-            try {
-                val value = URLEncoder.encode(value1.toString(), "UTF-8")
-                builder.append(key)
-                builder.append('=')
-                builder.append(value)
-                builder.append('&')
-            } catch (e: UnsupportedEncodingException) {
-                AcquiringSdk.log(e)
-            }
-        }
-
-        builder.setLength(builder.length - 1)
-
-        return builder.toString()
-    }
-
     @Throws(IOException::class)
     private fun read(reader: InputStreamReader): String {
         val buffer = CharArray(STREAM_BUFFER_SIZE)
@@ -271,8 +210,10 @@ internal class NetworkClient {
         }
     }
 
-    private fun createGson(): Gson {
-        return GsonBuilder()
+    companion object {
+
+        fun createGson(): Gson {
+            return GsonBuilder()
                 .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
                 .setExclusionStrategies(SerializableExclusionStrategy())
                 .registerTypeAdapter(CardStatus::class.java, CardStatusSerializer())
@@ -281,5 +222,6 @@ internal class NetworkClient {
                 .registerTypeAdapter(Tax::class.java, TaxSerializer())
                 .registerTypeAdapter(Taxation::class.java, TaxationSerializer())
                 .create()
+        }
     }
 }

@@ -1,3 +1,11 @@
+## 2.6.0
+
+#### Fixed
+#### Changes
+`TinkoffAcquiring` constructor should accept `applicationContext` parameter now
+#### Additions
+Added app-based 3DS flow for payments ([migration](/migration.md))
+
 ## 2.5.12
 
 #### Fixed

@@ -2,8 +2,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply from: rootProject.file('gradle/versions.gradle')
 
-def isAndroidLibrary = project.extensions.findByName('android') != null
-
 def getReleaseRepositoryUrl() {
     return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
             : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -26,17 +24,13 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from isAndroidLibrary ? components.release : components.java
                 groupId GROUP
                 version versionName
-                artifactId POM_ARTIFACT_ID
-                afterEvaluate {
-                    artifact sourcesJar
-                    artifact javadocJar
-                }
+                artifactId "threeds-sdk"
+                artifact("emv-3ds-sdk-release.aar")
                 pom {
-                    name = POM_NAME
-                    packaging = POM_PACKAGING
+                    name = "threeds-sdk"
+                    packaging = "aar"
                     description = POM_DESCRIPTION
                     url = POM_URL
                     scm {
@@ -71,21 +65,11 @@ afterEvaluate {
         }
     }
 
-    tasks.dokkaJavadoc.configure {
-        outputDirectory = file("$buildDir/dokka")
-    }
-
-    task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-        archiveClassifier.set('javadoc')
-        from "$buildDir/dokka"
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set("sources")
-        from isAndroidLibrary ? android.sourceSets.main.java.srcDirs : sourceSets.main.allSource
-    }
     signing {
         required { isRelease }
         sign publishing.publications.release
     }
 }
+
+configurations.maybeCreate("default")
+artifacts.add("default", file('emv-3ds-sdk-release.aar'))

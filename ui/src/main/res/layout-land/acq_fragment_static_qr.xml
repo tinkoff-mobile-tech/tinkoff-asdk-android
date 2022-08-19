@@ -23,7 +23,8 @@
     <FrameLayout
         android:id="@+id/acq_qr_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="ScrollViewSize">
 
         <LinearLayout
             android:id="@+id/acq_content"

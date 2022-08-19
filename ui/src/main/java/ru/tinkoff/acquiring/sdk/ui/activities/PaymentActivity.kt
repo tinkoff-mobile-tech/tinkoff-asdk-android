@@ -155,7 +155,7 @@ internal class PaymentActivity : TransparentActivity() {
                     val state = RejectedState(screen.cardId, screen.rejectedPaymentId)
                     showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey, state))
                 }
-                is ThreeDsScreenState -> openThreeDs(screen.data)
+                is ThreeDsScreenState -> openThreeDs(screen)
                 is ThreeDsDataCollectScreenState -> {
                     paymentViewModel.collectedDeviceData = ThreeDsActivity.collectData(this, screen.response)
                 }

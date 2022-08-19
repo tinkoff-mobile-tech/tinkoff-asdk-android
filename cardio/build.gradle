@@ -2,16 +2,16 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: '../gradle/dokka.gradle'
-apply from: '../gradle/versions.gradle'
+apply from: rootProject.file('gradle/versions.gradle')
 apply from: '../gradle/publish.gradle'
 
 android {
-    compileSdkVersion compileSdk
-    buildToolsVersion buildTools
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
-        minSdkVersion minSdk
-        targetSdkVersion targetSdk
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
     }

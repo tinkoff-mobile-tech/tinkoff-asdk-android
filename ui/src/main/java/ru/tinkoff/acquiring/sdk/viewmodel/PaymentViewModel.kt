@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.launch
@@ -54,14 +55,18 @@ import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 /**
  * @author Mariya Chernyadieva
  */
-internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) : BaseAcquiringViewModel(handleErrorsInSdk, sdk) {
+internal class PaymentViewModel(
+    application: Application,
+    handleErrorsInSdk: Boolean,
+    sdk: AcquiringSdk
+) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     private var cardsResult: MutableLiveData<List<Card>> = MutableLiveData()
     private var tinkoffPayStatusResult: MutableLiveData<TinkoffPayStatusResponse> = MutableLiveData()
 
     private val paymentListener: PaymentListener = createPaymentListener()
-    private val paymentProcess: PaymentProcess = PaymentProcess(sdk)
+    private val paymentProcess: PaymentProcess = PaymentProcess(sdk, context)
 
     private var requestPaymentStateCount = 0
 
@@ -78,7 +83,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
 
     fun checkoutAsdkState(state: AsdkState) {
         when (state) {
-            is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data))
+            is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data, state.threeDSWrapper, state.transaction))
             is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
             is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
             is FpsState -> changeScreenState(FpsScreenState)
@@ -178,37 +183,37 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
         }
 
         coroutine.call(request,
-                onSuccess = { response ->
-                    requestPaymentStateCount++
-                    when (response.status) {
-                        ResponseStatus.CONFIRMED, ResponseStatus.AUTHORIZED -> {
-                            paymentResult.value = PaymentResult(response.paymentId)
-                            requestPaymentStateCount = 0
-                            changeScreenState(LoadedState)
-                        }
-                        ResponseStatus.FORM_SHOWED -> {
-                            requestPaymentStateCount = 0
-                            changeScreenState(LoadedState)
-                            changeScreenState(FpsBankFormShowedScreenState(paymentId))
-                        }
-                        else -> {
-                            if (requestPaymentStateCount == 1) {
-                                changeScreenState(LoadingState)
-                                coroutine.runWithDelay(1000) {
-                                    requestPaymentState(paymentId)
-                                }
-                            } else {
-                                changeScreenState(LoadedState)
-                                val throwable = AcquiringSdkException(IllegalStateException("PaymentState = ${response.status}"))
-                                handleException(throwable)
+            onSuccess = { response ->
+                requestPaymentStateCount++
+                when (response.status) {
+                    ResponseStatus.CONFIRMED, ResponseStatus.AUTHORIZED -> {
+                        paymentResult.value = PaymentResult(response.paymentId)
+                        requestPaymentStateCount = 0
+                        changeScreenState(LoadedState)
+                    }
+                    ResponseStatus.FORM_SHOWED -> {
+                        requestPaymentStateCount = 0
+                        changeScreenState(LoadedState)
+                        changeScreenState(FpsBankFormShowedScreenState(paymentId))
+                    }
+                    else -> {
+                        if (requestPaymentStateCount == 1) {
+                            changeScreenState(LoadingState)
+                            coroutine.runWithDelay(1000) {
+                                requestPaymentState(paymentId)
                             }
+                        } else {
+                            changeScreenState(LoadedState)
+                            val throwable = AcquiringSdkException(IllegalStateException("PaymentState = ${response.status}"))
+                            handleException(throwable)
                         }
                     }
-                },
-                onFailure = {
-                    requestPaymentStateCount = 0
-                    handleException(it)
-                })
+                }
+            },
+            onFailure = {
+                requestPaymentStateCount = 0
+                handleException(it)
+            })
     }
 
     private fun createPaymentListener(): PaymentListener {
@@ -222,7 +227,7 @@ internal class PaymentViewModel(handleErrorsInSdk: Boolean, sdk: AcquiringSdk) :
             override fun onUiNeeded(state: AsdkState) {
                 when (state) {
                     is ThreeDsState -> {
-                        changeScreenState(ThreeDsScreenState(state.data))
+                        changeScreenState(ThreeDsScreenState(state.data, state.threeDSWrapper, state.transaction))
                         coroutine.runWithDelay(500) {
                             changeScreenState(LoadedState)
                         }

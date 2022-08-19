@@ -147,7 +147,7 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
 
         val sdk = AcquiringSdk(paymentOptions.terminalKey, paymentOptions.publicKey)
         viewModel = ViewModelProvider(this,
-                ViewModelProviderFactory(paymentOptions.features.handleErrorsInSdk,
+                ViewModelProviderFactory(application, paymentOptions.features.handleErrorsInSdk,
                         sdk))[NotificationPaymentViewModel::class.java]
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {

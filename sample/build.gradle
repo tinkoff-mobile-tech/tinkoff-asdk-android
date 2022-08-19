@@ -1,16 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply from: '../gradle/versions.gradle'
+apply from: rootProject.file('gradle/versions.gradle')
 
 android {
-    compileSdkVersion compileSdk
-    buildToolsVersion buildTools
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
 
     defaultConfig {
         applicationId "ru.tinkoff.acquiring.sample"
-        minSdkVersion minSdk
-        targetSdkVersion compileSdk
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.compileSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
     }
@@ -39,4 +39,6 @@ dependencies {
 
     implementation project(':ui')
     implementation project(':cardio')
+    implementation project(':threeds-sdk')
+    implementation project(':threeds-wrapper')
 }

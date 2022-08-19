@@ -142,7 +142,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     }
 
     protected fun provideViewModel(clazz: Class<out ViewModel>): ViewModel {
-        return ViewModelProvider(this, ViewModelProviderFactory(options.features.handleErrorsInSdk, sdk))[clazz]
+        return ViewModelProvider(this, ViewModelProviderFactory(application, options.features.handleErrorsInSdk, sdk))[clazz]
     }
 
     protected open fun setSuccessResult(result: AsdkResult) {
@@ -167,17 +167,17 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         setResult(TinkoffAcquiring.RESULT_ERROR, intent)
     }
 
-    protected open fun finishWithSuccess(result: AsdkResult) {
+    open fun finishWithSuccess(result: AsdkResult) {
         setSuccessResult(result)
         finish()
     }
 
-    protected open fun finishWithError(throwable: Throwable) {
+    open fun finishWithError(throwable: Throwable) {
         setErrorResult(throwable)
         finish()
     }
 
-    protected fun finishWithCancel() {
+    fun finishWithCancel() {
         setResult(Activity.RESULT_CANCELED)
         finish()
     }

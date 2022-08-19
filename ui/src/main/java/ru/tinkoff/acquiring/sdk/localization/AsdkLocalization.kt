@@ -48,6 +48,8 @@ internal object AsdkLocalization {
         resources = parser.parse()
     }
 
+    fun isInitialized() = this::resources.isInitialized
+
     private fun resolveLanguage(language: Language?): Language {
         return language ?: when (Locale.getDefault().language) {
             "ru", "ua", "kz", "by", "az", "os", "hy", "tg", "tk" -> Language.RU //страны СНГ

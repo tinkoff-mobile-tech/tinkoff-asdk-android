@@ -16,7 +16,9 @@
 
 package ru.tinkoff.acquiring.sdk.models
 
+import com.emvco3ds.sdk.spec.Transaction
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
 
 /**
  * @author Mariya Chernyadieva
@@ -34,7 +36,7 @@ internal object FpsScreenState: Screen()
 internal class BrowseFpsBankScreenState(val paymentId: Long, val deepLink: String, val banks: Set<Any?>?) : Screen()
 internal class OpenTinkoffPayBankScreenState(val paymentId: Long, val deepLink: String) : Screen()
 internal class RejectedCardScreenState(val cardId: String, val rejectedPaymentId: Long) : Screen()
-internal class ThreeDsScreenState(val data: ThreeDsData) : Screen()
+internal class ThreeDsScreenState(val data: ThreeDsData, val wrapper: ThreeDSWrapper?, val transaction: Transaction?) : Screen()
 internal class ThreeDsDataCollectScreenState(val response: Check3dsVersionResponse) : Screen()
 internal class LoopConfirmationScreenState(val requestKey: String) : Screen()
 

@@ -222,9 +222,18 @@ class AcquiringSdk(
         }
     }
 
+    fun submit3DSAuthorization(threeDSServerTransID: String, transStatus: String, request: (Submit3DSAuthorizationRequest.() -> Unit)? = null): Submit3DSAuthorizationRequest {
+        return Submit3DSAuthorizationRequest().apply {
+            terminalKey = this@AcquiringSdk.terminalKey
+            this.threeDSServerTransID = threeDSServerTransID
+            this.transStatus = transStatus
+            request?.invoke(this)
+        }
+    }
+
     class TinkoffPayStatusCache(
-            val status: TinkoffPayStatusResponse,
-            val time: Long) {
+        val status: TinkoffPayStatusResponse,
+        val time: Long) {
 
         fun isExpired() = System.currentTimeMillis() - time > CACHE_EXPIRE_TIME_MS
 
