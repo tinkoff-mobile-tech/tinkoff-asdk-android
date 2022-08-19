@@ -54,5 +54,7 @@
   "SbpWidget.AppsNotFound.Title": "Banking applications not found",
   "SbpWidget.AppsNotFound.Description": "To pay via FPS, you must have installed banking application",
   "SbpWidget.AppsNotFound.Button": "OK",
-  "SbpWidget.AppsNotFound.ButtonBrowser": "Information on the FPS website"
+  "SbpWidget.AppsNotFound.ButtonBrowser": "Information on the FPS website",
+  "ThreeDs.Confirmation": "Confirmation",
+  "ThreeDs.Cancel": "Cancel"
 }

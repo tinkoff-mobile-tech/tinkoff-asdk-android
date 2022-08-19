@@ -54,5 +54,7 @@
   "SbpWidget.AppsNotFound.Title": "Не найдено ни одного банковского приложения",
   "SbpWidget.AppsNotFound.Description": "Для оплаты через СБП необходимо иметь установленными банковские приложения",
   "SbpWidget.AppsNotFound.Button": "Понятно",
-  "SbpWidget.AppsNotFound.ButtonBrowser": "Информация на сайте сбп"
+  "SbpWidget.AppsNotFound.ButtonBrowser": "Информация на сайте сбп",
+  "ThreeDs.Confirmation": "Подтверждение",
+  "ThreeDs.Cancel": "Отмена"
 }

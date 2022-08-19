@@ -37,6 +37,9 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusSuccess
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
 import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
 
@@ -64,6 +67,10 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
             showBottomView = it.getBoolean(STATE_SHOW_BOTTOM)
         }
 
+        initThreeDs()
+    }
+
+    private fun initThreeDs() {
         threeDsViewModel = provideViewModel(ThreeDsViewModel::class.java) as ThreeDsViewModel
         threeDsViewModel.run {
             loadStateLiveData.observe(this@TransparentActivity) { handleLoadState(it) }
@@ -77,6 +84,18 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
             is ErrorScreenState -> finishWithError(AcquiringSdkException(IllegalStateException(screenState.message)))
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        when (val threeDsStatus = ThreeDsHelper.threeDsStatus) {
+            is ThreeDsStatusSuccess -> threeDsViewModel.submitAuthorization(threeDsStatus.threeDsData, threeDsStatus.transStatus)
+            is ThreeDsStatusCanceled -> finishWithCancel()
+            is ThreeDsStatusError -> finishWithError(threeDsStatus.error)
+            else -> Unit
+        }
+        ThreeDsHelper.threeDsStatus = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

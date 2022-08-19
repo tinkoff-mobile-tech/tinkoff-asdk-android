@@ -25,9 +25,6 @@ import com.emvco3ds.sdk.spec.RuntimeErrorEvent
 import com.emvco3ds.sdk.spec.Transaction
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
-import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
-import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
-import ru.tinkoff.acquiring.sdk.models.LoadState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsData
@@ -36,6 +33,9 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusSuccess
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.core.components.threedswrapper.ChallengeStatusReceiverAdapter
 import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
@@ -71,50 +71,42 @@ internal class ThreeDsViewModel(
                     override fun completed(event: CompletionEvent?) {
                         super.completed(event)
                         wrapper.cleanup(activity)
-                        coroutine.doOnMain {
-                            changeScreenState(LoadingState)
-                            submitAuthorization(threeDsData, event!!.transactionStatus)
-                        }
+                        ThreeDsHelper.threeDsStatus = ThreeDsStatusSuccess(threeDsData, event!!.transactionStatus)
                     }
 
                     override fun cancelled() {
                         super.cancelled()
                         wrapper.cleanup(activity)
-                        coroutine.doOnMain {
-                            activity.finishWithCancel()
-                        }
+                        ThreeDsHelper.threeDsStatus = ThreeDsStatusCanceled()
                     }
 
                     override fun timedout() {
                         super.timedout()
                         wrapper.cleanup(activity)
-                        coroutine.doOnMain {
-                            changeScreenState(ErrorScreenState("3DS SDK transaction timeout"))
-                        }
+                        val error = RuntimeException("3DS SDK transaction timeout")
+                        ThreeDsHelper.threeDsStatus = ThreeDsStatusError(error)
                     }
 
                     override fun protocolError(event: ProtocolErrorEvent?) {
                         super.protocolError(event)
                         wrapper.cleanup(activity)
-                        val errorMessage = "3DS SDK protocol error: sdkTransactionID - ${event?.sdkTransactionID}, message - ${event?.errorMessage}"
-                        coroutine.doOnMain {
-                            changeScreenState(FinishWithErrorScreenState(RuntimeException(errorMessage)))
-                        }
+                        val error = RuntimeException("3DS SDK protocol error: sdkTransactionID - ${event?.sdkTransactionID}, message - ${event?.errorMessage}")
+                        ThreeDsHelper.threeDsStatus = ThreeDsStatusError(error)
                     }
 
                     override fun runtimeError(event: RuntimeErrorEvent?) {
                         super.runtimeError(event)
                         wrapper.cleanup(activity)
-                        val errorMessage = "3DS SDK runtime error: code - ${event?.errorCode}, message - ${event?.errorMessage}"
-                        coroutine.doOnMain {
-                            changeScreenState(FinishWithErrorScreenState(AcquiringSdkException(RuntimeException(errorMessage))))
-                        }
+                        val error = RuntimeException("3DS SDK runtime error: code - ${event?.errorCode}, message - ${event?.errorMessage}")
+                        ThreeDsHelper.threeDsStatus = ThreeDsStatusError(error)
                     }
                 }, ThreeDsHelper.maxTimeout)
         }
     }
 
-    private fun submitAuthorization(threeDsData: ThreeDsData, transStatus: String) {
+    fun submitAuthorization(threeDsData: ThreeDsData, transStatus: String) {
+        changeScreenState(LoadingState)
+
         val request = sdk.submit3DSAuthorization(threeDsData.tdsServerTransId!!, transStatus)
 
         coroutine.call(request,

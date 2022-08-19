@@ -7,9 +7,13 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsCertInfo.CertType.Companion.toWrapperType
 import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
+import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.cancelButtonCustomization
 import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.setSdkAppId
+import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.submitButtonCustomization
+import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.toolbarCustomization
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
@@ -52,12 +56,28 @@ object ThreeDsHelper {
     private val okHttpClient = OkHttpClient()
     private val gson = Gson()
 
+    internal var threeDsStatus: ThreeDsStatus? = null
+
     suspend fun initWrapper(context: Context): ThreeDSWrapper {
+        val localisation = if (AsdkLocalization.isInitialized()) AsdkLocalization.resources else null
+
         val wrapper = ThreeDSWrapper(when (AcquiringSdk.isDeveloperMode) {
             true -> ThreeDSWrapper.EmbeddedCertsInfo.TEST
             else -> ThreeDSWrapper.EmbeddedCertsInfo.PROD
         }).init(context, ThreeDSWrapper.newConfigParameters {
             setSdkAppId(getSdkAppId(context).toString())
+        }, null, ThreeDSWrapper.newUiCustomization {
+            toolbarCustomization {
+                headerText = localisation?.threeDsConfirmation ?: "Confirmation"
+                buttonText = localisation?.threeDsCancel ?: "Cancel"
+                backgroundColor = "#888888"
+            }
+            submitButtonCustomization {
+                backgroundColor = "#ffdd2d"
+            }
+            cancelButtonCustomization {
+                textColor = "#ffffff"
+            }
         })
         val config = updateCertsConfigIfNeeded()
         wrapper.updateCertsIfNeeded(config)
