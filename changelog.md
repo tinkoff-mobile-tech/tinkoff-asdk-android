@@ -1,3 +1,10 @@
+## 2.7.0
+
+#### Fixed
+#### Changes
+`TinkoffAcquiring` constructor should accept `tokenGenerator` parameter now ([migration](/migration.md))
+#### Additions
+
 ## 2.6.0
 
 #### Fixed

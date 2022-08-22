@@ -22,6 +22,7 @@ import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.utils.SampleAcquiringTokenGenerator
 
 /**
  * @author Mariya Chernyadieva
@@ -33,7 +34,8 @@ class SampleApplication : Application() {
 
         val settings = SettingsSdkManager(this)
         val params = SessionParams[settings.terminalKey]
-        tinkoffAcquiring = TinkoffAcquiring(this, params.terminalKey, params.publicKey)
+        tinkoffAcquiring = TinkoffAcquiring(this, params.terminalKey,
+            params.publicKey, SampleAcquiringTokenGenerator(params.password))
         AcquiringSdk.isDeveloperMode = true
         AcquiringSdk.isDebug = true
     }

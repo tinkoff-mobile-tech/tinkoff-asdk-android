@@ -33,6 +33,7 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.cleanupSafe
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusSuccess
@@ -70,33 +71,33 @@ internal class ThreeDsViewModel(
                 object : ChallengeStatusReceiverAdapter(transaction, progressDialog) {
                     override fun completed(event: CompletionEvent?) {
                         super.completed(event)
-                        wrapper.cleanup(activity)
+                        wrapper.cleanupSafe(activity)
                         ThreeDsHelper.threeDsStatus = ThreeDsStatusSuccess(threeDsData, event!!.transactionStatus)
                     }
 
                     override fun cancelled() {
                         super.cancelled()
-                        wrapper.cleanup(activity)
+                        wrapper.cleanupSafe(activity)
                         ThreeDsHelper.threeDsStatus = ThreeDsStatusCanceled()
                     }
 
                     override fun timedout() {
                         super.timedout()
-                        wrapper.cleanup(activity)
+                        wrapper.cleanupSafe(activity)
                         val error = RuntimeException("3DS SDK transaction timeout")
                         ThreeDsHelper.threeDsStatus = ThreeDsStatusError(error)
                     }
 
                     override fun protocolError(event: ProtocolErrorEvent?) {
                         super.protocolError(event)
-                        wrapper.cleanup(activity)
+                        wrapper.cleanupSafe(activity)
                         val error = RuntimeException("3DS SDK protocol error: sdkTransactionID - ${event?.sdkTransactionID}, message - ${event?.errorMessage}")
                         ThreeDsHelper.threeDsStatus = ThreeDsStatusError(error)
                     }
 
                     override fun runtimeError(event: RuntimeErrorEvent?) {
                         super.runtimeError(event)
-                        wrapper.cleanup(activity)
+                        wrapper.cleanupSafe(context)
                         val error = RuntimeException("3DS SDK runtime error: code - ${event?.errorCode}, message - ${event?.errorMessage}")
                         ThreeDsHelper.threeDsStatus = ThreeDsStatusError(error)
                     }
