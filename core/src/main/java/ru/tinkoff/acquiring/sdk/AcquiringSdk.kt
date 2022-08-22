@@ -20,14 +20,18 @@ import ru.tinkoff.acquiring.sdk.loggers.JavaLogger
 import ru.tinkoff.acquiring.sdk.loggers.Logger
 import ru.tinkoff.acquiring.sdk.requests.*
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
+import ru.tinkoff.acquiring.sdk.utils.SampleAcquiringTokenGenerator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.KeyCreator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.StringKeyCreator
+import java.security.MessageDigest
 import java.security.PublicKey
 
 /**
  * Класс позволяет конфигурировать SDK и осуществлять взаимодействие с Tinkoff Acquiring API.
  * Методы осуществляют обращение к API.
  * Вызов методов выполняется синхронно
+ *
+ * Для корректного выполнения запросов также необходимо указать [tokenGenerator].
  *
  * @param terminalKey ключ терминала. Выдается после подключения к Tinkoff Acquiring
  * @param publicKey   экземпляр PublicKey созданный из публичного ключа, выдаваемого вместе с
@@ -243,7 +247,13 @@ class AcquiringSdk(
         }
     }
 
-    companion object AsdkLogger {
+    companion object {
+
+        /**
+         * Объект, который будет использоваться для генерации токена при формировании запросов к api
+         * ([документация по формированию токена](https://www.tinkoff.ru/kassa/develop/api/request-sign/))
+         */
+        var tokenGenerator: AcquiringTokenGenerator? = null
 
         /**
          * Позволяет использовать свой логгер или заданный
@@ -279,5 +289,36 @@ class AcquiringSdk(
                 logger.log(e)
             }
         }
+    }
+}
+
+/**
+ * Объект, который будет использоваться для генерации токена при формировании
+ * запросов к api ([документация по формированию токена](https://www.tinkoff.ru/kassa/develop/api/request-sign/)).
+ * На вход принимает словарь параметров (объекты **Shops**, **Receipt** и **DATA** уже исключены из
+ * этого словаря), на выходе должен вернуть строку, являющуюся токеном.
+ *
+ * Алгоритм формирования токена:
+ * 1. Добавить в исходный словарь пароль терминала с ключом **Password**.
+ * 2. Отсортировать словарь по ключам в алфавитном порядке.
+ * 3. Конкатенировать значения всех пар.
+ * 4. Для полученной строки вычислить хэш SHA-256.
+ *
+ * Полученный хэш и будет являться токеном.
+ *
+ * Пример реализации алгоритма генерации токена можно увидеть в [SampleAcquiringTokenGenerator].
+ *
+ * **Note:** Метод вызывается в фоновом потоке.
+ */
+fun interface AcquiringTokenGenerator {
+
+    fun generateToken(request: AcquiringRequest<*>, params: MutableMap<String, Any>): String
+
+    companion object {
+
+        fun sha256hashString(source: String): String =
+            MessageDigest.getInstance("SHA-256")
+                .digest(source.toByteArray())
+                .joinToString("") { "%02x".format(it) }
     }
 }

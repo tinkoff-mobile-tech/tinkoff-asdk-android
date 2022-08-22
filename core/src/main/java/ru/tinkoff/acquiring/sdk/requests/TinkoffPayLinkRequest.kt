@@ -30,6 +30,8 @@ class TinkoffPayLinkRequest(paymentId: String, version: String) :
 
     override fun asMap(): MutableMap<String, Any> = mutableMapOf()
 
+    override fun getToken(): String? = null
+
     override fun validate() = Unit
 
     /**

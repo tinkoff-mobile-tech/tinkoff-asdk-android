@@ -156,4 +156,14 @@ object ThreeDsHelper {
         true -> CERTS_CONFIG_URL_TEST
         else -> CERTS_CONFIG_URL_PROD
     }
+
+    fun ThreeDSWrapper.cleanupSafe(context: Context) {
+        if (isInitialized()) {
+            try {
+                cleanup(context)
+            } catch (ignored: Throwable) {
+                // ignore
+            }
+        }
+    }
 }

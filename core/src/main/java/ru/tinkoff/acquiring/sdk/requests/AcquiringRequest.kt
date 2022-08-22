@@ -44,8 +44,6 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
     private var disposed = false
     private val ignoredFieldsSet: HashSet<String> = hashSetOf(DATA, RECEIPT, RECEIPTS, SHOPS)
 
-    public var password: String? = null
-
     internal open val tokenIgnoreFields: HashSet<String>
         get() = ignoredFieldsSet
 
@@ -64,7 +62,6 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         val map = HashMap<String, Any>()
 
         map.putIfNotNull(TERMINAL_KEY, terminalKey)
-        map.putIfNotNull(PASSWORD, password)
 
         return map
     }
@@ -99,17 +96,27 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         val params = asMap()
         if (params.isEmpty()) return ""
 
+        getToken()?.let { params[TOKEN] = it }
+
         return when (contentType) {
             AcquiringApi.FORM_URL_ENCODED -> encodeRequestBody(params)
-            else -> jsonRequestBody(params)
+            else -> gson.toJson(params)
         }
     }
 
-    protected open fun jsonRequestBody(params: Map<String, Any>): String {
-        return gson.toJson(params)
+    protected open fun getToken(): String? =
+        AcquiringSdk.tokenGenerator?.generateToken(this, paramsForToken())
+
+    private fun paramsForToken(): MutableMap<String, Any> {
+        val tokenParams = asMap()
+        tokenIgnoreFields.forEach {
+            tokenParams.remove(it)
+        }
+        tokenParams.remove(TOKEN)
+        return tokenParams
     }
 
-    protected fun encodeRequestBody(params: Map<String, Any>): String {
+    private fun encodeRequestBody(params: Map<String, Any>): String {
         val builder = StringBuilder()
         for ((key, value1) in params) {
             try {

@@ -46,6 +46,7 @@ import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.cleanupSafe
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
@@ -323,7 +324,7 @@ internal constructor(
     ): Transaction? {
         val dsId = ThreeDsHelper.getDsId(paymentSystem)
         if (dsId == null) {
-            threeDSWrapper.cleanup(context)
+            threeDSWrapper.cleanupSafe(context)
             handleException(AcquiringSdkException(IllegalArgumentException(
                 "Directory server ID for payment system \"$paymentSystem\" can't be found")))
             return null
@@ -347,7 +348,7 @@ internal constructor(
 
         } catch (e: Throwable) {
             transaction?.closeSafe()
-            threeDSWrapper.cleanup(context)
+            threeDSWrapper.cleanupSafe(context)
             handleException(e)
             return null
         }
