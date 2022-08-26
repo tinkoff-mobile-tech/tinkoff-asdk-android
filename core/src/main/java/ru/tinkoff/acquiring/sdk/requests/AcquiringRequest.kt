@@ -169,6 +169,8 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val DATA_TYPE = "DataType"
         const val REDIRECT_DUE_DATE = "RedirectDueDate"
         const val NOTIFICATION_URL = "NotificationURL"
+        const val SUCCESS_URL = "SuccessURL"
+        const val FAIL_URL = "FailURL"
         const val IP = "IP"
         const val CONNECTION_TYPE = "connection_type"
         const val SDK_VERSION = "sdk_version"

@@ -63,6 +63,8 @@ internal class PaymentActivity : TransparentActivity() {
     private lateinit var paymentOptions: PaymentOptions
     private var asdkState: AsdkState = DefaultState
 
+    private var shouldRequestTinkoffPayState = true
+
     private val progressDialog: NotificationDialog by lazy {
         NotificationDialog(this).apply { showProgress() }
     }
@@ -82,14 +84,37 @@ internal class PaymentActivity : TransparentActivity() {
         observeLiveData()
 
         if (savedInstanceState == null) {
+            if (asdkState is OpenTinkoffPayBankState) {
+                // if the activity was launched to open Tinkoff Pay deeplink it will be opened
+                // before onResume, hence we shouldn't request Tinkoff Pay payment state in
+                // subsequent onResume
+                shouldRequestTinkoffPayState = false
+            }
             paymentViewModel.checkoutAsdkState(asdkState)
         }
     }
 
     override fun onResume() {
         super.onResume()
+        handleFpsResume()
+        handleTinkoffPayResume()
+    }
+
+    private fun handleFpsResume() {
         val screenState = paymentViewModel.screenStateLiveData.value
         if (screenState is FpsBankFormShowedScreenState) {
+            paymentViewModel.requestPaymentState(screenState.paymentId)
+        }
+    }
+
+    private fun handleTinkoffPayResume() {
+        if (!shouldRequestTinkoffPayState) {
+            shouldRequestTinkoffPayState = true
+            return
+        }
+
+        val screenState = paymentViewModel.screenChangeEventLiveData.value?.value
+        if (screenState is OpenTinkoffPayBankScreenState) {
             paymentViewModel.requestPaymentState(screenState.paymentId)
         }
     }
@@ -109,12 +134,6 @@ internal class PaymentActivity : TransparentActivity() {
                     data?.getStringExtra(EXTRA_SBP_BANK_PACKAGE_NAME)?.let { packageName ->
                         openSbpDeepLinkInBank(packageName)
                     }
-                }
-            }
-            TINKOFF_PAY_REQUEST_CODE -> {
-                val screenState = paymentViewModel.screenChangeEventLiveData.value?.value
-                if (screenState is OpenTinkoffPayBankScreenState) {
-                    paymentViewModel.requestPaymentState(screenState.paymentId)
                 }
             }
         }
@@ -237,7 +256,7 @@ internal class PaymentActivity : TransparentActivity() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(deepLink)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivityForResult(intent, TINKOFF_PAY_REQUEST_CODE)
+        startActivity(intent)
     }
 
     private fun showError(message: String) {
@@ -250,7 +269,6 @@ internal class PaymentActivity : TransparentActivity() {
     companion object {
         private const val SBP_BANK_REQUEST_CODE = 112
         private const val SBP_BANK_CHOOSE_REQUEST_CODE = 113
-        private const val TINKOFF_PAY_REQUEST_CODE = 114
 
         internal const val EXTRA_SBP_BANK_PACKAGE_NAME = "sbp_bank_package_name"
     }

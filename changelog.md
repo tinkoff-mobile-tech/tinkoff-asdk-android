@@ -1,3 +1,15 @@
+## 2.8.0
+
+#### Fixed
+Fixed proguard rules for inner dependencies to generate classes with unique package names
+to prevent duplicate class errors
+#### Changes
+Removed `tokenGenerator` parameter from `TinkoffAcquiring` constructor; `tokenGenerator` can
+be set via `AcquiringSdk.tokenGenerator`
+Added `paymentId` as a second parameter to `PaymentListener.onError` ([migration](/migration.md))
+#### Additions
+Added `successURL` and `failURL` to `OrderOptions`
+
 ## 2.7.0
 
 #### Fixed

@@ -123,6 +123,16 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
      */
     var notificationURL: String? = null
 
+    /**
+     * Страница успеха
+     */
+    var successURL: String? = null
+
+    /**
+     * Страница ошибки
+     */
+    var failURL: String? = null
+
     var sdkVersion: String? = null
 
     private var redirectDueDateFormat: String? = null
@@ -144,6 +154,8 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
         map.putIfNotNull(SHOPS, shops)
         map.putIfNotNull(REDIRECT_DUE_DATE, redirectDueDateFormat)
         map.putIfNotNull(NOTIFICATION_URL, notificationURL)
+        map.putIfNotNull(SUCCESS_URL, successURL)
+        map.putIfNotNull(FAIL_URL, failURL)
         map.putDataIfNonNull(data)
 
         return map

@@ -101,7 +101,7 @@ internal constructor(
         paymentOptions.validateRequiredFields()
 
         this.paymentSource = paymentSource
-        this.initRequest = configureInitRequest(paymentOptions)
+        this.initRequest = sdk.init { configure(paymentOptions) }
         this.paymentType = CardPaymentType
         this.email = email
         this.sdkState = paymentOptions.asdkState
@@ -133,7 +133,7 @@ internal constructor(
     fun createSbpPaymentProcess(paymentOptions: PaymentOptions): PaymentProcess {
         paymentOptions.validateRequiredFields()
 
-        this.initRequest = configureInitRequest(paymentOptions)
+        this.initRequest = sdk.init { configure(paymentOptions) }
         this.paymentType = SbpPaymentType
 
         sendToListener(PaymentState.CREATED)
@@ -160,7 +160,7 @@ internal constructor(
      * @return сконфигурированный объект для проведения оплаты
      */
     fun createTinkoffPayPaymentProcess(paymentOptions: PaymentOptions, tinkoffPayVersion: String): PaymentProcess {
-        this.initRequest = configureInitRequest(paymentOptions).apply {
+        this.initRequest = sdk.init { configure(paymentOptions) }.apply {
             data = mutableMapOf<String, String>().also { newData ->
                 data?.let { newData.putAll(it) }
                 newData["TinkoffPayWeb"] = "true"
@@ -216,7 +216,7 @@ internal constructor(
         this.state = state
         when (state) {
             PaymentState.SUCCESS -> listener?.onSuccess(paymentResult!!.paymentId!!, paymentResult!!.cardId, paymentResult!!.rebillId)
-            PaymentState.ERROR -> listener?.onError(error!!)
+            PaymentState.ERROR -> listener?.onError(error!!, paymentId)
             PaymentState.CHARGE_REJECTED, PaymentState.THREE_DS_NEEDED, PaymentState.BROWSE_SBP_BANK, PaymentState.OPEN_TINKOFF_PAY_BANK ->
                 listener?.onUiNeeded(sdkState!!)
             PaymentState.THREE_DS_DATA_COLLECTING -> {
@@ -251,10 +251,12 @@ internal constructor(
 
         coroutine.call(request,
             onSuccess = {
+                paymentId = it.paymentId
                 when (paymentType) {
                     CardPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
                     SbpPaymentType -> callGetQr(it.paymentId!!)
                     TinkoffPayPaymentType -> callTinkoffPayLinkRequest(it.paymentId!!, tinkoffPayVersion!!)
+                    else -> Unit
                 }
             })
     }
@@ -447,25 +449,6 @@ internal constructor(
         }
     }
 
-    private fun configureInitRequest(paymentOptions: PaymentOptions): InitRequest {
-        val order = paymentOptions.order
-
-        return sdk.init {
-            orderId = order.orderId
-            amount = order.amount.coins
-            description = order.description
-            chargeFlag = order.recurrentPayment
-            recurrent = order.recurrentPayment
-            receipt = order.receipt
-            receipts = order.receipts
-            shops = order.shops
-            data = order.additionalData
-            customerKey = paymentOptions.customer.customerKey
-            language = AsdkLocalization.language.name
-            sdkVersion = BuildConfig.ASDK_VERSION_NAME
-        }
-    }
-
     private fun modifyRejectedData(request: InitRequest): Map<String, String> {
         val map = HashMap<String, String>()
         map[RECURRING_TYPE_KEY] = RECURRING_TYPE_VALUE
@@ -475,6 +458,26 @@ internal constructor(
         data.putAll(map)
 
         return data.toMap()
+    }
+
+    companion object {
+
+        fun InitRequest.configure(paymentOptions: PaymentOptions) = apply {
+            orderId = paymentOptions.order.orderId
+            amount = paymentOptions.order.amount.coins
+            description = paymentOptions.order.description
+            chargeFlag = paymentOptions.order.recurrentPayment
+            recurrent = paymentOptions.order.recurrentPayment
+            receipt = paymentOptions.order.receipt
+            receipts = paymentOptions.order.receipts
+            shops = paymentOptions.order.shops
+            successURL = paymentOptions.order.successURL
+            failURL = paymentOptions.order.failURL
+            data = paymentOptions.order.additionalData
+            customerKey = paymentOptions.customer.customerKey
+            language = AsdkLocalization.language.name
+            sdkVersion = BuildConfig.ASDK_VERSION_NAME
+        }
     }
 }
 

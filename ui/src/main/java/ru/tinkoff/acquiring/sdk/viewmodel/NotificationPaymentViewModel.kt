@@ -54,7 +54,7 @@ internal class NotificationPaymentViewModel(
                         uiEvent.value = SingleEvent(state)
                     }
 
-                    override fun onError(throwable: Throwable) {
+                    override fun onError(throwable: Throwable, paymentId: Long?) {
                         changeScreenState(LoadedState)
                         errorData.value = throwable
                     }

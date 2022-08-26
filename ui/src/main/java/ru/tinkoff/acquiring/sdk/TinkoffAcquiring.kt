@@ -52,24 +52,20 @@ import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 /**
  * Точка входа для взаимодействия с Acquiring SDK
  *
+ * В некоторых случаях для формирования запросов к API может потребоваться генерация токена для
+ * подписи запроса, см. [AcquiringSdk.tokenGenerator].
+ *
  * @param terminalKey    ключ терминала. Выдается после подключения к Tinkoff Acquiring
  * @param publicKey      экземпляр PublicKey созданный из публичного ключа, выдаваемого вместе с
  *                       terminalKey
- * @param tokenGenerator объект, который будет использоваться для генерации токена при формировании
- *                       запросов к api ([документация по формированию токена](https://www.tinkoff.ru/kassa/develop/api/request-sign/))
- *
  *
  * @author Mariya Chernyadieva
  */
 class TinkoffAcquiring(
     private val applicationContext: Context,
     private val terminalKey: String,
-    private val publicKey: String,
-    tokenGenerator: AcquiringTokenGenerator
+    private val publicKey: String
 ) {
-    init {
-        TinkoffAcquiring.tokenGenerator = tokenGenerator
-    }
 
     val sdk = AcquiringSdk(terminalKey, publicKey)
 
@@ -461,7 +457,5 @@ class TinkoffAcquiring(
         const val EXTRA_REBILL_ID = "extra_rebill_id"
 
         const val EXTRA_CARD_LIST_CHANGED = "extra_cards_changed"
-
-        var tokenGenerator: AcquiringTokenGenerator? by AcquiringSdk.Companion::tokenGenerator
     }
 }
