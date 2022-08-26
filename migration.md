@@ -1,3 +1,11 @@
+2.8.0
+
+Конструктор `TinkoffAcquiring` больше не принимает `tokenGenerator`; при необходимости `tokenGenerator` 
+можно задать через `AcquiringSdk.tokenGenerator`.
+
+`PaymentListener.onError(throwable: Throwable, paymentId: Long?)` теперь принимает `paymentId`
+вторым параметром.
+
 2.7.0
 
 Большинство запросов теперь требует передачи токена.
@@ -8,6 +16,8 @@
 
 При использовании зависимости только от `core`-модуля объект для генерации токена можно задать 
 через `AcquiringSdk.tokenGenerator`.
+
+Поле `password` удалено из `AcquiringRequest`.
 
 2.6.0
 

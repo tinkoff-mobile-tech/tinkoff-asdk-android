@@ -73,6 +73,16 @@ class OrderOptions() : Options(), Parcelable {
     var receipts: List<Receipt>? = null
 
     /**
+     * Страница успеха
+     */
+    var successURL: String? = null
+
+    /**
+     * Страница ошибки
+     */
+    var failURL: String? = null
+
+    /**
      * Объект содержащий дополнительные параметры в виде "ключ":"значение".
      * Данные параметры будут переданы в запросе платежа/привязки карты.
      * Максимальная длина для каждого передаваемого параметра:
@@ -92,6 +102,8 @@ class OrderOptions() : Options(), Parcelable {
             receipt = readSerializable() as Receipt?
             shops = readParcelList(Shop::class.java)
             receipts = readParcelList(Receipt::class.java)
+            successURL = readString()
+            failURL = readString()
             additionalData = readParcelMap(String::class.java)
         }
     }
@@ -106,6 +118,8 @@ class OrderOptions() : Options(), Parcelable {
             writeSerializable(receipt)
             writeList(shops)
             writeList(receipts)
+            writeString(successURL)
+            writeString(failURL)
             writeMap(additionalData)
         }
     }

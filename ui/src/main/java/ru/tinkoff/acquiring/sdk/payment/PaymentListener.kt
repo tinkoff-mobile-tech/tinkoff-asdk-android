@@ -48,7 +48,7 @@ interface PaymentListener {
     /**
      * В процессе оплаты произошла ошибка
      */
-    fun onError(throwable: Throwable)
+    fun onError(throwable: Throwable, paymentId: Long?)
 
     /**
      * Событие изменения состояния процесса оплаты
@@ -65,7 +65,7 @@ abstract class PaymentListenerAdapter : PaymentListener {
 
     override fun onUiNeeded(state: AsdkState) = Unit
 
-    override fun onError(throwable: Throwable) = Unit
+    override fun onError(throwable: Throwable, paymentId: Long?) = Unit
 
     override fun onStatusChanged(state: PaymentState?) = Unit
 }

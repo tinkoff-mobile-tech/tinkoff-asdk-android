@@ -251,7 +251,9 @@ class AcquiringSdk(
 
         /**
          * Объект, который будет использоваться для генерации токена при формировании запросов к api
-         * ([документация по формированию токена](https://www.tinkoff.ru/kassa/develop/api/request-sign/))
+         * ([документация по формированию токена](https://www.tinkoff.ru/kassa/develop/api/request-sign/)).
+         *
+         * Передача токена для SDK терминалов в общем случае не обязательна и зависит от настроек терминала.
          */
         var tokenGenerator: AcquiringTokenGenerator? = null
 
@@ -304,7 +306,7 @@ class AcquiringSdk(
  * 3. Конкатенировать значения всех пар.
  * 4. Для полученной строки вычислить хэш SHA-256.
  *
- * Полученный хэш и будет являться токеном.
+ * Полученный хэш и будет являться токеном. При возвращении *null* токен не будет добавляться к запросу.
  *
  * Пример реализации алгоритма генерации токена можно увидеть в [SampleAcquiringTokenGenerator].
  *
@@ -312,7 +314,15 @@ class AcquiringSdk(
  */
 fun interface AcquiringTokenGenerator {
 
-    fun generateToken(request: AcquiringRequest<*>, params: MutableMap<String, Any>): String
+    /**
+     * @param request запрос, для которого будет гененрироваться токен
+     * @param params  словарь параметров, используемый для формирования токена; объекты **Shops**,
+     * **Receipt** и **DATA** уже исключены из этого словаря
+     *
+     * @return токен, сформированный с использоваванием [params], который будет добавлен в параметры
+     * запроса к API; при возвращении *null* токен не будет добавляться к запросу
+     */
+    fun generateToken(request: AcquiringRequest<*>, params: MutableMap<String, Any>): String?
 
     companion object {
 

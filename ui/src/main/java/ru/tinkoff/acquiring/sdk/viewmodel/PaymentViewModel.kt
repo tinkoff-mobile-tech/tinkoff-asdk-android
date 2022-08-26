@@ -251,7 +251,7 @@ internal class PaymentViewModel(
                 }
             }
 
-            override fun onError(throwable: Throwable) {
+            override fun onError(throwable: Throwable, paymentId: Long?) {
                 changeScreenState(LoadedState)
                 handleException(throwable)
             }

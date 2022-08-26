@@ -29,6 +29,7 @@ import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
 
 internal class QrViewModel(
@@ -49,7 +50,7 @@ internal class QrViewModel(
         changeScreenState(DefaultScreenState)
         changeScreenState(LoadingState)
 
-        coroutine.call(prepareInitRequest(paymentOptions),
+        coroutine.call(sdk.init { configure(paymentOptions) },
                 onSuccess = {
                     getQr(it.paymentId!!, DataTypeQr.IMAGE)
                 })
@@ -82,7 +83,7 @@ internal class QrViewModel(
     }
 
     fun getDynamicQrLink(paymentOptions: PaymentOptions) {
-        coroutine.call(prepareInitRequest(paymentOptions),
+        coroutine.call(sdk.init { configure(paymentOptions) },
                 onSuccess = {
                     getQr(it.paymentId!!, DataTypeQr.PAYLOAD)
                 })
@@ -124,23 +125,5 @@ internal class QrViewModel(
                         }
                     }
                 })
-    }
-
-    private fun prepareInitRequest(paymentOptions: PaymentOptions): InitRequest {
-        val order = paymentOptions.order
-        return sdk.init {
-            orderId = order.orderId
-            amount = order.amount.coins
-            description = order.description
-            chargeFlag = order.recurrentPayment
-            recurrent = order.recurrentPayment
-            receipt = order.receipt
-            receipts = order.receipts
-            shops = order.shops
-            data = order.additionalData
-            customerKey = paymentOptions.customer.customerKey
-            language = AsdkLocalization.language.name
-            sdkVersion = BuildConfig.ASDK_VERSION_NAME
-        }
     }
 }

@@ -34,10 +34,10 @@ class SampleApplication : Application() {
 
         val settings = SettingsSdkManager(this)
         val params = SessionParams[settings.terminalKey]
-        tinkoffAcquiring = TinkoffAcquiring(this, params.terminalKey,
-            params.publicKey, SampleAcquiringTokenGenerator(params.password))
+        tinkoffAcquiring = TinkoffAcquiring(this, params.terminalKey, params.publicKey)
         AcquiringSdk.isDeveloperMode = true
         AcquiringSdk.isDebug = true
+        AcquiringSdk.tokenGenerator = SampleAcquiringTokenGenerator(params.password)
     }
 
     override fun onTerminate() {

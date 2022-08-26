@@ -186,6 +186,11 @@ open class PayableActivity : AppCompatActivity() {
                         title = this@PayableActivity.title
                         description = this@PayableActivity.description
                         recurrentPayment = settings.isRecurrentPayment
+                        successURL = "https://www.google.com/search?q=success"
+                        failURL = "https://www.google.com/search?q=fail"
+                        additionalData = mutableMapOf(
+                            "test_additional_data_key_1" to "test_additional_data_value_2",
+                            "test_additional_data_key_2" to "test_additional_data_value_2")
                     }
                     customerOptions {
                         customerKey = sessionParams.customerKey
@@ -230,7 +235,7 @@ open class PayableActivity : AppCompatActivity() {
                         state)
             }
 
-            override fun onError(throwable: Throwable) {
+            override fun onError(throwable: Throwable, paymentId: Long?) {
                 hideProgressDialog()
                 showErrorDialog()
                 SampleApplication.paymentProcess = null
