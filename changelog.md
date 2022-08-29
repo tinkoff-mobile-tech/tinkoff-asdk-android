@@ -1,3 +1,11 @@
+## 2.8.1
+
+#### Fixed
+#### Changes
+3DS app-based flow is temporarily turned off due to technical issues during payment with
+cards of some issuers
+#### Additions
+
 ## 2.8.0
 
 #### Fixed
