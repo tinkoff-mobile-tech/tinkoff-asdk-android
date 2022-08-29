@@ -89,7 +89,7 @@ object ThreeDsHelper {
     fun getDsId(paymentSystem: String): String? = psToDsIdMap[paymentSystem]
 
     fun isAppBasedFlow(threeDsVersion: String?) = when (threeDsVersion) {
-        "2.1.0" -> true
+//        "2.1.0" -> true todo uncomment then app-based 3DS is fixed
         else -> false
     }
 
