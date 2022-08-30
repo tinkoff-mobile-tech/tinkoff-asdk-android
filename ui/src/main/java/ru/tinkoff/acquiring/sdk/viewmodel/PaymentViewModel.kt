@@ -152,7 +152,6 @@ internal class PaymentViewModel(
                 }
             }
         } catch (ignored: Throwable) {
-//            tinkoffPayStatusResult.value = TinkoffPayStatusResponse(TinkoffPayStatusResponse.Params(true, "1.0"))
             // ignore
         }
     }

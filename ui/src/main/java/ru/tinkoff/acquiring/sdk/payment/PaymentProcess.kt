@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.payment
 
 import android.content.Context
+import android.os.Build
 import android.util.Base64
 import com.emvco3ds.sdk.spec.Transaction
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -477,6 +478,8 @@ internal constructor(
             customerKey = paymentOptions.customer.customerKey
             language = AsdkLocalization.language.name
             sdkVersion = BuildConfig.ASDK_VERSION_NAME
+            softwareVersion = Build.VERSION.SDK_INT.toString()
+            deviceModel = Build.MODEL
         }
     }
 }
