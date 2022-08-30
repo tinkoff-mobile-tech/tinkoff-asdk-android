@@ -1,3 +1,11 @@
+## 2.8.2
+
+#### Fixed
+#### Changes
+Send `software_version` and `device_model` in Init request
+#### Additions
+
+
 ## 2.8.1
 
 #### Fixed

@@ -174,6 +174,8 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val IP = "IP"
         const val CONNECTION_TYPE = "connection_type"
         const val SDK_VERSION = "sdk_version"
+        const val SOFTWARE_VERSION = "software_version"
+        const val DEVICE_MODEL = "device_model"
         const val THREE_DS_SERVER_TRANS_ID = "threeDSServerTransID"
         const val TRANS_STATUS = "transStatus"
         const val CRES = "cres"
