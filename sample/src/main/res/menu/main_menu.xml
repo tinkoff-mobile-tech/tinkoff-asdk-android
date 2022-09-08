@@ -51,6 +51,11 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/menu_action_attach_card_manually"
+        android:title="@string/activity_title_attach_card_manually"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/menu_action_about"
         android:title="@string/activity_title_about"
         app:showAsAction="never"/>

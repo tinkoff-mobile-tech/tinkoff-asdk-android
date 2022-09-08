@@ -18,12 +18,9 @@ package ru.tinkoff.acquiring.sdk.payment
 
 import android.content.Context
 import android.os.Build
-import android.util.Base64
-import com.emvco3ds.sdk.spec.Transaction
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.BuildConfig
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
-import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
@@ -46,12 +43,10 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi.RECURRING_TYPE_VALUE
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.cleanupSafe
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
-import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
-import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.closeSafe
 
 /**
  * Позволяет создавать и управлять процессом оплаты
@@ -102,7 +97,12 @@ internal constructor(
         paymentOptions.validateRequiredFields()
 
         this.paymentSource = paymentSource
-        this.initRequest = sdk.init { configure(paymentOptions) }
+        this.initRequest = sdk.init {
+            configure(paymentOptions)
+            if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {
+                receipt?.email = email
+            }
+        }
         this.paymentType = CardPaymentType
         this.email = email
         this.sdkState = paymentOptions.asdkState
@@ -304,58 +304,22 @@ internal constructor(
 
                 coroutine.launchOnBackground {
                     val threeDsVersion = response.version
-                    var threeDSWrapper: ThreeDSWrapper? = null
-                    var threeDsTransaction: Transaction? = null
+                    var threeDsTransaction: ThreeDsAppBasedTransaction? = null
 
                     if (ThreeDsHelper.isAppBasedFlow(threeDsVersion)) {
-                        threeDSWrapper = ThreeDsHelper.initWrapper(context)
-                        threeDsTransaction = handleThreeDsAppBased(
-                            threeDSWrapper, threeDsVersion!!, response.paymentSystem!!, data) ?: return@launchOnBackground
+                        try {
+                            threeDsTransaction = ThreeDsHelper.CreateAppBasedTransaction(
+                                context, threeDsVersion!!, response.paymentSystem!!, data)
+                        } catch (e: Throwable) {
+                            handleException(e)
+                            return@launchOnBackground
+                        }
                     }
 
                     callFinishAuthorizeRequest(paymentId, paymentSource, email, data,
-                        threeDsVersion, threeDSWrapper, threeDsTransaction)
+                        threeDsVersion, threeDsTransaction)
                 }
             })
-    }
-
-    private fun handleThreeDsAppBased(
-        threeDSWrapper: ThreeDSWrapper,
-        threeDsVersion: String,
-        paymentSystem: String,
-        data: MutableMap<String, String>
-    ): Transaction? {
-        val dsId = ThreeDsHelper.getDsId(paymentSystem)
-        if (dsId == null) {
-            threeDSWrapper.cleanupSafe(context)
-            handleException(AcquiringSdkException(IllegalArgumentException(
-                "Directory server ID for payment system \"$paymentSystem\" can't be found")))
-            return null
-        }
-        var transaction: Transaction? = null
-
-        try {
-            transaction = threeDSWrapper.createTransaction(dsId, threeDsVersion)
-            val authParams = transaction.authenticationRequestParameters
-
-            data["sdkAppID"] = authParams.sdkAppID
-            data["sdkEncData"] = Base64.encodeToString(
-                authParams.deviceData.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-            data["sdkEphemPubKey"] = Base64.encodeToString(
-                authParams.sdkEphemeralPublicKey.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-            data["sdkMaxTimeout"] = ThreeDsHelper.maxTimeout.toString()
-            data["sdkReferenceNumber"] = authParams.sdkReferenceNumber
-            data["sdkTransID"] = authParams.sdkTransactionID
-            data["sdkInterface"] = "03"
-            data["sdkUiType"] = "01,02,03,04,05"
-
-        } catch (e: Throwable) {
-            transaction?.closeSafe()
-            threeDSWrapper.cleanupSafe(context)
-            handleException(e)
-            return null
-        }
-        return transaction
     }
 
     private fun callFinishAuthorizeRequest(
@@ -364,8 +328,7 @@ internal constructor(
         email: String? = null,
         data: Map<String, String>? = null,
         threeDsVersion: String? = null,
-        threeDSWrapper: ThreeDSWrapper? = null,
-        threeDsTransaction: Transaction? = null
+        threeDsTransaction: ThreeDsAppBasedTransaction? = null
     ) {
         val ipAddress = if (data != null) getIpAddress() else null
 
@@ -384,7 +347,7 @@ internal constructor(
                 val cardId = if (paymentSource is AttachedCard) paymentSource.cardId else null
 
                 if (threeDsData.isThreeDsNeed) {
-                    sdkState = ThreeDsState(threeDsData, threeDSWrapper, threeDsTransaction)
+                    sdkState = ThreeDsState(threeDsData, threeDsTransaction)
                     sendToListener(PaymentState.THREE_DS_NEEDED)
                 } else {
                     paymentResult = PaymentResult(response.paymentId, cardId, response.rebillId)

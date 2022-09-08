@@ -28,6 +28,7 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.fragments.AttachCardFragment
 import ru.tinkoff.acquiring.sdk.ui.fragments.LoopConfirmationFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.AttachCardViewModel
@@ -80,7 +81,14 @@ internal class AttachCardActivity : TransparentActivity() {
     private fun handleScreenChangeEvent(screenChangeEvent: SingleEvent<Screen>) {
         screenChangeEvent.getValueIfNotHandled()?.let { screen ->
             when (screen) {
-                is ThreeDsScreenState -> openThreeDs(screen)
+                is ThreeDsScreenState -> attachCardViewModel.launchOnMain {
+                    try {
+                        ThreeDsHelper.Launch(this@AttachCardActivity,
+                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                    } catch (e: Throwable) {
+                        finishWithError(e)
+                    }
+                }
                 is LoopConfirmationScreenState -> showFragment(LoopConfirmationFragment.newInstance(screen.requestKey))
             }
         }

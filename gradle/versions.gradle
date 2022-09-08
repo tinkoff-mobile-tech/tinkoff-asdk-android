@@ -11,9 +11,9 @@ ext {
     gradlePluginVersion = '7.1.2'
     dokkaVersion = '1.7.10'
 
-    appCompatVersion = '1.1.0'
+    appCompatVersion = '1.4.0'
     preferenceVersion = '1.1.1'
-    lifecycleExtensionsVersion = '2.2.0'
+    lifecycleExtensionsVersion = '2.5.1'
     cardIoVersion = '5.5.1'
     gsonVersion = '2.8.6'
     coreNfcVersion = '1.0.2'

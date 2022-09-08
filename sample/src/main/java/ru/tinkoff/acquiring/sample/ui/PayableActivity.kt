@@ -208,6 +208,7 @@ open class PayableActivity : AppCompatActivity() {
                         darkThemeMode = settings.resolveDarkThemeMode()
                         theme = settings.resolvePaymentStyle()
                         userCanSelectCard = true
+                        duplicateEmailToReceipt = true
                     }
                 }
     }

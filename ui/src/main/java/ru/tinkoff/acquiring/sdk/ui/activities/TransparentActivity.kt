@@ -89,21 +89,22 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     override fun onResume() {
         super.onResume()
 
-        when (val threeDsStatus = ThreeDsHelper.threeDsStatus) {
-            is ThreeDsStatusSuccess -> threeDsViewModel.submitAuthorization(threeDsStatus.threeDsData, threeDsStatus.transStatus)
-            is ThreeDsStatusCanceled -> finishWithCancel()
-            is ThreeDsStatusError -> finishWithError(threeDsStatus.error)
-            else -> Unit
+        ThreeDsHelper.checkoutTransactionStatus { status ->
+            when (status) {
+                is ThreeDsStatusSuccess -> threeDsViewModel.submitAuthorization(status.threeDsData, status.transStatus)
+                is ThreeDsStatusCanceled -> finishWithCancel()
+                is ThreeDsStatusError -> finishWithError(status.error)
+                else -> Unit
+            }
         }
-        ThreeDsHelper.threeDsStatus = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                finishWithSuccess(data.getSerializableExtra(ThreeDsActivity.RESULT_DATA) as AsdkResult)
-            } else if (resultCode == ThreeDsActivity.RESULT_ERROR) {
-                finishWithError(data?.getSerializableExtra(ThreeDsActivity.ERROR_DATA) as Throwable)
+                finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
+            } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
+                finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
             } else {
                 setResult(Activity.RESULT_CANCELED)
                 closeActivity()
@@ -198,17 +199,6 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         bottomContainer.showInitAnimation = showBottomView
     }
 
-    protected fun openThreeDs(screenState: ThreeDsScreenState) {
-        val threeDsData = screenState.data
-        if (ThreeDsHelper.isAppBasedFlow(threeDsData.version)) {
-            threeDsViewModel.launchThreeDsAppBased(this,
-                screenState.data, screenState.wrapper!!, screenState.transaction!!)
-        } else {
-            val intent = ThreeDsActivity.createIntent(this, options, threeDsData)
-            startActivityForResult(intent, THREE_DS_REQUEST_CODE)
-        }
-    }
-
     private fun setupTranslucentStatusBar() {
         if (Build.VERSION.SDK_INT in 19..20) {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
@@ -238,7 +228,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         private const val FULL_SCREEN_INDEX = 0
         private const val EXPANDED_INDEX = 1
 
-        private const val THREE_DS_REQUEST_CODE = 143
+        internal const val THREE_DS_REQUEST_CODE = 143
 
         private const val STATE_SHOW_BOTTOM = "state_show_bottom"
     }

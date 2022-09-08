@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sample.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
@@ -25,6 +26,8 @@ import android.view.MenuItem
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.adapters.BooksListAdapter
@@ -42,6 +45,8 @@ import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
  * @author Mariya Chernyadieva
@@ -101,6 +106,11 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             }
             R.id.menu_action_attach_card -> {
                 openAttachCardScreen()
+                true
+            }
+            R.id.menu_action_attach_card_manually -> {
+                AttachCardManuallyDialogFragment().show(supportFragmentManager,
+                    AttachCardManuallyDialogFragment.TAG)
                 true
             }
             R.id.menu_action_saved_cards -> {
@@ -169,6 +179,20 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                     RESULT_ERROR -> Toast.makeText(this,
                             R.string.payment_failed,
                             Toast.LENGTH_SHORT).show()
+                }
+            }
+            THREE_DS_REQUEST_CODE -> {
+                when (resultCode) {
+                    RESULT_OK -> {
+                        val result = data?.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as CardResult
+                        toast("Attach success: cardId = ${result.cardId} ")
+                    }
+                    RESULT_CANCELED -> toast("Attach canceled")
+                    RESULT_ERROR -> {
+                        val error = data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable
+                        error.printStackTrace()
+                        toast("Attach failure: ${error.message}")
+                    }
                 }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
@@ -250,7 +274,11 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
         private const val ATTACH_CARD_REQUEST_CODE = 11
         private const val STATIC_QR_REQUEST_CODE = 12
         private const val SAVED_CARDS_REQUEST_CODE = 13
-
         const val NOTIFICATION_PAYMENT_REQUEST_CODE = 14
+        const val THREE_DS_REQUEST_CODE = 15
+
+        fun Activity.toast(message: String) = runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
     }
 }

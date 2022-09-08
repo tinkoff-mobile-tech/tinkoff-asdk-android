@@ -16,10 +16,9 @@
 
 package ru.tinkoff.acquiring.sdk.models
 
-import com.emvco3ds.sdk.spec.Transaction
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
-import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
 import java.io.Serializable
 
 /**
@@ -56,7 +55,7 @@ object FpsState : AsdkState()
  * Состояние проверки 3DS. На экране пользователю будет предложено пройти подтверждение платежа
  * по технологии 3D-Secure
  */
-class ThreeDsState(val data: ThreeDsData, val threeDSWrapper: ThreeDSWrapper?, val transaction: Transaction?) : AsdkState()
+class ThreeDsState(val data: ThreeDsData, val transaction: ThreeDsAppBasedTransaction?) : AsdkState()
 
 /**
  * Состояние, когда необходимо собрать информацию об устройстве для прохождения 3DS

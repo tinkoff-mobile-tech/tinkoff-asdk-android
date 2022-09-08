@@ -113,6 +113,14 @@ class FeaturesOptions() : Options(), Parcelable {
     var emailRequired: Boolean = true
 
     /**
+     * При выставлении параметра в true, введенный пользователем на форме оплаты email будет
+     * продублирован в объект чека при отправке запроса Init.
+     *
+     * Не имеет эффекта если объект чека отсутствует.
+     */
+    var duplicateEmailToReceipt: Boolean = false
+
+    /**
      * Следует ли при валидации данных карты показывать пользователю ошибку, если введенная
      * им срок действия карты уже истек.
      * Если установить в true - пользователь не сможет добавить или провести оплату с помощью
@@ -133,6 +141,7 @@ class FeaturesOptions() : Options(), Parcelable {
             selectedCardId = readString()
             handleErrorsInSdk = readByte().toInt() != 0
             emailRequired = readByte().toInt() != 0
+            duplicateEmailToReceipt = readByte().toInt() != 0
             userCanSelectCard = readByte().toInt() != 0
             showOnlyRecurrentCards = readByte().toInt() != 0
             validateExpiryDate = readByte().toInt() != 0
@@ -152,6 +161,7 @@ class FeaturesOptions() : Options(), Parcelable {
             writeString(selectedCardId)
             writeByte((if (handleErrorsInSdk) 1 else 0).toByte())
             writeByte((if (emailRequired) 1 else 0).toByte())
+            writeByte((if (duplicateEmailToReceipt) 1 else 0).toByte())
             writeByte((if (userCanSelectCard) 1 else 0).toByte())
             writeByte((if (showOnlyRecurrentCards) 1 else 0).toByte())
             writeByte((if (validateExpiryDate) 1 else 0).toByte())
