@@ -41,6 +41,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
@@ -137,7 +138,7 @@ class TinkoffAcquiring(
     @JvmOverloads
     fun openPaymentScreen(activity: Activity, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
         if (state is CollectDataState) {
-            state.data.putAll(ThreeDsActivity.collectData(activity, state.response))
+            state.data.putAll(ThreeDsHelper.CollectData(activity, state.response))
         } else {
             options.asdkState = state
             val intent = prepareIntent(activity, options, PaymentActivity::class.java)
@@ -157,7 +158,7 @@ class TinkoffAcquiring(
     @JvmOverloads
     fun openPaymentScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
         if (state is CollectDataState) {
-            state.data.putAll(ThreeDsActivity.collectData(fragment.requireContext(), state.response))
+            state.data.putAll(ThreeDsHelper.CollectData(fragment.requireContext(), state.response))
         } else {
             options.asdkState = state
             val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)

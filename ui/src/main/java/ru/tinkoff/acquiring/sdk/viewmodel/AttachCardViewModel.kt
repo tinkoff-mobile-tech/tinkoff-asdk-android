@@ -91,7 +91,7 @@ internal class AttachCardViewModel(
         coroutine.call(attachCardRequest,
                 onSuccess = {
                     when (it.status) {
-                        ResponseStatus.THREE_DS_CHECKING -> changeScreenState(ThreeDsScreenState(it.getThreeDsData(), null, null))
+                        ResponseStatus.THREE_DS_CHECKING -> changeScreenState(ThreeDsScreenState(it.getThreeDsData(), null))
                         ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
                         null -> attachCardResult.value = CardResult(it.cardId)
                         else -> {

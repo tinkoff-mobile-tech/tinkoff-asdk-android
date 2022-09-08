@@ -38,7 +38,7 @@ internal class ViewModelProviderFactory(
         NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk))
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return viewModelCollection[modelClass] as T
     }
 }

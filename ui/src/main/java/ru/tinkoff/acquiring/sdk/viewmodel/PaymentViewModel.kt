@@ -83,7 +83,7 @@ internal class PaymentViewModel(
 
     fun checkoutAsdkState(state: AsdkState) {
         when (state) {
-            is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data, state.threeDSWrapper, state.transaction))
+            is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data, state.transaction))
             is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
             is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
             is FpsState -> changeScreenState(FpsScreenState)
@@ -226,7 +226,7 @@ internal class PaymentViewModel(
             override fun onUiNeeded(state: AsdkState) {
                 when (state) {
                     is ThreeDsState -> {
-                        changeScreenState(ThreeDsScreenState(state.data, state.threeDSWrapper, state.transaction))
+                        changeScreenState(ThreeDsScreenState(state.data, state.transaction))
                         coroutine.runWithDelay(500) {
                             changeScreenState(LoadedState)
                         }

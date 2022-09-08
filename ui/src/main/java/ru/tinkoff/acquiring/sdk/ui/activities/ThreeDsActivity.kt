@@ -20,10 +20,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Point
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
@@ -37,15 +35,12 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
-import ru.tinkoff.acquiring.sdk.network.AcquiringApi.COMPLETE_3DS_METHOD_V2
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION_V2
-import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.Base64
-import ru.tinkoff.acquiring.sdk.utils.getTimeZoneOffsetInMinutes
 import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
 import java.net.URLEncoder
-import java.util.*
 
 internal class ThreeDsActivity : BaseAcquiringActivity() {
 
@@ -57,61 +52,23 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
     companion object {
 
-        const val RESULT_DATA = "result_data"
-        const val ERROR_DATA = "result_error"
-        const val RESULT_ERROR = 564
-
         const val THREE_DS_DATA = "three_ds_data"
-        private const val OPTIONS = "options"
-
-        private const val THREE_DS_CALLED_FLAG = "Y"
-        private const val THREE_DS_NOT_CALLED_FLAG = "N"
 
         private const val WINDOW_SIZE_CODE = "05"
         private const val MESSAGE_TYPE = "CReq"
 
         private val TERM_URL = "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION)}/$SUBMIT_3DS_AUTHORIZATION"
-        private val TERM_URL_V2 = "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION_V2)}/$SUBMIT_3DS_AUTHORIZATION_V2"
-        private val NOTIFICATION_URL = "${AcquiringApi.getUrl(COMPLETE_3DS_METHOD_V2)}/$COMPLETE_3DS_METHOD_V2"
+        val TERM_URL_V2 = "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION_V2)}/$SUBMIT_3DS_AUTHORIZATION_V2"
 
         private val cancelActions = arrayOf("cancel.do", "cancel=true")
 
         fun createIntent(context: Context, options: BaseAcquiringOptions, data: ThreeDsData): Intent {
             val intent = Intent(context, ThreeDsActivity::class.java)
             intent.putExtra(THREE_DS_DATA, data)
-            intent.putExtra(OPTIONS, options)
+            intent.putExtras(Bundle().apply {
+                putParcelable(EXTRA_OPTIONS, options)
+            })
             return intent
-        }
-
-        fun collectData(context: Context, response: Check3dsVersionResponse): MutableMap<String, String> {
-            var threeDSCompInd = THREE_DS_NOT_CALLED_FLAG
-            if (response.threeDsMethodUrl != null) {
-                val hiddenWebView = WebView(context)
-
-                val threeDsMethodData = JSONObject().apply {
-                    put("threeDSMethodNotificationURL", NOTIFICATION_URL)
-                    put("threeDSServerTransID", response.serverTransId)
-                }
-
-                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(), Base64.NO_PADDING).trim()
-                val params = "threeDSMethodData=${URLEncoder.encode(dataBase64, "UTF-8")}"
-
-                hiddenWebView.postUrl(response.threeDsMethodUrl!!, params.toByteArray())
-                threeDSCompInd = THREE_DS_CALLED_FLAG
-            }
-
-            val display = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-            val point = Point()
-            display.getSize(point)
-
-            return mutableMapOf<String, String>().apply {
-                put("threeDSCompInd", threeDSCompInd)
-                put("language", Locale.getDefault().toString().replace("_", "-"))
-                put("timezone", getTimeZoneOffsetInMinutes())
-                put("screen_height", "${point.y}")
-                put("screen_width", "${point.x}")
-                put("cresCallbackUrl", TERM_URL_V2)
-            }
         }
     }
 
@@ -141,14 +98,14 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
     override fun setSuccessResult(result: AsdkResult) {
         val intent = Intent()
-        intent.putExtra(RESULT_DATA, result)
+        intent.putExtra(ThreeDsHelper.Launch.RESULT_DATA, result)
         setResult(Activity.RESULT_OK, intent)
     }
 
     override fun setErrorResult(throwable: Throwable) {
         val intent = Intent()
-        intent.putExtra(ERROR_DATA, throwable)
-        setResult(RESULT_ERROR, intent)
+        intent.putExtra(ThreeDsHelper.Launch.ERROR_DATA, throwable)
+        setResult(ThreeDsHelper.Launch.RESULT_ERROR, intent)
     }
 
     private fun observeLiveData() {

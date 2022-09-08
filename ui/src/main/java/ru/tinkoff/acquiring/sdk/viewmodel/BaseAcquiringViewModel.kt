@@ -22,6 +22,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
@@ -92,5 +93,13 @@ internal open class BaseAcquiringViewModel(
         } else {
             fallbackMessage
         }
+    }
+
+    fun launchOnMain(block: suspend CoroutineScope.() -> Unit) {
+        coroutine.launchOnMain(block)
+    }
+
+    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit) {
+        coroutine.launchOnBackground(block)
     }
 }

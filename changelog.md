@@ -1,10 +1,16 @@
+## 2.9.0
+
+#### Fixed
+#### Changes
+Added ability to launch 3DS authentication via `ThreeDsHelper` 
+#### Additions
+
 ## 2.8.2
 
 #### Fixed
 #### Changes
 Send `software_version` and `device_model` in Init request
 #### Additions
-
 
 ## 2.8.1
 
