@@ -81,7 +81,7 @@ internal class AttachCardActivity : TransparentActivity() {
     private fun handleScreenChangeEvent(screenChangeEvent: SingleEvent<Screen>) {
         screenChangeEvent.getValueIfNotHandled()?.let { screen ->
             when (screen) {
-                is ThreeDsScreenState -> attachCardViewModel.launchOnMain {
+                is ThreeDsScreenState -> attachCardViewModel.coroutine.launchOnMain {
                     try {
                         ThreeDsHelper.Launch(this@AttachCardActivity,
                             THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)

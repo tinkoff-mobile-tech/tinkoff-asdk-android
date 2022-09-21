@@ -1,3 +1,11 @@
+## 2.10.0
+
+#### Fixed
+#### Changes
+Deleted `CollectDataState`; 3DS data collection is handled internally now
+Changed `NetworkClient` to utilize okhttp 
+#### Additions
+
 ## 2.9.0
 
 #### Fixed

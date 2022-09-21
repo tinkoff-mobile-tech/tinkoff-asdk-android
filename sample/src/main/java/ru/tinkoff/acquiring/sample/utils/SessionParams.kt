@@ -32,7 +32,7 @@ class SessionParams(
 
         var GPAY_TEST_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST
 
-        private const val DEFAULT_CUSTOMER_KEY = "user-key"
+        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1"
         private const val DEFAULT_CUSTOMER_EMAIL = "user@example.com"
 
         private const val SDK_TERMINAL_ID = "TestSDK"

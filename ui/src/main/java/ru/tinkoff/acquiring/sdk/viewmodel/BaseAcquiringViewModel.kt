@@ -40,7 +40,7 @@ internal open class BaseAcquiringViewModel(
     val sdk: AcquiringSdk
 ) : AndroidViewModel(application) {
 
-    protected val coroutine = CoroutineManager(exceptionHandler = { handleException(it) })
+    val coroutine = CoroutineManager(exceptionHandler = { handleException(it) })
     private val loadState: MutableLiveData<LoadState> = MutableLiveData()
     private val screenState: MutableLiveData<ScreenState> = MutableLiveData()
     private val screenChangeEvent: MutableLiveData<SingleEvent<Screen>> = MutableLiveData()
@@ -93,13 +93,5 @@ internal open class BaseAcquiringViewModel(
         } else {
             fallbackMessage
         }
-    }
-
-    fun launchOnMain(block: suspend CoroutineScope.() -> Unit) {
-        coroutine.launchOnMain(block)
-    }
-
-    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit) {
-        coroutine.launchOnBackground(block)
     }
 }

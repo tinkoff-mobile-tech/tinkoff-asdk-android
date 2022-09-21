@@ -24,7 +24,6 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
-import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.NspkRequest
 import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
@@ -70,7 +69,6 @@ internal constructor(
 
     private lateinit var paymentSource: PaymentSource
     private var check3dsVersionResponse: Check3dsVersionResponse? = null
-    private var collectedDeviceData: Map<String, String>? = null
     private var initRequest: InitRequest? = null
     private var paymentType: PaymentType? = null
     private var paymentId: Long? = null
@@ -220,10 +218,6 @@ internal constructor(
             PaymentState.ERROR -> listener?.onError(error!!, paymentId)
             PaymentState.CHARGE_REJECTED, PaymentState.THREE_DS_NEEDED, PaymentState.BROWSE_SBP_BANK, PaymentState.OPEN_TINKOFF_PAY_BANK ->
                 listener?.onUiNeeded(sdkState!!)
-            PaymentState.THREE_DS_DATA_COLLECTING -> {
-                listener?.onUiNeeded(sdkState!!)
-                collectedDeviceData = (sdkState as CollectDataState).data
-            }
             else -> Unit
         }
         listener?.onStatusChanged(state)
@@ -297,9 +291,7 @@ internal constructor(
                     if (!response.threeDsMethodUrl.isNullOrEmpty()) {
                         this.check3dsVersionResponse = response
                     }
-                    sdkState = CollectDataState(response)
-                    sendToListener(PaymentState.THREE_DS_DATA_COLLECTING)
-                    this.collectedDeviceData?.let { data.putAll(it) }
+                    data.putAll(ThreeDsHelper.CollectData(context, response))
                 }
 
                 coroutine.launchOnBackground {

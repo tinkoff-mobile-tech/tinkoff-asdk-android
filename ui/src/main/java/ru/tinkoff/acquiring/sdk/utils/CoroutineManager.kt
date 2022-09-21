@@ -35,22 +35,22 @@ import kotlin.coroutines.suspendCoroutine
 internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Unit) {
 
     private val job = SupervisorJob()
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable -> doOnMain { exceptionHandler(throwable) } }
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable -> launchOnMain { exceptionHandler(throwable) } }
     private val coroutineScope = CoroutineScope(Dispatchers.Main + coroutineExceptionHandler + job)
     private val disposableSet = hashSetOf<Disposable>()
 
     fun <R> call(request: Request<R>, onSuccess: (R) -> Unit, onFailure: ((Exception) -> Unit)? = null) {
         disposableSet.add(request)
 
-        doOnBackground {
+        launchOnBackground {
             request.execute(
                     onSuccess = {
-                        doOnMain {
+                        launchOnMain {
                             onSuccess(it)
                         }
                     },
                     onFailure = {
-                        doOnMain {
+                        launchOnMain {
                             if (onFailure == null) {
                                 exceptionHandler.invoke(it)
                             } else {
@@ -95,21 +95,9 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
         }
     }
 
-    fun doOnMain(block: () -> Unit) {
-        coroutineScope.launch(Dispatchers.Main) {
-            block.invoke()
-        }
-    }
-
     fun launchOnBackground(block: suspend CoroutineScope.() -> Unit) {
         coroutineScope.launch(IO) {
             block.invoke(this)
-        }
-    }
-
-    fun doOnBackground(block: () -> Unit) {
-        coroutineScope.launch(IO) {
-            block.invoke()
         }
     }
 }

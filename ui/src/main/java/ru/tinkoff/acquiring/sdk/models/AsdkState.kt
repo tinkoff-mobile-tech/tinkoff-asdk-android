@@ -58,13 +58,6 @@ object FpsState : AsdkState()
 class ThreeDsState(val data: ThreeDsData, val transaction: ThreeDsAppBasedTransaction?) : AsdkState()
 
 /**
- * Состояние, когда необходимо собрать информацию об устройстве для прохождения 3DS
- */
-class CollectDataState(val response: Check3dsVersionResponse) : AsdkState() {
-    var data: MutableMap<String, String> = mutableMapOf()
-}
-
-/**
  * Состояние открытия приложения (или выбора приложения), зарегистрированного для обработки ссылки
  * Системы быстрых платежей, в котором произойдет оплата
  */

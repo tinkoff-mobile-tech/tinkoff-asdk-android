@@ -26,7 +26,6 @@ import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
@@ -40,7 +39,6 @@ import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedState
-import ru.tinkoff.acquiring.sdk.models.ThreeDsDataCollectScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
@@ -73,8 +71,6 @@ internal class PaymentViewModel(
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
     val cardsResultLiveData: LiveData<List<Card>> = cardsResult
     val tinkoffPayStatusResultLiveData: LiveData<TinkoffPayStatusResponse> = tinkoffPayStatusResult
-
-    var collectedDeviceData: MutableMap<String, String> = mutableMapOf()
 
     override fun onCleared() {
         super.onCleared()
@@ -234,10 +230,6 @@ internal class PaymentViewModel(
                     is RejectedState -> {
                         changeScreenState(LoadedState)
                         changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
-                    }
-                    is CollectDataState -> {
-                        changeScreenState(ThreeDsDataCollectScreenState(state.response))
-                        state.data.putAll(collectedDeviceData)
                     }
                     is BrowseFpsBankState -> {
                         changeScreenState(LoadedState)
