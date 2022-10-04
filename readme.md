@@ -322,6 +322,9 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 -keep class ru.tinkoff.acquiring.sdk.localization.** { *; }
 -keep class ru.tinkoff.acquiring.sdk.requests.** { *; }
 -keep class ru.tinkoff.acquiring.sdk.models.** { *; }
+-keep class ru.rtln.tds.sdk.** { *; }
+-keep class org.spongycastle.**
+-keep class org.bouncycastle.**
 ```
 
 ### Поддержка

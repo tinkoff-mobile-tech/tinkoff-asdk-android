@@ -4,6 +4,8 @@
 #### Changes
 Deleted `CollectDataState`; 3DS data collection is handled internally now
 Changed `NetworkClient` to utilize okhttp 
+Tinkoff Pay button redesign
+Changed card pan validation mechanism; added Union Pay system recognition
 #### Additions
 
 ## 2.9.0

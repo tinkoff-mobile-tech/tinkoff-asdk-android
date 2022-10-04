@@ -16,46 +16,35 @@
 
 package ru.tinkoff.acquiring.sdk.ui.customview.editcard
 
-import java.util.regex.Pattern
+private val REGEX_VISA = "^(4[0-9*]*)\$".toRegex()
+private val REGEX_MASTER_CARD = "^(5(?!05827|61468)[0-9*]*)\$".toRegex()
+private val REGEX_MIR = "^((220[0-4]|356|505827|561468|623446|629129|629157|629244|676347|676454|676531|671182|676884|676907|677319|677384|8600|9051|9112(?!00|50|39|99)|9417(?!00|99)|9762|9777|9990(?!01))[0-9*]*)\$".toRegex()
+private val REGEX_MAESTRO = "^(6(?!2|76347|76454|76531|71182|76884|76907|77319|77384)[0-9*]*)\$".toRegex()
+private val REGEX_UNION_PAY = "^((81[0-6]|817[01]|62(?!3446|9129|9157|9244))[0-9*]*)\$".toRegex()
+private val REGEX_BELKART = "^(9112(00|50|39|99)[0-9*]*)\$".toRegex()
+private val REGEX_ELCART = "^(9417(00|99)[0-9*]*)\$".toRegex()
+private val REGEX_APRA = "^(999001[0-9*]*)\$".toRegex()
+private val REGEX_ARCA = "^(902100[0-9*]*)\$".toRegex()
+private val REGEX_ANY = "[0-9*]*".toRegex()
 
-/**
- * @author Mariya Chernyadieva
- */
-internal object CardPaymentSystem {
+enum class CardPaymentSystem(val regex: Regex, val range: IntRange, val showLogo: Boolean) {
 
-    const val UNKNOWN = 0
-    const val MASTER_CARD = 1
-    const val MAESTRO = 2
-    const val MIR = 3
-    const val VISA = 4
+    VISA(REGEX_VISA, 16..16, true),
+    MASTER_CARD(REGEX_MASTER_CARD, 16..16, true),
+    MIR(REGEX_MIR, 16..19, true),
+    MAESTRO(REGEX_MAESTRO, 13..19, true),
+    UNION_PAY(REGEX_UNION_PAY, 13..19, true),
+    BELKART(REGEX_BELKART, 16..16, false),
+    ELCART(REGEX_ELCART, 16..16, false),
+    APRA(REGEX_APRA, 16..16, false),
+    ARCA(REGEX_ARCA, 16..16, false),
+    UNKNOWN(REGEX_ANY, 13..28, false);
 
-    private val defaultRangers = intArrayOf(16)
-    private val unknownRangers = intArrayOf(13, 14, 15, 16, 17, 18, 19)
-    private val maestroRangers = intArrayOf(13, 14, 15, 16, 17, 18, 19)
-    private val mirRanges = intArrayOf(16, 18, 19)
-    private val mirPattern = Pattern.compile("^220[0-4]")
+    fun matches(cardNumber: String) = regex.matches(cardNumber) && cardNumber.length <= range.last
 
-    fun resolvePaymentSystem(cardNumber: String): Int {
-        return if (cardNumber.length >= 4) {
-            val firstChar = cardNumber[0]
-            when {
-                mirPattern.matcher(cardNumber).find() -> MIR
-                firstChar == '2' || firstChar == '5' -> MASTER_CARD
-                firstChar == '4' -> VISA
-                firstChar == '6' -> MAESTRO
-                else -> UNKNOWN
-            }
-        } else {
-            UNKNOWN
-        }
-    }
+    companion object {
 
-    fun getLengthRanges(paymentSystem: Int): IntArray {
-        return when (paymentSystem) {
-            MASTER_CARD, VISA -> defaultRangers
-            MIR -> mirRanges
-            MAESTRO -> maestroRangers
-            else -> unknownRangers
-        }
+        fun resolvePaymentSystem(cardNumber: String): CardPaymentSystem =
+            values().find { it.matches(cardNumber) } ?: UNKNOWN
     }
 }
