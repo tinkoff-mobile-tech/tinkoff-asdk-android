@@ -24,7 +24,7 @@ import java.util.regex.Pattern
  */
 internal object CardValidator {
 
-    private val allowedLengths = intArrayOf(13, 14, 15, 16, 17, 18, 19)
+    private val allowedLengths = 13..28
     private const val ZERO_NUMBERS_CARD_NUMBER_REGEXP = "[0]{1,}"
     private const val CVC_REGEXP = "^[0-9]{3}$"
 
