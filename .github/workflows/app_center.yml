@@ -1,0 +1,27 @@
+name: publish demo to AppCenter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+      - name: build release
+        run: ./gradlew :sample:assembleRelease
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: Tinkoff-Mobile-Core/Tinkoff-Acquiring
+          token: ${{secrets.APP_CENTER_TOKEN}}
+          group: Collaborators
+          file: sample/build/outputs/apk/release/sample-release-unsigned.apk
+          notifyTesters: false
+          debug: false
