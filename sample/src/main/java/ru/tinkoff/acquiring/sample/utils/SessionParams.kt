@@ -17,26 +17,30 @@
 package ru.tinkoff.acquiring.sample.utils
 
 import com.google.android.gms.wallet.WalletConstants
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**
  * @author Mariya Chernyadieva
  */
-class SessionParams(
-        val terminalKey: String,
-        val password: String,
-        val publicKey: String,
-        val customerKey: String,
-        val customerEmail: String) {
+data class SessionParams(
+    @SerializedName("terminalKey")
+    val terminalKey: String,
+    @SerializedName("password")
+    val password: String?,
+    @SerializedName("publicKey")
+    val publicKey: String,
+    @SerializedName("customerKey")
+    val customerKey: String,
+    @SerializedName("customerEmail")
+    val customerEmail: String,
+    @SerializedName("description")
+    val description: String? = null
+) {
+
     companion object {
 
         var GPAY_TEST_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST
-
-        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1"
-        private const val DEFAULT_CUSTOMER_EMAIL = "user@example.com"
-
-        private const val SDK_TERMINAL_ID = "TestSDK"
-        private const val NON_3DS_TERMINAL_ID = "sdkNon3DS"
 
         private const val PASSWORD = "12345678"
         private const val PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5Yg3RyEkszggDVMDHCAG\n" +
@@ -47,35 +51,18 @@ class SessionParams(
                 "L+evz0+s60Qz5gbBRGfqCA57lUiB3hfXQZq5/q1YkABOHf9cR6Ov5nTRSOnjORgP\n" +
                 "jwIDAQAB"
 
-        val TEST_SDK = SessionParams(
-                SDK_TERMINAL_ID, PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL
+        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1"
+        private const val DEFAULT_CUSTOMER_EMAIL = "user@example.com"
+
+        val TEST_SDK = SessionParams("TestSDK", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL)
+
+        fun getDefaultTerminals(): List<SessionParams> = listOf(
+            TEST_SDK,
+            SessionParams("1521204415922", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "SBP 1"),
+            SessionParams("1562595669054", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "SBP 2"),
+            SessionParams("1578942570730", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "SBP 3"),
+            SessionParams("1661351612593", "45tnvz0kkyyz82mw", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "With token"),
+            SessionParams("1661161705205", null, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "Without token"),
         )
-
-        val NON_3DS = SessionParams(
-                NON_3DS_TERMINAL_ID, PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL
-        )
-
-        val DEFAULT = TEST_SDK
-
-        private val terminals = object : HashMap<String, SessionParams>() {
-
-            private fun addTerminal(sessionParams: SessionParams) {
-                put(sessionParams.terminalKey, sessionParams)
-            }
-
-            init {
-                addTerminal(DEFAULT)
-                addTerminal(TEST_SDK)
-                addTerminal(NON_3DS)
-            }
-        }
-
-        fun terminals(): Collection<SessionParams> {
-            return terminals.values
-        }
-
-        operator fun get(terminalKey: String): SessionParams {
-            return terminals[terminalKey]!!
-        }
     }
 }
