@@ -41,13 +41,6 @@ class SettingsSdkManager(private val context: Context) {
     val validateExpiryDate: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_validate_expiry_date), false)
 
-    val terminalKey: String
-        get() {
-            val key = context.getString(R.string.acq_sp_terminal_id)
-            val fallback = SessionParams.DEFAULT.terminalKey
-            return preferences.getString(key, fallback)!!
-        }
-
     val isRecurrentPayment: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_recurrent_payment), false)
 

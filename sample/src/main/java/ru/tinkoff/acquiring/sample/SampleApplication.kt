@@ -17,8 +17,9 @@
 package ru.tinkoff.acquiring.sample
 
 import android.app.Application
+import android.content.Context
 import ru.tinkoff.acquiring.sample.utils.SessionParams
-import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
+import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
@@ -32,12 +33,9 @@ class SampleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val settings = SettingsSdkManager(this)
-        val params = SessionParams[settings.terminalKey]
-        tinkoffAcquiring = TinkoffAcquiring(this, params.terminalKey, params.publicKey)
+        initSdk(this, TerminalsManager.init(this).selectedTerminal)
         AcquiringSdk.isDeveloperMode = true
         AcquiringSdk.isDebug = true
-        AcquiringSdk.tokenGenerator = SampleAcquiringTokenGenerator(params.password)
     }
 
     override fun onTerminate() {
@@ -49,5 +47,11 @@ class SampleApplication : Application() {
         lateinit var tinkoffAcquiring: TinkoffAcquiring
             private set
         var paymentProcess: PaymentProcess? = null
+
+        fun initSdk(context: Context, params: SessionParams) {
+            tinkoffAcquiring = TinkoffAcquiring(context.applicationContext,
+                params.terminalKey, params.publicKey)
+            AcquiringSdk.tokenGenerator = params.password?.let { SampleAcquiringTokenGenerator(it) }
+        }
     }
 }

@@ -54,6 +54,10 @@
             android:label="@string/activity_title_cart" />
 
         <activity
+            android:name=".ui.TerminalsActivity"
+            android:label="@string/activity_title_terminals" />
+
+        <activity
             android:name=".ui.AboutActivity"
             android:label="@string/activity_title_about" />
 
