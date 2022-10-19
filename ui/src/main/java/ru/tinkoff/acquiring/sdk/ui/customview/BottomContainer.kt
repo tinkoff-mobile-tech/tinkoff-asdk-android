@@ -25,6 +25,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Point
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -388,6 +389,12 @@ internal class BottomContainer @JvmOverloads constructor(
         moveToPosition(initialPositionY.toFloat())
     }
 
+    fun containsRect(x: Int, y: Int): Boolean {
+        val containerRect = Rect()
+        getHitRect(containerRect)
+        return containerRect.contains(x, y)
+    }
+
     private fun getChildHeight(): Int {
         var childHeight = 0
         for (index in 0 until this.childCount) {
@@ -414,7 +421,7 @@ internal class BottomContainer @JvmOverloads constructor(
         return relativePosition
     }
 
-    private fun isScrollableViewTouch(x: Float, y: Float) : Boolean {
+    private fun isScrollableViewTouch(x: Float, y: Float): Boolean {
         val scrollViewPosition = getPositionInParent(scrollableView)
 
         val viewX = scrollViewPosition[0]
