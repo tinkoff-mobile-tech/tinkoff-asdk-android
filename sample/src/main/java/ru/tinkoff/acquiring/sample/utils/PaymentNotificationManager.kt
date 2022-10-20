@@ -38,7 +38,7 @@ import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.utils.Money
-import java.util.*
+import java.util.Random
 import kotlin.math.abs
 
 /**
@@ -124,9 +124,8 @@ object PaymentNotificationManager {
     }
 
     private fun getGooglePayIntent(activity: Activity, price: Money): PendingIntent {
-        val settings = SettingsSdkManager(activity)
         val options = createNotificationPaymentOptions(activity, price)
-        val googleParams = GooglePayParams(settings.terminalKey,
+        val googleParams = GooglePayParams(TerminalsManager.selectedTerminalKey,
                 environment = SessionParams.GPAY_TEST_ENVIRONMENT)
 
         return SampleApplication.tinkoffAcquiring.createGooglePayPendingIntentForResult(activity,
@@ -142,7 +141,7 @@ object PaymentNotificationManager {
 
     private fun createNotificationPaymentOptions(activity: Activity, price: Money): PaymentOptions {
         val settings = SettingsSdkManager(activity)
-        val sessionParams = SessionParams[settings.terminalKey]
+        val sessionParams = TerminalsManager.selectedTerminal
 
         return PaymentOptions()
                 .setOptions {

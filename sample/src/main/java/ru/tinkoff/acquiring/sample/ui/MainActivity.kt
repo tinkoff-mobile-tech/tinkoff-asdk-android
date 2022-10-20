@@ -38,6 +38,7 @@ import ru.tinkoff.acquiring.sample.service.PriceNotificationReceiver
 import ru.tinkoff.acquiring.sample.utils.PaymentNotificationManager
 import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
+import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
@@ -115,6 +116,10 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             }
             R.id.menu_action_saved_cards -> {
                 openSavedCardsScreen()
+                true
+            }
+            R.id.terminals -> {
+                startActivity(Intent(this, TerminalsActivity::class.java))
                 true
             }
             R.id.menu_action_about -> {
@@ -210,7 +215,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
 
     private fun openAttachCardScreen() {
         val settings = SettingsSdkManager(this)
-        val params = SessionParams[settings.terminalKey]
+        val params = TerminalsManager.selectedTerminal
 
         val options = AttachCardOptions()
                 .setOptions {
@@ -245,7 +250,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
 
     private fun openSavedCardsScreen() {
         val settings = SettingsSdkManager(this)
-        val params = SessionParams[settings.terminalKey]
+        val params = TerminalsManager.selectedTerminal
 
         val options = SavedCardsOptions().setOptions {
             customerOptions {
