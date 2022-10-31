@@ -170,7 +170,8 @@ object ThreeDsHelper {
                     put("threeDSServerTransID", response.serverTransId)
                 }
 
-                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(), Base64.NO_PADDING).trim()
+                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(),
+                    Base64.NO_PADDING or Base64.NO_WRAP).trim()
                 val params = "threeDSMethodData=${URLEncoder.encode(dataBase64, "UTF-8")}"
 
                 hiddenWebView.postUrl(response.threeDsMethodUrl!!, params.toByteArray())

@@ -52,20 +52,6 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.settings)
         }
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-            val terminalPreference = preferenceManager.findPreference<ListPreference>(getString(R.string.acq_sp_terminal_id))
-            val terminals = SessionParams.terminals()
-            val entries = arrayOfNulls<CharSequence>(terminals.size)
-            for ((i, params) in terminals.withIndex()) {
-                entries[i] = params.terminalKey
-            }
-            terminalPreference?.setDefaultValue(SessionParams.TEST_SDK.terminalKey)
-            terminalPreference?.entries = entries
-            terminalPreference?.entryValues = entries
-        }
     }
 
     companion object {

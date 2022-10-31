@@ -19,6 +19,10 @@ package ru.tinkoff.acquiring.sdk.network
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
@@ -26,9 +30,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.enums.Tax
 import ru.tinkoff.acquiring.sdk.models.enums.Taxation
-import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FORM_URL_ENCODED
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.JSON
-import ru.tinkoff.acquiring.sdk.network.AcquiringApi.STREAM_BUFFER_SIZE
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.TIMEOUT
 import ru.tinkoff.acquiring.sdk.requests.AcquiringRequest
 import ru.tinkoff.acquiring.sdk.requests.FinishAuthorizeRequest
@@ -37,61 +39,44 @@ import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.serialization.*
 import java.io.*
 import java.lang.reflect.Modifier
-import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_OK
 import java.net.MalformedURLException
 import java.net.URL
-import java.net.URLEncoder
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Mariya Chernyadieva, Taras Nagorny
  */
 internal class NetworkClient {
 
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(TIMEOUT, TimeUnit.MILLISECONDS)
+        .readTimeout(TIMEOUT, TimeUnit.MILLISECONDS)
+        .build()
+
     private val gson: Gson = createGson()
 
-    internal fun <R : AcquiringResponse> call(request: AcquiringRequest<R>,
-                                              responseClass: Class<R>,
-                                              onSuccess: (R) -> Unit,
-                                              onFailure: (Exception) -> Unit) {
-
-        val result: R
+    internal fun <R : AcquiringResponse> call(
+        request: AcquiringRequest<R>,
+        responseClass: Class<R>,
+        onSuccess: (R) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         var response: String? = null
-        var responseReader: InputStreamReader? = null
-        var requestContentStream: OutputStream? = null
 
         try {
-            lateinit var connection: HttpURLConnection
+            val httpRequest = request.httpRequest()
+            val call = okHttpClient.newCall(httpRequest)
+            val httpResponse = call.execute()
 
-            when (request.httpRequestMethod) {
-                AcquiringApi.API_REQUEST_METHOD_GET -> {
-                    prepareConnection(request) {
-                        connection = it
+            AcquiringSdk.log("=== Sending ${httpRequest.method} request to ${httpRequest.url}")
 
-                        AcquiringSdk.log("=== Sending ${request.httpRequestMethod} request to ${connection.url}")
-                    }
-                }
-                AcquiringApi.API_REQUEST_METHOD_POST -> {
-                    prepareBody(request) { body ->
-                        prepareConnection(request) {
-                            connection = it
-                            connection.setRequestProperty("Content-length", body.size.toString())
-                            requestContentStream = connection.outputStream
-                            requestContentStream?.write(body)
-
-                            AcquiringSdk.log("=== Sending ${request.httpRequestMethod} request to ${connection.url}")
-                        }
-                    }
-                }
-            }
-
-            val responseCode = connection.responseCode
+            val responseCode = httpResponse.code
+            response = httpResponse.body?.string()
 
             if (responseCode == HTTP_OK) {
-                responseReader = InputStreamReader(connection.inputStream)
-                response = read(responseReader)
                 AcquiringSdk.log("=== Got server response: $response")
-                result = gson.fromJson(response, responseClass)
+                val result = gson.fromJson(response, responseClass)
 
                 checkResult(result) { isSuccess ->
                     if (!request.isDisposed()) {
@@ -106,9 +91,7 @@ internal class NetworkClient {
                 }
 
             } else {
-                responseReader = InputStreamReader(connection.errorStream)
-                response = read(responseReader)
-                if (response.isNotEmpty()) {
+                if (!response.isNullOrEmpty()) {
                     AcquiringSdk.log("=== Got server error response: $response")
                 } else {
                     AcquiringSdk.log("=== Got server error response code: $responseCode")
@@ -126,41 +109,25 @@ internal class NetworkClient {
             if (!request.isDisposed()) {
                 onFailure(AcquiringApiException("Invalid response. $response", e))
             }
-        } finally {
-            closeQuietly(responseReader)
-            closeQuietly(requestContentStream)
         }
     }
 
-    private fun <R : AcquiringResponse> prepareConnection(request: AcquiringRequest<R>, onReady: (HttpURLConnection) -> Unit) {
-        val targetUrl = prepareURL(request.apiMethod)
-        val connection = targetUrl.openConnection() as HttpURLConnection
-
-        with(connection) {
-            requestMethod = request.httpRequestMethod
-            connectTimeout = TIMEOUT
-            readTimeout = TIMEOUT
-            doOutput = when (request.httpRequestMethod) {
-                AcquiringApi.API_REQUEST_METHOD_GET -> false
-                else -> true
-            }
-            setRequestProperty("Content-type", request.contentType)
-
-            if (request is FinishAuthorizeRequest && request.is3DsVersionV2()) {
-                setRequestProperty("User-Agent", System.getProperty("http.agent"))
-                setRequestProperty("Accept", JSON)
+    private fun AcquiringRequest<*>.httpRequest() = Request.Builder().also { builder ->
+        builder.url(prepareURL(apiMethod))
+        when (httpRequestMethod) {
+            AcquiringApi.API_REQUEST_METHOD_GET -> builder.get()
+            AcquiringApi.API_REQUEST_METHOD_POST -> {
+                val body = getRequestBody()
+                AcquiringSdk.log("=== Parameters: $body")
+                builder.post(body.toRequestBody(contentType.toMediaType()))
             }
         }
 
-        onReady(connection)
-    }
-
-    private fun <R : AcquiringResponse> prepareBody(request: AcquiringRequest<R>, onReady: (ByteArray) -> Unit) {
-        val requestBody = request.getRequestBody()
-        AcquiringSdk.log("=== Parameters: $requestBody")
-
-        onReady(requestBody.toByteArray())
-    }
+        if (this is FinishAuthorizeRequest && is3DsVersionV2()) {
+            builder.header("User-Agent", System.getProperty("http.agent"))
+            builder.header("Accept", JSON)
+        }
+    }.build()
 
     private fun <R : AcquiringResponse> checkResult(result: R, onChecked: (isSuccess: Boolean) -> Unit) {
         if (result.errorCode == AcquiringApi.API_ERROR_CODE_NO_ERROR && result.isSuccess!!) {
@@ -183,31 +150,6 @@ internal class NetworkClient {
         builder.append(apiMethod)
 
         return URL(builder.toString())
-    }
-
-    @Throws(IOException::class)
-    private fun read(reader: InputStreamReader): String {
-        val buffer = CharArray(STREAM_BUFFER_SIZE)
-        var read: Int = -1
-        val result = StringBuilder()
-
-        while ({ read = reader.read(buffer, 0, STREAM_BUFFER_SIZE); read }() != -1) {
-            result.append(buffer, 0, read)
-        }
-
-        return result.toString()
-    }
-
-    private fun closeQuietly(closeable: Closeable?) {
-        if (closeable == null) {
-            return
-        }
-
-        try {
-            closeable.close()
-        } catch (e: IOException) {
-            AcquiringSdk.log(e)
-        }
     }
 
     companion object {

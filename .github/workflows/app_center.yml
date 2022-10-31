@@ -15,13 +15,13 @@ jobs:
         with:
           java-version: '11'
       - name: build release
-        run: ./gradlew :sample:assembleRelease
+        run: ./gradlew :sample:assembleDebug
       - name: upload artefact to App Center
         uses: wzieba/AppCenter-Github-Action@v1
         with:
           appName: Tinkoff-Mobile-Core/Tinkoff-Acquiring
           token: ${{secrets.APP_CENTER_TOKEN}}
           group: Collaborators
-          file: sample/build/outputs/apk/release/sample-release-unsigned.apk
+          file: sample/build/outputs/apk/debug/sample-debug.apk
           notifyTesters: false
           debug: false

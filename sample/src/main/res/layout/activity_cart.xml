@@ -16,61 +16,61 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
-        style="@style/PriceBlueTextView"
-        android:gravity="center"
         android:id="@+id/tv_empty_cart"
-        android:layout_height="match_parent"
+        style="@style/PriceBlueTextView"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:text="@string/empty_cart"
         android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/ll_cart_content"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="visible">
 
         <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_width="match_parent"
             android:orientation="vertical">
 
             <ListView
                 android:id="@+id/lv_cart_items"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_margin="12dp"
-                android:layout_weight="1"
-                android:layout_width="match_parent" />
+                android:layout_weight="1" />
 
             <RelativeLayout
-                android:background="@drawable/background_gray_total_price"
-                android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_margin="12dp"
-                android:layout_width="match_parent"
+                android:background="@drawable/background_gray_total_price"
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:padding="12dp">
 
                 <TextView
-                    android:fontFamily="@font/roboto_regular"
-                    android:layout_alignParentStart="true"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/total_sum"
                     android:textColor="@color/common_black" />
 
                 <TextView
-                    android:fontFamily="@font/roboto_regular"
                     android:id="@+id/tv_total_price"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:fontFamily="@font/roboto_regular"
                     android:textColor="@color/common_black"
                     tools:text="20 Р" />
 
@@ -78,22 +78,21 @@
         </LinearLayout>
 
         <LinearLayout
-            android:paddingTop="26dp"
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="8dp"
-            android:orientation="vertical">
+            android:paddingTop="26dp">
 
             <include
-                layout="@layout/btn_google_pay"
                 android:id="@+id/btn_google_pay"
+                layout="@layout/btn_google_pay"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <ImageView
+            <include
                 android:id="@+id/tinkoff_pay_button"
-                android:background="@drawable/bg_black_button"
-                android:src="@drawable/acq_tinkoff_pay_logo_with_text_white"
+                layout="@layout/acq_button_tinkoff_pay"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_margin="8dp"
@@ -102,17 +101,17 @@
                 tools:visibility="visible" />
 
             <include
-                layout="@layout/btn_fps_pay"
-                android:id="@+id/btn_fps_pay" />
+                android:id="@+id/btn_fps_pay"
+                layout="@layout/btn_fps_pay" />
 
             <TextView
-                style="@style/TextAppearance.AppCompat.Widget.Button"
-                android:background="@drawable/btn_background_gray"
-                android:gravity="center"
                 android:id="@+id/card_pay"
+                style="@style/TextAppearance.AppCompat.Widget.Button"
+                android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
-                android:layout_width="match_parent"
+                android:background="@drawable/btn_background_gray"
+                android:gravity="center"
                 android:text="@string/buy_with_card"
                 android:textAllCaps="true"
                 android:textColor="@color/common_black"

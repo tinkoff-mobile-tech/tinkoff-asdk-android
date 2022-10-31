@@ -149,7 +149,8 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
             put("challengeWindowSize", WINDOW_SIZE_CODE)
             put("messageType", MESSAGE_TYPE)
         }
-        return Base64.encodeToString(creqData.toString().toByteArray(), Base64.NO_PADDING).trim()
+        return Base64.encodeToString(creqData.toString().toByteArray(),
+            Base64.NO_PADDING or Base64.NO_WRAP).trim()
     }
 
     private inner class ThreeDsWebViewClient : WebViewClient() {

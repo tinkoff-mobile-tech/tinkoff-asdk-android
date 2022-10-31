@@ -46,7 +46,6 @@ import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.Screen
 import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
-import ru.tinkoff.acquiring.sdk.models.ThreeDsDataCollectScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
@@ -175,16 +174,13 @@ internal class PaymentActivity : TransparentActivity() {
                     val state = RejectedState(screen.cardId, screen.rejectedPaymentId)
                     showFragment(PaymentFragment.newInstance(paymentOptions.customer.customerKey, state))
                 }
-                is ThreeDsScreenState -> paymentViewModel.launchOnMain {
+                is ThreeDsScreenState -> paymentViewModel.coroutine.launchOnMain {
                     try {
                         ThreeDsHelper.Launch(this@PaymentActivity,
                             THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
                     } catch (e: Throwable) {
                         finishWithError(e)
                     }
-                }
-                is ThreeDsDataCollectScreenState -> {
-                    paymentViewModel.collectedDeviceData = ThreeDsHelper.CollectData(this, screen.response)
                 }
                 is BrowseFpsBankScreenState -> openBankChooser(screen.deepLink, screen.banks)
                 is FpsScreenState -> paymentViewModel.startFpsPayment(paymentOptions)
