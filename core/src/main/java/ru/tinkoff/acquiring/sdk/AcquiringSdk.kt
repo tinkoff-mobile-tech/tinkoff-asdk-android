@@ -235,6 +235,13 @@ class AcquiringSdk(
         }
     }
 
+    fun submit3DSAuthorizationFromWebView(paymentId: String?): Submit3DSAuthorizationWebViewRequest {
+        return Submit3DSAuthorizationWebViewRequest().apply {
+            terminalKey = this@AcquiringSdk.terminalKey
+            this.paymentId = paymentId
+        }
+    }
+
     class TinkoffPayStatusCache(
         val status: TinkoffPayStatusResponse,
         val time: Long) {

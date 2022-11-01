@@ -22,6 +22,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
@@ -156,6 +158,13 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
     private inner class ThreeDsWebViewClient : WebViewClient() {
 
         private var canceled = false
+
+        override fun shouldInterceptRequest(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): WebResourceResponse? {
+            return provideThreeDsSubmitV2Delegate().shouldInterceptRequest(request, data)
+        }
 
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)

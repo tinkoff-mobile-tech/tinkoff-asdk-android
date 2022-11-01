@@ -29,4 +29,6 @@ ext {
     blurryVersion = '4.0.0'
     bouncyCastleVersion = '1.65'
     rootBeerVersion = '0.1.0'
+
+    mokitoKotlin = '4.0.0'
 }
