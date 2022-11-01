@@ -678,7 +678,7 @@ internal class EditCard @JvmOverloads constructor(
                         }
                         checkFlags(FLAG_CARD_SYSTEM_LOGO) -> {
                             if (isValid(CARD_NUMBER) && mode != NUMBER_ONLY && !checkFlags(FLAG_PASTED_TEXT) &&
-                                cardNumber.length >= MIN_LENGTH_FOR_AUTO_SWITCH) {
+                                shouldAutoSwitchFromCardNumber()) {
                                 showDateAndCvc()
                             }
                         }
@@ -922,6 +922,11 @@ internal class EditCard @JvmOverloads constructor(
             EXPIRE_DATE -> CardValidator.validateExpireDate(cardDate, validateNotExpired)
             SECURE_CODE -> CardValidator.validateSecurityCode(cardCvc)
         }
+    }
+
+    private fun shouldAutoSwitchFromCardNumber(): Boolean {
+        val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        return cardNumber.length == paymentSystem.range.last
     }
 
     private fun isFilled(field: EditCardField): Boolean {
@@ -1592,8 +1597,6 @@ internal class EditCard @JvmOverloads constructor(
         private const val CARD_LOGO_ANIMATION_DURATION = 150L
 
         private const val MASK_CHAR = '*'
-
-        private const val MIN_LENGTH_FOR_AUTO_SWITCH = 16
     }
 
     enum class EditCardMode(val value: Int) {
