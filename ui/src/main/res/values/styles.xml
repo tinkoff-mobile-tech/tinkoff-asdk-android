@@ -216,4 +216,25 @@
         <item name="android:textColor">?colorAccent</item>
     </style>
 
+    <style name="AcqTextInputLayout">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="acq_til_title_text_size">@dimen/acq_sf_text_size_small</item>
+        <item name="acq_til_title_text_color">@drawable/acq_sf_title_text_selector</item>
+        <item name="acq_til_title_bottom_margin">4dp</item>
+    </style>
+
+    <style name="AcqEditText" parent="Widget.AppCompat.EditText">
+        <item name="colorControlActivated">@color/acq_colorAccent</item>
+        <item name="android:textColor">@drawable/acq_sf_primary_text_selector</item>
+        <item name="android:textSize">@dimen/acq_sf_text_size_default</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+        <item name="android:textColorHint">@drawable/acq_sf_hint_selector</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:textCursorDrawable">@drawable/acq_sf_cursor</item>
+    </style>
+
 </resources>
