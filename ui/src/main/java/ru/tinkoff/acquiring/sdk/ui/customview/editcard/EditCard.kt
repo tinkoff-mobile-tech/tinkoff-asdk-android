@@ -1420,7 +1420,7 @@ internal class EditCard @JvmOverloads constructor(
     private fun defineCardLogo(): Boolean {
         if (!isInEditMode) {
             val newLogo = cardSystemIconsHolder.getCardSystemLogo(cardNumber)
-            if (newLogo != null && viewState != CARD_LOGO_ANIMATION_STATE) {
+            if (newLogo != null) {
                 cardLogo = newLogo
             }
         }
