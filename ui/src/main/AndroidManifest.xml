@@ -78,6 +78,11 @@
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringNotificationTransparentTheme" />
 
+        <activity
+            android:name=".redesign.cards.list.ui.CardsListActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base"/>
+
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />

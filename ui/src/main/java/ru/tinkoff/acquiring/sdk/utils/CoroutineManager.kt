@@ -34,6 +34,8 @@ import kotlin.coroutines.suspendCoroutine
  */
 internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Unit) {
 
+    constructor() : this({})
+
     private val job = SupervisorJob()
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable -> launchOnMain { exceptionHandler(throwable) } }
     private val coroutineScope = CoroutineScope(Dispatchers.Main + coroutineExceptionHandler + job)

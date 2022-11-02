@@ -52,16 +52,19 @@ dependencies {
 
     // threeds dependencies
     implementation "androidx.appcompat:appcompat:${appCompatVersion}"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${lifecycleRuntimeVersion}"
     implementation "androidx.constraintlayout:constraintlayout:${constraintLayoutVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.nimbusds:nimbus-jose-jwt:${nimbusVersion}"
     implementation "org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}"
     implementation "jp.wasabeef:blurry:${blurryVersion}"
     implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
+    implementation "androidx.recyclerview:recyclerview:${recyclerviewVersion}"
 
     testImplementation 'junit:junit:4.13'
-    testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlin}"
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlinVersion}"
+    testImplementation "org.mockito:mockito-inline:${mokitoInlineVersion}"
+    testImplementation "app.cash.turbine:turbine:${turbineVersion}"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

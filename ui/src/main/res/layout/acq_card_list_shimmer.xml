@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +13,20 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_height="match_parent">
 
-<resources>
+    <include layout="@layout/acq_card_list_card_item_shimmer"/>
 
-    <string name="acq_nfc_need_enable">Для сканирования карты необходимо включить NFC</string>
-    <string name="acq_nfc_is_disable">NFC выключен</string>
+    <include layout="@layout/acq_card_list_card_item_shimmer" />
 
-    <string name="googlepay_button_content_description">Google Pay</string>
+    <include layout="@layout/acq_card_list_card_item_shimmer" />
 
-    <string name="acq_fps_chooser_title">Выберите приложение</string>
+    <include layout="@layout/acq_card_list_card_item_shimmer" />
 
-    <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
-    <string name="acq_card_list_title">Ваши карты</string>
-</resources>
+    <include layout="@layout/acq_card_list_card_item_shimmer" />
+
+</LinearLayout>

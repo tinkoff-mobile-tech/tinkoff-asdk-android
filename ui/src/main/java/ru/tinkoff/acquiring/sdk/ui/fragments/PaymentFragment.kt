@@ -63,9 +63,9 @@ import ru.tinkoff.acquiring.sdk.models.SelectCardAndPayState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.EditCardScanButtonClickListener
 import ru.tinkoff.acquiring.sdk.ui.customview.scrollingindicator.ScrollingPagerIndicator
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
@@ -164,7 +164,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
                     val options = getSavedCardOptions()
                     val intent = BaseAcquiringActivity.createIntent(requireActivity(),
                             options,
-                            SavedCardsActivity::class.java)
+                            CardsListActivity::class.java)
                     startActivityForResult(intent, CARD_LIST_REQUEST_CODE)
                 }
             })

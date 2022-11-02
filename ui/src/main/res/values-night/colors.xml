@@ -29,4 +29,6 @@
 
     <color name="acq_colorHint">#727272</color>
     <color name="acq_colorTextButton">@color/acq_colorMain</color>
+
+    <color name="acq_colorShimmer">#333335</color>
 </resources>

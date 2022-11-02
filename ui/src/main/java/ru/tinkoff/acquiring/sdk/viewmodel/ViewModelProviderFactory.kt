@@ -20,6 +20,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 
 /**
  * @author Mariya Chernyadieva
@@ -29,16 +30,28 @@ internal class ViewModelProviderFactory(
 ) : ViewModelProvider.AndroidViewModelFactory(application) {
 
     private val viewModelCollection: Map<Class<out ViewModel>, BaseAcquiringViewModel> = mapOf(
-        BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(application, handleErrorsInSdk, sdk),
+        BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(
+            application,
+            handleErrorsInSdk,
+            sdk
+        ),
         PaymentViewModel::class.java to PaymentViewModel(application, handleErrorsInSdk, sdk),
         AttachCardViewModel::class.java to AttachCardViewModel(application, handleErrorsInSdk, sdk),
         QrViewModel::class.java to QrViewModel(application, handleErrorsInSdk, sdk),
         ThreeDsViewModel::class.java to ThreeDsViewModel(application, handleErrorsInSdk, sdk),
-        SavedCardsViewModel::class.java to SavedCardsViewModel(application, handleErrorsInSdk, sdk),
-        NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk))
+        NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(
+            application,
+            handleErrorsInSdk,
+            sdk
+        )
+    )
+
+    private val redesignViewModels = mapOf<Class<out ViewModel>, ViewModel>(
+        CardsListViewModel::class.java to CardsListViewModel(sdk)
+    )
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return viewModelCollection[modelClass] as T
+        return (redesignViewModels + viewModelCollection)[modelClass] as T
     }
 }
