@@ -127,9 +127,9 @@
 
     <style name="AcquiringEditCardStyle">
         <item name="android:textColorHint">@color/acq_colorHint</item>
-        <item name="textColorInvalid">@color/acq_colorTextInvalid</item>
-        <item name="keyboardBackgroundColor">@color/acq_colorKeyboardBackground</item>
-        <item name="keyboardKeyTextColor">@color/acq_colorKeyText</item>
+        <item name="acqTextColorInvalid">@color/acq_colorTextInvalid</item>
+        <item name="acqKeyboardBackgroundColor">@color/acq_colorKeyboardBackground</item>
+        <item name="acqKeyboardKeyTextColor">@color/acq_colorKeyText</item>
     </style>
 
     <style name="AcquiringTitleTextStyle">

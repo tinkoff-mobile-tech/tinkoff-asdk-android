@@ -282,17 +282,17 @@ internal class EditCard @JvmOverloads constructor(
                 textColor = getColor(R.styleable.EditCard_android_textColor, R.styleable.EditCard_android_textColor)
                 fontFamily = getString(R.styleable.EditCard_android_fontFamily)
                 textColorHint = getColor(R.styleable.EditCard_android_textColorHint, R.styleable.EditCard_android_textColorHint)
-                textColorInvalid = getColor(R.styleable.EditCard_textColorInvalid, Color.RED)
-                cursorColor = getColor(R.styleable.EditCard_cursorColor, typedValue.data)
+                textColorInvalid = getColor(R.styleable.EditCard_acqTextColorInvalid, Color.RED)
+                cursorColor = getColor(R.styleable.EditCard_acqCursorColor, typedValue.data)
 
-                cardNumberHint = getString(R.styleable.EditCard_numberHint) ?: "Card number"
-                cardDateHint = getString(R.styleable.EditCard_dateHint) ?: "MM/YY"
-                cardCvcHint = getString(R.styleable.EditCard_cvcHint) ?: "CVC"
+                cardNumberHint = getString(R.styleable.EditCard_acqNumberHint) ?: "Card number"
+                cardDateHint = getString(R.styleable.EditCard_acqDateHint) ?: "MM/YY"
+                cardCvcHint = getString(R.styleable.EditCard_acqCvcHint) ?: "CVC"
 
-                nextIconResId = getResourceId(R.styleable.EditCard_nextIcon, R.drawable.acq_icon_next)
-                scanIconResId = getResourceId(R.styleable.EditCard_scanIcon, R.drawable.acq_icon_scan_card)
+                nextIconResId = getResourceId(R.styleable.EditCard_acqNextIcon, R.drawable.acq_icon_next)
+                scanIconResId = getResourceId(R.styleable.EditCard_acqScanIcon, R.drawable.acq_icon_scan_card)
 
-                mode = EditCardMode.fromInt(getInteger(R.styleable.EditCard_mode, DEFAULT.value))
+                mode = EditCardMode.fromInt(getInteger(R.styleable.EditCard_acqMode, DEFAULT.value))
             }
         } finally {
             attrsArray.recycle()

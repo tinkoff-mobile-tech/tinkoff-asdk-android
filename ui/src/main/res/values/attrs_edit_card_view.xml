@@ -25,17 +25,17 @@
         <attr name="android:enabled" />
         <attr name="android:textColorHint" />
 
-        <attr name="numberHint" format="string|reference" />
-        <attr name="dateHint" format="string|reference" />
-        <attr name="cvcHint" format="string|reference" />
+        <attr name="acqNumberHint" format="string|reference" />
+        <attr name="acqDateHint" format="string|reference" />
+        <attr name="acqCvcHint" format="string|reference" />
 
-        <attr name="scanIcon" format="reference" />
-        <attr name="nextIcon" format="reference" />
+        <attr name="acqScanIcon" format="reference" />
+        <attr name="acqNextIcon" format="reference" />
 
-        <attr name="textColorInvalid" format="color|reference" />
-        <attr name="cursorColor" format="color|reference" />
+        <attr name="acqTextColorInvalid" format="color|reference" />
+        <attr name="acqCursorColor" format="color|reference" />
 
-        <attr name="mode" format="enum">
+        <attr name="acqMode" format="enum">
             <enum name="default_edit" value="1" />
             <enum name="without_cvc" value="2" />
             <enum name="number_only" value="4" />
@@ -45,7 +45,7 @@
     </declare-styleable>
 
     <declare-styleable name="SecureKeyboard">
-        <attr name="keyboardBackgroundColor" format="color|reference"/>
-        <attr name="keyboardKeyTextColor" format="color|reference"/>
+        <attr name="acqKeyboardBackgroundColor" format="color|reference"/>
+        <attr name="acqKeyboardKeyTextColor" format="color|reference"/>
     </declare-styleable>
 </resources>
