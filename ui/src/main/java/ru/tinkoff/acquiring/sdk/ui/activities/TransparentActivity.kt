@@ -48,7 +48,7 @@ import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
  */
 internal open class TransparentActivity : BaseAcquiringActivity() {
 
-    protected lateinit var bottomContainer: BottomContainer
+    protected var bottomContainer: BottomContainer? = null
 
     private lateinit var localization: LocalizationResources
     private var showBottomView = true
@@ -127,7 +127,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     }
 
     override fun onBackPressed() {
-        if (bottomContainer.isEnabled) {
+        if (bottomContainer?.isEnabled == true) {
             closeActivity()
         }
     }
@@ -144,7 +144,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
 
     override fun handleLoadState(loadState: LoadState) {
         super.handleLoadState(loadState)
-        bottomContainer.isEnabled = loadState is LoadedState
+        bottomContainer?.isEnabled = loadState is LoadedState
     }
 
     protected fun initViews(fullScreenMode: Boolean = false) {
@@ -166,7 +166,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         setContentView(R.layout.acq_activity)
 
         bottomContainer = findViewById(R.id.acq_activity_bottom_container)
-        bottomContainer.setContainerStateListener(object : BottomContainer.ContainerStateListener {
+        bottomContainer?.setContainerStateListener(object : BottomContainer.ContainerStateListener {
             override fun onHidden() {
                 finish()
                 overridePendingTransition(0, 0)
@@ -191,12 +191,12 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
             }
         }
 
-        bottomContainer.containerState = if ((viewType == EXPANDED_INDEX && !fullScreenMode) && orientation == Configuration.ORIENTATION_PORTRAIT) {
+        bottomContainer?.containerState = if ((viewType == EXPANDED_INDEX && !fullScreenMode) && orientation == Configuration.ORIENTATION_PORTRAIT) {
             BottomContainer.STATE_SHOWED
         } else {
             BottomContainer.STATE_FULLSCREEN
         }
-        bottomContainer.showInitAnimation = showBottomView
+        bottomContainer?.showInitAnimation = showBottomView
     }
 
     private fun setupTranslucentStatusBar() {
@@ -217,8 +217,8 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
     }
 
     private fun closeActivity() {
-        if (viewType == EXPANDED_INDEX && bottomContainer.containerState != BottomContainer.STATE_FULLSCREEN) {
-            bottomContainer.hide()
+        if (viewType == EXPANDED_INDEX && bottomContainer?.containerState != BottomContainer.STATE_FULLSCREEN) {
+            bottomContainer?.hide()
         } else {
             finish()
         }

@@ -65,7 +65,6 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.EditCardScanButtonClickListener
 import ru.tinkoff.acquiring.sdk.ui.customview.scrollingindicator.ScrollingPagerIndicator
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel

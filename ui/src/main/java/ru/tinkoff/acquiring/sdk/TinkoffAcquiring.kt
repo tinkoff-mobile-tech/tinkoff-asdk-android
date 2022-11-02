@@ -39,15 +39,13 @@ import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -253,7 +251,7 @@ class TinkoffAcquiring(
      *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
      */
     fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
-        val intent = prepareIntent(activity, savedCardsOptions, SavedCardsActivity::class.java)
+        val intent = prepareIntent(activity, savedCardsOptions, CardsListActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -269,7 +267,7 @@ class TinkoffAcquiring(
      *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
      */
     fun openSavedCardsScreen(fragment: Fragment, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
-        val intent = prepareIntent(fragment.requireContext(), savedCardsOptions, SavedCardsActivity::class.java)
+        val intent = prepareIntent(fragment.requireContext(), savedCardsOptions, CardsListActivity::class.java)
         fragment.startActivityForResult(intent, requestCode)
     }
 
