@@ -1,3 +1,17 @@
+2.10.0
+
+Изменены имена некоторых атрибутов:
+`numberHint` -> `acqNumberHint`
+`dateHint` -> `acqDateHint`
+`cvcHint` -> `acqCvcHint`
+`scanIcon` -> `acqScanIcon`
+`nextIcon` -> `acqNextIcon`
+`textColorInvalid` -> `acqTextColorInvalid`
+`cursorColor` -> `acqCursorColor`
+`mode` -> `acqMode`
+`keyboardBackgroundColor` -> `acqKeyboardBackgroundColor`
+`keyboardKeyTextColor` -> `acqKeyboardKeyTextColor`
+
 2.8.0
 
 Конструктор `TinkoffAcquiring` больше не принимает `tokenGenerator`; при необходимости `tokenGenerator` 
