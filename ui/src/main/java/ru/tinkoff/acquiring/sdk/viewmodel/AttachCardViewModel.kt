@@ -33,6 +33,9 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
+import ru.tinkoff.acquiring.sdk.responses.AttachCardResponse
+import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
  * @author Mariya Chernyadieva
@@ -64,7 +67,7 @@ internal class AttachCardViewModel(
 
         coroutine.call(addCardRequest,
                 onSuccess = {
-                    attachCard(it.requestKey!!, data)
+                    check3dsVersionIfNeed(cardData, it.paymentId, it.requestKey!!,data)
                 })
     }
 
@@ -81,35 +84,83 @@ internal class AttachCardViewModel(
                 })
     }
 
-    private fun attachCard(requestKey: String, data: Map<String, String>?) {
+    fun check3dsVersionIfNeed(cardData: CardData,
+                              paymentId: Long?,
+                              requestKey: String,
+                              data: Map<String, String>?
+    ) {
+        if (paymentId == null) {
+            attachCard(requestKey, data)
+        } else {
+            val check3DsRequest = sdk.check3DsVersion {
+                this.paymentId = paymentId
+                this.paymentSource = cardData
+            }
+            coroutine.call(
+                check3DsRequest,
+                onSuccess = {
+                    if (it.is3DsVersionV2()) {
+                        val check3dsMap = ThreeDsHelper.CollectData.invoke(context, it)
+                        ThreeDsHelper.CollectData.addExtraData(check3dsMap, it)
+                        attachCard(requestKey, check3dsMap + (data ?: mapOf()) , it)
+                    } else {
+                        attachCard(requestKey, data, it)
+                    }
+                }
+            )
+        }
+    }
+
+    private fun attachCard(requestKey: String,
+                           data: Map<String, String>?,
+                           check3dsVersionResponse: Check3dsVersionResponse? = null) {
         val attachCardRequest = sdk.attachCard {
             this.requestKey = requestKey
             this.data = data
             this.cardData = this@AttachCardViewModel.cardData
+
+            if (check3dsVersionResponse?.is3DsVersionV2() == true) {
+                this.addContentHeader()
+                this.addUserAgentHeader()
+            }
+        }
+        coroutine.call(attachCardRequest,
+                onSuccess = { handleAttachSuccess(it, check3dsVersionResponse) },
+                onFailure = ::handleAttachError
+        )
+    }
+
+    private fun handleAttachSuccess(it: AttachCardResponse,
+                                    check3dsVersionResponse: Check3dsVersionResponse?){
+            when (it.status) {
+                ResponseStatus.THREE_DS_CHECKING -> {
+                    val _3dsData = it.getThreeDsData()
+                    ThreeDsHelper.CollectData.addExtraThreeDsData(
+                        data = _3dsData,
+                        acsTransId = checkNotNull(it.acsTransId),
+                        serverTransId = checkNotNull(check3dsVersionResponse?.serverTransId),
+                        version = checkNotNull(check3dsVersionResponse?.version)
+                    )
+                    changeScreenState(ThreeDsScreenState(_3dsData, null))
+                }
+                ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
+                null -> attachCardResult.value = CardResult(it.cardId)
+                else -> {
+                    val throwable =
+                        AcquiringSdkException(IllegalStateException("ResponseStatus = ${it.status}"))
+                    handleException(throwable)
+                }
+            }
+            changeScreenState(LoadedState)
         }
 
-        coroutine.call(attachCardRequest,
-                onSuccess = {
-                    when (it.status) {
-                        ResponseStatus.THREE_DS_CHECKING -> changeScreenState(ThreeDsScreenState(it.getThreeDsData(), null))
-                        ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
-                        null -> attachCardResult.value = CardResult(it.cardId)
-                        else -> {
-                            val throwable = AcquiringSdkException(IllegalStateException("ResponseStatus = ${it.status}"))
-                            handleException(throwable)
-                        }
-                    }
-                    changeScreenState(LoadedState)
-                },
-                onFailure = {
-                    if (needHandleErrorsInSdk && it is AcquiringApiException) {
-                        if (it.response != null && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
-                            changeScreenState(LoadedState)
-                            changeScreenState(ErrorScreenState(AsdkLocalization.resources.addCardErrorErrorAttached
-                                    ?: AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
-                        } else handleException(it)
-                    } else handleException(it)
-                }
-        )
+    private fun handleAttachError(it: Exception) {
+        if (needHandleErrorsInSdk && it is AcquiringApiException) {
+            if (it.response != null && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
+                changeScreenState(LoadedState)
+                changeScreenState(ErrorScreenState(AsdkLocalization.resources.addCardErrorErrorAttached
+                    ?: AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
+            } else handleException(it)
+        } else handleException(it)
     }
 }
