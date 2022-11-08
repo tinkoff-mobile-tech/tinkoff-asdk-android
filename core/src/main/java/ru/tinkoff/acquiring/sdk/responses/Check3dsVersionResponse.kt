@@ -44,4 +44,7 @@ class Check3dsVersionResponse(
         @SerializedName("PaymentSystem")
         val paymentSystem: String? = null
 
-) : AcquiringResponse()
+) : AcquiringResponse() {
+
+    fun is3DsVersionV2() = version?.startsWith("2") ?: false
+}

@@ -99,9 +99,13 @@ internal class AttachCardViewModel(
             coroutine.call(
                 check3DsRequest,
                 onSuccess = {
-                    val check3dsMap = ThreeDsHelper.CollectData.invoke(context, it)
-                    ThreeDsHelper.CollectData.addExtraData(check3dsMap, it)
-                    attachCard(requestKey, check3dsMap + (data ?: mapOf()) , it)
+                    if (it.is3DsVersionV2()) {
+                        val check3dsMap = ThreeDsHelper.CollectData.invoke(context, it)
+                        ThreeDsHelper.CollectData.addExtraData(check3dsMap, it)
+                        attachCard(requestKey, check3dsMap + (data ?: mapOf()) , it)
+                    } else {
+                        attachCard(requestKey, data, it)
+                    }
                 }
             )
         }
@@ -114,6 +118,11 @@ internal class AttachCardViewModel(
             this.requestKey = requestKey
             this.data = data
             this.cardData = this@AttachCardViewModel.cardData
+
+            if (check3dsVersionResponse?.is3DsVersionV2() == true) {
+                this.addContentHeader()
+                this.addUserAgentHeader()
+            }
         }
         coroutine.call(attachCardRequest,
                 onSuccess = { handleAttachSuccess(it, check3dsVersionResponse) },
