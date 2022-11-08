@@ -48,7 +48,7 @@
 
         <include
             android:id="@+id/acq_card_list_stub"
-            layout="@layout/acq_card_list_error_stub" />
+            layout="@layout/acq_card_list_stub" />
 
     </ViewFlipper>
 

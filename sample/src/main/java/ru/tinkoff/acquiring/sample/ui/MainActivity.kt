@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             }
         }
 
-        SampleApplication.tinkoffAcquiring.openSavedCardsScreenV2(this,
+        SampleApplication.tinkoffAcquiring.openSavedCardsScreen(this,
                 options,
                 SAVED_CARDS_REQUEST_CODE)
     }

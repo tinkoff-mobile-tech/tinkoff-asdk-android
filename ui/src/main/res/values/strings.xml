@@ -28,4 +28,15 @@
 
     <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
     <string name="acq_card_list_title">Your cards</string>
+
+    <string name="acq_cards_list_error_title"><![CDATA[We have a problem, we are already solving it]]></string>
+    <string name="acq_cards_list_error_subtitle">Try again in a couple of minutes</string>
+    <string name="acq_cards_list_error_button">Clear</string>
+
+    <string name="acq_cards_list_no_network_title">Not loaded</string>
+    <string name="acq_cards_list_no_network_subtitle"><![CDATA[Check internet access and try again]]></string>
+    <string name="acq_cards_list_no_network_button">Refresh</string>
+
+    <string name="acq_cards_list_empty_subtitle">This is where your cards will be</string>
+    <string name="acq_cards_list_empty_button">Add</string>
 </resources>

@@ -1,7 +1,10 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.core.view.children
 import androidx.lifecycle.lifecycleScope
@@ -25,13 +28,29 @@ internal class CardsListActivity : TransparentActivity() {
     private lateinit var viewFlipper: ViewFlipper
     private lateinit var cardShimmer: ViewGroup
 
+    private val stubImage: ImageView by lazy(LazyThreadSafetyMode.NONE) {
+        findViewById(R.id.acq_stub_img)
+    }
+    private val stubTitleView: TextView by lazy(LazyThreadSafetyMode.NONE) {
+        findViewById(R.id.acq_stub_title)
+    }
+    private val stubSubtitleView: TextView by lazy(LazyThreadSafetyMode.NONE) {
+        findViewById(R.id.acq_stub_subtitle)
+    }
+    private val stubButtonView: TextView by lazy(LazyThreadSafetyMode.NONE) {
+        findViewById(R.id.acq_stub_retry_button)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedCardsOptions = options as SavedCardsOptions
         setContentView(R.layout.acq_activity_card_list)
 
         viewModel = provideViewModel(CardsListViewModel::class.java) as CardsListViewModel
-        viewModel.loadData(savedCardsOptions.customer.customerKey, options.features.showOnlyRecurrentCards)
+        viewModel.loadData(
+            savedCardsOptions.customer.customerKey,
+            options.features.showOnlyRecurrentCards
+        )
 
         initToolbar()
         initViews()
@@ -68,11 +87,28 @@ internal class CardsListActivity : TransparentActivity() {
                         )
                     }
                     is CardsListState.Error -> {
-                        viewFlipper.showById(R.id.acq_card_list_stub)
-                        // TODO задача со стабами
+                        showStub(
+                            imageResId = R.drawable.acq_ic_cards_list_error_stub,
+                            titleTextRes = R.string.acq_cards_list_error_title,
+                            subTitleTextRes = R.string.acq_cards_list_error_subtitle,
+                            buttonTextRes = R.string.acq_cards_list_error_button
+                        )
                     }
                     is CardsListState.Empty -> {
-                        // TODO задача со стабами
+                        showStub(
+                            imageResId = R.drawable.acq_ic_cards_list_empty,
+                            titleTextRes = null,
+                            subTitleTextRes = R.string.acq_cards_list_empty_subtitle,
+                            buttonTextRes = R.string.acq_cards_list_empty_button
+                        )
+                    }
+                    is CardsListState.NoNetwork -> {
+                        showStub(
+                            imageResId = R.drawable.acq_ic_no_network,
+                            titleTextRes = R.string.acq_cards_list_no_network_title,
+                            subTitleTextRes = R.string.acq_cards_list_no_network_subtitle,
+                            buttonTextRes = R.string.acq_cards_list_no_network_button
+                        )
                     }
                 }
             }
@@ -80,8 +116,33 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     override fun onBackPressed() {
-        //TODO навигация по фрагментам флоу управления картой
         finish()
+    }
+
+    private fun showStub(
+        imageResId: Int,
+        titleTextRes: Int?,
+        subTitleTextRes: Int,
+        buttonTextRes: Int
+    ) {
+        viewFlipper.showById(R.id.acq_card_list_stub)
+
+        stubImage.setImageResource(imageResId)
+        if (titleTextRes == null) {
+            stubTitleView.visibility = View.GONE
+        } else {
+            stubTitleView.setText(titleTextRes)
+            stubTitleView.visibility = View.VISIBLE
+        }
+        stubSubtitleView.setText(subTitleTextRes)
+        stubButtonView.setText(buttonTextRes)
+
+        stubButtonView.setOnClickListener {
+            viewModel.loadData(
+                savedCardsOptions.customer.customerKey,
+                options.features.showOnlyRecurrentCards
+            )
+        }
     }
 }
 

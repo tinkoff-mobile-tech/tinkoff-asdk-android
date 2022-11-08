@@ -8,9 +8,13 @@ import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 
-class CardsListViewModel(private val sdk: AcquiringSdk) : ViewModel() {
+class CardsListViewModel(
+    private val sdk: AcquiringSdk,
+    private val connectionChecker: ConnectionChecker
+) : ViewModel() {
 
     private val manager = CoroutineManager()
 
@@ -19,6 +23,11 @@ class CardsListViewModel(private val sdk: AcquiringSdk) : ViewModel() {
     val stateFlow = MutableStateFlow<CardsListState>(CardsListState.Loading)
 
     fun loadData(customerKey: String?, recurrentOnly: Boolean) {
+        if (connectionChecker.isOnline().not()) {
+            stateFlow.tryEmit(CardsListState.NoNetwork)
+            return
+        }
+        stateFlow.tryEmit(CardsListState.Loading)
         manager.launchOnBackground {
             if (customerKey == null) {
                 handleWithoutCustomerKey()
@@ -63,12 +72,11 @@ class CardsListViewModel(private val sdk: AcquiringSdk) : ViewModel() {
 
     private fun handleGetCardListError(it: Exception) {
         cardsListFlow.tryEmit(emptyList())
-        stateFlow.tryEmit(CardsListState.Error())
+        stateFlow.tryEmit(CardsListState.Error)
     }
 
     private fun handleWithoutCustomerKey() {
-        // уточнить по поводу ошибки
-        stateFlow.tryEmit(CardsListState.Error())
+        stateFlow.tryEmit(CardsListState.Error)
     }
 
     override fun onCleared() {

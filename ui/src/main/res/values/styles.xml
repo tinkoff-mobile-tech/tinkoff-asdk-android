@@ -146,6 +146,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="AcquiringStubTitleStyle" parent="AcquiringScreenTitleStyle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/acq_colorText</item>
+    </style>
+
     <style name="AcquiringOrderTitleStyle" parent="AcquiringTitleTextStyle">
         <item name="android:textSize">@dimen/acq_medium_text_size</item>
         <item name="android:textStyle">bold</item>

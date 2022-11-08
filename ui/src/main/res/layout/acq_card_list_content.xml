@@ -29,17 +29,7 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
-
-        <TextView
-            android:drawablePadding="24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="empty stub"
-            app:drawableStartCompat="@drawable/acq_ic_add_new_card">
-
-        </TextView>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
