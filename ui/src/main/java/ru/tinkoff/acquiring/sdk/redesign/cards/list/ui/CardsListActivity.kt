@@ -1,8 +1,8 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper

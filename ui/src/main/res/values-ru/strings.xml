@@ -34,4 +34,18 @@
     <string name="acq_cards_list_no_network_button">Обновить</string>
     <string name="acq_cards_list_empty_subtitle">Здесь будут ваши карты</string>
     <string name="acq_cards_list_empty_button">Добавить</string>
+
+    <plurals name="acq_sf_max_symbol_counter_empty">
+        <item quantity="one">Доступен %d символ</item>
+        <item quantity="few">Доступно %d символа</item>
+        <item quantity="many">Доступно %d символов</item>
+        <item quantity="other">Доступно %d символов</item>
+    </plurals>
+    <plurals name="acq_sf_max_symbol_counter_remaining">
+        <item quantity="one">Остался %d символ</item>
+        <item quantity="few">Осталось %d символа</item>
+        <item quantity="many">Осталось %d символов</item>
+        <item quantity="other">Осталось %d символов</item>
+    </plurals>
+
 </resources>

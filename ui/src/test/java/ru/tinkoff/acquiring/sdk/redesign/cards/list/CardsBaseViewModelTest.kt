@@ -15,22 +15,28 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
+import java.lang.Exception
 
 class CardsListViewModelTest {
 
     @Test
-    fun testWithoutKey() {
-        runBlocking {
-            val viewModel = createViewModelMock(mock())
-            viewModel.loadData(null, false)
-            viewModel.stateFlow.test {
-                val awaitLoading = awaitItem()
-                assertTrue(
-                    "${awaitLoading.javaClass.simpleName} is not Loading",
-                    awaitLoading is CardsListState.Error
+    fun `when customer key are null`() {
+        runViewModelCardsLoadTest<CardsListState.Error>(
+            null,
+            RequestResult.Success(
+                GetCardListResponse(
+                    emptyArray()
                 )
-            }
-        }
+            )
+        )
+    }
+
+    @Test
+    fun `when cards response return error`() {
+        runViewModelCardsLoadTest<CardsListState.Error>(
+            null,
+            RequestResult.Failure(Exception())
+        )
     }
 
     @Test
@@ -86,12 +92,8 @@ class CardsListViewModelTest {
         runBlocking {
             val viewModel = createViewModelMock(requestResult)
             viewModel.loadData(key, recurrentOnly)
+            delay(100)
             viewModel.stateFlow.test {
-                val awaitLoading = awaitItem()
-                assertTrue(
-                    "${awaitLoading.javaClass.simpleName} is not Loading",
-                    awaitLoading is CardsListState.Loading
-                )
                 val awaitNextEvent = awaitItem()
                 val excClass = T::class
                 assertTrue(

@@ -72,4 +72,12 @@
     <dimen name="acq_sbp_apps_not_found_browser_button_margin">28dp</dimen>
     <dimen name="acq_sbp_apps_not_found_button_margin">35dp</dimen>
     <dimen name="acq_sbp_apps_not_found_desc_margin">8dp</dimen>
+
+    <dimen name="acq_sf_horizontal_padding">16dp</dimen>
+    <dimen name="acq_sf_vertical_padding">6dp</dimen>
+    <dimen name="acq_sf_min_row_height">56dp</dimen>
+    <dimen name="acq_sf_text_field_bg_corner_radius">16dp</dimen>
+    <dimen name="acq_sf_text_size_default">16sp</dimen>
+    <dimen name="acq_sf_text_size_medium">14sp</dimen>
+    <dimen name="acq_sf_text_size_small">13sp</dimen>
 </resources>

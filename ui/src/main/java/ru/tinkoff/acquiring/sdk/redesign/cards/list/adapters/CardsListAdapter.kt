@@ -50,7 +50,7 @@ class CardsListAdapter : RecyclerView.Adapter<CardsListAdapter.CardViewHolder>()
             cardNameView.text = itemView.context.getString(
                 R.string.card_list_item_card_name_masked_template,
                 card.bankName,
-                card.tale
+                card.tail
             )
         }
     }

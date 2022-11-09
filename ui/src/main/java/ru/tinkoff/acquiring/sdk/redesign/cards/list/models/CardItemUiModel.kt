@@ -13,5 +13,5 @@ class CardItemUiModel(
 ) {
     val id = card.cardId
 
-    val tale = card.pan?.takeLast(4)
+    val tail = card.pan?.takeLast(4)
 }

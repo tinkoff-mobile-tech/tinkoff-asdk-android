@@ -39,4 +39,14 @@
 
     <string name="acq_cards_list_empty_subtitle">This is where your cards will be</string>
     <string name="acq_cards_list_empty_button">Add</string>
+
+    <plurals name="acq_sf_max_symbol_counter_empty">
+        <item quantity="one">%d symbol available</item>
+        <item quantity="other">%d symbols available</item>
+    </plurals>
+    <plurals name="acq_sf_max_symbol_counter_remaining">
+        <item quantity="one">%d symbol remaining</item>
+        <item quantity="other">%d symbols remaining</item>
+    </plurals>
+
 </resources>
