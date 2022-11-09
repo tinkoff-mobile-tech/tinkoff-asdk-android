@@ -37,14 +37,9 @@
             android:id="@+id/acq_card_list_shimmer"
             layout="@layout/acq_card_list_shimmer" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/acq_card_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
-
-        </androidx.recyclerview.widget.RecyclerView>
+        <include
+            android:id="@+id/acq_card_list_content"
+            layout="@layout/acq_card_list_content" />
 
         <include
             android:id="@+id/acq_card_list_stub"
