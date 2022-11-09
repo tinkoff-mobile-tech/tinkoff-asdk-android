@@ -135,12 +135,14 @@ internal class AttachCardViewModel(
             when (it.status) {
                 ResponseStatus.THREE_DS_CHECKING -> {
                     val _3dsData = it.getThreeDsData()
-                    ThreeDsHelper.CollectData.addExtraThreeDsData(
-                        data = _3dsData,
-                        acsTransId = checkNotNull(it.acsTransId),
-                        serverTransId = checkNotNull(check3dsVersionResponse?.serverTransId),
-                        version = checkNotNull(check3dsVersionResponse?.version)
-                    )
+                    if (check3dsVersionResponse?.is3DsVersionV2() == true) {
+                        ThreeDsHelper.CollectData.addExtraThreeDsData(
+                            data = _3dsData,
+                            acsTransId = checkNotNull(it.acsTransId),
+                            serverTransId = checkNotNull(check3dsVersionResponse.serverTransId),
+                            version = checkNotNull(check3dsVersionResponse.version)
+                        )
+                    }
                     changeScreenState(ThreeDsScreenState(_3dsData, null))
                 }
                 ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
