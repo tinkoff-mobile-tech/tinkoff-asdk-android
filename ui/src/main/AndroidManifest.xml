@@ -60,11 +60,6 @@
             android:theme="@style/AcquiringTheme" />
 
         <activity
-            android:name=".ui.activities.SavedCardsActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base" />
-
-        <activity
             android:name=".ui.activities.ThreeDsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AcquiringTheme.Base" />
