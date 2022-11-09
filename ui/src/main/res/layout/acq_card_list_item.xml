@@ -14,26 +14,41 @@
   ~  limitations under the License.
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:orientation="horizontal">
 
     <View
         android:layout_width="40dp"
-        android:layout_height="26dp" />
+        android:layout_height="26dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp" />
 
     <TextView
+        android:id="@+id/acq_card_list_item_masked_name"
         style="@style/TextAppearance.AppCompat.Body1"
-        tools:text="Тинькофф банк • 7913"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="18dp"
         android:layout_marginStart="16dp"
+        android:layout_weight="1"
         android:fontFamily="@font/roboto_regular"
         android:textSize="@dimen/acq_large_text_size"
-        android:id="@+id/cardNameMasked"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </TextView>
+        tools:text="Тинькофф банк • 7913" />
 
+    <FrameLayout
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/acq_card_list_item_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/acq_ic_clear" />
+    </FrameLayout>
 
 </LinearLayout>

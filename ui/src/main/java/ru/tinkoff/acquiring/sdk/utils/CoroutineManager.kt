@@ -16,15 +16,8 @@
 
 package ru.tinkoff.acquiring.sdk.utils
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -97,8 +90,8 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
         }
     }
 
-    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit) {
-        coroutineScope.launch(IO) {
+    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit): Job {
+        return coroutineScope.launch(IO) {
             block.invoke(this)
         }
     }

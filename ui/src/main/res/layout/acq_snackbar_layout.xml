@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="16dp"
+    android:background="@drawable/acq_snackbar_bg"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/acq_snackbar_text"
+        tools:text="Карта •7913 удалена"
+        android:fontFamily="@font/roboto_regular"
+        android:textSize="@dimen/acq_large_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

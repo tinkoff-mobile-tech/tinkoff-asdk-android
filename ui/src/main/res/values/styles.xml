@@ -21,6 +21,9 @@
         <item name="colorPrimaryDark">@color/acq_colorMainDark</item>
         <item name="colorAccent">@color/acq_colorAccent</item>
         <item name="android:textColor">@color/acq_colorText</item>
+        <!--<item name="android:itemTextAppearance">@style/AcqMenuItem</item>-->
+        <item name="actionMenuTextColor">@color/acq_colorAccent</item>
+        <item name="android:actionMenuTextAppearance">@style/AcqMenuItem</item>
         <item name="alertDialogTheme">@style/AcquiringDialogStyle</item>
 
         <item name="acqContentLayoutStyle">@style/AcquiringContentLayout</item>
@@ -240,6 +243,11 @@
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:textCursorDrawable">@drawable/acq_sf_cursor</item>
+    </style>
+
+    <style name="AcqMenuItem" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
     </style>
 
 </resources>

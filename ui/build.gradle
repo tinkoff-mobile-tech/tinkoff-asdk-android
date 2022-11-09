@@ -60,6 +60,7 @@ dependencies {
     implementation "jp.wasabeef:blurry:${blurryVersion}"
     implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
     implementation "androidx.recyclerview:recyclerview:${recyclerviewVersion}"
+    implementation "com.google.android.material:material:${materialVersion}"
 
     testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlinVersion}"

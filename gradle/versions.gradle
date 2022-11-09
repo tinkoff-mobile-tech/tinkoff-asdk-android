@@ -31,6 +31,7 @@ ext {
     rootBeerVersion = '0.1.0'
     lifecycleRuntimeVersion = '2.4.0'
     recyclerviewVersion = '1.2.1'
+    materialVersion = '1.5.0'
 
     mokitoKotlinVersion = '4.0.0'
     mokitoInlineVersion = '3.5.13'

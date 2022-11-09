@@ -2,8 +2,8 @@ package ru.tinkoff.acquiring.sdk.redesign.cards.list.models
 
 import ru.tinkoff.acquiring.sdk.models.Card
 
-class CardItemUiModel(
-    val card: Card,
+data class CardItemUiModel(
+    private val card: Card,
 
     // TODO after brandByBin algo impl
     val bankName: String = "***",
