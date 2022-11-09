@@ -86,12 +86,8 @@ class CardsListViewModelTest {
         runBlocking {
             val viewModel = createViewModelMock(requestResult)
             viewModel.loadData(key, recurrentOnly)
+            delay(100)
             viewModel.stateFlow.test {
-                val awaitLoading = awaitItem()
-                assertTrue(
-                    "${awaitLoading.javaClass.simpleName} is not Loading",
-                    awaitLoading is CardsListState.Loading
-                )
                 val awaitNextEvent = awaitItem()
                 val excClass = T::class
                 assertTrue(

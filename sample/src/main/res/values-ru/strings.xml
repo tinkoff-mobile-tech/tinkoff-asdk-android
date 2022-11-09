@@ -82,6 +82,4 @@
     <string name="notification_channel_name">Платежные уведомления</string>
     <string name="notification_order_title_subscription_renewal">Продление подписки</string>
     <string name="notification_payment_success">Подписка успешно продлена!</string>
-
-    <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
 </resources>
