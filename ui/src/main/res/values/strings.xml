@@ -28,6 +28,11 @@
 
     <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
     <string name="acq_card_list_title">Your cards</string>
+    <string name="acq_attach_card_title">Attach card</string>
+    <string name="acq_label_card_number">Number</string>
+    <string name="acq_label_expiry_date">Expiry date</string>
+    <string name="acq_label_card_cvv">Code</string>
+    <string name="acq_attach_card_btn">Attach</string>
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">%d symbol available</item>
