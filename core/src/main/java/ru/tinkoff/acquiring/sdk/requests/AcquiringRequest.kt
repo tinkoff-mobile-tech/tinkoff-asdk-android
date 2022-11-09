@@ -17,6 +17,9 @@
 package ru.tinkoff.acquiring.sdk.requests
 
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import okhttp3.Response
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
@@ -24,6 +27,7 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.utils.Request
+import ru.tinkoff.acquiring.sdk.utils.RequestResult
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.security.PublicKey
@@ -75,6 +79,18 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         request.validate()
         val client = NetworkClient()
         client.call(request, responseClass, onSuccess, onFailure)
+    }
+
+    protected fun <R : AcquiringResponse> performRequestFlow(request: AcquiringRequest<R>,
+                                                             responseClass: Class<R>) : Flow<RequestResult<out R>> {
+        request.validate()
+        val client = NetworkClient()
+        val flow = MutableStateFlow<RequestResult<out R>>(RequestResult.NotYet)
+        client.call(request, responseClass,
+            onSuccess = { flow.tryEmit(RequestResult.Success(it)) },
+            onFailure = { flow.tryEmit(RequestResult.Failure(it)) }
+        )
+        return flow
     }
 
     @kotlin.jvm.Throws(NetworkException::class)

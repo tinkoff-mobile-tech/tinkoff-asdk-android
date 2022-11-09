@@ -26,6 +26,9 @@
     <string name="acq_fps" translatable="false">fps</string>
     <string name="acq_tinkoff" translatable="false">Tinkoff</string>
 
+    <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
+    <string name="acq_card_list_title">Your cards</string>
+
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">%d symbol available</item>
         <item quantity="other">%d symbols available</item>

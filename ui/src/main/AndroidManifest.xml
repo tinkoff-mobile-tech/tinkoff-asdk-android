@@ -60,11 +60,6 @@
             android:theme="@style/AcquiringTheme" />
 
         <activity
-            android:name=".ui.activities.SavedCardsActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base" />
-
-        <activity
             android:name=".ui.activities.ThreeDsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AcquiringTheme.Base" />
@@ -78,6 +73,11 @@
             android:name=".ui.activities.BankChooseActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringNotificationTransparentTheme" />
+
+        <activity
+            android:name=".redesign.cards.list.ui.CardsListActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base"/>
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

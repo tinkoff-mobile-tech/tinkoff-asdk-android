@@ -49,6 +49,8 @@
     <color name="acq_colorKeyCircle">#2CFFFFFF</color>
     <color name="acq_colorKeyboardBackground">@color/acq_colorBrandGray</color>
 
+    <color name="acq_colorShimmer">#f7f7f7</color>
+
     <color name="acq_sf_text_field_bg">#08001024</color>
     <color name="acq_sf_text_field_bg_pressed">#0f001024</color>
 </resources>

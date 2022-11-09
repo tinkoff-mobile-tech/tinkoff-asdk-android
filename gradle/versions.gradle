@@ -17,7 +17,7 @@ ext {
     cardIoVersion = '5.5.1'
     gsonVersion = '2.8.6'
     coreNfcVersion = '1.0.2'
-    coroutinesVersion = '1.3.7'
+    coroutinesVersion = '1.6.4'
     googleWalletVersion = '18.0.0'
 
     constraintLayoutVersion = '1.1.3'
@@ -29,6 +29,10 @@ ext {
     blurryVersion = '4.0.0'
     bouncyCastleVersion = '1.65'
     rootBeerVersion = '0.1.0'
+    lifecycleRuntimeVersion = '2.4.0'
+    recyclerviewVersion = '1.2.1'
 
-    mokitoKotlin = '4.0.0'
+    mokitoKotlinVersion = '4.0.0'
+    mokitoInlineVersion = '3.5.13'
+    turbineVersion = '0.12.0'
 }

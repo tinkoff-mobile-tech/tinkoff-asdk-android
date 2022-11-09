@@ -16,8 +16,10 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import kotlinx.coroutines.flow.Flow
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.GET_CARD_LIST_METHOD
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
+import ru.tinkoff.acquiring.sdk.utils.RequestResult
 
 /**
  * Возвращает список привязанных карт у покупателя
@@ -48,5 +50,12 @@ class GetCardListRequest : AcquiringRequest<GetCardListResponse>(GET_CARD_LIST_M
      */
     override fun execute(onSuccess: (GetCardListResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, GetCardListResponse::class.java, onSuccess, onFailure)
+    }
+
+    /**
+     * Реактивный вызов метода API
+     */
+    fun executeFlow(): Flow<RequestResult<out GetCardListResponse>> {
+        return super.performRequestFlow(this, GetCardListResponse::class.java)
     }
 }

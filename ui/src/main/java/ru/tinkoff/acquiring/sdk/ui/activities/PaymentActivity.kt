@@ -77,7 +77,7 @@ internal class PaymentActivity : TransparentActivity() {
 
         initViews()
         if (asdkState is BrowseFpsBankState || asdkState is FpsState || asdkState is OpenTinkoffPayBankState) {
-            bottomContainer.visibility = View.GONE
+            bottomContainer?.visibility = View.GONE
         }
 
         paymentViewModel = provideViewModel(PaymentViewModel::class.java) as PaymentViewModel

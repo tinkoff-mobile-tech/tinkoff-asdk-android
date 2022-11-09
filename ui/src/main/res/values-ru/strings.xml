@@ -24,6 +24,8 @@
 
     <string name="acq_fps_chooser_title">Выберите приложение</string>
 
+    <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
+    <string name="acq_card_list_title">Ваши карты</string>
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">Доступен %d символ</item>
         <item quantity="few">Доступно %d символа</item>
