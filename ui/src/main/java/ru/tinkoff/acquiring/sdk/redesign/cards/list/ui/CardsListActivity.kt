@@ -77,7 +77,7 @@ internal class CardsListActivity : TransparentActivity() {
             viewModel.stateFlow.collectLatest {
                 when (it) {
                     is CardsListState.Content -> {
-                        viewFlipper.showById(R.id.acq_card_list_view)
+                        viewFlipper.showById(R.id.acq_card_list_content)
                         cardsListAdapter.setCards(it.cards)
                     }
                     is CardsListState.Loading -> {
