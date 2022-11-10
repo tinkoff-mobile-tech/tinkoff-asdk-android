@@ -13,27 +13,28 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/acq_colorMain">
+    android:background="?colorPrimary"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/acq_toolbar"
+        style="?attr/acqToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/acq_ic_close"
+        app:titleTextAppearance="@style/AcqToolbarTitleStyle" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_card_data_input"
-        android:name="ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment"
+        android:id="@+id/acq_activity_fl_container"
+        android:name="ru.tinkoff.acquiring.sdk.ui.fragments.AttachCardFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/acq_fragment_card_data_input" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:layout="@layout/acq_fragment_attach_card" />
 
-    <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
-        android:id="@+id/acq_attach_btn_attach"
-        style="@style/AcqLoaderButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="24dp"
-        app:acq_text="@string/acq_attach_card_btn" />
-
-</RelativeLayout>
+</LinearLayout>

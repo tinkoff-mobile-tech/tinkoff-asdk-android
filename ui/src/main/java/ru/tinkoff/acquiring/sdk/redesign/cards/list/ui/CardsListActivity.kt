@@ -13,6 +13,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -88,6 +89,10 @@ internal class CardsListActivity : TransparentActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        finish()
+    }
+
     private fun initToolbar() {
         setSupportActionBar(findViewById(R.id.acq_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -107,84 +112,96 @@ internal class CardsListActivity : TransparentActivity() {
 
     private fun subscribeOnState() {
         lifecycleScope.launch {
-            launch {
-                viewModel.stateUiFlow.collectLatest {
-                    when (it) {
-                        is CardsListState.Content -> {
-                            viewFlipper.showById(R.id.acq_card_list_content)
-                            if (it.mode == CardListMode.ADD) {
-                                cardsListAdapter.setCards(it.cards)
-                            } else {
-                                cardsListAdapter.updateMode(it.cards)
-                            }
-                        }
-                        is CardsListState.Loading -> {
-                            viewFlipper.showById(R.id.acq_card_list_shimmer)
-                            AcqShimmerAnimator.animateSequentially(
-                                cardShimmer.children.toList()
-                            )
-                        }
-                        is CardsListState.Error -> {
-                            showStub(
-                                imageResId = R.drawable.acq_ic_cards_list_error_stub,
-                                titleTextRes = R.string.acq_cards_list_error_title,
-                                subTitleTextRes = R.string.acq_cards_list_error_subtitle,
-                                buttonTextRes = R.string.acq_cards_list_error_button
-                            )
-                        }
-                        is CardsListState.Empty -> {
-                            showStub(
-                                imageResId = R.drawable.acq_ic_cards_list_empty,
-                                titleTextRes = null,
-                                subTitleTextRes = R.string.acq_cards_list_empty_subtitle,
-                                buttonTextRes = R.string.acq_cards_list_empty_button
-                            )
-                        }
-                        is CardsListState.NoNetwork -> {
-                            showStub(
-                                imageResId = R.drawable.acq_ic_no_network,
-                                titleTextRes = R.string.acq_cards_list_no_network_title,
-                                subTitleTextRes = R.string.acq_cards_list_no_network_subtitle,
-                                buttonTextRes = R.string.acq_cards_list_no_network_button
-                            )
-                        }
-                    }
-                }
-            }
-            launch {
-                viewModel.modeFlow.collectLatest {
-                    mode = it
-                    invalidateOptionsMenu()
-                    addNewCard.isVisible = mode === CardListMode.ADD
-                }
-            }
-            launch {
-                viewModel.eventFlow.filterNotNull().collect {
-                    when (it) {
-                        is CardListEvent.RemoveCard -> {
-                            cardsListAdapter.onRemoveCard(it.indexAt)
-                            // TODO  после задачи обработки ошибок
-                            Toast.makeText(
-                                this@CardsListActivity,
-                                "карта удалена",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
-                        is CardListEvent.ShowError -> {
-                            // TODO  после задачи обработки ошибок
-                            Toast.makeText(this@CardsListActivity, "ошибка!", Toast.LENGTH_LONG)
-                                .show()
-                        }
-                    }
+            subscribeOnUiState()
+            subscribeOnMode()
+            subscribeOnEvents()
+        }
+    }
 
+    private fun CoroutineScope.subscribeOnMode() {
+        launch {
+            viewModel.modeFlow.collectLatest {
+                mode = it
+                invalidateOptionsMenu()
+                addNewCard.isVisible = mode === CardListMode.ADD
+            }
+        }
+    }
+
+    private fun CoroutineScope.subscribeOnUiState() {
+        launch {
+            viewModel.stateUiFlow.collectLatest {
+                when (it) {
+                    is CardsListState.Content -> {
+                        viewFlipper.showById(R.id.acq_card_list_content)
+                        if (it.mode == CardListMode.ADD) {
+                            cardsListAdapter.setCards(it.cards)
+                        } else {
+                            cardsListAdapter.updateMode(it.cards)
+                        }
+                    }
+                    is CardsListState.Loading -> {
+                        viewFlipper.showById(R.id.acq_card_list_shimmer)
+                        AcqShimmerAnimator.animateSequentially(
+                            cardShimmer.children.toList()
+                        )
+                    }
+                    is CardsListState.Error -> {
+                        showStub(
+                            imageResId = R.drawable.acq_ic_cards_list_error_stub,
+                            titleTextRes = R.string.acq_cards_list_error_title,
+                            subTitleTextRes = R.string.acq_cards_list_error_subtitle,
+                            buttonTextRes = R.string.acq_cards_list_error_button
+                        )
+                    }
+                    is CardsListState.Empty -> {
+                        showStub(
+                            imageResId = R.drawable.acq_ic_cards_list_empty,
+                            titleTextRes = null,
+                            subTitleTextRes = R.string.acq_cards_list_empty_subtitle,
+                            buttonTextRes = R.string.acq_cards_list_empty_button
+                        )
+                    }
+                    is CardsListState.NoNetwork -> {
+                        showStub(
+                            imageResId = R.drawable.acq_ic_no_network,
+                            titleTextRes = R.string.acq_cards_list_no_network_title,
+                            subTitleTextRes = R.string.acq_cards_list_no_network_subtitle,
+                            buttonTextRes = R.string.acq_cards_list_no_network_button
+                        )
+                    }
                 }
             }
         }
     }
 
-    override fun onBackPressed() {
-        finish()
+    private fun CoroutineScope.subscribeOnEvents() {
+        launch {
+            viewModel.eventFlow.filterNotNull().collect {
+                when (it) {
+                    is CardListEvent.RemoveCard -> {
+                        cardsListAdapter.onRemoveCard(it.indexAt)
+                        // TODO  после задачи обработки ошибок
+                        Toast.makeText(
+                            this@CardsListActivity,
+                            "карта удалена",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                    is CardListEvent.ShowError -> {
+                        // TODO  после задачи обработки ошибок
+                        Toast.makeText(
+                            this@CardsListActivity,
+                            "ошибка!",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                }
+
+            }
+        }
     }
 
     private fun showStub(
@@ -213,5 +230,3 @@ internal class CardsListActivity : TransparentActivity() {
         }
     }
 }
-
-

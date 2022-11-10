@@ -34,6 +34,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleExtensionsVersion"
     implementation "ru.tinkoff.core.components.nfc:nfc:$coreNfcVersion"
+    implementation "ru.tinkoff.decoro:decoro:$decoroVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"

@@ -141,7 +141,13 @@
         <!-- If set to false symbols counter (see z_maxSymbols) will not be displayed. -->
         <attr name="acq_maxSymbolsCounterVisible" format="boolean" />
         <!-- Text in this field. -->
-        <attr name="acq_text" format="string" />
+        <attr name="acq_text" />
     </declare-styleable>
+
+    <declare-styleable name="LoaderButton">
+        <attr name="acq_text" />
+    </declare-styleable>
+
+    <attr name="acq_text" format="string" />
 
 </resources>

@@ -5,7 +5,7 @@
     <ru.tinkoff.acquiring.sdk.smartfield.AcqTextInputLayout
         android:id="@+id/text_input_layout"
         style="@style/AcqTextInputLayout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:layout_weight="1"

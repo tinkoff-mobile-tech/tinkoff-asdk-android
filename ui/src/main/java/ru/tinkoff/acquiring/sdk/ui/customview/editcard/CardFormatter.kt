@@ -36,10 +36,14 @@ internal object CardFormatter {
 
     const val DATE_DELIMITER = "/"
 
-    fun resolveCardFormat(cardNumber: String): CardFormat {
+    @Deprecated("Redesign")
+    fun resolveCardFormat(cardNumber: String): CardFormat =
+        CardFormat(resolveCardNumberMask(cardNumber))
+
+    fun resolveCardNumberMask(cardNumber: String): String {
         val length = cardNumber.length
 
-        val mask = when (CardPaymentSystem.resolvePaymentSystem(cardNumber)) {
+        return when (CardPaymentSystem.resolvePaymentSystem(cardNumber)) {
             VISA -> "#### #### #### ####"
             MASTER_CARD -> "#### #### #### ####"
             MIR -> when (length) {
@@ -60,7 +64,6 @@ internal object CardFormatter {
             BELKART, ELCART, APRA, ARCA -> "#### #### #### ####"
             else -> "#".repeat(UNKNOWN.range.last)
         }
-        return CardFormat(mask)
     }
 
     fun formatDate(cardDate: String): String {
@@ -107,7 +110,8 @@ internal object CardFormatter {
         return cardDate.replace(DATE_DELIMITER, "")
     }
 
-    class CardFormat(mask: String) {
+    @Deprecated("Redesign")
+    class CardFormat(val mask: String) {
 
         val blocks = mask.split(' ')
 

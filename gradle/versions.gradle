@@ -17,6 +17,7 @@ ext {
     cardIoVersion = '5.5.1'
     gsonVersion = '2.8.6'
     coreNfcVersion = '1.0.2'
+    decoroVersion = '1.5.1'
     coroutinesVersion = '1.6.4'
     googleWalletVersion = '18.0.0'
 

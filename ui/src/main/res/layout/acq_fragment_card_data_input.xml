@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
+        android:id="@+id/card_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:paddingHorizontal="16dp"
+        app:acq_title="@string/acq_label_card_number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
+        android:id="@+id/expiry_date_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:paddingStart="16dp"
+        android:paddingEnd="6dp"
+        app:acq_title="@string/acq_label_expiry_date"
+        app:layout_constraintEnd_toEndOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_number_input" />
+
+    <ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
+        android:id="@+id/cvc_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:paddingStart="6dp"
+        android:paddingEnd="16dp"
+        app:acq_title="@string/acq_label_card_cvv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/card_number_input" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
