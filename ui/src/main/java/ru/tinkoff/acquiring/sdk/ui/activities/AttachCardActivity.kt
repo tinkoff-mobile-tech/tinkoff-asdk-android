@@ -43,11 +43,12 @@ internal class AttachCardActivity : TransparentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        initViews()
-
         attachCardOptions = options as AttachCardOptions
+        setContentView(R.layout.acq_activity_attach_card)
+
         attachCardViewModel = provideViewModel(AttachCardViewModel::class.java) as AttachCardViewModel
+
+        initToolbar()
         observeLiveData()
 
         if (savedInstanceState == null) {
@@ -55,9 +56,15 @@ internal class AttachCardActivity : TransparentActivity() {
         }
     }
 
+    private fun initToolbar() {
+        setSupportActionBar(findViewById(R.id.acq_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setTitle(R.string.acq_attach_card_title)
+    }
+
     private fun observeLiveData() {
         with(attachCardViewModel) {
-            loadStateLiveData.observe(this@AttachCardActivity, Observer { handleLoadState(it) })
             attachCardResultLiveData.observe(this@AttachCardActivity, Observer { finishWithSuccess(it) })
             screenStateLiveData.observe(this@AttachCardActivity, Observer { handleScreenState(it) })
             screenChangeEventLiveData.observe(this@AttachCardActivity, Observer { handleScreenChangeEvent(it) })
@@ -92,5 +99,9 @@ internal class AttachCardActivity : TransparentActivity() {
                 is LoopConfirmationScreenState -> showFragment(LoopConfirmationFragment.newInstance(screen.requestKey))
             }
         }
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 }

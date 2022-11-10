@@ -237,4 +237,10 @@
         <item name="android:textCursorDrawable">@drawable/acq_sf_cursor</item>
     </style>
 
+    <style name="AcqLoaderButton">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
 </resources>
