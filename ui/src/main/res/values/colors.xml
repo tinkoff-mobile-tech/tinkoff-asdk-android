@@ -53,4 +53,5 @@
 
     <color name="acq_sf_text_field_bg">#08001024</color>
     <color name="acq_sf_text_field_bg_pressed">#0f001024</color>
+    <color name="acq_colorButtonText">#333333</color>
 </resources>

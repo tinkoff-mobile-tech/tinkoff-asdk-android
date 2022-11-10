@@ -139,13 +139,18 @@ constructor(
     var fontFamily: Int = -1
         set(value) {
             field = value
+            if (value == -1) return
             editText.setTypeface(ResourcesCompat.getFont(context, value), textStyle)
         }
 
     var textStyle: Int = Typeface.NORMAL
         set(value) {
             field = value
-            editText.setTypeface(ResourcesCompat.getFont(context, fontFamily), value)
+            if (fontFamily == -1) {
+                editText.setTypeface(editText.typeface, value)
+            } else {
+                editText.setTypeface(ResourcesCompat.getFont(context, fontFamily), value)
+            }
         }
 
     var inputType: Int

@@ -90,12 +90,12 @@ constructor(
     init {
         orientation = VERTICAL
         setVerticalPadding(context.resources.getDimensionPixelSize(R.dimen.acq_sf_vertical_padding))
-        setHorizontalPadding(context.resources.getDimensionPixelSize(R.dimen.acq_sf_horizontal_padding))
 
         editText.isSaveFromParentEnabled = false
 
         textInputLayout.addFocusChangeListener { symbolCounter.update() }
         editText.afterTextChanged { symbolCounter.update() }
+        setViewClickListener { editText.requestFocus() }
 
         initAttrs(attrs)
     }

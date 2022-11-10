@@ -28,6 +28,11 @@
 
     <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
     <string name="acq_card_list_title">Your cards</string>
+    <string name="acq_attach_card_title">Attach card</string>
+    <string name="acq_label_card_number">Number</string>
+    <string name="acq_label_expiry_date">Expiry date</string>
+    <string name="acq_label_card_cvv">Code</string>
+    <string name="acq_attach_card_btn">Attach</string>
 
     <string name="acq_cards_list_error_title"><![CDATA[We have a problem, we are already solving it]]></string>
     <string name="acq_cards_list_error_subtitle">Try again in a couple of minutes</string>
