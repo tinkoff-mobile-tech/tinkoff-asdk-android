@@ -26,11 +26,22 @@
 
     <string name="card_list_item_card_name_masked_template">%1$s • %2$s</string>
     <string name="acq_card_list_title">Ваши карты</string>
+
+    <string name="acq_cards_list_error_title"><![CDATA[У нас проблема, мы уже решаем ее]]></string>
+    <string name="acq_cards_list_error_subtitle">Попробуйте снова через пару минут</string>
+    <string name="acq_cards_list_error_button">Понятно</string>
+    <string name="acq_cards_list_no_network_title">Не загрузилось</string>
+    <string name="acq_cards_list_no_network_subtitle"><![CDATA[Проверьте доступ к интернету и попробуйте еще раз]]></string>
+    <string name="acq_cards_list_no_network_button">Обновить</string>
+    <string name="acq_cards_list_empty_subtitle">Здесь будут ваши карты</string>
+    <string name="acq_cards_list_empty_button">Добавить</string>
+
     <string name="acq_attach_card_title">Оплата картой</string>
     <string name="acq_label_card_number">Номер</string>
     <string name="acq_label_expiry_date">Срок</string>
     <string name="acq_label_card_cvv">Код</string>
     <string name="acq_attach_card_btn">Добавить</string>
+
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">Доступен %d символ</item>

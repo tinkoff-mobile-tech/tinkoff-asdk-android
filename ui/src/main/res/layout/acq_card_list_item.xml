@@ -27,6 +27,7 @@
     <TextView
         style="@style/TextAppearance.AppCompat.Body1"
         tools:text="Тинькофф банк • 7913"
+        android:layout_marginStart="16dp"
         android:fontFamily="@font/roboto_regular"
         android:textSize="@dimen/acq_large_text_size"
         android:id="@+id/cardNameMasked"

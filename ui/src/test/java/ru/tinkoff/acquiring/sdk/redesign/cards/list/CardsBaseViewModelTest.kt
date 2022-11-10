@@ -14,6 +14,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewMo
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
 import java.lang.Exception
 
@@ -83,14 +84,33 @@ class CardsListViewModelTest {
         )
     }
 
+    @Test
+    fun `when connection lost`() {
+        runViewModelCardsLoadTest<CardsListState.NoNetwork>(
+            "key",
+            RequestResult.Success(
+                GetCardListResponse(
+                    arrayOf(mock {
+                        on { pan } doReturn "3413413413413414"
+                        on { cardId } doReturn "1"
+                        on { status } doReturn CardStatus.DELETED
+                    })
+                )
+            ),
+            connectionChecker = mock { on { isOnline() } doReturn false }
+        )
+    }
 
     private inline fun <reified T : CardsListState> runViewModelCardsLoadTest(
         key: String?,
         requestResult: RequestResult<out GetCardListResponse>,
         recurrentOnly: Boolean = false,
+        connectionChecker: ConnectionChecker = mock {
+            on { isOnline() } doReturn true
+        }
     ) {
         runBlocking {
-            val viewModel = createViewModelMock(requestResult)
+            val viewModel = createViewModelMock(requestResult, connectionChecker)
             viewModel.loadData(key, recurrentOnly)
             delay(100)
             viewModel.stateFlow.test {
@@ -105,7 +125,8 @@ class CardsListViewModelTest {
     }
 
     private fun createViewModelMock(
-        result: RequestResult<out GetCardListResponse>
+        result: RequestResult<out GetCardListResponse>,
+        connectionChecker: ConnectionChecker
     ): CardsListViewModel {
         val request = mock<GetCardListRequest> {
             on { executeFlow() } doReturn MutableStateFlow(result)
@@ -113,7 +134,7 @@ class CardsListViewModelTest {
         val sdk = mock<AcquiringSdk> {
             on { getCardList(any()) } doReturn request
         }
-        return CardsListViewModel(sdk)
+        return CardsListViewModel(sdk, connectionChecker)
     }
 
 }

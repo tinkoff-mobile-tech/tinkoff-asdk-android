@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 
 /**
  * @author Mariya Chernyadieva
@@ -47,7 +48,7 @@ internal class ViewModelProviderFactory(
     )
 
     private val redesignViewModels = mapOf<Class<out ViewModel>, ViewModel>(
-        CardsListViewModel::class.java to CardsListViewModel(sdk)
+        CardsListViewModel::class.java to CardsListViewModel(sdk, ConnectionChecker(application))
     )
 
     @Suppress("UNCHECKED_CAST")

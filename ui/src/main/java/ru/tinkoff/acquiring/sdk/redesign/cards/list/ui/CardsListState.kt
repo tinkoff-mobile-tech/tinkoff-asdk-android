@@ -6,7 +6,6 @@ sealed class CardsListState {
     object Loading : CardsListState()
     class Content(val cards: List<CardItemUiModel>) : CardsListState()
     object Empty : CardsListState()
-    class Error(
-        //TODO
-    ) : CardsListState()
+    object Error : CardsListState()
+    object NoNetwork : CardsListState()
 }
