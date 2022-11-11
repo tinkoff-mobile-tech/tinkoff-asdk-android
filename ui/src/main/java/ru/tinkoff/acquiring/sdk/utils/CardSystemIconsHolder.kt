@@ -37,6 +37,7 @@ internal class CardSystemIconsHolder(private val context: Context) : EditCardSys
             CardPaymentSystem.VISA -> R.drawable.acq_ic_visa_blue
             CardPaymentSystem.MIR -> R.drawable.acq_ic_mir
             CardPaymentSystem.MAESTRO -> R.drawable.acq_ic_maestro
+            CardPaymentSystem.UNION_PAY -> R.drawable.acq_ic_union_pay
             else -> return null
         }
 

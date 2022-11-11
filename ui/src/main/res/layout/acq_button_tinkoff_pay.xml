@@ -15,6 +15,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/acq_tinkoff_pay_button_height"
@@ -23,15 +24,16 @@
     android:layout_marginRight="?acqViewHorizontalOffset"
     android:background="@drawable/acq_button_tinkoff_pay"
     android:gravity="center"
-    android:orientation="horizontal"
-    android:padding="@dimen/acq_tinkoff_pay_button_padding">
+    android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/acq_button_tinkoff_pay_logo_with_text"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:src="@drawable/acq_tinkoff_pay_logo_with_text_white"
+        android:drawablePadding="8dp"
+        android:text="@string/acq_tinkoff"
+        android:textColor="@color/acq_colorTinkoffPayText"
+        android:textSize="18sp"
+        app:drawableEndCompat="@drawable/acq_icon_tinkoff_pay"
         tools:ignore="ContentDescription" />
 
 </LinearLayout>

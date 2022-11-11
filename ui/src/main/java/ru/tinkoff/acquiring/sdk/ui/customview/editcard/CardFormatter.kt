@@ -16,9 +16,15 @@
 
 package ru.tinkoff.acquiring.sdk.ui.customview.editcard
 
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.APRA
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.ARCA
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.BELKART
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.ELCART
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MAESTRO
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MASTER_CARD
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MIR
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.UNKNOWN
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.UNION_PAY
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.VISA
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.RegexpValidator
@@ -28,25 +34,33 @@ import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.RegexpValidato
  */
 internal object CardFormatter {
 
-    const val DEFAULT_FORMAT = 0 //xxxx xxxx xxxx xxxx
-    const val MAESTRO_FORMAT = 1 //xxxxxxxx xxxx...x
-    const val UNKNOWN_FORMAT = 2 //xxxxxxxxxx...
-
     const val DATE_DELIMITER = "/"
 
-    fun resolveCardFormat(cardNumber: String): Int {
-        return if (cardNumber.length >= 4) {
-            val cardType = CardPaymentSystem.resolvePaymentSystem(cardNumber)
-            when {
-                (cardType == MIR && cardNumber.length <= CardPaymentSystem.getLengthRanges(MIR).first()) ||
-                        cardType == VISA || cardType == MASTER_CARD -> DEFAULT_FORMAT
-                (cardType == MIR && cardNumber.length > CardPaymentSystem.getLengthRanges(MIR).first()) ||
-                        cardType == MAESTRO -> MAESTRO_FORMAT
-                else -> UNKNOWN_FORMAT
+    fun resolveCardFormat(cardNumber: String): CardFormat {
+        val length = cardNumber.length
+
+        val mask = when (CardPaymentSystem.resolvePaymentSystem(cardNumber)) {
+            VISA -> "#### #### #### ####"
+            MASTER_CARD -> "#### #### #### ####"
+            MIR -> when (length) {
+                in 0..16 -> "#### #### #### ####"
+                else -> "###### #############"
             }
-        } else {
-            UNKNOWN_FORMAT
+            MAESTRO -> when (length) {
+                in 0..13 -> "#### #### #####"
+                in 0..15 -> "#### ###### #####"
+                in 0..16 -> "#### #### #### ####"
+                in 0..19 -> "###### #############"
+                else -> "###################"
+            }
+            UNION_PAY -> when (length) {
+                in 0..16 -> "#### #### #### ####"
+                else -> "###### #############"
+            }
+            BELKART, ELCART, APRA, ARCA -> "#### #### #### ####"
+            else -> "#".repeat(UNKNOWN.range.last)
         }
+        return CardFormat(mask)
     }
 
     fun formatDate(cardDate: String): String {
@@ -91,5 +105,28 @@ internal object CardFormatter {
 
     fun getRawDate(cardDate: String): String {
         return cardDate.replace(DATE_DELIMITER, "")
+    }
+
+    class CardFormat(mask: String) {
+
+        val blocks = mask.split(' ')
+
+        fun forEachBlockUntil(index: Int, action: (blockStart: Int, blockEnd: Int) -> Unit) {
+            var position = 0
+            for (i in 0..blocks.size) {
+                if (position > index) return
+                action(position, (position + blocks[i].length).coerceAtMost(index + 1))
+                position += blocks[i].length
+            }
+        }
+
+        fun getBlockNumber(index: Int): Int {
+            var position = 0
+            for (i in blocks.indices) {
+                position += blocks[i].length
+                if (position > index) return i
+            }
+            return blocks.size - 1
+        }
     }
 }

@@ -29,6 +29,7 @@ import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
+import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
@@ -156,9 +157,8 @@ open class PayableActivity : AppCompatActivity() {
     protected fun setupGooglePay() {
         val googlePayButton = findViewById<View>(R.id.btn_google_pay)
 
-        val googleParams = GooglePayParams(settings.terminalKey,
-                environment = SessionParams.GPAY_TEST_ENVIRONMENT
-        )
+        val googleParams = GooglePayParams(TerminalsManager.selectedTerminalKey,
+                environment = SessionParams.GPAY_TEST_ENVIRONMENT)
 
         val googlePayHelper = GooglePayHelper(googleParams)
 
@@ -175,8 +175,7 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     private fun createPaymentOptions(): PaymentOptions {
-        val terminalKey = settings.terminalKey
-        val sessionParams = SessionParams[terminalKey]
+        val sessionParams = TerminalsManager.selectedTerminal
 
         return PaymentOptions()
                 .setOptions {

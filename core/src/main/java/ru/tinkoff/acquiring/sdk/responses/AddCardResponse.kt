@@ -23,6 +23,8 @@ import com.google.gson.annotations.SerializedName
  *
  * @param customerKey идентификатор покупателя в системе продавца
  * @param requestKey  идентификатор запроса на привязку карты
+ * @param paymentId   Уникальный идентификатор транзакции в системе Банка
+ *                    Возвращается, если в запросе был указан  checkType != NO
  *
  * @author Mariya Chernyadieva
  */
@@ -31,6 +33,9 @@ class AddCardResponse(
         val customerKey: String? = null,
 
         @SerializedName("RequestKey")
-        val requestKey: String? = null
+        val requestKey: String? = null,
+
+        @SerializedName("PaymentId")
+        val paymentId: Long? = null
 
 ) : AcquiringResponse()

@@ -76,7 +76,7 @@ object AcquiringApi {
 
     internal const val JSON = "application/json"
     internal const val FORM_URL_ENCODED = "application/x-www-form-urlencoded"
-    internal const val TIMEOUT = 40000
+    internal const val TIMEOUT = 40000L
 
     private const val API_URL_RELEASE_OLD = "https://securepay.tinkoff.ru/rest"
     private const val API_URL_DEBUG_OLD = "https://rest-api-test.tcsbank.ru/rest"

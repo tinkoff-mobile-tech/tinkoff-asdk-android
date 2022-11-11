@@ -86,14 +86,14 @@
     </style>
 
     <style name="AcquiringEditCardStyle.Custom" parent="AcquiringEditCardStyle">
-        <item name="cursorColor">@color/custom_colorAccent</item>
+        <item name="acqCursorColor">@color/custom_colorAccent</item>
         <item name="android:textColorHint">@color/common_gray</item>
-        <item name="textColorInvalid">@color/custom_textColorInvalid</item>
-        <item name="numberHint">Custom Card Number</item>
-        <item name="dateHint">**/**</item>
-        <item name="cvcHint">***</item>
-        <item name="keyboardBackgroundColor">#222645</item>
-        <item name="keyboardKeyTextColor">#ffffff</item>
+        <item name="acqTextColorInvalid">@color/custom_textColorInvalid</item>
+        <item name="acqNumberHint">Custom Card Number</item>
+        <item name="acqDateHint">**/**</item>
+        <item name="acqCvcHint">***</item>
+        <item name="acqKeyboardBackgroundColor">#222645</item>
+        <item name="acqKeyboardKeyTextColor">#ffffff</item>
     </style>
 
     <style name="AcquiringTitleStyle.Custom" parent="AcquiringTitleTextStyle">

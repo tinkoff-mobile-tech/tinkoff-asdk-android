@@ -1,3 +1,15 @@
+## 2.10.0
+
+#### Fixed
+#### Changes
+- Deleted `CollectDataState`; 3DS data collection is handled internally now
+- Changed `NetworkClient` to utilize okhttp 
+- Tinkoff Pay button redesign
+- Changed card pan validation mechanism; added Union Pay system recognition
+- Changed names of some view attributes ([migration](/migration.md))
+- Add 3DS v2 flow for attach card
+#### Additions
+
 ## 2.9.0
 
 #### Fixed

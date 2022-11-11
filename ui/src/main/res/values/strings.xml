@@ -24,5 +24,6 @@
     <string name="acq_fps_chooser_title">Choose app</string>
 
     <string name="acq_fps" translatable="false">fps</string>
+    <string name="acq_tinkoff" translatable="false">Tinkoff</string>
 
 </resources>

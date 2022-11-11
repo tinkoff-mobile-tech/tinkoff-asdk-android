@@ -16,7 +16,7 @@ ext {
     lifecycleExtensionsVersion = '2.5.1'
     cardIoVersion = '5.5.1'
     gsonVersion = '2.8.6'
-    coreNfcVersion = '1.0.2'
+    coreNfcVersion = '1.0.3'
     coroutinesVersion = '1.3.7'
     googleWalletVersion = '18.0.0'
 

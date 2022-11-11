@@ -25,7 +25,6 @@ enum class PaymentState {
     CREATED,
     STARTED,
     STOPPED,
-    THREE_DS_DATA_COLLECTING,
     THREE_DS_V2_REJECTED,
     THREE_DS_NEEDED,
     BROWSE_SBP_BANK,

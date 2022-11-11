@@ -22,6 +22,7 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.COMPLETE_3DS_METHOD_V2
+import ru.tinkoff.acquiring.sdk.responses.AttachCardResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsCertInfo.CertType.Companion.toWrapperType
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
@@ -170,7 +171,8 @@ object ThreeDsHelper {
                     put("threeDSServerTransID", response.serverTransId)
                 }
 
-                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(), Base64.NO_PADDING).trim()
+                val dataBase64 = Base64.encodeToString(threeDsMethodData.toString().toByteArray(),
+                    Base64.NO_PADDING or Base64.NO_WRAP).trim()
                 val params = "threeDSMethodData=${URLEncoder.encode(dataBase64, "UTF-8")}"
 
                 hiddenWebView.postUrl(response.threeDsMethodUrl!!, params.toByteArray())
@@ -188,6 +190,25 @@ object ThreeDsHelper {
                 put("screen_height", "${point.y}")
                 put("screen_width", "${point.x}")
                 put("cresCallbackUrl", TERM_URL_V2)
+            }
+        }
+
+        fun addExtraData(data: MutableMap<String, String>, response: Check3dsVersionResponse) {
+            data.apply {
+                put("version", response.version!!)
+                put("tdsServerTransId" , response.serverTransId!!)
+            }
+        }
+
+        fun addExtraThreeDsData(data: ThreeDsData,
+                                acsTransId: String,
+                                serverTransId: String,
+                                version:String
+        ) {
+            data.apply {
+                this.version = version
+                this.tdsServerTransId = serverTransId
+                this.acsTransId = acsTransId
             }
         }
     }

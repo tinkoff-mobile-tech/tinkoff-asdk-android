@@ -26,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.CollectDataState
 import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
@@ -137,13 +136,9 @@ class TinkoffAcquiring(
      */
     @JvmOverloads
     fun openPaymentScreen(activity: Activity, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
-        if (state is CollectDataState) {
-            state.data.putAll(ThreeDsHelper.CollectData(activity, state.response))
-        } else {
-            options.asdkState = state
-            val intent = prepareIntent(activity, options, PaymentActivity::class.java)
-            activity.startActivityForResult(intent, requestCode)
-        }
+        options.asdkState = state
+        val intent = prepareIntent(activity, options, PaymentActivity::class.java)
+        activity.startActivityForResult(intent, requestCode)
     }
 
     /**
@@ -157,13 +152,9 @@ class TinkoffAcquiring(
      */
     @JvmOverloads
     fun openPaymentScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
-        if (state is CollectDataState) {
-            state.data.putAll(ThreeDsHelper.CollectData(fragment.requireContext(), state.response))
-        } else {
-            options.asdkState = state
-            val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)
-            fragment.startActivityForResult(intent, requestCode)
-        }
+        options.asdkState = state
+        val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)
+        fragment.startActivityForResult(intent, requestCode)
     }
 
     /**
