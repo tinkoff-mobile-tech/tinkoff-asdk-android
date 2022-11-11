@@ -22,7 +22,7 @@ import java.lang.Exception
 /**
  * Created by Ivan Golovachev
  */
-class CardsListViewModelTest {
+internal class CardsListViewModelTest {
 
     @Test
     fun `when customer key are null`() {

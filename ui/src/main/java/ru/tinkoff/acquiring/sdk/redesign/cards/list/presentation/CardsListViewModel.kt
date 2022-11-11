@@ -21,12 +21,11 @@ import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 /**
  * Created by Ivan Golovachev
  */
-class CardsListViewModel(
+internal class CardsListViewModel(
     private val sdk: AcquiringSdk,
-    private val connectionChecker: ConnectionChecker
+    private val connectionChecker: ConnectionChecker,
+    private val manager : CoroutineManager = CoroutineManager()
 ) : ViewModel() {
-
-    private val manager = CoroutineManager()
 
     private var deleteJob: Job? = null
 
