@@ -21,6 +21,7 @@ import okhttp3.Response
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi.JSON
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 import ru.tinkoff.acquiring.sdk.utils.Request
@@ -45,6 +46,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
     @Volatile
     private var disposed = false
     private val ignoredFieldsSet: HashSet<String> = hashSetOf(DATA, RECEIPT, RECEIPTS, SHOPS)
+    private val headersMap: HashMap<String, String> = hashMapOf()
 
     internal open val tokenIgnoreFields: HashSet<String>
         get() = ignoredFieldsSet
@@ -68,10 +70,12 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         return map
     }
 
-    protected fun <R : AcquiringResponse> performRequest(request: AcquiringRequest<R>,
-                                                         responseClass: Class<R>,
-                                                         onSuccess: (R) -> Unit,
-                                                         onFailure: (Exception) -> Unit) {
+    protected fun <R : AcquiringResponse> performRequest(
+        request: AcquiringRequest<R>,
+        responseClass: Class<R>,
+        onSuccess: (R) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         request.validate()
         val client = NetworkClient()
         client.call(request, responseClass, onSuccess, onFailure)
@@ -113,8 +117,18 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         }
     }
 
+    fun addUserAgentHeader(userAgent: String = System.getProperty("http.agent")) {
+        headersMap.put("User-Agent", userAgent)
+    }
+
+    fun addContentHeader(content: String = JSON) {
+        headersMap.put("Accept", content)
+    }
+
     protected open fun getToken(): String? =
         AcquiringSdk.tokenGenerator?.generateToken(this, paramsForToken())
+
+    internal fun getHeaders() = headersMap
 
     private fun paramsForToken(): MutableMap<String, Any> {
         val tokenParams = asMap()
