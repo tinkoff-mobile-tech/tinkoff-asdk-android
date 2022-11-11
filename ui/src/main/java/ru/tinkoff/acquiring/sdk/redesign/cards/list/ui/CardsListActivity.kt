@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import android.widget.ViewFlipper
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -23,6 +22,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
+import ru.tinkoff.acquiring.sdk.utils.AcqSnackBarHelper
 import ru.tinkoff.acquiring.sdk.utils.showById
 
 internal class CardsListActivity : TransparentActivity() {
@@ -30,9 +30,11 @@ internal class CardsListActivity : TransparentActivity() {
     private lateinit var viewModel: CardsListViewModel
     private lateinit var savedCardsOptions: SavedCardsOptions
 
+    private lateinit var recyclerView: RecyclerView
     private lateinit var cardsListAdapter: CardsListAdapter
     private lateinit var viewFlipper: ViewFlipper
     private lateinit var cardShimmer: ViewGroup
+    private lateinit var snackBarHelper: AcqSnackBarHelper
 
     private var mode = CardListMode.STUB
 
@@ -101,13 +103,14 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun initViews() {
-        val recyclerView = findViewById<RecyclerView>(R.id.acq_card_list_view)
+        recyclerView = findViewById<RecyclerView>(R.id.acq_card_list_view)
         viewFlipper = findViewById(R.id.acq_view_flipper)
         cardShimmer = viewFlipper.findViewById(R.id.acq_card_list_shimmer)
         cardsListAdapter = CardsListAdapter(onDeleteClick = {
             viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!)
         })
         recyclerView.adapter = cardsListAdapter
+        snackBarHelper = AcqSnackBarHelper(findViewById(R.id.acq_card_list_root))
     }
 
     private fun subscribeOnState() {
@@ -134,13 +137,9 @@ internal class CardsListActivity : TransparentActivity() {
                 when (it) {
                     is CardsListState.Content -> {
                         viewFlipper.showById(R.id.acq_card_list_content)
-                        if (it.mode == CardListMode.ADD) {
-                            cardsListAdapter.setCards(it.cards)
-                        } else {
-                            cardsListAdapter.updateMode(it.cards)
-                        }
+                        cardsListAdapter.setCards(it.cards)
                     }
-                    is CardsListState.Loading -> {
+                    is CardsListState.Shimmer -> {
                         viewFlipper.showById(R.id.acq_card_list_shimmer)
                         AcqShimmerAnimator.animateSequentially(
                             cardShimmer.children.toList()
@@ -153,6 +152,9 @@ internal class CardsListActivity : TransparentActivity() {
                             subTitleTextRes = R.string.acq_cards_list_error_subtitle,
                             buttonTextRes = R.string.acq_cards_list_error_button
                         )
+                        stubButtonView.setOnClickListener {
+                            finish()
+                        }
                     }
                     is CardsListState.Empty -> {
                         showStub(
@@ -161,6 +163,9 @@ internal class CardsListActivity : TransparentActivity() {
                             subTitleTextRes = R.string.acq_cards_list_empty_subtitle,
                             buttonTextRes = R.string.acq_cards_list_empty_button
                         )
+                        stubButtonView.setOnClickListener {
+                           //todo навигация с результатом о привязке карты
+                        }
                     }
                     is CardsListState.NoNetwork -> {
                         showStub(
@@ -169,6 +174,12 @@ internal class CardsListActivity : TransparentActivity() {
                             subTitleTextRes = R.string.acq_cards_list_no_network_subtitle,
                             buttonTextRes = R.string.acq_cards_list_no_network_button
                         )
+                        stubButtonView.setOnClickListener {
+                            viewModel.loadData(
+                                savedCardsOptions.customer.customerKey,
+                                options.features.showOnlyRecurrentCards
+                            )
+                        }
                     }
                 }
             }
@@ -178,28 +189,26 @@ internal class CardsListActivity : TransparentActivity() {
     private fun CoroutineScope.subscribeOnEvents() {
         launch {
             viewModel.eventFlow.filterNotNull().collect {
+                recyclerView.alpha = if (it is CardListEvent.RemoveCardProgress) 0.5f else 1f
+                recyclerView.isEnabled = it !is CardListEvent.RemoveCardProgress
+
                 when (it) {
-                    is CardListEvent.RemoveCard -> {
-                        cardsListAdapter.onRemoveCard(it.indexAt)
-                        // TODO  после задачи обработки ошибок
-                        Toast.makeText(
-                            this@CardsListActivity,
-                            "карта удалена",
-                            Toast.LENGTH_LONG
+                    is CardListEvent.RemoveCardProgress -> {
+                        snackBarHelper.show(
+                            R.string.acq_cardlist_snackbar_remove_progress, true
                         )
-                            .show()
+                    }
+                    is CardListEvent.RemoveCardSuccess -> {
+                        it.indexAt?.let(cardsListAdapter::onRemoveCard)
+                        snackBarHelper.hide()
                     }
                     is CardListEvent.ShowError -> {
-                        // TODO  после задачи обработки ошибок
-                        Toast.makeText(
-                            this@CardsListActivity,
-                            "ошибка!",
-                            Toast.LENGTH_LONG
+                        // TODO  после задачи на диалог с ошибками
+                        snackBarHelper.show(
+                            "Произошла ошибка"
                         )
-                            .show()
                     }
                 }
-
             }
         }
     }
@@ -221,12 +230,5 @@ internal class CardsListActivity : TransparentActivity() {
         }
         stubSubtitleView.setText(subTitleTextRes)
         stubButtonView.setText(buttonTextRes)
-
-        stubButtonView.setOnClickListener {
-            viewModel.loadData(
-                savedCardsOptions.customer.customerKey,
-                options.features.showOnlyRecurrentCards
-            )
-        }
     }
 }

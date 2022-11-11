@@ -1,13 +1,13 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list
 
 import app.cash.turbine.test
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import awaitWithConditionOrNext
+import common.MutableCollector
+import common.assertByClassName
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -25,8 +25,8 @@ import ru.tinkoff.acquiring.sdk.responses.RemoveCardResponse
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
-import turbineDelay
 import java.lang.Exception
+import java.util.concurrent.Executors
 
 /**
  * Created by Ivan Golovachev
@@ -44,61 +44,91 @@ internal class CardsDeleteViewModelTest {
     @Test
     fun `when card delete complete`() = runBlocking {
         with(Environment(initState = defaultContent)) {
+            eventCollector.takeValues(2)
             setResponse(RequestResult.Success(RemoveCardResponse(1)))
+
             vm.deleteCard(createCard("1"), "")
-            checkState<CardsListState.Content>()
-            checkEvent<CardListEvent.RemoveCard>()
+
+            eventCollector.joinWithTimeout()
+            eventCollector.flow.test {
+                assertByClassName(CardListEvent.RemoveCardProgress, awaitItem())
+                assertByClassName(CardListEvent.RemoveCardSuccess(null), awaitItem())
+                awaitComplete()
+            }
         }
     }
 
     @Test
     fun `when card delete throw error`() = runBlocking {
         with(Environment(initState = defaultContent)) {
+
+            eventCollector.takeValues(2)
             setResponse(RequestResult.Failure(Exception()))
+
             vm.deleteCard(createCard("1"), "")
-            checkEvent<CardListEvent.ShowError>()
-            checkState<CardsListState.Content>()
+
+            eventCollector.joinWithTimeout()
+            eventCollector.flow.test {
+                assertByClassName(CardListEvent.RemoveCardProgress, awaitItem())
+                assertByClassName(CardListEvent.ShowError, awaitItem())
+                awaitComplete()
+            }
         }
     }
 
+
+    @Test
+    fun `when card delete without key`() = runBlocking {
+        with(Environment(initState = defaultContent)) {
+
+            eventCollector.takeValues(1)
+            setResponse(RequestResult.Failure(Exception()))
+
+            vm.deleteCard(createCard("1"), null)
+
+            eventCollector.joinWithTimeout()
+            eventCollector.flow.test {
+                assertByClassName(CardListEvent.ShowError, awaitItem())
+                awaitComplete()
+            }
+        }
+    }
 
     @Test
     fun `when card delete is offline`() = runBlocking {
         with(Environment(initState = defaultContent)) {
+
+            eventCollector.takeValues(1)
             setResponse(RequestResult.Failure(Exception()))
-            setOnline(true)
+            setOnline(false)
+
             vm.deleteCard(createCard("1"), "")
-            checkEvent<CardListEvent.ShowError>()
-            checkState<CardsListState.Content>()
-        }
-
-    }
-
-    @Test
-    fun `when card delete multiply show empty`() = runBlocking {
-        with(Environment(initState = defaultContent)) {
-            setResponse(RequestResult.Success(RemoveCardResponse(1)))
-            vm.deleteCard(createCard("1"), "")
-            checkEvent<CardListEvent.RemoveCard>()
-            setResponse(RequestResult.Success(RemoveCardResponse(2)))
-            vm.deleteCard(createCard("2"), "")
-            checkEvent<CardListEvent.RemoveCard>()
-
-            checkState<CardsListState.Empty>()
+            eventCollector.joinWithTimeout()
+            eventCollector.flow.test {
+                assertByClassName(CardListEvent.ShowError, awaitItem())
+                awaitComplete()
+            }
         }
     }
 
     @Test
     fun `when card delete multiply show last card`() = runBlocking {
         with(Environment(initState = extendsContent)) {
+
+            stateCollector.takeValues(2)
+
             setResponse(RequestResult.Success(RemoveCardResponse(1)))
             vm.deleteCard(createCard("1"), "")
-            checkEvent<CardListEvent.RemoveCard>()
+
             setResponse(RequestResult.Success(RemoveCardResponse(2)))
             vm.deleteCard(createCard("2"), "")
-            checkEvent<CardListEvent.RemoveCard>()
 
-            checkState<CardsListState.Content>()
+            stateCollector.joinWithTimeout()
+            stateCollector.flow.test {
+                assertByClassName(CardsListState.Content::class.java, awaitItem().javaClass)
+                assertByClassName(CardsListState.Content::class.java, awaitItem().javaClass)
+                awaitComplete()
+            }
         }
     }
 
@@ -108,7 +138,8 @@ internal class CardsDeleteViewModelTest {
         val connectionMock: ConnectionChecker = mock { on { isOnline() } doReturn true },
         val asdk: AcquiringSdk = mock { }
     ) {
-        val dispatcher: CoroutineDispatcher = Dispatchers.Default
+        val dispatcher: CoroutineDispatcher =
+            Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
         val vm = CardsListViewModel(
             asdk,
@@ -117,6 +148,10 @@ internal class CardsDeleteViewModelTest {
         ).apply {
             stateFlow.value = initState
         }
+
+        val eventCollector = MutableCollector<CardListEvent>(vm.eventFlow)
+
+        val stateCollector = MutableCollector<CardsListState>(vm.stateFlow)
 
         fun setState(initState: CardsListState) {
             vm.stateFlow.value = initState
@@ -133,33 +168,6 @@ internal class CardsDeleteViewModelTest {
             whenever(asdk.removeCard(any())).doReturn(request)
         }
 
-
-        suspend inline fun <reified T : CardsListState> checkState() {
-            vm.stateFlow.test {
-                val value = awaitItem()
-
-                Assert.assertTrue(
-                    "state instance is ${value.javaClass.simpleName}\n expected is ${T::class.simpleName}",
-                    value is T
-                )
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-
-        suspend inline fun <reified T : CardListEvent> checkEvent() {
-            vm.eventFlow.filterNotNull().test {
-                awaitItem().let {
-                    val event = it
-
-                    Assert.assertTrue(
-                        "state instance is ${event?.javaClass?.simpleName}\n expected is ${T::class.simpleName}",
-                        event is T
-                    )
-                    cancelAndIgnoreRemainingEvents()
-                }
-            }
-        }
     }
 
     private fun createCard(idMock: String): CardItemUiModel = mock { on { id } doReturn idMock }

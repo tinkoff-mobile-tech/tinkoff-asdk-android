@@ -67,6 +67,7 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlinVersion}"
     testImplementation "org.mockito:mockito-inline:${mokitoInlineVersion}"
     testImplementation "app.cash.turbine:turbine:${turbineVersion}"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

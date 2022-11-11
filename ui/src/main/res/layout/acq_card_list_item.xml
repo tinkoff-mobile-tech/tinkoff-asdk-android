@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/acq_ic_clear" />
+            android:src="@drawable/acq_ic_cardlist_delete" />
     </FrameLayout>
 
 </LinearLayout>

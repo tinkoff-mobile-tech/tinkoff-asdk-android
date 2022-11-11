@@ -9,7 +9,9 @@ data class CardItemUiModel(
     val bankName: String = "***",
 
     // TODO after delete card task
-    val showDelete: Boolean = false
+    val showDelete: Boolean = false,
+
+    val isBlocked: Boolean = false
 ) {
     val id = card.cardId
 

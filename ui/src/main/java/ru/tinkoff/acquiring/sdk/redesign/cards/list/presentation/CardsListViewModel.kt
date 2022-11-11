@@ -3,10 +3,8 @@ package ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
@@ -24,13 +22,13 @@ import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 internal class CardsListViewModel(
     private val sdk: AcquiringSdk,
     private val connectionChecker: ConnectionChecker,
-    private val manager : CoroutineManager = CoroutineManager()
+    private val manager: CoroutineManager = CoroutineManager()
 ) : ViewModel() {
 
     private var deleteJob: Job? = null
 
     @VisibleForTesting
-    val stateFlow = MutableStateFlow<CardsListState>(CardsListState.Loading)
+    val stateFlow = MutableStateFlow<CardsListState>(CardsListState.Shimmer)
 
     val stateUiFlow = stateFlow.filter { it.isInternal.not() }
 
@@ -43,7 +41,7 @@ internal class CardsListViewModel(
             stateFlow.tryEmit(CardsListState.NoNetwork)
             return
         }
-        stateFlow.tryEmit(CardsListState.Loading)
+        stateFlow.tryEmit(CardsListState.Shimmer)
         manager.launchOnBackground {
             if (customerKey == null) {
                 stateFlow.tryEmit(CardsListState.Error)
@@ -77,13 +75,17 @@ internal class CardsListViewModel(
                 this.cardId = model.id
                 this.customerKey = customerKey
             }
-                .executeFlow().collect {
+                .executeFlow()
+                .onStart { eventFlow.value = CardListEvent.RemoveCardProgress }
+                .collect {
                     it.process(
                         onSuccess = { r ->
                             handleDeleteCard(checkNotNull(r.cardId?.toString()))
                             deleteJob?.cancel()
                         },
                         onFailure = {
+                            val list = checkNotNull((stateFlow.value as? CardsListState.Content)?.cards)
+                            stateFlow.update { CardsListState.Content(it.mode, true, list) }
                             eventFlow.value = CardListEvent.ShowError
                             deleteJob?.cancel()
                         }
@@ -93,9 +95,11 @@ internal class CardsListViewModel(
     }
 
     fun changeMode(mode: CardListMode) {
-        val list = (stateFlow.value as? CardsListState.Content)?.cards ?: return
-        val cards = list.map { it.copy(showDelete = mode == CardListMode.DELETE) }
-        stateFlow.value = CardsListState.Content(mode, false, cards)
+        stateFlow.update { state ->
+            val prev = state as CardsListState.Content
+            val cards = prev.cards.map { it.copy(showDelete = mode == CardListMode.DELETE, isBlocked = it.isBlocked) }
+            CardsListState.Content(mode, false, cards)
+        }
     }
 
     private fun handleGetCardListResponse(it: GetCardListResponse, recurrentOnly: Boolean) {
@@ -134,9 +138,10 @@ internal class CardsListViewModel(
 
         if (list.isEmpty()) {
             stateFlow.value = CardsListState.Empty
+            eventFlow.value = CardListEvent.RemoveCardSuccess(null)
         } else {
             stateFlow.update { CardsListState.Content(it.mode, true, list) }
-            eventFlow.value = CardListEvent.RemoveCard(indexAt)
+            eventFlow.value = CardListEvent.RemoveCardSuccess(indexAt)
         }
     }
 

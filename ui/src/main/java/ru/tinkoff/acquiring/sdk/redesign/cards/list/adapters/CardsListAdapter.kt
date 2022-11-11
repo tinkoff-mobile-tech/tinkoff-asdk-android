@@ -22,16 +22,14 @@ class CardsListAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setCards(cards: List<CardItemUiModel>) {
-        this.cards.clear()
-        this.cards.addAll(cards)
-        notifyDataSetChanged()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateMode(cards: List<CardItemUiModel>) {
-        this.cards.clear()
-        this.cards.addAll(cards)
-        notifyItemRangeChanged(0, cards.size, PAYLOAD_CHANGE_MODE)
+        if (this.cards.isEmpty()) {
+            this.cards.addAll(cards)
+            notifyDataSetChanged()
+        } else {
+            this.cards.clear()
+            this.cards.addAll(cards)
+            notifyItemRangeChanged(0, cards.size, PAYLOAD_CHANGE_MODE)
+        }
     }
 
     fun onRemoveCard(indexAt: Int) {
