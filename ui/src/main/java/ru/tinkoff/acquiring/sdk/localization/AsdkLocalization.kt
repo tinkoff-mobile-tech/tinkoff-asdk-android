@@ -26,6 +26,7 @@ import java.util.*
 /**
  * @author Mariya Chernyadieva
  */
+@Deprecated("Redesign")
 internal object AsdkLocalization {
 
     lateinit var resources: LocalizationResources

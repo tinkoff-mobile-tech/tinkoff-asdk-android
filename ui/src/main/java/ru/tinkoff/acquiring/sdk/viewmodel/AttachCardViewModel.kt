@@ -20,6 +20,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
@@ -105,8 +106,7 @@ internal class AttachCardViewModel(
                     if (needHandleErrorsInSdk && it is AcquiringApiException) {
                         if (it.response != null && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
                             changeScreenState(LoadedState)
-                            changeScreenState(ErrorScreenState(AsdkLocalization.resources.addCardErrorErrorAttached
-                                    ?: AsdkLocalization.resources.payDialogErrorFallbackMessage!!))
+                            changeScreenState(ErrorScreenState(context.getString(R.string.acq_attach_card_error)))
                         } else handleException(it)
                     } else handleException(it)
                 }

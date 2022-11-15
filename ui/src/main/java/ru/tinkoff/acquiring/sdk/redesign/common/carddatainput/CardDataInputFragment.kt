@@ -14,12 +14,14 @@ import kotlinx.android.synthetic.main.acq_fragment_card_data_input.*
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner
 import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
+import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearButton
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MASTER_CARD
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.VISA
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
 import ru.tinkoff.acquiring.sdk.utils.SimpleTextWatcher.Companion.afterTextChanged
+import ru.tinkoff.acquiring.sdk.utils.lazyView
 import ru.tinkoff.decoro.MaskImpl
 import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser
 import ru.tinkoff.decoro.watchers.MaskFormatWatcher
@@ -31,13 +33,13 @@ internal class CardDataInputFragment : Fragment() {
     var onComplete: ((CardDataInputFragment) -> Unit)? = null
     var validateNotExpired = false
 
-    val cardNumberInput get() = card_number_input
-    val expiryDateInput get() = expiry_date_input
-    val cvcInput get() = cvc_input
+    val cardNumberInput: AcqTextFieldView by lazyView(R.id.card_number_input)
+    val expiryDateInput: AcqTextFieldView by lazyView(R.id.expiry_date_input)
+    val cvcInput: AcqTextFieldView by lazyView(R.id.cvc_input)
 
-    val cardNumber get() = CardNumberFormatter.normalizeCardNumber(card_number_input.text)
-    val expiryDate get() = expiry_date_input.text.orEmpty()
-    val cvc get() = cvc_input.text.orEmpty()
+    val cardNumber get() = CardNumberFormatter.normalizeCardNumber(cardNumberInput.text)
+    val expiryDate get() = expiryDateInput.text.orEmpty()
+    val cvc get() = cvcInput.text.orEmpty()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.acq_fragment_card_data_input, container, false)
