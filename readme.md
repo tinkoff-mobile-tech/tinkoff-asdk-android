@@ -291,6 +291,16 @@ TinkoffAcquiring.initPayment(token, paymentOptions) // создание проц
                 .start()                            // запуск процесса
 ```
 
+#### Завершение оплаты с уже существующим paymentId
+Для отображения платежной формы и проведения платежа без вызова метода Init можно передать
+значение `SelectCardAndPayState` при вызове `openPaymentScreen`, пример вызова:
+```kotlin
+val paymentId = 123456789L // некоторый paymentId, полученный ранее при вызове метода Init
+tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE, SelectCardAndPayState(paymentId))
+```
+
+Для завершения платежа без отображения платежной формы можно использовать метод `TinkoffAcquiring.finishPayment`.
+
 ### Структура
 SDK состоит из следующих модулей:
 
