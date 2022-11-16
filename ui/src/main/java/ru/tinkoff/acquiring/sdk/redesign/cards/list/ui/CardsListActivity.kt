@@ -99,7 +99,7 @@ internal class CardsListActivity : TransparentActivity() {
         setSupportActionBar(findViewById(R.id.acq_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setTitle(R.string.acq_card_list_title)
+        supportActionBar?.setTitle(R.string.acq_cardlist_title)
     }
 
     private fun initViews() {
@@ -148,9 +148,9 @@ internal class CardsListActivity : TransparentActivity() {
                     is CardsListState.Error -> {
                         showStub(
                             imageResId = R.drawable.acq_ic_cards_list_error_stub,
-                            titleTextRes = R.string.acq_cards_list_error_title,
-                            subTitleTextRes = R.string.acq_cards_list_error_subtitle,
-                            buttonTextRes = R.string.acq_cards_list_error_button
+                            titleTextRes = R.string.acq_cardlist_alert_label,
+                            subTitleTextRes = R.string.acq_cardlist_stub_description,
+                            buttonTextRes = R.string.acq_cardlist_alert_access
                         )
                         stubButtonView.setOnClickListener {
                             finish()
@@ -160,8 +160,8 @@ internal class CardsListActivity : TransparentActivity() {
                         showStub(
                             imageResId = R.drawable.acq_ic_cards_list_empty,
                             titleTextRes = null,
-                            subTitleTextRes = R.string.acq_cards_list_empty_subtitle,
-                            buttonTextRes = R.string.acq_cards_list_empty_button
+                            subTitleTextRes = R.string.acq_cardlist_description,
+                            buttonTextRes = R.string.acq_cardlist_button_add
                         )
                         stubButtonView.setOnClickListener {
                            //todo навигация с результатом о привязке карты
@@ -170,9 +170,9 @@ internal class CardsListActivity : TransparentActivity() {
                     is CardsListState.NoNetwork -> {
                         showStub(
                             imageResId = R.drawable.acq_ic_no_network,
-                            titleTextRes = R.string.acq_cards_list_no_network_title,
-                            subTitleTextRes = R.string.acq_cards_list_no_network_subtitle,
-                            buttonTextRes = R.string.acq_cards_list_no_network_button
+                            titleTextRes = R.string.acq_cardlist_stubnet_title,
+                            subTitleTextRes = R.string.acq_cardlist_stubnet_description,
+                            buttonTextRes = R.string.acq_cardlist_button_stubnet
                         )
                         stubButtonView.setOnClickListener {
                             viewModel.loadData(

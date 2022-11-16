@@ -16,7 +16,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:id="@+id/acq_stub_img"
@@ -39,7 +40,7 @@
         android:layout_marginTop="24dp"
         android:fontFamily="@font/roboto_regular"
         android:gravity="center"
-        android:text="@string/acq_cards_list_empty_button"
+        android:text="@string/acq_cardlist_stubnet_title"
         app:layout_constraintBottom_toTopOf="@+id/acq_stub_subtitle"
         app:layout_constraintTop_toBottomOf="@+id/acq_stub_img" />
 
@@ -50,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="@string/acq_cards_list_no_network_subtitle"
+        tools:text="@string/acq_cardlist_stubnet_description"
         app:layout_constraintBottom_toTopOf="@+id/acq_stub_retry_button"
         app:layout_constraintTop_toBottomOf="@+id/acq_stub_title" />
 
@@ -63,7 +64,7 @@
         android:gravity="center"
         android:paddingHorizontal="18dp"
         android:paddingVertical="14dp"
-        android:text="@string/acq_cards_list_no_network_button"
+        android:text="@string/acq_cardlist_button_stubnet"
         android:textAllCaps="false"
         android:textColor="@color/acq_colorAccent"
         android:textSize="@dimen/acq_small_text_size"

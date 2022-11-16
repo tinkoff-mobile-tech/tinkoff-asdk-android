@@ -79,7 +79,7 @@ class CardsListAdapter(
             onDeleteClick: (CardItemUiModel) -> Unit
         ) {
             cardNameView.text = itemView.context.getString(
-                R.string.card_list_item_card_name_masked_template,
+                R.string.acq_cardlist_bankname,
                 card.bankName,
                 card.tail
             )

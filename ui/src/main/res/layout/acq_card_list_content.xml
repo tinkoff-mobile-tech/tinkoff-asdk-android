@@ -43,7 +43,7 @@
             android:fontFamily="@font/roboto_regular"
             android:gravity="center_vertical"
             android:padding="16dp"
-            android:text="Добавить новую"
+            android:text="@string/acq_cardlist_addcard"
             android:textSize="@dimen/acq_large_text_size"
             app:drawableStartCompat="@drawable/acq_add_new_card">
 
