@@ -45,6 +45,9 @@
     <string name="acq_cardlist_snackbar_add">Карта •%1$s добавлена</string>
     <string name="acq_cardlist_snackbar_remove">Карта •%1$s удалена</string>
     <string name="acq_cardlist_snackbar_remove_progress">Удаляем карту</string>
+    <string name="acq_error">Ошибка</string>
+    <string name="acq_attach_card_error">Ошибка добавления карты</string>
+    <string name="acq_ok">Понятно</string>
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">Доступен %d символ</item>
@@ -58,5 +61,12 @@
         <item quantity="many">Осталось %d символов</item>
         <item quantity="other">Осталось %d символов</item>
     </plurals>
+
+    <string name="acq_bank_issuer_tinkoff">Тинькофф</string>
+    <string name="acq_bank_issuer_alfabank">Альфа банк</string>
+    <string name="acq_bank_issuer_gazprombank">Газпромбанк</string>
+    <string name="acq_bank_issuer_vtb">ВТБ</string>
+    <string name="acq_bank_issuer_sberbank">Сбербанк</string>
+    <string name="acq_bank_issuer_raiffeizen">Райффайзен</string>
 
 </resources>

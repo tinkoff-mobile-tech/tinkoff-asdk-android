@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.utils
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Matrix
 import android.graphics.Rect
@@ -8,6 +9,8 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
+import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -121,3 +124,12 @@ internal fun lerp(start: Long, end: Long, fraction: Float): Long {
 internal fun lerp(start: Float, end: Float, fraction: Float): Float {
     return (start + (end - start) * fraction)
 }
+
+internal fun <T> lazyUnsafe(initializer: () -> T): Lazy<T> =
+    lazy(LazyThreadSafetyMode.NONE, initializer)
+
+internal fun <T> Fragment.lazyView(@IdRes id: Int): Lazy<T> =
+    lazyUnsafe { requireView().findViewById(id) }
+
+internal fun <T> Activity.lazyView(@IdRes id: Int): Lazy<T> =
+    lazyUnsafe { findViewById(id) }

@@ -76,8 +76,7 @@ internal class AttachCardActivity : TransparentActivity() {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> {
                 if (supportFragmentManager.findFragmentById(R.id.acq_activity_fl_container) !is LoopConfirmationFragment) {
-                    showErrorScreen(screenState.message) {
-                        hideErrorScreen()
+                    showErrorDialog(message = screenState.message) {
                         attachCardViewModel.createEvent(ErrorButtonClickedEvent)
                     }
                 }

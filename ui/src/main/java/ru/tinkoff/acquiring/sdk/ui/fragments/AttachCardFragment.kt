@@ -20,8 +20,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.acq_fragment_attach_card.*
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
@@ -32,6 +33,8 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
+import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+import ru.tinkoff.acquiring.sdk.utils.lazyView
 import ru.tinkoff.acquiring.sdk.viewmodel.AttachCardViewModel
 
 /**
@@ -46,6 +49,9 @@ internal class AttachCardFragment : BaseAcquiringFragment() {
         get() = childFragmentManager
             .findFragmentById(R.id.fragment_card_data_input) as CardDataInputFragment
 
+    private val attachButton: LoaderButton by lazyView(R.id.acq_attach_btn_attach)
+    private val touchInterceptor: FrameLayout by lazyView(R.id.acq_touch_interceptor)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.acq_fragment_attach_card, container, false)
 
@@ -59,7 +65,7 @@ internal class AttachCardFragment : BaseAcquiringFragment() {
             // todo secure keyboard?
         }
 
-        acq_attach_btn_attach.setOnClickListener { processAttach() }
+        attachButton.setOnClickListener { processAttach() }
 
         attachCardViewModel = ViewModelProvider(requireActivity()).get(AttachCardViewModel::class.java)
         val isErrorShowing = attachCardViewModel.screenStateLiveData.value is ErrorScreenState
@@ -78,7 +84,8 @@ internal class AttachCardFragment : BaseAcquiringFragment() {
     }
 
     private fun handleLoadState(loadState: LoadState) {
-        acq_attach_btn_attach.isLoading = loadState == LoadingState
+        attachButton.isLoading = loadState == LoadingState
+        touchInterceptor.isVisible = loadState == LoadingState
     }
 
     private fun handleScreenState(screenState: ScreenState) {
