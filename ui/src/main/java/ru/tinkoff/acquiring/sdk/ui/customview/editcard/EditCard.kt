@@ -659,7 +659,7 @@ internal class EditCard @JvmOverloads constructor(
     override fun afterTextChanged(editable: Editable?) {
         when (editable) {
             is CardNumberEditable -> {
-                val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+                val paymentSystem = CardPaymentSystem.resolve(cardNumber)
                 if (!paymentSystem.showLogo) {
                     if (editable.isEmpty()) {
                         post { hideLogoIfNeed() }
@@ -927,7 +927,7 @@ internal class EditCard @JvmOverloads constructor(
     private fun isFilled(field: EditCardField): Boolean {
         return when (field) {
             CARD_NUMBER -> {
-                val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+                val paymentSystem = CardPaymentSystem.resolve(cardNumber)
                 cardNumber.length in paymentSystem.range
             }
             EXPIRE_DATE -> cardDate.length == CardValidator.MAX_DATE_LENGTH
@@ -1472,14 +1472,14 @@ internal class EditCard @JvmOverloads constructor(
     }
 
     private fun hideLogoIfNeed() {
-        val showLogo = CardPaymentSystem.resolvePaymentSystem(cardNumber).showLogo
+        val showLogo = CardPaymentSystem.resolve(cardNumber).showLogo
         if (!showLogo && checkFlags(FLAG_CARD_SYSTEM_LOGO) && viewState != CARD_LOGO_ANIMATION_STATE) {
             hideCardSystemLogo()
         }
     }
 
     private fun updateCardInputFilter() {
-        val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
         cardNumberEditable.filters = arrayOf(InputFilter.LengthFilter(paymentSystem.range.last))
     }
 

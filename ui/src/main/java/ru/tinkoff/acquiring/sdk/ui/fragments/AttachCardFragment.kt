@@ -90,7 +90,6 @@ internal class AttachCardFragment : BaseAcquiringFragment() {
 
     private fun handleScreenState(screenState: ScreenState) {
         if (screenState is ErrorButtonClickedEvent) {
-            cardDataInput.clearInput()
             attachCardViewModel.showCardInput()
         }
     }

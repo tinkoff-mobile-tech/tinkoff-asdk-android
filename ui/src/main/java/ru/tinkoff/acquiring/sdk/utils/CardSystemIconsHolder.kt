@@ -32,7 +32,7 @@ import ru.tinkoff.acquiring.sdk.ui.customview.editcard.EditCardSystemIconsHolder
 internal class CardSystemIconsHolder(private val context: Context) : EditCardSystemIconsHolder {
 
     override fun getCardSystemLogo(cardNumber: String): Bitmap? {
-        val logoRes = when (CardPaymentSystem.resolvePaymentSystem(cardNumber)) {
+        val logoRes = when (CardPaymentSystem.resolve(cardNumber)) {
             CardPaymentSystem.MASTER_CARD -> R.drawable.acq_ic_master
             CardPaymentSystem.VISA -> R.drawable.acq_ic_visa_blue
             CardPaymentSystem.MIR -> R.drawable.acq_ic_mir

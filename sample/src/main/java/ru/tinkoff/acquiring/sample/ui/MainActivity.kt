@@ -25,9 +25,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ListView
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.adapters.BooksListAdapter
@@ -36,15 +35,14 @@ import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.service.PaymentNotificationIntentService
 import ru.tinkoff.acquiring.sample.service.PriceNotificationReceiver
 import ru.tinkoff.acquiring.sample.utils.PaymentNotificationManager
-import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
@@ -59,6 +57,10 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     private lateinit var settings: SettingsSdkManager
     private val priceNotificationReceiver = PriceNotificationReceiver()
     private var selectedCardIdForDemo: String? = null
+
+    private val attachCard = registerForActivityResult(TinkoffAcquiring.AttachCardContract) { cardId ->
+        cardId?.let { PaymentResultActivity.start(this, it) } ?: toast(R.string.attachment_failed)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,18 +152,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                     Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
                 }
             }
-            ATTACH_CARD_REQUEST_CODE -> {
-                when (resultCode) {
-                    RESULT_OK -> PaymentResultActivity.start(this,
-                            data?.getStringExtra(EXTRA_CARD_ID)!!)
-                    RESULT_CANCELED -> Toast.makeText(this,
-                            R.string.attachment_cancelled,
-                            Toast.LENGTH_SHORT).show()
-                    RESULT_ERROR -> Toast.makeText(this,
-                            R.string.attachment_failed,
-                            Toast.LENGTH_SHORT).show()
-                }
-            }
             SAVED_CARDS_REQUEST_CODE -> {
                 val selectedCardId = data?.getStringExtra(EXTRA_CARD_ID)
                 selectedCardIdForDemo = selectedCardId
@@ -217,25 +207,22 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
         val settings = SettingsSdkManager(this)
         val params = TerminalsManager.selectedTerminal
 
-        val options = AttachCardOptions()
-                .setOptions {
-                    customerOptions {
-                        customerKey = params.customerKey
-                        checkType = settings.checkType
-                        email = params.customerEmail
-                    }
-                    featuresOptions {
-                        useSecureKeyboard = settings.isCustomKeyboardEnabled
-                        validateExpiryDate = settings.validateExpiryDate
-                        cameraCardScanner = settings.cameraScanner
-                        darkThemeMode = settings.resolveDarkThemeMode()
-                        theme = settings.resolveAttachCardStyle()
-                    }
-                }
+        val options = SampleApplication.tinkoffAcquiring.attachCardOptions {
+            customerOptions {
+                customerKey = params.customerKey
+                checkType = settings.checkType
+                email = params.customerEmail
+            }
+            featuresOptions {
+                useSecureKeyboard = settings.isCustomKeyboardEnabled
+                validateExpiryDate = settings.validateExpiryDate
+                cameraCardScanner = settings.cameraScanner
+                darkThemeMode = settings.resolveDarkThemeMode()
+                theme = settings.resolveAttachCardStyle()
+            }
+        }
 
-        SampleApplication.tinkoffAcquiring.openAttachCardScreen(this,
-                options,
-                ATTACH_CARD_REQUEST_CODE)
+        attachCard.launch(options)
     }
 
     private fun openStaticQrScreen() {
@@ -276,13 +263,16 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
 
     companion object {
 
-        private const val ATTACH_CARD_REQUEST_CODE = 11
         private const val STATIC_QR_REQUEST_CODE = 12
         private const val SAVED_CARDS_REQUEST_CODE = 13
         const val NOTIFICATION_PAYMENT_REQUEST_CODE = 14
         const val THREE_DS_REQUEST_CODE = 15
 
         fun Activity.toast(message: String) = runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
+
+        fun Activity.toast(@StringRes message: Int) = runOnUiThread {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }

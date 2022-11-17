@@ -11,7 +11,7 @@ class CardPaymentSystemTests {
     @Test
     fun verifyPaymentSystems() {
         cardNumbers.forEach { (number, paymentSystem) ->
-            assert(CardPaymentSystem.resolvePaymentSystem(number) == paymentSystem)
+            assert(CardPaymentSystem.resolve(number) == paymentSystem)
         }
     }
 

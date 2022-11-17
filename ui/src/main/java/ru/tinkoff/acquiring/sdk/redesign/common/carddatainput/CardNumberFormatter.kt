@@ -13,7 +13,7 @@ internal class CardNumberFormatter : TextWatcher {
     private var deleteAt = -1
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        prev = normalizeCardNumber(s?.toString())
+        prev = normalize(s?.toString())
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -24,12 +24,12 @@ internal class CardNumberFormatter : TextWatcher {
     override fun afterTextChanged(source: Editable) {
         if (selfChange) return
 
-        var cardNumber = normalizeCardNumber(source.toString())
+        var cardNumber = normalize(source.toString())
         if (cardNumber == prev && deleteAt != -1) {
-            cardNumber = normalizeCardNumber(source.toString().removeRange(deleteAt - 1, deleteAt))
+            cardNumber = normalize(source.toString().removeRange(deleteAt - 1, deleteAt))
         }
 
-        val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
 
         if (cardNumber.length > paymentSystem.range.last) {
             cardNumber = cardNumber.substring(0, paymentSystem.range.last)
@@ -60,6 +60,6 @@ internal class CardNumberFormatter : TextWatcher {
 
         private val REGEX_NON_DIGITS = "\\D".toRegex()
 
-        fun normalizeCardNumber(source: String?) = source.orEmpty().replace(REGEX_NON_DIGITS, "")
+        fun normalize(source: String?) = source.orEmpty().replace(REGEX_NON_DIGITS, "")
     }
 }

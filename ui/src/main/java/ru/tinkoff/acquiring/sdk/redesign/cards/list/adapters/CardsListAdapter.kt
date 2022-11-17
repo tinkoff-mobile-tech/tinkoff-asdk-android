@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
+import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
 
 /**
  * Created by Ivan Golovachev
@@ -69,6 +70,8 @@ class CardsListAdapter(
 
     class CardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+        private val cardLogo =
+            itemView.findViewById<ImageView>(R.id.acq_card_list_item_logo)
         private val cardNameView =
             itemView.findViewById<TextView>(R.id.acq_card_list_item_masked_name)
         private val cardDeleteIcon =
@@ -78,9 +81,10 @@ class CardsListAdapter(
             card: CardItemUiModel,
             onDeleteClick: (CardItemUiModel) -> Unit
         ) {
+            cardLogo.setImageResource(CardLogoProvider.getCardLogo(card.pan))
             cardNameView.text = itemView.context.getString(
                 R.string.acq_cardlist_bankname,
-                card.bankName,
+                card.bankName(itemView.context).orEmpty(),
                 card.tail
             )
             bindDeleteVisibility(card.showDelete)

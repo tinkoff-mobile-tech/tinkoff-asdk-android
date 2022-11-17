@@ -43,7 +43,7 @@ internal object CardFormatter {
     fun resolveCardNumberMask(cardNumber: String): String {
         val length = cardNumber.length
 
-        return when (CardPaymentSystem.resolvePaymentSystem(cardNumber)) {
+        return when (CardPaymentSystem.resolve(cardNumber)) {
             VISA -> "#### #### #### ####"
             MASTER_CARD -> "#### #### #### ####"
             MIR -> when (length) {
