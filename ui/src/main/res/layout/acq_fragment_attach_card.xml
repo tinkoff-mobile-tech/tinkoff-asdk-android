@@ -36,4 +36,10 @@
         android:layout_marginBottom="24dp"
         app:acq_text="@string/acq_attach_card_btn" />
 
+    <FrameLayout
+        android:id="@+id/acq_touch_interceptor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
 </RelativeLayout>

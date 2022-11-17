@@ -26,6 +26,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -127,6 +129,34 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                 onButtonClick.invoke()
             }
         }
+    }
+
+    protected fun showErrorDialog(
+        @StringRes title: Int = R.string.acq_error,
+        @StringRes message: Int,
+        @StringRes buttonText: Int = R.string.acq_ok,
+        onButtonClick: (() -> Unit)? = null
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(buttonText) { _, _ ->
+                onButtonClick?.invoke()
+            }.show()
+    }
+
+    protected fun showErrorDialog(
+        title: String = getString(R.string.acq_error),
+        message: String,
+        buttonText: String = getString(R.string.acq_ok),
+        onButtonClick: (() -> Unit)? = null
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(buttonText) { _, _ ->
+                onButtonClick?.invoke()
+            }.show()
     }
 
     protected fun hideErrorScreen() {
