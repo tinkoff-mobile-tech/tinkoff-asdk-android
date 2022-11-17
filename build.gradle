@@ -1,12 +1,10 @@
-apply plugin: 'kotlin'
-apply from: 'gradle/versions.gradle'
-
 buildscript {
     apply from: 'gradle/versions.gradle'
 
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 
@@ -17,6 +15,13 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.ajoberstar.grgit' version '5.0.0'
+}
+
+apply plugin: 'kotlin'
+apply from: 'gradle/versions.gradle'
+
 allprojects {
     repositories {
         jcenter()
@@ -26,5 +31,17 @@ allprojects {
         tasks.withType(Javadoc) {
             options.addStringOption('encoding', 'UTF-8')
         }
+    }
+}
+
+tasks.register("diffWithMaster") {
+    doLast {
+        def branch = grgit.branch.current().getName()
+        def log = grgit
+                .log { range branch, 'master' }
+                .findAll { !it.shortMessage.startsWith("Merge pull request ") }
+                .collect { it.shortMessage }
+                .join("\n")
+        print log
     }
 }

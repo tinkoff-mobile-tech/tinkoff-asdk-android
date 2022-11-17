@@ -1,0 +1,17 @@
+name: publish demo to AppCenter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set the value
+        id: step_one
+        run: |
+          echo 'log<<EOF' >> $GITHUB_ENV
+          ./gradlew -q :diffWithMaster >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV

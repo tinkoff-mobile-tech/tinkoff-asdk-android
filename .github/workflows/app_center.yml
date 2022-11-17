@@ -23,5 +23,5 @@ jobs:
           token: ${{secrets.APP_CENTER_TOKEN}}
           group: Collaborators
           file: sample/build/outputs/apk/debug/sample-debug.apk
-          notifyTesters: false
+          notifyTesters: true
           debug: false
