@@ -34,14 +34,14 @@ allprojects {
     }
 }
 
-tasks.register("diffWithMaster") {
+tasks.register("realeaseNotes") {
     doLast {
-        def branch = grgit.branch.current().getName()
+        def branch = grgit.branch.current().fullName
         def log = grgit
-                .log { range branch, 'master' }
-                .findAll { !it.shortMessage.startsWith("Merge pull request ") }
+                .log { range branch, diffWithOrigin }
+                .findAll { !it.shortMessage.startsWith("Merge") }
                 .collect { it.shortMessage }
-                .join("\n")
+                .join("\n\n")
         print log
     }
 }

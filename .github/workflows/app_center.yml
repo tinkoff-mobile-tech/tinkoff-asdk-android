@@ -2,6 +2,11 @@ name: publish demo to AppCenter
 
 on:
   workflow_dispatch:
+    inputs:
+      diff_with_origin:
+        description: 'diff with origin'
+        required: true
+        default: 'origin/master'
 
 jobs:
   build:
@@ -16,6 +21,12 @@ jobs:
           java-version: '11'
       - name: build release
         run: ./gradlew :sample:assembleDebug
+      - name: get the realease Notes
+        run: |
+            NEW_CHANGES=$(./gradlew -q :realeaseNotes -PdiffWithOrigin='${{ github.event.inputs.diff_with_origin }}')
+            echo "NEW_CHANGES<<EOF" >> $GITHUB_ENV
+            echo "$NEW_CHANGES" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
       - name: upload artefact to App Center
         uses: wzieba/AppCenter-Github-Action@v1
         with:
@@ -25,3 +36,9 @@ jobs:
           file: sample/build/outputs/apk/debug/sample-debug.apk
           notifyTesters: true
           debug: false
+          releaseNotes: |+
+            Branch name : ${{ github.head_ref || github.ref_name }}
+            
+            Last changes :
+            
+            ${{ env.NEW_CHANGES }}

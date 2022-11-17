@@ -5,18 +5,7 @@ on:
     branches:
       - 'master'
       - 'v**'
-    paths:
-      - ".github/workflows/app_center_release_notes_test.yaml"
 
 jobs:
   check:
     uses: tinkoff-mobile-tech/workflows/.github/workflows/android_lib.merge_request.yml@v1
-
-  log:
-    steps:
-      - name: Set the value
-        id: step_one
-        run: |
-          echo 'log<<EOF' >> $GITHUB_ENV
-          ./gradlew -q :diffWithMaster >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
