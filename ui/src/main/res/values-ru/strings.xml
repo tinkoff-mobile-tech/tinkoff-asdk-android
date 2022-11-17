@@ -42,6 +42,9 @@
     <string name="acq_label_card_cvv">Код</string>
     <string name="acq_attach_card_btn">Добавить</string>
 
+    <string name="acq_cardlist_snackbar_add">Карта •%1$s добавлена</string>
+    <string name="acq_cardlist_snackbar_remove">Карта •%1$s удалена</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Удаляем карту</string>
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">Доступен %d символ</item>

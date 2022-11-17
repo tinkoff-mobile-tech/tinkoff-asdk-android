@@ -53,5 +53,10 @@
 
     <color name="acq_sf_text_field_bg">#08001024</color>
     <color name="acq_sf_text_field_bg_pressed">#0f001024</color>
+
+
+    <color name="acq_snackbar_bg">#333333</color>
     <color name="acq_colorButtonText">#333333</color>
+    <color name="acq_progress_bar_color">#FFDD2D</color>
+
 </resources>

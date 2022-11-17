@@ -16,8 +16,10 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import kotlinx.coroutines.flow.Flow
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.REMOVE_CARD_METHOD
 import ru.tinkoff.acquiring.sdk.responses.RemoveCardResponse
+import ru.tinkoff.acquiring.sdk.utils.RequestResult
 
 /**
  * Удаляет привязанную карту
@@ -55,5 +57,12 @@ class RemoveCardRequest : AcquiringRequest<RemoveCardResponse>(REMOVE_CARD_METHO
      */
     override fun execute(onSuccess: (RemoveCardResponse) -> Unit, onFailure: (Exception) -> Unit) {
         super.performRequest(this, RemoveCardResponse::class.java, onSuccess, onFailure)
+    }
+
+    /**
+     * Реактивный вызов метода API
+     */
+    fun executeFlow(): Flow<RequestResult<out RemoveCardResponse>> {
+        return super.performRequestFlow(this, RemoveCardResponse::class.java)
     }
 }

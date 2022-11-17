@@ -16,9 +16,13 @@ import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
+import turbineDelay
 import java.lang.Exception
 
-class CardsListViewModelTest {
+/**
+ * Created by Ivan Golovachev
+ */
+internal class CardsListViewModelTest {
 
     @Test
     fun `when customer key are null`() {
@@ -112,8 +116,8 @@ class CardsListViewModelTest {
         runBlocking {
             val viewModel = createViewModelMock(requestResult, connectionChecker)
             viewModel.loadData(key, recurrentOnly)
-            delay(100)
-            viewModel.stateFlow.test {
+            turbineDelay()
+            viewModel.stateUiFlow.test {
                 val awaitNextEvent = awaitItem()
                 val excClass = T::class
                 assertTrue(

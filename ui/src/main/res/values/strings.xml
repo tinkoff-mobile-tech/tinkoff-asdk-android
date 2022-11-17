@@ -45,6 +45,10 @@
     <string name="acq_cards_list_empty_subtitle">This is where your cards will be</string>
     <string name="acq_cards_list_empty_button">Add</string>
 
+    <string name="acq_cardlist_snackbar_add">Card •%1$s added</string>
+    <string name="acq_cardlist_snackbar_remove">Card •%1$s deleted</string>
+    <string name="acq_cardlist_snackbar_remove_progress">delete in progress</string>
+
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">%d symbol available</item>
         <item quantity="other">%d symbols available</item>
