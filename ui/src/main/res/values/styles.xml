@@ -21,6 +21,8 @@
         <item name="colorPrimaryDark">@color/acq_colorMainDark</item>
         <item name="colorAccent">@color/acq_colorAccent</item>
         <item name="android:textColor">@color/acq_colorText</item>
+        <item name="actionMenuTextColor">@color/acq_colorAccent</item>
+        <item name="android:actionMenuTextAppearance">@style/AcqMenuItem</item>
         <item name="alertDialogTheme">@style/AcquiringDialogStyle</item>
 
         <item name="acqContentLayoutStyle">@style/AcquiringContentLayout</item>
@@ -242,10 +244,20 @@
         <item name="android:textCursorDrawable">@drawable/acq_sf_cursor</item>
     </style>
 
+
+    <style name="AcqMenuItem" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">@dimen/acq_medium_text_size</item>
+    </style>
+
     <style name="AcqLoaderButton">
         <item name="android:minHeight">56dp</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
+    <style name="MySnackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:layout_margin">32dp</item>
     </style>
 
 </resources>

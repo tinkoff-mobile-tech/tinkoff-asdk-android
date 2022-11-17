@@ -16,15 +16,9 @@
 
 package ru.tinkoff.acquiring.sdk.utils
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers.Main
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -32,13 +26,16 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * @author Mariya Chernyadieva
  */
-internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Unit) {
+internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Unit,
+                                private val io: CoroutineDispatcher = IO,
+                                private val main : CoroutineDispatcher = Main) {
 
-    constructor() : this({})
+    constructor(io: CoroutineDispatcher = IO,
+                main : CoroutineDispatcher = Main) : this({}, io, main)
 
     private val job = SupervisorJob()
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable -> launchOnMain { exceptionHandler(throwable) } }
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + coroutineExceptionHandler + job)
+    private val coroutineScope = CoroutineScope(Main + coroutineExceptionHandler + job)
     private val disposableSet = hashSetOf<Disposable>()
 
     fun <R> call(request: Request<R>, onSuccess: (R) -> Unit, onFailure: ((Exception) -> Unit)? = null) {
@@ -66,7 +63,7 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
     suspend fun <R> callSuspended(request: Request<R>): R {
         disposableSet.add(request)
 
-        return withContext(IO) {
+        return withContext(io) {
             suspendCoroutine<R> { continuation ->
                 request.execute({ result ->
                     continuation.resume(result)
@@ -85,20 +82,20 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
     }
 
     fun runWithDelay(timeMills: Long, block: () -> Unit) {
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(main) {
             delay(timeMills)
             block.invoke()
         }
     }
 
     fun launchOnMain(block: suspend CoroutineScope.() -> Unit) {
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(main) {
             block.invoke(this)
         }
     }
 
-    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit) {
-        coroutineScope.launch(IO) {
+    fun launchOnBackground(block: suspend CoroutineScope.() -> Unit): Job {
+        return coroutineScope.launch(io) {
             block.invoke(this)
         }
     }
