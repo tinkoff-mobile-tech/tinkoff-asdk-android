@@ -13,6 +13,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListEvent
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListMode
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 
@@ -22,6 +23,7 @@ import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 internal class CardsListViewModel(
     private val sdk: AcquiringSdk,
     private val connectionChecker: ConnectionChecker,
+    private val bankCaptionProvider: BankCaptionProvider,
     private val manager: CoroutineManager = CoroutineManager()
 ) : ViewModel() {
 
@@ -84,7 +86,8 @@ internal class CardsListViewModel(
                             deleteJob?.cancel()
                         },
                         onFailure = {
-                            val list = checkNotNull((stateFlow.value as? CardsListState.Content)?.cards)
+                            val list =
+                                checkNotNull((stateFlow.value as? CardsListState.Content)?.cards)
                             stateFlow.update { CardsListState.Content(it.mode, true, list) }
                             eventFlow.value = CardListEvent.ShowError
                             deleteJob?.cancel()
@@ -97,7 +100,12 @@ internal class CardsListViewModel(
     fun changeMode(mode: CardListMode) {
         stateFlow.update { state ->
             val prev = state as CardsListState.Content
-            val cards = prev.cards.map { it.copy(showDelete = mode == CardListMode.DELETE, isBlocked = it.isBlocked) }
+            val cards = prev.cards.map {
+                it.copy(
+                    showDelete = mode == CardListMode.DELETE,
+                    isBlocked = it.isBlocked
+                )
+            }
             CardsListState.Content(mode, false, cards)
         }
     }
@@ -124,7 +132,10 @@ internal class CardsListViewModel(
             activeCards = activeCards.filter { card -> !card.rebillId.isNullOrBlank() }
         }
 
-        return activeCards.map(::CardItemUiModel)
+        return activeCards.map {
+            val cardNumber = checkNotNull(it.pan)
+            CardItemUiModel(card = it, bankName = bankCaptionProvider(cardNumber))
+        }
     }
 
     private fun handleGetCardListError(it: Exception) {

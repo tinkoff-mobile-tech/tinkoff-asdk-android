@@ -84,7 +84,7 @@ class CardsListAdapter(
             cardLogo.setImageResource(CardLogoProvider.getCardLogo(card.pan))
             cardNameView.text = itemView.context.getString(
                 R.string.acq_cardlist_bankname,
-                card.bankName(itemView.context).orEmpty(),
+                card.bankName,
                 card.tail
             )
             bindDeleteVisibility(card.showDelete)

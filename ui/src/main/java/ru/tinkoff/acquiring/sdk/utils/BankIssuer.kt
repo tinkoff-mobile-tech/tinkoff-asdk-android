@@ -4,6 +4,14 @@ import android.content.Context
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardNumberFormatter
 
+fun interface BankCaptionProvider {
+    operator fun invoke(pan: String): String?
+}
+
+internal class BankCaptionResourceProvider(private val context: Context) : BankCaptionProvider {
+    override fun invoke(pan: String) = BankIssuer.resolve(pan).getCaption(context)
+}
+
 enum class BankIssuer(val bins: Collection<String>) {
 
     SBERBANK(SBERBANK_BINS),
