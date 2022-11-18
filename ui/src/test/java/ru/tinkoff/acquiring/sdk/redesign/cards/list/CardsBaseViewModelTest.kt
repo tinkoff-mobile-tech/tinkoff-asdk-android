@@ -14,6 +14,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewMo
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
 import turbineDelay
@@ -138,7 +139,10 @@ internal class CardsListViewModelTest {
         val sdk = mock<AcquiringSdk> {
             on { getCardList(any()) } doReturn request
         }
-        return CardsListViewModel(sdk, connectionChecker)
+        val provider = BankCaptionProvider {
+            "Tinkoff"
+        }
+        return CardsListViewModel(sdk, connectionChecker, provider)
     }
 
 }

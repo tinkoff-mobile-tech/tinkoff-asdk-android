@@ -34,7 +34,7 @@ internal object CardValidator {
             return false
         }
 
-        val cardType = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val cardType = CardPaymentSystem.resolve(cardNumber)
         val allowedLengths = cardType.range
         var lengthAllowed = false
 

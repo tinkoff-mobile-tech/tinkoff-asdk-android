@@ -2,6 +2,15 @@ package ru.tinkoff.acquiring.sdk.utils
 
 import android.content.Context
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardNumberFormatter
+
+fun interface BankCaptionProvider {
+    operator fun invoke(pan: String): String?
+}
+
+internal class BankCaptionResourceProvider(private val context: Context) : BankCaptionProvider {
+    override fun invoke(pan: String) = BankIssuer.resolve(pan).getCaption(context)
+}
 
 enum class BankIssuer(val bins: Collection<String>) {
 
@@ -28,9 +37,10 @@ enum class BankIssuer(val bins: Collection<String>) {
 
     companion object {
 
-        fun resolve(cardNumber: String): BankIssuer {
-            if (cardNumber.length < 6) return UNKNOWN
-            return values().find { bank -> bank.matches(cardNumber) } ?: OTHER
+        fun resolve(cardNumber: String?): BankIssuer {
+            val number = CardNumberFormatter.normalize(cardNumber)
+            if (number.length < 6) return UNKNOWN
+            return values().find { bank -> bank.matches(number) } ?: OTHER
         }
     }
 }

@@ -15,6 +15,7 @@ import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner
 import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
+import ru.tinkoff.acquiring.sdk.smartfield.BaubleCardLogo
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearButton
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MASTER_CARD
@@ -37,7 +38,7 @@ internal class CardDataInputFragment : Fragment() {
     val expiryDateInput: AcqTextFieldView by lazyView(R.id.expiry_date_input)
     val cvcInput: AcqTextFieldView by lazyView(R.id.cvc_input)
 
-    val cardNumber get() = CardNumberFormatter.normalizeCardNumber(cardNumberInput.text)
+    val cardNumber get() = CardNumberFormatter.normalize(cardNumberInput.text)
     val expiryDate get() = expiryDateInput.text.orEmpty()
     val cvc get() = cvcInput.text.orEmpty()
 
@@ -48,6 +49,7 @@ internal class CardDataInputFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         with(card_number_input) {
+            BaubleCardLogo().attach(this)
             BaubleClearButton().attach(this)
             val cardNumberFormatter = CardNumberFormatter().also {
                 editText.addTextChangedListener(it)
@@ -57,7 +59,7 @@ internal class CardDataInputFragment : Fragment() {
                 errorHighlighted = false
 
                 val cardNumber = cardNumber
-                val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+                val paymentSystem = CardPaymentSystem.resolve(cardNumber)
 
                 if (cardNumber.startsWith("0")) {
                     errorHighlighted = true
@@ -72,8 +74,6 @@ internal class CardDataInputFragment : Fragment() {
                         expiry_date_input.requestViewFocus()
                     }
                 }
-
-                // logo
             }
         }
 

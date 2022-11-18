@@ -44,7 +44,7 @@ enum class CardPaymentSystem(val regex: Regex, val range: IntRange, val showLogo
 
     companion object {
 
-        fun resolvePaymentSystem(cardNumber: String): CardPaymentSystem =
+        fun resolve(cardNumber: String): CardPaymentSystem =
             values().find { it.matches(cardNumber) } ?: UNKNOWN
     }
 }

@@ -22,6 +22,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListMode
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.RemoveCardRequest
 import ru.tinkoff.acquiring.sdk.responses.RemoveCardResponse
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
@@ -144,6 +145,7 @@ internal class CardsDeleteViewModelTest {
         val vm = CardsListViewModel(
             asdk,
             connectionMock,
+            BankCaptionProvider { "Tinkoff" },
             CoroutineManager(dispatcher, dispatcher)
         ).apply {
             stateFlow.value = initState

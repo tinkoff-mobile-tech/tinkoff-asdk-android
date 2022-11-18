@@ -20,6 +20,8 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -222,6 +224,12 @@ class TinkoffAcquiring(
      * @param options     настройки привязки карты и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
+    @Deprecated("registerForActivityResult(AttachCardContract) { cardId -> }.launch(options)",
+        ReplaceWith("registerForActivityResult(AttachCardContract) { cardId ->\n" +
+                "    // handle result\n" +
+                "}.launch(attachCardOptions {\n" +
+                "    //setup options\n" +
+                "})"))
     fun openAttachCardScreen(activity: Activity, options: AttachCardOptions, requestCode: Int) {
         val intent = prepareIntent(activity, options, AttachCardActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
@@ -436,6 +444,24 @@ class TinkoffAcquiring(
     private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
         options.setTerminalParams(terminalKey, publicKey)
         return BaseAcquiringActivity.createIntent(context, options, cls)
+    }
+
+    fun attachCardOptions(setup: AttachCardOptions.() -> Unit) = AttachCardOptions().also { options ->
+        options.setTerminalParams(terminalKey, publicKey)
+        setup(options)
+    }
+
+    object AttachCardContract : ActivityResultContract<AttachCardOptions, String?>() {
+
+        override fun createIntent(context: Context, input: AttachCardOptions): Intent =
+            BaseAcquiringActivity.createIntent(context, input.apply {
+                setTerminalParams(terminalKey, publicKey)
+            }, AttachCardActivity::class.java)
+
+        override fun parseResult(resultCode: Int, intent: Intent?): String? = when (resultCode) {
+            AppCompatActivity.RESULT_OK -> intent?.getStringExtra(EXTRA_CARD_ID)!!
+            else -> null
+        }
     }
 
     companion object {

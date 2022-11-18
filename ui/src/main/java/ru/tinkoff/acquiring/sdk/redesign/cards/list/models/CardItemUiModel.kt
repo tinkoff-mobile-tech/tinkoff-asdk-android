@@ -5,15 +5,15 @@ import ru.tinkoff.acquiring.sdk.models.Card
 data class CardItemUiModel(
     private val card: Card,
 
-    // TODO after brandByBin algo impl
-    val bankName: String = "***",
-
-    // TODO after delete card task
     val showDelete: Boolean = false,
 
-    val isBlocked: Boolean = false
+    val isBlocked: Boolean = false,
+
+    val bankName: String?
 ) {
     val id = card.cardId
+
+    val pan: String? = card.pan
 
     val tail = card.pan?.takeLast(4)
 }
