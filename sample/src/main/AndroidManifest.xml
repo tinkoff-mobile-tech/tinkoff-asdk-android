@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,14 +19,15 @@
     package="ru.tinkoff.acquiring.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-sdk android:minSdkVersion="21" tools:overrideLibrary="com.yandex.pay.core"/>
 
     <application
         android:name=".SampleApplication"
         android:allowBackup="false"
         android:icon="@mipmap/appicon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
         <meta-data

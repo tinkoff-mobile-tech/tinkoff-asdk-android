@@ -31,14 +31,12 @@ import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.*
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
@@ -48,6 +46,10 @@ import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
+import ru.tinkoff.acquiring.sdk.yandex.YandexButtonFragment
+import ru.tinkoff.acquiring.sdk.yandex.YandexButtonViewModel
+import ru.tinkoff.acquiring.sdk.yandex.models.YandexPayData
+import ru.tinkoff.acquiring.sdk.yandex.models.mapYandexPayData
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -202,6 +204,26 @@ class TinkoffAcquiring(
             }, {
                 launch(Dispatchers.Main) { onFailure?.invoke(it) }
             })
+        }
+    }
+
+    /**
+     * Проверка статуса возможности оплата с помощью Yandex Pay
+     */
+    fun checkYandexPayData(onSuccess: (YandexPayData?) -> Unit,
+                           onFailure: ((Throwable) -> Unit)? = null) {
+
+        val onFailureOrThrow = onFailure ?: { throw it }
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = sdk.getTerminalPayMethods()
+                .performSuspendRequest()
+                .map { it.terminalInfo?.mapYandexPayData() }
+
+            launch(Dispatchers.Main) {
+              result.fold(onSuccess, onFailureOrThrow)
+            }
         }
     }
 
@@ -433,6 +455,20 @@ class TinkoffAcquiring(
             requestCode,
             NotificationPaymentActivity.PaymentMethod.TINKOFF,
             notificationId)
+    }
+
+
+    fun creteYandexPayButtonFragment(yandexPayData: YandexPayData? = null): YandexButtonFragment {
+        return YandexButtonFragment.newInstance(
+            YandexPayData(
+            merchantUrl = "rest-api-test.tinkoff.ru/verification_code",
+            merchantName = "yandex_id_test",
+            merchantId = "9dc6814e39204c638222dede9561ea6f"
+        ), object : BaseAcquiringOptions() {
+            init {
+                setTerminalParams(this@TinkoffAcquiring.terminalKey, this@TinkoffAcquiring.publicKey)
+            }
+        })
     }
 
     private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {

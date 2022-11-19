@@ -20,6 +20,8 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.yandex.YandexButtonViewModel
+import java.security.PublicKey
 
 /**
  * @author Mariya Chernyadieva
@@ -37,8 +39,28 @@ internal class ViewModelProviderFactory(
         SavedCardsViewModel::class.java to SavedCardsViewModel(application, handleErrorsInSdk, sdk),
         NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk))
 
+    private val simpleViewModels: Map<Class<out ViewModel>, ViewModel> = mapOf(
+        YandexButtonViewModel::class.java to YandexButtonViewModel(sdk)
+    )
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return viewModelCollection[modelClass] as T
+        return (viewModelCollection + simpleViewModels)[modelClass] as T
     }
 }
+
+//internal class ViewModelSimpleProviderFactory(
+//    private val terminalKey: String,
+//    private val publicKey: String
+//)  : ViewModelProvider.Factory {
+//    private val sdk = AcquiringSdk(terminalKey, publicKey)
+//
+//    private val simpleViewModels: Map<Class<out ViewModel>, ViewModel> = mapOf(
+//        YandexButtonViewModel::class.java to YandexButtonViewModel(sdk)
+//    )
+//
+//    @Suppress("UNCHECKED_CAST")
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//        return simpleViewModels[modelClass] as T
+//    }
+//}

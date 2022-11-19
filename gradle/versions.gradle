@@ -31,4 +31,6 @@ ext {
     rootBeerVersion = '0.1.0'
 
     mokitoKotlin = '4.0.0'
+
+    yandexPayVersion = '0.2.0'
 }

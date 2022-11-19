@@ -13,6 +13,9 @@ android {
         targetSdkVersion rootProject.compileSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
+        manifestPlaceholders = [
+                YANDEX_CLIENT_ID: "9dc6814e39204c638222dede9561ea6f"
+        ]
     }
     buildTypes {
         release {

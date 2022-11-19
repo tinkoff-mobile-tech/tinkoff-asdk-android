@@ -226,6 +226,13 @@ class AcquiringSdk(
         }
     }
 
+    fun getTerminalPayMethods() : GetTerminalPayMethodsRequest {
+        return GetTerminalPayMethodsRequest().apply {
+            terminalKey = this@AcquiringSdk.terminalKey
+            paysource = GetTerminalPayMethodsRequest.Paysource.SDK
+        }
+    }
+
     fun submit3DSAuthorization(threeDSServerTransID: String, transStatus: String, request: (Submit3DSAuthorizationRequest.() -> Unit)? = null): Submit3DSAuthorizationRequest {
         return Submit3DSAuthorizationRequest().apply {
             terminalKey = this@AcquiringSdk.terminalKey

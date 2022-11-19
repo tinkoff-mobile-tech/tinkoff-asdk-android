@@ -52,3 +52,4 @@ class AttachCardOptions : BaseCardsOptions<AttachCardOptions>, Parcelable {
         }
     }
 }
+

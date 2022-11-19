@@ -61,7 +61,7 @@ open class PayableActivity : AppCompatActivity() {
     private val paymentListener = createPaymentListener()
     private var isProgressShowing = false
     private var isErrorShowing = false
-    private var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
+    protected var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
     private val orderId: String
         get() = abs(Random().nextInt()).toString()
 
