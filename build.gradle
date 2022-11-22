@@ -1,12 +1,10 @@
-apply plugin: 'kotlin'
-apply from: 'gradle/versions.gradle'
-
 buildscript {
     apply from: 'gradle/versions.gradle'
 
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 
@@ -17,6 +15,13 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.ajoberstar.grgit' version '5.0.0'
+}
+
+apply plugin: 'kotlin'
+apply from: 'gradle/versions.gradle'
+
 allprojects {
     repositories {
         jcenter()
@@ -26,5 +31,17 @@ allprojects {
         tasks.withType(Javadoc) {
             options.addStringOption('encoding', 'UTF-8')
         }
+    }
+}
+
+tasks.register("realeaseNotes") {
+    doLast {
+        def branch = grgit.branch.current().fullName
+        def log = grgit
+                .log { range branch, diffWithOrigin }
+                .findAll { !it.shortMessage.startsWith("Merge") }
+                .collect { it.shortMessage }
+                .join("\n\n")
+        print log
     }
 }
