@@ -43,6 +43,11 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.Base64
 import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
 import java.net.URLEncoder
+import kotlin.concurrent.thread
+
+enum class ThreeDsStartParam {
+    PAY, ADD
+}
 
 internal class ThreeDsActivity : BaseAcquiringActivity() {
 
@@ -50,26 +55,36 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
     private lateinit var viewModel: ThreeDsViewModel
     private lateinit var data: ThreeDsData
+    private var threeDsStartParam: ThreeDsStartParam? = null
     private var termUrl: String? = null
 
     companion object {
 
         const val THREE_DS_DATA = "three_ds_data"
+        const val THREE_DS_START_PARAMS = "three_ds_start_params"
 
         private const val WINDOW_SIZE_CODE = "05"
         private const val MESSAGE_TYPE = "CReq"
 
-        private val TERM_URL = "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION)}/$SUBMIT_3DS_AUTHORIZATION"
-        val TERM_URL_V2 = "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION_V2)}/$SUBMIT_3DS_AUTHORIZATION_V2"
+        private val TERM_URL =
+            "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION)}/$SUBMIT_3DS_AUTHORIZATION"
+        val TERM_URL_V2 =
+            "${AcquiringApi.getUrl(SUBMIT_3DS_AUTHORIZATION_V2)}/$SUBMIT_3DS_AUTHORIZATION_V2"
 
         private val cancelActions = arrayOf("cancel.do", "cancel=true")
 
-        fun createIntent(context: Context, options: BaseAcquiringOptions, data: ThreeDsData): Intent {
+        fun createIntent(
+            context: Context,
+            options: BaseAcquiringOptions,
+            data: ThreeDsData,
+            threeDsStartParam: ThreeDsStartParam? = null
+        ): Intent {
             val intent = Intent(context, ThreeDsActivity::class.java)
             intent.putExtra(THREE_DS_DATA, data)
             intent.putExtras(Bundle().apply {
                 putParcelable(EXTRA_OPTIONS, options)
             })
+            intent.putExtra(THREE_DS_START_PARAMS, threeDsStartParam)
             return intent
         }
     }
@@ -91,6 +106,8 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
         content = wvThreeDs
 
         data = intent.getSerializableExtra(THREE_DS_DATA) as ThreeDsData
+        threeDsStartParam =
+            intent.getSerializableExtra(THREE_DS_START_PARAMS) as? ThreeDsStartParam?
 
         viewModel = provideViewModel(ThreeDsViewModel::class.java) as ThreeDsViewModel
         observeLiveData()
@@ -120,7 +137,13 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
-            is ErrorScreenState -> finishWithError(AcquiringSdkException(IllegalStateException(screenState.message)))
+            is ErrorScreenState -> finishWithError(
+                AcquiringSdkException(
+                    IllegalStateException(
+                        screenState.message
+                    )
+                )
+            )
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
         }
     }
@@ -151,8 +174,10 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
             put("challengeWindowSize", WINDOW_SIZE_CODE)
             put("messageType", MESSAGE_TYPE)
         }
-        return Base64.encodeToString(creqData.toString().toByteArray(),
-            Base64.NO_PADDING or Base64.NO_WRAP).trim()
+        return Base64.encodeToString(
+            creqData.toString().toByteArray(),
+            Base64.NO_PADDING or Base64.NO_WRAP
+        ).trim()
     }
 
     private inner class ThreeDsWebViewClient : WebViewClient() {
@@ -181,7 +206,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
             if (termUrl == url) {
                 view.visibility = View.INVISIBLE
                 if (!canceled) {
-                    viewModel.requestState(data)
+                    viewModel.requestState(data, threeDsStartParam)
                 }
             }
         }

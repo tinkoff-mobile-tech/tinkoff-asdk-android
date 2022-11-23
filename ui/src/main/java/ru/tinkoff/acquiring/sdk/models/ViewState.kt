@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models
 
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
+import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsStartParam
 
 /**
  * @author Mariya Chernyadieva

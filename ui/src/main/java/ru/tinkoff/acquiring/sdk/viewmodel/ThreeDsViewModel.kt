@@ -38,6 +38,7 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusSuccess
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
+import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsStartParam
 import ru.tinkoff.core.components.threedswrapper.ChallengeStatusReceiverAdapter
 import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
 import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.closeSafe
@@ -64,11 +65,16 @@ internal class ThreeDsViewModel(
             })
     }
 
-    fun requestState(threeDsData: ThreeDsData) {
-        if (threeDsData.isPayment) {
-            requestPaymentState(threeDsData.paymentId)
-        } else if (threeDsData.isAttaching) {
-            requestAddCardState(threeDsData.requestKey)
+    fun requestState(threeDsData: ThreeDsData, start: ThreeDsStartParam? = null) {
+        when (start) {
+            ThreeDsStartParam.ADD -> requestAddCardState(threeDsData.requestKey)
+            ThreeDsStartParam.PAY -> requestPaymentState(threeDsData.paymentId)
+
+            else -> if (threeDsData.isPayment) {
+                requestPaymentState(threeDsData.paymentId)
+            } else if (threeDsData.isAttaching) {
+                requestAddCardState(threeDsData.requestKey)
+            }
         }
     }
 
@@ -84,7 +90,8 @@ internal class ThreeDsViewModel(
                 if (response.status == ResponseStatus.CONFIRMED || response.status == ResponseStatus.AUTHORIZED) {
                     asdkResult.value = PaymentResult(response.paymentId)
                 } else {
-                    val throwable = AcquiringSdkException(IllegalStateException("PaymentState = ${response.status}"))
+                    val throwable =
+                        AcquiringSdkException(IllegalStateException("PaymentState = ${response.status}"))
                     handleException(throwable)
                 }
                 changeScreenState(LoadedState)
@@ -103,7 +110,8 @@ internal class ThreeDsViewModel(
                 if (response.status == ResponseStatus.COMPLETED) {
                     asdkResult.value = CardResult(response.cardId)
                 } else {
-                    val throwable = AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))
+                    val throwable =
+                        AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))
                     handleException(throwable)
                 }
                 changeScreenState(LoadedState)

@@ -177,7 +177,7 @@ internal class PaymentActivity : TransparentActivity() {
                 is ThreeDsScreenState -> paymentViewModel.coroutine.launchOnMain {
                     try {
                         ThreeDsHelper.Launch(this@PaymentActivity,
-                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction, ThreeDsStartParam.PAY)
                     } catch (e: Throwable) {
                         finishWithError(e)
                     }

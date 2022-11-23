@@ -131,7 +131,7 @@ internal class NetworkClient {
             val call = okHttpClient.newCall(httpRequest)
             AcquiringSdk.log("=== Sending ${httpRequest.method} request to ${httpRequest.url}")
             call.execute()
-        } catch (e: IOException) {
+        } catch (e: Throwable) {
             AcquiringSdk.log("=== Receive error ${e.message} on method ${request.httpRequestMethod} ${request.apiMethod}")
             throw NetworkException("Unable to performRequest request ${request.apiMethod}", e)
         }
