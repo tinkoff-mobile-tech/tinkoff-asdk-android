@@ -26,6 +26,7 @@ import ru.tinkoff.acquiring.sdk.responses.AttachCardResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsCertInfo.CertType.Companion.toWrapperType
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
+import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsStartParam
 import ru.tinkoff.acquiring.sdk.utils.Base64
 import ru.tinkoff.acquiring.sdk.utils.getTimeZoneOffsetInMinutes
 import ru.tinkoff.core.components.threedswrapper.ChallengeStatusReceiverAdapter
@@ -203,12 +204,14 @@ object ThreeDsHelper {
         fun addExtraThreeDsData(data: ThreeDsData,
                                 acsTransId: String,
                                 serverTransId: String,
-                                version:String
+                                version: String,
+                                paymentId: Long?
         ) {
             data.apply {
                 this.version = version
                 this.tdsServerTransId = serverTransId
                 this.acsTransId = acsTransId
+                paymentId?.let { this.paymentId = it }
             }
         }
     }
@@ -307,12 +310,13 @@ object ThreeDsHelper {
             requestCode: Int,
             options: BaseAcquiringOptions?,
             threeDsData: ThreeDsData,
-            appBasedTransaction: ThreeDsAppBasedTransaction?
+            appBasedTransaction: ThreeDsAppBasedTransaction?,
+            threeDsStartParam: ThreeDsStartParam? = null
         ) {
             if (isAppBasedFlow(threeDsData.version)) {
                 launchAppBased(activity, threeDsData, appBasedTransaction!!)
             } else {
-                launchBrowserBased(activity, requestCode, options!!, threeDsData)
+                launchBrowserBased(activity, requestCode, options!!, threeDsData, threeDsStartParam)
             }
         }
 
@@ -381,9 +385,10 @@ object ThreeDsHelper {
             activity: Activity,
             requestCode: Int,
             options: BaseAcquiringOptions,
-            threeDsData: ThreeDsData
+            threeDsData: ThreeDsData,
+            threeDsStartParam: ThreeDsStartParam?
         ) {
-            val intent = ThreeDsActivity.createIntent(activity, options, threeDsData)
+            val intent = ThreeDsActivity.createIntent(activity, options, threeDsData, threeDsStartParam)
             activity.startActivityForResult(intent, requestCode)
         }
     }

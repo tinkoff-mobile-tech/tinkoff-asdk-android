@@ -84,7 +84,7 @@ internal class AttachCardActivity : TransparentActivity() {
                 is ThreeDsScreenState -> attachCardViewModel.coroutine.launchOnMain {
                     try {
                         ThreeDsHelper.Launch(this@AttachCardActivity,
-                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction, ThreeDsStartParam.ADD)
                     } catch (e: Throwable) {
                         finishWithError(e)
                     }

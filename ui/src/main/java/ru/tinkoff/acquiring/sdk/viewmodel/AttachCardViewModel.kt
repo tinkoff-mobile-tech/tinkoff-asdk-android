@@ -36,6 +36,7 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.responses.AttachCardResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsStartParam
 
 /**
  * @author Mariya Chernyadieva
@@ -102,9 +103,9 @@ internal class AttachCardViewModel(
                     if (it.is3DsVersionV2()) {
                         val check3dsMap = ThreeDsHelper.CollectData.invoke(context, it)
                         ThreeDsHelper.CollectData.addExtraData(check3dsMap, it)
-                        attachCard(requestKey, check3dsMap + (data ?: mapOf()) , it)
+                        attachCard(requestKey, check3dsMap + (data ?: mapOf()) , it, paymentId)
                     } else {
-                        attachCard(requestKey, data, it)
+                        attachCard(requestKey, data, it, paymentId)
                     }
                 }
             )
@@ -113,7 +114,8 @@ internal class AttachCardViewModel(
 
     private fun attachCard(requestKey: String,
                            data: Map<String, String>?,
-                           check3dsVersionResponse: Check3dsVersionResponse? = null) {
+                           check3dsVersionResponse: Check3dsVersionResponse? = null,
+                           paymentId: Long? = null) {
         val attachCardRequest = sdk.attachCard {
             this.requestKey = requestKey
             this.data = data
@@ -125,13 +127,14 @@ internal class AttachCardViewModel(
             }
         }
         coroutine.call(attachCardRequest,
-                onSuccess = { handleAttachSuccess(it, check3dsVersionResponse) },
+                onSuccess = { handleAttachSuccess(it, check3dsVersionResponse, paymentId) },
                 onFailure = ::handleAttachError
         )
     }
 
     private fun handleAttachSuccess(it: AttachCardResponse,
-                                    check3dsVersionResponse: Check3dsVersionResponse?){
+                                    check3dsVersionResponse: Check3dsVersionResponse?,
+                                    paymentId: Long?){
             when (it.status) {
                 ResponseStatus.THREE_DS_CHECKING -> {
                     val _3dsData = it.getThreeDsData()
@@ -140,7 +143,8 @@ internal class AttachCardViewModel(
                             data = _3dsData,
                             acsTransId = checkNotNull(it.acsTransId),
                             serverTransId = checkNotNull(check3dsVersionResponse.serverTransId),
-                            version = checkNotNull(check3dsVersionResponse.version)
+                            version = checkNotNull(check3dsVersionResponse.version),
+                            paymentId = paymentId
                         )
                     }
                     changeScreenState(ThreeDsScreenState(_3dsData, null))

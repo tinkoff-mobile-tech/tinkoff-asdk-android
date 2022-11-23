@@ -18,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsStartParam
 
 class AttachCardManuallyDialogFragment : DialogFragment() {
 
@@ -74,7 +75,7 @@ class AttachCardManuallyDialogFragment : DialogFragment() {
             attachCard.execute({
                 when (it.status) {
                     ResponseStatus.THREE_DS_CHECKING -> ThreeDsHelper.Launch.launchBrowserBased(
-                        requireActivity(), MainActivity.THREE_DS_REQUEST_CODE, options, it.getThreeDsData())
+                        requireActivity(), MainActivity.THREE_DS_REQUEST_CODE, options, it.getThreeDsData(), ThreeDsStartParam.ADD)
                     null -> {
                         requireActivity().toast("Attach success")
                         dismiss()
