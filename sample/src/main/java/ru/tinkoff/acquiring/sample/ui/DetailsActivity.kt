@@ -93,12 +93,9 @@ class DetailsActivity : PayableActivity() {
             setupGooglePay()
         }
 
-        fillViews()
+        setupYandexPay()
 
-         supportFragmentManager
-             .commit {
-                 replace(R.id.btn_yandex_container, tinkoffAcquiring.creteYandexPayButtonFragment(null))
-             }
+        fillViews()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

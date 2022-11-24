@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.requests
 
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.GET_TERMINAL_PAY_METHODS
 import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 
@@ -8,23 +9,20 @@ import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
  *
  * Created by Ivan Golovachev
  */
-class GetTerminalPayMethodsRequest :
-    AcquiringRequest<GetTerminalPayMethodsResponse>(GET_TERMINAL_PAY_METHODS) {
+class GetTerminalPayMethodsRequest(
+    terminalKey: String,
+    paysource: Paysource = Paysource.SDK
+) :
+    AcquiringRequest<GetTerminalPayMethodsResponse>(
+        "$GET_TERMINAL_PAY_METHODS?TerminalKey=flightagent3DS&PaySource=$paysource") {
 
-    /**
-     *  Тип подключения API, SDK
-     */
-    var paysource: Paysource? = null
+    override val httpRequestMethod: String = AcquiringApi.API_REQUEST_METHOD_GET
 
-    override fun validate() {
-        paysource.validate(PAYSOURCE)
-    }
+    override fun validate() = Unit
 
-    override fun asMap(): MutableMap<String, Any> {
-        return super.asMap().apply {
-            putIfNotNull(PAYSOURCE, paysource)
-        }
-    }
+    override fun asMap(): MutableMap<String, Any> = mutableMapOf()
+
+    override fun getToken(): String? = null
 
     override fun execute(
         onSuccess: (GetTerminalPayMethodsResponse) -> Unit,

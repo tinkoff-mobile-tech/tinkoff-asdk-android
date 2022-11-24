@@ -5,7 +5,7 @@ ext {
     compileSdk = 31
     minSdk = 21
     targetSdk = 31
-    buildTools = '29.0.2'
+    buildTools = '30.0.3'
 
     kotlinVersion = '1.6.10'
     gradlePluginVersion = '7.1.2'

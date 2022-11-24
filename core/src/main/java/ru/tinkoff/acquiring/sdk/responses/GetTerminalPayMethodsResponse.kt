@@ -49,7 +49,7 @@ class TerminalInfo(
  */
 class PaymethodData(
 
-    @SerializedName("Paymethod")
+    @SerializedName("PayMethod")
     val paymethod: Paymethod? = null,
 
     @SerializedName("Params")

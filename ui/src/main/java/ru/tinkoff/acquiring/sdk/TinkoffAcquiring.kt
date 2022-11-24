@@ -37,6 +37,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
@@ -208,10 +209,10 @@ class TinkoffAcquiring(
     }
 
     /**
-     * Проверка статуса возможности оплата с помощью Yandex Pay
+     * Проверка доступных спосбов оплаты
      */
-    fun checkYandexPayData(onSuccess: (YandexPayData?) -> Unit,
-                           onFailure: ((Throwable) -> Unit)? = null) {
+    fun checkTerminalInfo(onSuccess: (TerminalInfo?) -> Unit,
+                          onFailure: ((Throwable) -> Unit)? = null) {
 
         val onFailureOrThrow = onFailure ?: { throw it }
 
@@ -219,10 +220,10 @@ class TinkoffAcquiring(
 
             val result = sdk.getTerminalPayMethods()
                 .performSuspendRequest()
-                .map { it.terminalInfo?.mapYandexPayData() }
+                .map { it.terminalInfo }
 
             launch(Dispatchers.Main) {
-              result.fold(onSuccess, onFailureOrThrow)
+                result.fold(onSuccess, onFailureOrThrow)
             }
         }
     }
@@ -458,17 +459,8 @@ class TinkoffAcquiring(
     }
 
 
-    fun creteYandexPayButtonFragment(yandexPayData: YandexPayData? = null): YandexButtonFragment {
-        return YandexButtonFragment.newInstance(
-            YandexPayData(
-            merchantUrl = "rest-api-test.tinkoff.ru/verification_code",
-            merchantName = "yandex_id_test",
-            merchantId = "9dc6814e39204c638222dede9561ea6f"
-        ), object : BaseAcquiringOptions() {
-            init {
-                setTerminalParams(this@TinkoffAcquiring.terminalKey, this@TinkoffAcquiring.publicKey)
-            }
-        })
+    fun creteYandexPayButtonFragment(yandexPayData: YandexPayData, options: PaymentOptions): YandexButtonFragment {
+        return YandexButtonFragment.newInstance(yandexPayData, options)
     }
 
     private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
