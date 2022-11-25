@@ -38,11 +38,11 @@
     <string name="acq_cardlist_button_add">Добавить</string>
     <string name="acq_cardlist_addcard">Добавить новую</string>
 
-    <string name="acq_attach_card_title">Оплата картой</string>
+    <string name="acq_cardlist_addcard_title">Добавить карту</string>
     <string name="acq_label_card_number">Номер</string>
     <string name="acq_label_expiry_date">Срок</string>
     <string name="acq_label_card_cvv">Код</string>
-    <string name="acq_attach_card_btn">Добавить</string>
+    <string name="acq_addcard_button_add">Добавить</string>
 
     <string name="acq_cardlist_snackbar_add">Карта •%1$s добавлена</string>
     <string name="acq_cardlist_snackbar_remove">Карта •%1$s удалена</string>
@@ -51,9 +51,7 @@
     <string name="acq_cardlist_button_change">Изменить</string>
     <string name="acq_cardlist_button_done">Готово</string>
 
-    <string name="acq_error">Ошибка</string>
     <string name="acq_attach_card_error">Ошибка добавления карты</string>
-    <string name="acq_ok">Понятно</string>
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">Доступен %d символ</item>

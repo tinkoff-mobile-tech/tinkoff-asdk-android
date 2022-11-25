@@ -14,15 +14,14 @@
   ~  limitations under the License.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/acq_colorButtonPressed">
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/acq_colorButtonPressed">
 
-    <item android:state_enabled="false">
+    <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/acq_colorButtonDisable" />
+            <solid android:color="@color/acq_colorButton" />
             <corners android:radius="16dp" />
         </shape>
     </item>
 
-    <item android:drawable="@drawable/acq_button_yellow_bg_ripple" android:state_enabled="true" />
-
-</selector>
+</ripple>

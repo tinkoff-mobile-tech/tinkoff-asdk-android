@@ -49,7 +49,7 @@
             android:name=".ui.activities.AttachCardActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"
-            android:windowSoftInputMode="adjustNothing" />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".cardscanners.ui.AsdkNfcScanActivity"

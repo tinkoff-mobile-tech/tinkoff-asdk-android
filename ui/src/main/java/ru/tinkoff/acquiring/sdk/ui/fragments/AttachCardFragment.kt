@@ -40,7 +40,8 @@ import ru.tinkoff.acquiring.sdk.viewmodel.AttachCardViewModel
 /**
  * @author Mariya Chernyadieva
  */
-internal class AttachCardFragment : BaseAcquiringFragment() {
+internal class AttachCardFragment : BaseAcquiringFragment(),
+    CardDataInputFragment.OnCardDataChanged {
 
     private lateinit var attachCardViewModel: AttachCardViewModel
     private lateinit var attachCardOptions: AttachCardOptions
@@ -74,6 +75,10 @@ internal class AttachCardFragment : BaseAcquiringFragment() {
         if (!isErrorShowing) {
             attachCardViewModel.showCardInput()
         }
+    }
+
+    override fun onCardDataChanged(isValid: Boolean) {
+        attachButton.isEnabled = isValid
     }
 
     private fun observeLiveData() {

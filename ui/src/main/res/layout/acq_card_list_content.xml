@@ -39,6 +39,7 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
             android:drawablePadding="16dp"
             android:fontFamily="@font/roboto_regular"
             android:gravity="center_vertical"

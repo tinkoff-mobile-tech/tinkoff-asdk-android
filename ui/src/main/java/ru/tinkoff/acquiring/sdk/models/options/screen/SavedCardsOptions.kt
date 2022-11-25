@@ -2,6 +2,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 
 /**
  * Настройки экрана сохраненных карт
@@ -10,7 +11,10 @@ import android.os.Parcelable
  */
 class SavedCardsOptions : BaseCardsOptions<SavedCardsOptions>, Parcelable {
 
-    constructor() : super()
+    /**
+     * [TinkoffAcquiring.savedCardsOptions]
+     */
+    internal constructor() : super()
     private constructor(parcel: Parcel) : super(parcel)
 
     override fun setOptions(options: SavedCardsOptions.() -> Unit): SavedCardsOptions {

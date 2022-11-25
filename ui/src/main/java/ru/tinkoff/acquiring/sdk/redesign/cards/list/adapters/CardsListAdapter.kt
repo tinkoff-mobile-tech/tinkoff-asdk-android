@@ -38,10 +38,6 @@ class CardsListAdapter(
         notifyItemRemoved(indexAt)
     }
 
-    fun onAddCard(card: CardItemUiModel) {
-        //TODO после задачи на добавление карты
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.acq_card_list_item, parent, false) as View
@@ -84,7 +80,7 @@ class CardsListAdapter(
             cardLogo.setImageResource(CardLogoProvider.getCardLogo(card.pan))
             cardNameView.text = itemView.context.getString(
                 R.string.acq_cardlist_bankname,
-                card.bankName,
+                card.bankName.orEmpty(),
                 card.tail
             )
             bindDeleteVisibility(card.showDelete)

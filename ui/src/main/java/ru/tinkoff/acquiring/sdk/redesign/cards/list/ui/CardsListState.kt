@@ -8,7 +8,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 sealed class CardsListState(val mode: CardListMode, val isInternal: Boolean = false) {
     object Shimmer : CardsListState(CardListMode.STUB)
     object Empty : CardsListState(CardListMode.STUB)
-    object Error : CardsListState(CardListMode.STUB)
+    class Error(val throwable: Throwable) : CardsListState(CardListMode.STUB)
     object NoNetwork : CardsListState(CardListMode.STUB)
 
     class Content(
@@ -20,7 +20,11 @@ sealed class CardsListState(val mode: CardListMode, val isInternal: Boolean = fa
 
 sealed class CardListEvent {
     object RemoveCardProgress : CardListEvent()
-    class RemoveCardSuccess(val indexAt: Int?) : CardListEvent()
+
+    class RemoveCardSuccess(
+        val deletedCard: CardItemUiModel,
+        val indexAt: Int?) : CardListEvent()
+
     object ShowError : CardListEvent()
 }
 

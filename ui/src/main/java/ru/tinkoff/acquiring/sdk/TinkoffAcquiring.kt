@@ -224,7 +224,7 @@ class TinkoffAcquiring(
      * @param options     настройки привязки карты и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
-    @Deprecated("registerForActivityResult(AttachCardContract) { cardId -> }.launch(options)",
+    @Deprecated("registerForActivityResult(AttachCard.Contract) { result -> }.launch(options)",
         ReplaceWith("registerForActivityResult(AttachCardContract) { cardId ->\n" +
                 "    // handle result\n" +
                 "}.launch(attachCardOptions {\n" +
@@ -242,6 +242,7 @@ class TinkoffAcquiring(
      * @param options     настройки привязки карты и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
+    @Deprecated("registerForActivityResult(AttachCard.Contract) { result -> }.launch(options)")
     fun openAttachCardScreen(fragment: Fragment, options: AttachCardOptions, requestCode: Int) {
         val intent = prepareIntent(fragment.requireContext(), options, AttachCardActivity::class.java)
         fragment.startActivityForResult(intent, requestCode)
@@ -258,6 +259,12 @@ class TinkoffAcquiring(
      *                          В случае выбора покупателем приоритетной карты, возвращается intent
      *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
      */
+    @Deprecated("registerForActivityResult(SavedCards.Contract) { result -> }.launch(options)",
+        ReplaceWith("registerForActivityResult(SavedCardsContract) { result ->\n" +
+                "    // handle result\n" +
+                "}.launch(savedCardsOptions {\n" +
+                "    //setup options\n" +
+                "})"))
     fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
         val intent = prepareIntent(activity, savedCardsOptions, CardsListActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
@@ -274,6 +281,7 @@ class TinkoffAcquiring(
      *                          В случае выбора покупателем приоритетной карты, возвращается intent
      *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
      */
+    @Deprecated("registerForActivityResult(SavedCards.Contract) { result -> }.launch(options)")
     fun openSavedCardsScreen(fragment: Fragment, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
         val intent = prepareIntent(fragment.requireContext(), savedCardsOptions, CardsListActivity::class.java)
         fragment.startActivityForResult(intent, requestCode)
@@ -411,11 +419,11 @@ class TinkoffAcquiring(
                                               notificationId: Int? = null): PendingIntent {
         options.setTerminalParams(terminalKey, publicKey)
         return NotificationPaymentActivity.createPendingIntent(activity,
-                options,
-                requestCode,
-                NotificationPaymentActivity.PaymentMethod.GPAY,
-                notificationId,
-                googlePayParams)
+            options,
+            requestCode,
+            NotificationPaymentActivity.PaymentMethod.GPAY,
+            notificationId,
+            googlePayParams)
     }
 
     /**
@@ -451,16 +459,55 @@ class TinkoffAcquiring(
         setup(options)
     }
 
-    object AttachCardContract : ActivityResultContract<AttachCardOptions, String?>() {
+    fun savedCardsOptions(setup: SavedCardsOptions.() -> Unit) = SavedCardsOptions().also { options ->
+        options.setTerminalParams(terminalKey, publicKey)
+        setup(options)
+    }
 
-        override fun createIntent(context: Context, input: AttachCardOptions): Intent =
-            BaseAcquiringActivity.createIntent(context, input.apply {
-                setTerminalParams(terminalKey, publicKey)
-            }, AttachCardActivity::class.java)
+    object AttachCard {
 
-        override fun parseResult(resultCode: Int, intent: Intent?): String? = when (resultCode) {
-            AppCompatActivity.RESULT_OK -> intent?.getStringExtra(EXTRA_CARD_ID)!!
-            else -> null
+        sealed class Result
+        class Success(val cardId: String) : Result()
+        class Canceled : Result()
+        class Error(val error: Throwable) : Result()
+
+
+        object Contract : ActivityResultContract<AttachCardOptions, Result>() {
+
+            override fun createIntent(context: Context, input: AttachCardOptions): Intent =
+                BaseAcquiringActivity.createIntent(context, input.apply {
+                    setTerminalParams(terminalKey, publicKey)
+                }, AttachCardActivity::class.java)
+
+            override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
+                AppCompatActivity.RESULT_OK -> Success(intent!!.getStringExtra(EXTRA_CARD_ID)!!)
+                RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
+                else -> Canceled()
+            }
+        }
+    }
+
+    object SavedCards {
+
+        sealed class Result
+        class Success(val selectedCardId: String?, val cardListChanged: Boolean) : Result()
+        class Canceled : Result()
+        class Error(val error: Throwable) : Result()
+
+        object Contract : ActivityResultContract<SavedCardsOptions, Result>() {
+
+            override fun createIntent(context: Context, input: SavedCardsOptions): Intent =
+                BaseAcquiringActivity.createIntent(context, input.apply {
+                    setTerminalParams(terminalKey, publicKey)
+                }, CardsListActivity::class.java)
+
+            override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
+                AppCompatActivity.RESULT_OK -> Success(
+                    intent?.getStringExtra(EXTRA_CARD_ID),
+                    intent?.getBooleanExtra(EXTRA_CARD_LIST_CHANGED, false)!!)
+                RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
+                else -> Canceled()
+            }
         }
     }
 

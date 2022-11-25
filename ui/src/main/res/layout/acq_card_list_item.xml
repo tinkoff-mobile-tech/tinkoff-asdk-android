@@ -25,7 +25,7 @@
         android:layout_height="26dp"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
-        tools:src="@drawable/acq_ic_card_mir_tinkoff"/>
+        tools:src="@drawable/acq_ic_card_mir_tinkoff" />
 
     <TextView
         android:id="@+id/acq_card_list_item_masked_name"
@@ -50,7 +50,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@drawable/acq_selectable_item_background_circle"
+            android:padding="8dp"
             android:src="@drawable/acq_ic_cardlist_delete" />
+
     </FrameLayout>
 
 </LinearLayout>
