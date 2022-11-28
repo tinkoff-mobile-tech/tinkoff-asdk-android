@@ -1,14 +1,10 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list
 
 import app.cash.turbine.test
-import awaitWithConditionOrNext
 import common.MutableCollector
 import common.assertByClassName
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.test.runTest
-import org.junit.Assert
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -48,12 +44,13 @@ internal class CardsDeleteViewModelTest {
             eventCollector.takeValues(2)
             setResponse(RequestResult.Success(RemoveCardResponse(1)))
 
-            vm.deleteCard(createCard("1"), "")
+            val card = createCard("1")
+            vm.deleteCard(card, "")
 
             eventCollector.joinWithTimeout()
             eventCollector.flow.test {
                 assertByClassName(CardListEvent.RemoveCardProgress, awaitItem())
-                assertByClassName(CardListEvent.RemoveCardSuccess(null), awaitItem())
+                assertByClassName(CardListEvent.RemoveCardSuccess(card, null), awaitItem())
                 awaitComplete()
             }
         }

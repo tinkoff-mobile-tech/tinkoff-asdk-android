@@ -16,9 +16,12 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
@@ -28,6 +31,7 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.fragments.AttachCardFragment
 import ru.tinkoff.acquiring.sdk.ui.fragments.LoopConfirmationFragment
@@ -60,7 +64,7 @@ internal class AttachCardActivity : TransparentActivity() {
         setSupportActionBar(findViewById(R.id.acq_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setTitle(R.string.acq_attach_card_title)
+        supportActionBar?.setTitle(R.string.acq_cardlist_addcard_title)
     }
 
     private fun observeLiveData() {
@@ -71,12 +75,23 @@ internal class AttachCardActivity : TransparentActivity() {
         }
     }
 
+    private fun finishWithSuccess(result: CardResult) {
+        val intent = Intent()
+        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> {
                 if (supportFragmentManager.findFragmentById(R.id.acq_activity_fl_container) !is LoopConfirmationFragment) {
-                    showErrorDialog(message = screenState.message) {
+                    showErrorDialog(
+                        getString(R.string.acq_attach_card_error),
+                        screenState.message,
+                        getString(R.string.acq_cardlist_alert_access)
+                    ) {
                         attachCardViewModel.createEvent(ErrorButtonClickedEvent)
                     }
                 }

@@ -39,8 +39,8 @@ constructor(
 
     val textView = TextView(context).apply {
         textSize = 16f
-        setTextColor(ColorStateList.valueOf(ResourcesCompat.getColor(
-            context.resources, R.color.acq_colorButtonText, context.theme)))
+        setTextColor(ResourcesCompat.getColorStateList(
+            context.resources, R.color.acq_button_text_selector, context.theme))
     }
 
     val loader = ProgressBar(context).apply {

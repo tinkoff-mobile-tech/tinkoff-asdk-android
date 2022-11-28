@@ -74,6 +74,8 @@ internal class CardDataInputFragment : Fragment() {
                         expiry_date_input.requestViewFocus()
                     }
                 }
+
+                onDataChanged()
             }
         }
 
@@ -92,6 +94,8 @@ internal class CardDataInputFragment : Fragment() {
                         errorHighlighted = true
                     }
                 }
+
+                onDataChanged()
             }
         }
 
@@ -114,10 +118,14 @@ internal class CardDataInputFragment : Fragment() {
                         errorHighlighted = true
                     }
                 }
+
+                onDataChanged()
             }
         }
 
         cardNumberInput.requestViewFocus()
+
+        onDataChanged()
     }
 
     override fun onAttach(context: Context) {
@@ -168,10 +176,23 @@ internal class CardDataInputFragment : Fragment() {
         return result
     }
 
+    fun isValid(): Boolean = CardValidator.validateCardNumber(cardNumber) &&
+            CardValidator.validateExpireDate(expiryDate, false) &&
+            CardValidator.validateSecurityCode(cvc)
+
+    private fun onDataChanged() {
+        ((parentFragment as? OnCardDataChanged) ?: (activity as? OnCardDataChanged))
+            ?.onCardDataChanged(isValid())
+    }
+
     fun clearInput() {
         cardNumberInput.text = ""
         expiryDateInput.text = ""
         cvcInput.text = ""
+    }
+
+    fun interface OnCardDataChanged {
+        fun onCardDataChanged(isValid: Boolean)
     }
 
     private companion object {

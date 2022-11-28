@@ -3,7 +3,6 @@ package ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
@@ -46,7 +45,7 @@ internal class CardsListViewModel(
         stateFlow.tryEmit(CardsListState.Shimmer)
         manager.launchOnBackground {
             if (customerKey == null) {
-                stateFlow.tryEmit(CardsListState.Error)
+                stateFlow.tryEmit(CardsListState.Error(Throwable()))
                 return@launchOnBackground
             }
 
@@ -81,8 +80,8 @@ internal class CardsListViewModel(
                 .onStart { eventFlow.value = CardListEvent.RemoveCardProgress }
                 .collect {
                     it.process(
-                        onSuccess = { r ->
-                            handleDeleteCard(checkNotNull(r.cardId?.toString()))
+                        onSuccess = {
+                            handleDeleteCard(model)
                             deleteJob?.cancel()
                         },
                         onFailure = {
@@ -139,20 +138,20 @@ internal class CardsListViewModel(
     }
 
     private fun handleGetCardListError(it: Exception) {
-        stateFlow.value = CardsListState.Error
+        stateFlow.value = CardsListState.Error(it)
     }
 
-    private fun handleDeleteCard(deletedCardId: String) {
+    private fun handleDeleteCard(deletedCard: CardItemUiModel) {
         val list = checkNotNull((stateFlow.value as? CardsListState.Content)?.cards).toMutableList()
-        val indexAt = list.indexOfFirst { it.id == deletedCardId }
+        val indexAt = list.indexOfFirst { it.id == deletedCard.id }
         list.removeAt(indexAt)
 
         if (list.isEmpty()) {
             stateFlow.value = CardsListState.Empty
-            eventFlow.value = CardListEvent.RemoveCardSuccess(null)
+            eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, null)
         } else {
             stateFlow.update { CardsListState.Content(it.mode, true, list) }
-            eventFlow.value = CardListEvent.RemoveCardSuccess(indexAt)
+            eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, indexAt)
         }
     }
 

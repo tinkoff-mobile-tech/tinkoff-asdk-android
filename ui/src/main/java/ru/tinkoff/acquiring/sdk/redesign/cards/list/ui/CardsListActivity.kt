@@ -1,5 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -17,12 +19,18 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.AttachCard
+import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.utils.AcqSnackBarHelper
+import ru.tinkoff.acquiring.sdk.utils.ErrorResolver
+import ru.tinkoff.acquiring.sdk.utils.lazyView
 import ru.tinkoff.acquiring.sdk.utils.showById
 
 internal class CardsListActivity : TransparentActivity() {
@@ -38,21 +46,34 @@ internal class CardsListActivity : TransparentActivity() {
 
     private var mode = CardListMode.STUB
 
-    private val stubImage: ImageView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById(R.id.acq_stub_img)
+    private val stubImage: ImageView by lazyView(R.id.acq_stub_img)
+    private val stubTitleView: TextView by lazyView(R.id.acq_stub_title)
+    private val stubSubtitleView: TextView by lazyView(R.id.acq_stub_subtitle)
+    private val stubButtonView: TextView by lazyView(R.id.acq_stub_retry_button)
+    private val addNewCard: TextView by lazyView(R.id.acq_add_new_card)
+
+    private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
+        when (result) {
+            is AttachCard.Success -> {
+                attachedCardId = result.cardId
+
+                viewModel.loadData(
+                    savedCardsOptions.customer.customerKey,
+                    options.features.showOnlyRecurrentCards)
+            }
+            is AttachCard.Error -> showErrorDialog(
+                getString(R.string.acq_cardlist_alert_label),
+                ErrorResolver.resolve(result.error,  getString(R.string.acq_cardlist_stub_description)),
+                getString(R.string.acq_cardlist_alert_access)
+            )
+            else -> Unit
+        }
     }
-    private val stubTitleView: TextView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById(R.id.acq_stub_title)
-    }
-    private val stubSubtitleView: TextView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById(R.id.acq_stub_subtitle)
-    }
-    private val stubButtonView: TextView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById(R.id.acq_stub_retry_button)
-    }
-    private val addNewCard: TextView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById(R.id.acq_add_new_card)
-    }
+
+    private var selectedCardId: String? = null
+    private var isCardListChanged = false
+    private var isErrorOccurred = false
+    private var attachedCardId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +89,9 @@ internal class CardsListActivity : TransparentActivity() {
         initToolbar()
         initViews()
         subscribeOnState()
+
+        // todo
+        // options.features.selectedCardId
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -103,13 +127,14 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun initViews() {
-        recyclerView = findViewById<RecyclerView>(R.id.acq_card_list_view)
+        recyclerView = findViewById(R.id.acq_card_list_view)
         viewFlipper = findViewById(R.id.acq_view_flipper)
         cardShimmer = viewFlipper.findViewById(R.id.acq_card_list_shimmer)
         cardsListAdapter = CardsListAdapter(onDeleteClick = {
             viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!)
         })
         recyclerView.adapter = cardsListAdapter
+        addNewCard.setOnClickListener { startAttachCard() }
         snackBarHelper = AcqSnackBarHelper(findViewById(R.id.acq_card_list_root))
     }
 
@@ -136,6 +161,7 @@ internal class CardsListActivity : TransparentActivity() {
             viewModel.stateUiFlow.collectLatest {
                 when (it) {
                     is CardsListState.Content -> {
+                        it.cards.find { card -> card.id == attachedCardId }?.handleCardAttached()
                         viewFlipper.showById(R.id.acq_card_list_content)
                         cardsListAdapter.setCards(it.cards)
                     }
@@ -152,9 +178,7 @@ internal class CardsListActivity : TransparentActivity() {
                             subTitleTextRes = R.string.acq_cardlist_stub_description,
                             buttonTextRes = R.string.acq_cardlist_alert_access
                         )
-                        stubButtonView.setOnClickListener {
-                            finish()
-                        }
+                        stubButtonView.setOnClickListener { _ -> finishWithError(it.throwable) }
                     }
                     is CardsListState.Empty -> {
                         showStub(
@@ -163,9 +187,7 @@ internal class CardsListActivity : TransparentActivity() {
                             subTitleTextRes = R.string.acq_cardlist_description,
                             buttonTextRes = R.string.acq_cardlist_button_add
                         )
-                        stubButtonView.setOnClickListener {
-                           //todo навигация с результатом о привязке карты
-                        }
+                        stubButtonView.setOnClickListener { startAttachCard() }
                     }
                     is CardsListState.NoNetwork -> {
                         showStub(
@@ -186,6 +208,23 @@ internal class CardsListActivity : TransparentActivity() {
         }
     }
 
+    private fun startAttachCard() {
+        attachCard.launch(AttachCardOptions().setOptions {
+            setTerminalParams(savedCardsOptions.terminalKey, savedCardsOptions.publicKey)
+            customerOptions {
+                checkType = savedCardsOptions.customer.checkType
+                customerKey = savedCardsOptions.customer.customerKey
+            }
+            features = savedCardsOptions.features
+        })
+    }
+
+    private fun CardItemUiModel.handleCardAttached() {
+        attachedCardId = null
+        snackBarHelper.showWithIcon(R.drawable.acq_ic_card_sparkle,
+            getString(R.string.acq_cardlist_snackbar_add, tail))
+    }
+
     private fun CoroutineScope.subscribeOnEvents() {
         launch {
             viewModel.eventFlow.filterNotNull().collect {
@@ -194,19 +233,18 @@ internal class CardsListActivity : TransparentActivity() {
 
                 when (it) {
                     is CardListEvent.RemoveCardProgress -> {
-                        snackBarHelper.show(
-                            R.string.acq_cardlist_snackbar_remove_progress, true
-                        )
+                        snackBarHelper.showProgress(R.string.acq_cardlist_snackbar_remove_progress)
                     }
                     is CardListEvent.RemoveCardSuccess -> {
                         it.indexAt?.let(cardsListAdapter::onRemoveCard)
-                        snackBarHelper.hide()
+                        snackBarHelper.showWithIcon(R.drawable.acq_ic_card_sparkle,
+                            getString(R.string.acq_cardlist_snackbar_remove, it.deletedCard.tail))
                     }
                     is CardListEvent.ShowError -> {
-                        // TODO  после задачи на диалог с ошибками
-                        snackBarHelper.show(
-                            "Произошла ошибка"
-                        )
+                        showErrorDialog(
+                            R.string.acq_cardlist_alert_label,
+                            R.string.acq_cardlist_stub_description,
+                            R.string.acq_cardlist_alert_access)
                     }
                 }
             }
@@ -230,5 +268,20 @@ internal class CardsListActivity : TransparentActivity() {
         }
         stubSubtitleView.setText(subTitleTextRes)
         stubButtonView.setText(buttonTextRes)
+    }
+
+    override fun finishWithError(throwable: Throwable) {
+        isErrorOccurred = true
+        super.finishWithError(throwable)
+    }
+
+    override fun finish() {
+        if (!isErrorOccurred) {
+            val intent = Intent()
+            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, selectedCardId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, isCardListChanged)
+            setResult(Activity.RESULT_OK, intent)
+        }
+        super.finish()
     }
 }

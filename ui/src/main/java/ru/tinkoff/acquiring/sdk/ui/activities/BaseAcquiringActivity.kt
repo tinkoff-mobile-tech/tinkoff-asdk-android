@@ -132,28 +132,28 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     }
 
     protected fun showErrorDialog(
-        @StringRes title: Int = R.string.acq_error,
-        @StringRes message: Int,
-        @StringRes buttonText: Int = R.string.acq_ok,
+        @StringRes title: Int,
+        @StringRes message: Int?,
+        @StringRes buttonText: Int,
         onButtonClick: (() -> Unit)? = null
     ) {
         AlertDialog.Builder(this)
             .setTitle(title)
-            .setMessage(message)
+            .apply { message?.let { setMessage(it) } }
             .setPositiveButton(buttonText) { _, _ ->
                 onButtonClick?.invoke()
             }.show()
     }
 
     protected fun showErrorDialog(
-        title: String = getString(R.string.acq_error),
-        message: String,
-        buttonText: String = getString(R.string.acq_ok),
+        title: String,
+        message: String?,
+        buttonText: String,
         onButtonClick: (() -> Unit)? = null
     ) {
         AlertDialog.Builder(this)
             .setTitle(title)
-            .setMessage(message)
+            .apply { message?.let { setMessage(it) } }
             .setPositiveButton(buttonText) { _, _ ->
                 onButtonClick?.invoke()
             }.show()

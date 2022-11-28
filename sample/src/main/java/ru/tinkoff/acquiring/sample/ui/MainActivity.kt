@@ -37,13 +37,12 @@ import ru.tinkoff.acquiring.sample.service.PriceNotificationReceiver
 import ru.tinkoff.acquiring.sample.utils.PaymentNotificationManager
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.AttachCard
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.SavedCards
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
@@ -58,8 +57,20 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     private val priceNotificationReceiver = PriceNotificationReceiver()
     private var selectedCardIdForDemo: String? = null
 
-    private val attachCard = registerForActivityResult(TinkoffAcquiring.AttachCardContract) { cardId ->
-        cardId?.let { PaymentResultActivity.start(this, it) } ?: toast(R.string.attachment_failed)
+    private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
+        when (result) {
+            is AttachCard.Success -> PaymentResultActivity.start(this, result.cardId)
+            is AttachCard.Error -> toast(result.error.message ?: getString(R.string.attachment_failed))
+            is AttachCard.Canceled -> toast(R.string.attachment_cancelled)
+        }
+    }
+
+    private val savedCards = registerForActivityResult(SavedCards.Contract) { result ->
+        when (result) {
+            is SavedCards.Success -> selectedCardIdForDemo = result.selectedCardId
+            is SavedCards.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            else -> Unit
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,15 +163,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                     Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
                 }
             }
-            SAVED_CARDS_REQUEST_CODE -> {
-                val selectedCardId = data?.getStringExtra(EXTRA_CARD_ID)
-                selectedCardIdForDemo = selectedCardId
-
-                when (resultCode) {
-                    RESULT_OK -> Toast.makeText(this, "Выбранная карта: CardId=$selectedCardId", Toast.LENGTH_SHORT).show()
-                    RESULT_ERROR -> Toast.makeText(this, R.string.error_title, Toast.LENGTH_SHORT).show()
-                }
-            }
             NOTIFICATION_PAYMENT_REQUEST_CODE -> {
                 when (resultCode) {
                     RESULT_OK -> {
@@ -239,7 +241,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
         val settings = SettingsSdkManager(this)
         val params = TerminalsManager.selectedTerminal
 
-        val options = SavedCardsOptions().setOptions {
+        savedCards.launch(SampleApplication.tinkoffAcquiring.savedCardsOptions {
             customerOptions {
                 customerKey = params.customerKey
                 checkType = settings.checkType
@@ -254,17 +256,12 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 userCanSelectCard = true
                 selectedCardId = selectedCardIdForDemo
             }
-        }
-
-        SampleApplication.tinkoffAcquiring.openSavedCardsScreen(this,
-                options,
-                SAVED_CARDS_REQUEST_CODE)
+        })
     }
 
     companion object {
 
         private const val STATIC_QR_REQUEST_CODE = 12
-        private const val SAVED_CARDS_REQUEST_CODE = 13
         const val NOTIFICATION_PAYMENT_REQUEST_CODE = 14
         const val THREE_DS_REQUEST_CODE = 15
 

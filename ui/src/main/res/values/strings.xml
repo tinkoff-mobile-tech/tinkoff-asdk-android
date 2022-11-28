@@ -29,11 +29,11 @@
     <string name="acq_cardlist_bankname">%1$s • %2$s</string>
     <string name="acq_cardlist_title">Your cards</string>
 
-    <string name="acq_attach_card_title">Attach card</string>
+    <string name="acq_cardlist_addcard_title">Attach card</string>
     <string name="acq_label_card_number">Number</string>
     <string name="acq_label_expiry_date">Expiry date</string>
     <string name="acq_label_card_cvv">Code</string>
-    <string name="acq_attach_card_btn">Attach</string>
+    <string name="acq_addcard_button_add">Attach</string>
 
     <string name="acq_cardlist_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>
     <string name="acq_cardlist_stub_description">Try again in a couple of minutes</string>
@@ -48,14 +48,12 @@
 
     <string name="acq_cardlist_snackbar_add">Card •%1$s added</string>
     <string name="acq_cardlist_snackbar_remove">Card •%1$s deleted</string>
-    <string name="acq_cardlist_snackbar_remove_progress">delete in progress</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Delete in progress</string>
     <string name="acq_cardlist_addcard">Add new</string>
     <string name="acq_cardlist_button_change">Сhange</string>
     <string name="acq_cardlist_button_done">Done</string>
 
-    <string name="acq_error">Error</string>
     <string name="acq_attach_card_error">Error attaching card</string>
-    <string name="acq_ok">OK</string>
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">%d symbol available</item>

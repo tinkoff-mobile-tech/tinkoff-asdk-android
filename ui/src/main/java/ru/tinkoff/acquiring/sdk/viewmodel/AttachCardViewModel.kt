@@ -23,7 +23,6 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
-import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
@@ -34,6 +33,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
+import ru.tinkoff.acquiring.sdk.utils.ErrorResolver
 
 /**
  * @author Mariya Chernyadieva
@@ -106,7 +106,8 @@ internal class AttachCardViewModel(
                     if (needHandleErrorsInSdk && it is AcquiringApiException) {
                         if (it.response != null && AcquiringApi.errorCodesAttachedCard.contains(it.response!!.errorCode)) {
                             changeScreenState(LoadedState)
-                            changeScreenState(ErrorScreenState(context.getString(R.string.acq_attach_card_error)))
+                            changeScreenState(ErrorScreenState(ErrorResolver.resolve(it,
+                                context.getString(R.string.acq_attach_card_error))))
                         } else handleException(it)
                     } else handleException(it)
                 }
