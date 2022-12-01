@@ -19,6 +19,7 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
@@ -195,6 +196,22 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         selectedCardId = card.cardId
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        ev ?: return false
+        return if (isDeletingBottomContainerShowed) {
+
+            if (deletingBottomContainer.containsRect(ev.x.toInt(), ev.y.toInt())) {
+                super.dispatchTouchEvent(ev)
+            } else {
+                deletingBottomContainer.hide()
+                false
+            }
+
+        } else {
+            super.dispatchTouchEvent(ev)
+        }
+    }
+
     private fun initViews() {
         val toolbar = findViewById<Toolbar>(R.id.acq_toolbar)
         toolbar.title = localization.cardListTitle
@@ -291,7 +308,8 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
                 }
             }
         } else {
-            showErrorScreen(localization.cardListEmptyList ?: "", localization.addCardAttachmentTitle) {
+            showErrorScreen(localization.cardListEmptyList
+                    ?: "", localization.addCardAttachmentTitle) {
                 openAttachActivity()
             }
         }

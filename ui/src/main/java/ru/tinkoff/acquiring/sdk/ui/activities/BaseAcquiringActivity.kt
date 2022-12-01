@@ -45,6 +45,7 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.BankChooseResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsSubmitV2Delegate
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_PACKAGE_NAME
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
 
@@ -144,6 +145,8 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     protected fun provideViewModel(clazz: Class<out ViewModel>): ViewModel {
         return ViewModelProvider(this, ViewModelProviderFactory(application, options.features.handleErrorsInSdk, sdk))[clazz]
     }
+
+    protected fun provideThreeDsSubmitV2Delegate() = ThreeDsSubmitV2Delegate(sdk)
 
     protected open fun setSuccessResult(result: AsdkResult) {
         val intent = Intent()

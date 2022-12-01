@@ -17,7 +17,9 @@
 package ru.tinkoff.acquiring.sdk.requests
 
 import com.google.gson.Gson
+import okhttp3.Response
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.JSON
 import ru.tinkoff.acquiring.sdk.network.NetworkClient
@@ -77,6 +79,13 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         request.validate()
         val client = NetworkClient()
         client.call(request, responseClass, onSuccess, onFailure)
+    }
+
+    @kotlin.jvm.Throws(NetworkException::class)
+    protected fun <R : AcquiringResponse> performRequestRaw(request: AcquiringRequest<R>): Response {
+        request.validate()
+        val client = NetworkClient()
+        return client.callRaw(request)
     }
 
     protected fun MutableMap<String, Any>.putIfNotNull(key: String, value: Any?) {

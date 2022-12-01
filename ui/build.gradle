@@ -60,6 +60,8 @@ dependencies {
     implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
 
     testImplementation 'junit:junit:4.13'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlin}"
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

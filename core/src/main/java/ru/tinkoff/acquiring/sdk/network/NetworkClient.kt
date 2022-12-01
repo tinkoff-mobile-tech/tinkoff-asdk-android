@@ -23,6 +23,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
@@ -85,7 +86,12 @@ internal class NetworkClient {
                             onSuccess(result)
                         } else {
                             AcquiringSdk.log("=== Request done with fail")
-                            onFailure(AcquiringApiException(result, "${result.message ?: ""} ${result.details ?: ""}"))
+                            onFailure(
+                                AcquiringApiException(
+                                    result,
+                                    "${result.message ?: ""} ${result.details ?: ""}"
+                                )
+                            )
                         }
                     }
                 }
@@ -103,12 +109,31 @@ internal class NetworkClient {
 
         } catch (e: IOException) {
             if (!request.isDisposed()) {
-                onFailure(NetworkException("Unable to performRequest request ${request.apiMethod}", e))
+                onFailure(
+                    NetworkException(
+                        "Unable to performRequest request ${request.apiMethod}",
+                        e
+                    )
+                )
             }
         } catch (e: JsonParseException) {
             if (!request.isDisposed()) {
                 onFailure(AcquiringApiException("Invalid response. $response", e))
             }
+        }
+    }
+
+    internal fun <R : AcquiringResponse> callRaw(
+        request: AcquiringRequest<R>
+    ): Response {
+        return try {
+            val httpRequest = request.httpRequest()
+            val call = okHttpClient.newCall(httpRequest)
+            AcquiringSdk.log("=== Sending ${httpRequest.method} request to ${httpRequest.url}")
+            call.execute()
+        } catch (e: IOException) {
+            AcquiringSdk.log("=== Receive error ${e.message} on method ${request.httpRequestMethod} ${request.apiMethod}")
+            throw NetworkException("Unable to performRequest request ${request.apiMethod}", e)
         }
     }
 
@@ -134,7 +159,10 @@ internal class NetworkClient {
 
     }.build()
 
-    private fun <R : AcquiringResponse> checkResult(result: R, onChecked: (isSuccess: Boolean) -> Unit) {
+    private fun <R : AcquiringResponse> checkResult(
+        result: R,
+        onChecked: (isSuccess: Boolean) -> Unit
+    ) {
         if (result.errorCode == AcquiringApi.API_ERROR_CODE_NO_ERROR && result.isSuccess!!) {
             onChecked(true)
         } else {
@@ -146,7 +174,7 @@ internal class NetworkClient {
     private fun prepareURL(apiMethod: String?): URL {
         if (apiMethod.isNullOrEmpty()) {
             throw IllegalArgumentException(
-                    "Cannot prepare URL for request api method is empty or null!"
+                "Cannot prepare URL for request api method is empty or null!"
             )
         }
 
