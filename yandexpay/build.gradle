@@ -10,7 +10,7 @@ android {
     buildToolsVersion rootProject.buildTools
 
     defaultConfig {
-        minSdkVersion rootProject.minSdk
+        minSdkVersion rootProject.yandexPayMinSdk
         targetSdkVersion rootProject.targetSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
@@ -24,8 +24,10 @@ android {
         }
     }
 
-    lintOptions {
-        disable 'VectorRaster', 'UseRequireDrawableLoadingForDrawables', 'ObsoleteSdkInt', 'UnusedResources', 'IconDipSize', 'IconLocation'
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains("AndroidTest")) {
+            task.enabled = false
+        }
     }
 }
 
@@ -33,37 +35,19 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleExtensionsVersion"
-    implementation "ru.tinkoff.core.components.nfc:nfc:$coreNfcVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-
-    implementation "com.google.code.gson:gson:$gsonVersion"
-
-    api("com.google.android.gms:play-services-wallet:$googleWalletVersion")
+    
     api project(':core')
+    implementation project(':ui')
 
-    implementation project(':threeds-sdk')
-    implementation project(':threeds-wrapper')
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
-    implementation "com.squareup.okhttp3:okhttp:${okHttpVersion}"
-    implementation "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
-    implementation "androidx.security:security-crypto:${cryptoVersion}"
-
-    // threeds dependencies
     implementation "androidx.appcompat:appcompat:${appCompatVersion}"
-    implementation "androidx.constraintlayout:constraintlayout:${constraintLayoutVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    implementation "com.nimbusds:nimbus-jose-jwt:${nimbusVersion}"
-    implementation "org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}"
-    implementation "jp.wasabeef:blurry:${blurryVersion}"
-    implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
+    implementation("com.yandex.pay:core:${yandexPayVersion}")
 
 
     testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlin}"
     testImplementation 'org.mockito:mockito-inline:2.13.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

@@ -46,11 +46,6 @@ import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
-import ru.tinkoff.acquiring.sdk.yandex.YandexButtonFragment
-import ru.tinkoff.acquiring.sdk.yandex.YandexButtonViewModel
-import ru.tinkoff.acquiring.sdk.yandex.models.YandexPayData
-import ru.tinkoff.acquiring.sdk.yandex.models.mapYandexPayData
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -456,11 +451,6 @@ class TinkoffAcquiring(
             requestCode,
             NotificationPaymentActivity.PaymentMethod.TINKOFF,
             notificationId)
-    }
-
-
-    fun creteYandexPayButtonFragment(yandexPayData: YandexPayData, options: PaymentOptions): YandexButtonFragment {
-        return YandexButtonFragment.newInstance(yandexPayData, options)
     }
 
     private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {

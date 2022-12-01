@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.yandex.models
+package ru.tinkoff.acquiring.yandexpay.models
 
 import com.yandex.pay.core.data.Amount
 import com.yandex.pay.core.data.Order

@@ -43,7 +43,9 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
-import ru.tinkoff.acquiring.sdk.yandex.models.mapYandexPayData
+import ru.tinkoff.acquiring.yandexpay.creteYandexPayButtonFragment
+import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
+import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
 import kotlin.math.abs
 
@@ -175,6 +177,20 @@ open class PayableActivity : AppCompatActivity() {
             supportFragmentManager.commit {
                 replace(yandexPayButtonContainer.id,
                     tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
+                )
+            }
+        },{
+            yandexPayButtonContainer.visibility = View.VISIBLE
+            val paymentOptions = createPaymentOptions().apply {
+                val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
+                this.setTerminalParams(
+                    terminalKey = session.terminalKey, publicKey = session.publicKey
+                )
+            }
+
+            supportFragmentManager.commit {
+                replace(yandexPayButtonContainer.id,
+                    tinkoffAcquiring.creteYandexPayButtonFragment(YandexPayData("1","name","", "tinkoff"), paymentOptions)
                 )
             }
         })
