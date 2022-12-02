@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'kotlin'
-apply from: '../gradle/dokka.gradle'
+apply plugin: 'org.jetbrains.dokka'
 apply from: '../gradle/versions.gradle'
 apply from: '../gradle/publish.gradle'
 
@@ -9,6 +9,10 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+tasks.dokkaHtmlPartial.configure {
+    outputDirectory = file("../build/dokka/core")
 }
 
 dependencies {

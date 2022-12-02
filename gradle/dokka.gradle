@@ -3,3 +3,7 @@ apply plugin: 'org.jetbrains.dokka'
 tasks.dokkaHtml.configure {
     outputDirectory = file("$buildDir/dokka")
 }
+
+tasks.dokkaHtmlPartial.configure {
+    outputDirectory = file("../dokka")
+}
