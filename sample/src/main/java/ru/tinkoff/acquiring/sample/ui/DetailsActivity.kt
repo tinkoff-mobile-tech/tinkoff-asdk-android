@@ -26,13 +26,10 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.commit
-import androidx.fragment.app.transaction
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.models.Cart
-import ru.tinkoff.acquiring.sdk.yandex.YandexButtonFragment
 
 /**
  * @author Mariya Chernyadieva

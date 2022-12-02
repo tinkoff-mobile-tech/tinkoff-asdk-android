@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.yandex
+package ru.tinkoff.acquiring.yandexpay
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,10 +10,9 @@ import androidx.fragment.app.Fragment
 import com.yandex.pay.core.*
 import com.yandex.pay.core.data.*
 import com.yandex.pay.core.ui.YandexPayButton
-import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.yandex.models.YandexPayData
-import ru.tinkoff.acquiring.sdk.yandex.models.mapYandexOrder
+import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
+import ru.tinkoff.acquiring.yandexpay.models.mapYandexOrder
 
 /**
  * Created by i.golovachev

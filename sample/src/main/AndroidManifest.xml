@@ -19,7 +19,6 @@
     package="ru.tinkoff.acquiring.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-sdk android:minSdkVersion="21" tools:overrideLibrary="com.yandex.pay.core"/>
 
     <application
         android:name=".SampleApplication"
