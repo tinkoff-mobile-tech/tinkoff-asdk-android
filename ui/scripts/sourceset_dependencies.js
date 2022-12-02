@@ -1,0 +1,1 @@
+{"@class":"org.jetbrains.dokka.base.templating.AddToSourcesetDependencies","moduleName":"ui","content":{":ui:dokkaHtmlPartial/androidTestRelease":[],":ui:dokkaHtmlPartial/debug":[],":ui:dokkaHtmlPartial/main":[],":ui:dokkaHtmlPartial/release":[],":ui:dokkaHtmlPartial/testFixtures":[],":ui:dokkaHtmlPartial/testFixturesDebug":[],":ui:dokkaHtmlPartial/testFixturesRelease":[]}}

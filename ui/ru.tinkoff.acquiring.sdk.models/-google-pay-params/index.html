@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GooglePayParams</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+const savedDarkMode = storage ? JSON.parse(storage) : false
+if(savedDarkMode === true){
+    document.getElementsByTagName("html")[0].classList.add("theme-dark")
+}</script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>AcquiringSdkAndroid</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="ui::ru.tinkoff.acquiring.sdk.models/GooglePayParams///PointingToDeclaration//-587146753">
+  <div class="breadcrumbs"><a href="../../index.html">ui</a><span class="delimiter">/</span><a href="../index.html">ru.tinkoff.acquiring.sdk.models</a><span class="delimiter">/</span><a href="index.html">GooglePayParams</a></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Google</span><wbr><span>Pay</span><wbr><span><span>Params</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GooglePayParams</a>&nbsp;<span><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>terminalKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>isAddressRequired<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>isPhoneRequired<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>environment<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>WalletConstants.ENVIRONMENT_TEST<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>cardAuthMethods<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-card-auth-method/index.html">GooglePayParams.CardAuthMethod</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf(CardAuthMethod.PAN_ONLY, CardAuthMethod.CRYPTOGRAM_3DS)</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">Параметры, передающиеся для конфигурации Google Pay</p><h4 class="">Author</h4><p class="paragraph">Mariya Chernyadieva</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Parameters">Parameters</button></div>
+    <div class="tabs-section-body">
+      <h2 class="">Parameters</h2>
+      <div data-togglable="Parameters">
+        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span>terminal</span><wbr><span><span>Key</span></span></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Ключ терминала. Выдается после подключения к Tinkoff Acquiring</p></div></div></div></div></div><div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span>is</span><wbr><span>Address</span><wbr><span><span>Required</span></span></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Параметр, указывающий нужно ли запрашивать адрес доставки у покупателя</p></div></div></div></div></div><div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span>is</span><wbr><span>Phone</span><wbr><span><span>Required</span></span></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Параметр, указывающий нужно ли запрашивать номер телефона для доставки     у покупателя. Для запроса телефона необходимо также запрашивать адрес,     установив isAddressRequired = true</p></div></div></div></div></div><div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span><span>environment</span></span></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Значение параметра указывает, в каком режиме работает сервер –     рабочем или тестовом. По-умолчанию задан тестовый режим</p></div></div></div></div></div><div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><span>card</span><wbr><span>Auth</span><wbr><span><span>Methods</span></span></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Методы аутентификации карты <a href="-card-auth-method/index.html">CardAuthMethod</a></p></div></div></div></div></div></div></div></div></div>
+      </div>
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="-732389667%2FConstructors%2F-587146753" anchor-label="GooglePayParams" id="-732389667%2FConstructors%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-google-pay-params.html"><span>Google</span><wbr><span>Pay</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-732389667%2FConstructors%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="-google-pay-params.html"><span class="token function">GooglePayParams</span></a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;terminalKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;isAddressRequired<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;isPhoneRequired<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;environment<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>WalletConstants.ENVIRONMENT_TEST<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;cardAuthMethods<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-card-auth-method/index.html">GooglePayParams.CardAuthMethod</a><span class="token operator">&gt;</span><span class="token operator"> = </span>listOf(CardAuthMethod.PAN_ONLY, CardAuthMethod.CRYPTOGRAM_3DS)</span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Types</h2>
+      <div class="table" data-togglable="Types"><a data-name="110342277%2FClasslikes%2F-587146753" anchor-label="CardAuthMethod" id="110342277%2FClasslikes%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-card-auth-method/index.html"><span>Card</span><wbr><span>Auth</span><wbr><span><span>Method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="110342277%2FClasslikes%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-card-auth-method/index.html">CardAuthMethod</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-card-auth-method/index.html">GooglePayParams.CardAuthMethod</a><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Методы аутентификации карты.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="398729336%2FClasslikes%2F-587146753" anchor-label="Companion" id="398729336%2FClasslikes%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="398729336%2FClasslikes%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-590536166%2FClasslikes%2F-587146753" anchor-label="GooglePayEnvironment" id="-590536166%2FClasslikes%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-google-pay-environment/index.html"><span>Google</span><wbr><span>Pay</span><wbr><span><span>Environment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-590536166%2FClasslikes%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">annotation class </span><a href="-google-pay-environment/index.html">GooglePayEnvironment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Properties</h2>
+      <div class="table" data-togglable="Properties"><a data-name="1733833143%2FProperties%2F-587146753" anchor-label="cardAuthMethods" id="1733833143%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="card-auth-methods.html"><span>card</span><wbr><span>Auth</span><wbr><span><span>Methods</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1733833143%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1733833143%2FProperties%2F-587146753" anchor-label="cardAuthMethods" id="1733833143%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="card-auth-methods.html">cardAuthMethods</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-card-auth-method/index.html">GooglePayParams.CardAuthMethod</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-609846402%2FProperties%2F-587146753" anchor-label="environment" id="-609846402%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="environment.html"><span><span>environment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-609846402%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-609846402%2FProperties%2F-587146753" anchor-label="environment" id="-609846402%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="environment.html">environment</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-805461464%2FProperties%2F-587146753" anchor-label="isAddressRequired" id="-805461464%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="is-address-required.html"><span>is</span><wbr><span>Address</span><wbr><span><span>Required</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-805461464%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-805461464%2FProperties%2F-587146753" anchor-label="isAddressRequired" id="-805461464%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="is-address-required.html">isAddressRequired</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2101358446%2FProperties%2F-587146753" anchor-label="isPhoneRequired" id="2101358446%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="is-phone-required.html"><span>is</span><wbr><span>Phone</span><wbr><span><span>Required</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2101358446%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="2101358446%2FProperties%2F-587146753" anchor-label="isPhoneRequired" id="2101358446%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="is-phone-required.html">isPhoneRequired</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1877569202%2FProperties%2F-587146753" anchor-label="terminalKey" id="-1877569202%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="terminal-key.html"><span>terminal</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1877569202%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1877569202%2FProperties%2F-587146753" anchor-label="terminalKey" id="-1877569202%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="terminal-key.html">terminalKey</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+

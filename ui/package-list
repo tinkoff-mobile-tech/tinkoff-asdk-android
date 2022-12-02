@@ -1,0 +1,17 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+ru.tinkoff.acquiring.sdk
+ru.tinkoff.acquiring.sdk.cardscanners
+ru.tinkoff.acquiring.sdk.cardscanners.models
+ru.tinkoff.acquiring.sdk.localization
+ru.tinkoff.acquiring.sdk.models
+ru.tinkoff.acquiring.sdk.models.options
+ru.tinkoff.acquiring.sdk.models.options.screen
+ru.tinkoff.acquiring.sdk.models.result
+ru.tinkoff.acquiring.sdk.payment
+ru.tinkoff.acquiring.sdk.threeds
+ru.tinkoff.acquiring.sdk.ui.customview
+ru.tinkoff.acquiring.sdk.ui.customview.editcard
+ru.tinkoff.acquiring.sdk.utils
+
