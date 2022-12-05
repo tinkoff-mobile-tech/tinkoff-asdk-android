@@ -43,6 +43,7 @@ object AcquiringApi {
     const val SUBMIT_3DS_AUTHORIZATION = "Submit3DSAuthorization"
     const val SUBMIT_3DS_AUTHORIZATION_V2 = "Submit3DSAuthorizationV2"
     const val COMPLETE_3DS_METHOD_V2 = "Complete3DSMethodv2"
+    const val GET_TERMINAL_PAY_METHODS = "GetTerminalPayMethods"
 
     const val API_ERROR_CODE_3DSV2_NOT_SUPPORTED = "106"
     const val API_ERROR_CODE_CUSTOMER_NOT_FOUND = "7"

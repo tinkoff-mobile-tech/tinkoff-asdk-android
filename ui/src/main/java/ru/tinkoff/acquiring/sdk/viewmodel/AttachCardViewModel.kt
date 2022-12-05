@@ -36,6 +36,7 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.responses.AttachCardResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import kotlin.properties.ReadWriteProperty
 
 /**
  * @author Mariya Chernyadieva

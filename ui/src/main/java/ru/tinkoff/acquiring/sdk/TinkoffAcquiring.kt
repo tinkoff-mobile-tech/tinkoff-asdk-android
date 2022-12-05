@@ -31,14 +31,13 @@ import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.*
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
@@ -47,7 +46,6 @@ import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -202,6 +200,26 @@ class TinkoffAcquiring(
             }, {
                 launch(Dispatchers.Main) { onFailure?.invoke(it) }
             })
+        }
+    }
+
+    /**
+     * Проверка доступных спосбов оплаты
+     */
+    fun checkTerminalInfo(onSuccess: (TerminalInfo?) -> Unit,
+                          onFailure: ((Throwable) -> Unit)? = null) {
+
+        val onFailureOrThrow = onFailure ?: { throw it }
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = sdk.getTerminalPayMethods()
+                .performSuspendRequest()
+                .map { it.terminalInfo }
+
+            launch(Dispatchers.Main) {
+                result.fold(onSuccess, onFailureOrThrow)
+            }
         }
     }
 

@@ -17,6 +17,8 @@
 package ru.tinkoff.acquiring.sdk.requests
 
 import com.google.gson.Gson
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import okhttp3.Response
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
@@ -34,7 +36,8 @@ import java.security.PublicKey
  *
  * @author Mariya Chernyadieva, Taras Nagorny
  */
-abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) : Request<R> {
+abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: String) :
+    Request<R> {
 
     protected val gson: Gson = NetworkClient.createGson()
 
@@ -43,6 +46,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
 
     internal lateinit var terminalKey: String
     internal lateinit var publicKey: PublicKey
+
     @Volatile
     private var disposed = false
     private val ignoredFieldsSet: HashSet<String> = hashSetOf(DATA, RECEIPT, RECEIPTS, SHOPS)
@@ -79,6 +83,28 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         request.validate()
         val client = NetworkClient()
         client.call(request, responseClass, onSuccess, onFailure)
+    }
+
+    fun performRequestAsync(responseClass: Class<R>): Deferred<Result<R>> {
+        this.validate()
+        val client = NetworkClient()
+        val deferred: CompletableDeferred<Result<R>> = CompletableDeferred()
+
+        client.call(this, responseClass,
+            onSuccess = {
+                deferred.complete(Result.success(it))
+            },
+            onFailure = {
+                deferred.complete(Result.failure(it))
+            })
+        return deferred
+    }
+
+    suspend fun performSuspendRequest(responseClass: Class<R>): Result<R> {
+        return performRequestAsync(responseClass).run {
+            start()
+            await()
+        }
     }
 
     @kotlin.jvm.Throws(NetworkException::class)
@@ -202,5 +228,10 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val THREE_DS_SERVER_TRANS_ID = "threeDSServerTransID"
         const val TRANS_STATUS = "transStatus"
         const val CRES = "cres"
+        const val PAYSOURCE = "Paysource"
     }
+}
+
+suspend inline fun <reified R : AcquiringResponse> AcquiringRequest<R>.performSuspendRequest(): Result<R> {
+    return performSuspendRequest(R::class.java)
 }

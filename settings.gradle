@@ -3,4 +3,5 @@ include ':sample',
         ':cardio',
         ':ui',
         ':threeds-sdk',
-        ':threeds-wrapper'
+        ':threeds-wrapper',
+        ':yandexpay'

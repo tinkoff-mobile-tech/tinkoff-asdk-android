@@ -25,6 +25,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.utils.SessionParams
@@ -42,6 +43,9 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
+import ru.tinkoff.acquiring.yandexpay.creteYandexPayButtonFragment
+import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
+import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
 import kotlin.math.abs
 
@@ -61,7 +65,7 @@ open class PayableActivity : AppCompatActivity() {
     private val paymentListener = createPaymentListener()
     private var isProgressShowing = false
     private var isErrorShowing = false
-    private var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
+    protected var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
     private val orderId: String
         get() = abs(Random().nextInt()).toString()
 
@@ -150,6 +154,44 @@ open class PayableActivity : AppCompatActivity() {
                 tinkoffAcquiring.payWithTinkoffPay(createPaymentOptions(), version)
                         .subscribe(paymentListener)
                         .start()
+            }
+        })
+    }
+
+    protected fun setupYandexPay() {
+        if (!settings.yandexPayEnabled) return
+
+        val yandexPayButtonContainer = findViewById<View>(R.id.btn_yandex_container)
+
+        tinkoffAcquiring.checkTerminalInfo({ terminalInfo ->
+            val yandexPayData = terminalInfo?.mapYandexPayData() ?: return@checkTerminalInfo
+
+            yandexPayButtonContainer.visibility = View.VISIBLE
+            val paymentOptions = createPaymentOptions().apply {
+                val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
+                this.setTerminalParams(
+                     terminalKey = session.terminalKey, publicKey = session.publicKey
+                )
+            }
+
+            supportFragmentManager.commit {
+                replace(yandexPayButtonContainer.id,
+                    tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
+                )
+            }
+        },{
+            yandexPayButtonContainer.visibility = View.VISIBLE
+            val paymentOptions = createPaymentOptions().apply {
+                val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
+                this.setTerminalParams(
+                    terminalKey = session.terminalKey, publicKey = session.publicKey
+                )
+            }
+
+            supportFragmentManager.commit {
+                replace(yandexPayButtonContainer.id,
+                    tinkoffAcquiring.creteYandexPayButtonFragment(YandexPayData("1","name","", "tinkoff"), paymentOptions)
+                )
             }
         })
     }
@@ -255,6 +297,7 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     private fun handleGooglePayResult(resultCode: Int, data: Intent?) {
+        val a = createPaymentOptions()
         if (data != null && resultCode == Activity.RESULT_OK) {
             val token = GooglePayHelper.getGooglePayToken(data)
             if (token == null) {
@@ -296,12 +339,12 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun showProgressDialog() {
+    protected fun showProgressDialog() {
         progressDialog.show()
         isProgressShowing = true
     }
 
-    private fun hideProgressDialog() {
+    protected fun hideProgressDialog() {
         progressDialog.dismiss()
         isProgressShowing = false
     }
