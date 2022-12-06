@@ -344,6 +344,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 ### Поддержка
 - По возникающим вопросам просьба обращаться на [oplata@tinkoff.ru][support-email]
 - Баги и feature-реквесты можно направлять в раздел [issues][issues]
+- Документация на [GitHub Pages](https://tinkoff.github.io/AcquiringSdkAndroid/ui/ru.tinkoff.acquiring.sdk/-tinkoff-acquiring/index.html)
 
 [search.maven]: http://search.maven.org/#search|ga|1|ru.tinkoff.acquiring.ui
 [build-config]: https://developer.android.com/studio/build/index.html
