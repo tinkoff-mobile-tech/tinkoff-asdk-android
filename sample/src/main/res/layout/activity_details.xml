@@ -162,6 +162,7 @@
         android:id="@+id/btn_yandex_container"
         android:background="@color/colorPrimary"
         android:paddingBottom="12dp"
+        android:paddingHorizontal="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </FrameLayout>

@@ -22,6 +22,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="actionBarStyle">@style/AppTheme.ActionBarStyle</item>
+        <item name="acqYandexPayButtonWidth">match_parent</item>
+        <item name="acqYandexPayButtonHeight">54dp</item>
+        <item name="acqYandexPayButtonCornerRadius">6dp</item>
     </style>
 
     <style name="AppTheme.ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
