@@ -20,9 +20,7 @@ import ru.tinkoff.acquiring.yandexpay.models.mapYandexOrder
 class YandexButtonFragment : Fragment() {
 
     companion object {
-        /**
-         * если данные получены другим способом, возможность засетить их синхронно
-         */
+
         fun newInstance(
             data: YandexPayData, options: PaymentOptions
         ): YandexButtonFragment {
@@ -35,6 +33,8 @@ class YandexButtonFragment : Fragment() {
         }
     }
 
+    var listener : ((AcqYandexPayResult) -> Unit)? = null
+
     private val data: YandexPayData by lazy {
         arguments?.getSerializable(YandexButtonFragment::data.name) as YandexPayData
     }
@@ -44,14 +44,16 @@ class YandexButtonFragment : Fragment() {
     }
 
     private val yandexPayLauncher = registerForActivityResult(OpenYandexPayContract()) { result ->
-        when (result) {
-            is YandexPayResult.Success -> Unit  //showToast("token: ${result.paymentToken}")
+        val acqResult = when (result) {
+            is YandexPayResult.Success ->
+                AcqYandexPayResult.Success(result.paymentToken.value)
             is YandexPayResult.Failure -> when (result) {
-                is YandexPayResult.Failure.Validation -> Unit //showToast("failure: ${result.details}")
-                is YandexPayResult.Failure.Internal -> Unit// showToast("failure: ${result.message}")
+                is YandexPayResult.Failure.Validation -> AcqYandexPayResult.Error(result.details.name)
+                is YandexPayResult.Failure.Internal -> AcqYandexPayResult.Error(result.message)
             }
-            is YandexPayResult.Cancelled -> Unit //showToast("cancelled")
+            is YandexPayResult.Cancelled -> AcqYandexPayResult.Cancelled
         }
+        listener?.invoke(acqResult)
     }
 
     override fun onCreateView(
