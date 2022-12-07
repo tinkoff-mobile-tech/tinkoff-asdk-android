@@ -44,6 +44,12 @@
             android:windowSoftInputMode="adjustNothing" />
 
         <activity
+            android:name=".ui.activities.YandexPaymentActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
             android:name=".ui.activities.AttachCardActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"

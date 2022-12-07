@@ -80,7 +80,6 @@ class YandexButtonFragment : Fragment() {
             )
             // запустите сервис с помощью лаунчера, передав сформированные orderDetails
             yandexPayLauncher.launch(orderDetails)
-
         }
 
         return view

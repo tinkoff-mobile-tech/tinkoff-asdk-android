@@ -178,7 +178,11 @@ open class PayableActivity : AppCompatActivity() {
             val acqFragment = tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
             acqFragment.listener =  {
                 when (it) {
-                    is AcqYandexPayResult.Success -> Unit // TODO start yandex payment flow
+                    is AcqYandexPayResult.Success -> tinkoffAcquiring.openYandexPaymentScreen(this,
+                        paymentOptions,
+                        YANDEX_PAY_REQUEST_CODE,
+                        it.token,
+                        terminalInfo.initTokenRequired)
                     is AcqYandexPayResult.Error -> showErrorDialog()
                     else -> Unit
                 }
@@ -348,6 +352,7 @@ open class PayableActivity : AppCompatActivity() {
         const val PAYMENT_REQUEST_CODE = 1
         const val DYNAMIC_QR_PAYMENT_REQUEST_CODE = 2
         const val GOOGLE_PAY_REQUEST_CODE = 5
+        const val YANDEX_PAY_REQUEST_CODE = 6
 
         private const val STATE_PAYMENT_AMOUNT = "payment_amount"
         private const val STATE_LOADING_SHOW = "loading_show"
