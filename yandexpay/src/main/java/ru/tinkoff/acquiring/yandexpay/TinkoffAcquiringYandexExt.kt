@@ -7,6 +7,9 @@ import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 /**
  * Created by i.golovachev
  */
-fun TinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData: YandexPayData, options: PaymentOptions): YandexButtonFragment {
+fun TinkoffAcquiring.creteYandexPayButtonFragment(
+    yandexPayData: YandexPayData,
+    options: PaymentOptions
+): YandexButtonFragment {
     return YandexButtonFragment.newInstance(yandexPayData, options)
 }

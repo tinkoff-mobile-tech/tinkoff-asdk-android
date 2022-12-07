@@ -55,6 +55,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
     internal open val tokenIgnoreFields: HashSet<String>
         get() = ignoredFieldsSet
 
+    var needSignToken: Boolean = true
 
     protected abstract fun validate()
 
@@ -135,7 +136,9 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         val params = asMap()
         if (params.isEmpty()) return ""
 
-        getToken()?.let { params[TOKEN] = it }
+        if (needSignToken) {
+            getToken()?.let { params[TOKEN] = it }
+        }
 
         return when (contentType) {
             AcquiringApi.FORM_URL_ENCODED -> encodeRequestBody(params)

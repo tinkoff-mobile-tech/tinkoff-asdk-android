@@ -236,6 +236,18 @@ class TinkoffAcquiring(
     }
 
     /**
+     * Запуск SDK для оплаты через Yandex Pay. У возвращенгого объекта следует указать
+     * слушатель событий с помощью метода [PaymentProcess.subscribe] и вызвать метод
+     * [PaymentProcess.start] для запуска сценария оплаты.
+     *
+     * @param options настройки платежной сессии
+     * @param yandexPayToken платежный токен Tinkoff Pay
+     */
+    fun payWithYandexPay(options: PaymentOptions, yandexPayToken: String): PaymentProcess {
+        return PaymentProcess(sdk, applicationContext).createYandexPayPaymentProcess(options, yandexPayToken)
+    }
+
+    /**
      * Запуск экрана Acquiring SDK для привязки новой карты
      *
      * @param activity    контекст для запуска экрана из Activity

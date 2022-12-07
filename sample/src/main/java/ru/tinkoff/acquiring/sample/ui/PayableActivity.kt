@@ -43,6 +43,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
+import ru.tinkoff.acquiring.yandexpay.AcqYandexPayResult
 import ru.tinkoff.acquiring.yandexpay.creteYandexPayButtonFragment
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
@@ -174,11 +175,15 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
 
-            supportFragmentManager.commit {
-                replace(yandexPayButtonContainer.id,
-                    tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
-                )
+            val acqFragment = tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
+            acqFragment.listener =  {
+                when (it) {
+                    is AcqYandexPayResult.Success -> Unit // TODO start yandex payment flow
+                    is AcqYandexPayResult.Error -> showErrorDialog()
+                    else -> Unit
+                }
             }
+            supportFragmentManager.commit { replace(yandexPayButtonContainer.id, acqFragment) }
         },{
             yandexPayButtonContainer.visibility = View.VISIBLE
             showErrorDialog()
