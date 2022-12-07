@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2020 Tinkoff Bank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -146,6 +145,9 @@
 
     <declare-styleable name="LoaderButton">
         <attr name="acq_text" />
+        <attr name="acq_text_color" format="color" />
+        <attr name="acq_background" format="reference" />
+        <attr name="acq_progress_color" format="color" />
     </declare-styleable>
 
     <attr name="acq_text" format="string" />

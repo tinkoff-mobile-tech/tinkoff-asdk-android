@@ -39,6 +39,7 @@ dependencies {
     implementation "androidx.preference:preference:$preferenceVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "com.google.android.material:material:${materialVersion}"
     implementation "com.google.code.gson:gson:$gsonVersion"
 
     testImplementation 'junit:junit:4.13'

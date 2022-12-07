@@ -13,15 +13,30 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/acq_colorButtonPressed">
-
-    <item>
+    <item android:state_enabled="false">
         <shape android:shape="rectangle">
-            <solid android:color="@color/acq_colorButton" />
+            <solid android:color="@android:color/transparent" />
             <corners android:radius="16dp" />
         </shape>
     </item>
 
-</ripple>
+    <item android:state_enabled="true">
+        <ripple android:color="@color/acq_colorButtonSecondary">
+            <item android:id="@android:id/mask">
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/white" />
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+
+</selector>
