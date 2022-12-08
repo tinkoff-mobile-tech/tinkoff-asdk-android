@@ -213,7 +213,7 @@ internal constructor(
      */
     fun start(): PaymentProcess {
         when (paymentType) {
-            SbpPaymentType, CardPaymentType, TinkoffPayPaymentType -> callInitRequest(initRequest!!)
+            SbpPaymentType, CardPaymentType, TinkoffPayPaymentType, YandexPaymentType -> callInitRequest(initRequest!!)
             FinishPaymentType -> finishPayment(paymentId!!, paymentSource)
             InitializedSbpPaymentType -> callGetQr(paymentId!!)
         }
@@ -246,6 +246,9 @@ internal constructor(
             paymentSource is AttachedCard && paymentSource.rebillId != null -> {
                 callChargeRequest(paymentId, paymentSource)
             }
+            paymentSource is YandexPay -> {
+                callFinishAuthorizeRequest(paymentId, paymentSource, email, data = ThreeDsHelper.CollectData.invoke(context, null))
+            }
             paymentSource is GooglePay || state == PaymentState.THREE_DS_V2_REJECTED -> {
                 callFinishAuthorizeRequest(paymentId, paymentSource, email)
             }
@@ -266,7 +269,7 @@ internal constructor(
             onSuccess = {
                 paymentId = it.paymentId
                 when (paymentType) {
-                    CardPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
+                    CardPaymentType, YandexPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
                     SbpPaymentType -> callGetQr(it.paymentId!!)
                     TinkoffPayPaymentType -> callTinkoffPayLinkRequest(it.paymentId!!, tinkoffPayVersion!!)
                     else -> Unit
