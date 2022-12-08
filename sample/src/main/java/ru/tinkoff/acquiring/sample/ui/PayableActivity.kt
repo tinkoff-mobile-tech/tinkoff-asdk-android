@@ -181,18 +181,7 @@ open class PayableActivity : AppCompatActivity() {
             }
         },{
             yandexPayButtonContainer.visibility = View.VISIBLE
-            val paymentOptions = createPaymentOptions().apply {
-                val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
-                this.setTerminalParams(
-                    terminalKey = session.terminalKey, publicKey = session.publicKey
-                )
-            }
-
-            supportFragmentManager.commit {
-                replace(yandexPayButtonContainer.id,
-                    tinkoffAcquiring.creteYandexPayButtonFragment(YandexPayData("1","name","", "tinkoff"), paymentOptions)
-                )
-            }
+            showErrorDialog()
         })
     }
 
