@@ -192,7 +192,7 @@
         <item name="android:layout_marginBottom">@dimen/acq_secure_icons_margin</item>
     </style>
 
-    <style name="AcquiringQrStaticMessage" parent="AcquiringScreenTitleStyle"/>
+    <style name="AcquiringQrStaticMessage" parent="AcquiringScreenTitleStyle" />
 
     <style name="AcquiringScrollingPagerIndicator">
         <item name="spi_dotSize">@dimen/acq_dot_size</item>
@@ -254,6 +254,24 @@
         <item name="android:minHeight">56dp</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
+    <style name="AcqLoaderButton.Primary" parent="AcqLoaderButton">
+        <item name="acq_text_color">@color/acq_button_text_selector</item>
+        <item name="acq_progress_color">@color/acq_colorButtonText</item>
+        <item name="acq_background">@drawable/acq_button_yellow_bg</item>
+    </style>
+
+    <style name="AcqLoaderButton.Secondary" parent="AcqLoaderButton">
+        <item name="acq_text_color">@color/acq_secondary_button_text_selector</item>
+        <item name="acq_progress_color">@color/acq_colorAccent</item>
+        <item name="acq_background">@drawable/acq_button_secondary_bg</item>
+    </style>
+
+    <style name="AcqLoaderButton.Flat" parent="AcqLoaderButton">
+        <item name="acq_text_color">@color/acq_secondary_button_text_selector</item>
+        <item name="acq_progress_color">@color/acq_colorAccent</item>
+        <item name="acq_background">@drawable/acq_button_flat_bg</item>
     </style>
 
     <style name="MySnackbar" parent="Widget.MaterialComponents.Snackbar">

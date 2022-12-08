@@ -23,6 +23,8 @@
     <color name="acq_colorButton">#FFDD2D</color>
     <color name="acq_colorButtonPressed">#FFCD33</color>
     <color name="acq_colorButtonDisable">#08001024</color>
+    <color name="acq_colorButtonSecondary">@color/acq_colorButtonDisable</color>
+    <color name="acq_colorButtonSecondaryPressed">#08001024</color>
     <color name="acq_colorTitle">#000000</color>
     <color name="acq_colorText">#333333</color>
     <color name="acq_colorTextSecondary">#ff9299a2</color>
