@@ -217,7 +217,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val REQUEST_KEY = "RequestKey"
         const val SOURCE = "Source"
         const val PAYMENT_SOURCE = "PaymentSource"
-        const val ANDROID_PAY_TOKEN = "EncryptedPaymentData"
+        const val ENCRYPTED_PAYMENT_DATA = "EncryptedPaymentData"
         const val DATA_TYPE = "DataType"
         const val REDIRECT_DUE_DATE = "RedirectDueDate"
         const val NOTIFICATION_URL = "NotificationURL"

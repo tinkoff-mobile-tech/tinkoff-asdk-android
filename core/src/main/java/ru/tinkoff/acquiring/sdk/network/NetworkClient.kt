@@ -189,6 +189,7 @@ internal class NetworkClient {
 
         fun createGson(): Gson {
             return GsonBuilder()
+                .disableHtmlEscaping()
                 .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
                 .setExclusionStrategies(SerializableExclusionStrategy())
                 .registerTypeAdapter(CardStatus::class.java, CardStatusSerializer())
