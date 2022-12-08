@@ -43,6 +43,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
+import ru.tinkoff.acquiring.yandexpay.AcqYandexPayResult
 import ru.tinkoff.acquiring.yandexpay.creteYandexPayButtonFragment
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
@@ -174,11 +175,19 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
 
-            supportFragmentManager.commit {
-                replace(yandexPayButtonContainer.id,
-                    tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
-                )
+            val acqFragment = tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
+            acqFragment.listener =  {
+                when (it) {
+                    is AcqYandexPayResult.Success -> tinkoffAcquiring.openYandexPaymentScreen(this,
+                        paymentOptions,
+                        YANDEX_PAY_REQUEST_CODE,
+                        it.token,
+                        terminalInfo.initTokenRequired)
+                    is AcqYandexPayResult.Error -> showErrorDialog()
+                    else -> Unit
+                }
             }
+            supportFragmentManager.commit { replace(yandexPayButtonContainer.id, acqFragment) }
         },{
             yandexPayButtonContainer.visibility = View.VISIBLE
             showErrorDialog()
@@ -343,6 +352,7 @@ open class PayableActivity : AppCompatActivity() {
         const val PAYMENT_REQUEST_CODE = 1
         const val DYNAMIC_QR_PAYMENT_REQUEST_CODE = 2
         const val GOOGLE_PAY_REQUEST_CODE = 5
+        const val YANDEX_PAY_REQUEST_CODE = 6
 
         private const val STATE_PAYMENT_AMOUNT = "payment_amount"
         private const val STATE_LOADING_SHOW = "loading_show"

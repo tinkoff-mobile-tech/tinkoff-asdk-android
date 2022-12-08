@@ -34,6 +34,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
+import ru.tinkoff.acquiring.sdk.models.paysources.YandexPay
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FAIL_MAPI_SESSION_ID
@@ -167,6 +168,23 @@ internal constructor(
         }
         this.paymentType = TinkoffPayPaymentType
         this.tinkoffPayVersion = tinkoffPayVersion
+
+        sendToListener(PaymentState.CREATED)
+        return this
+    }
+
+    /**
+     * Создает объект процесса для проведения оплаты через yandex Pay
+     * @return сконфигурированный объект для проведения оплаты
+     */
+    fun createYandexPayPaymentProcess(paymentOptions: PaymentOptions, yandexPayToken: String, needTokenSign: Boolean): PaymentProcess {
+
+        this.initRequest = sdk.init {
+            needSignToken = needTokenSign
+            configure(paymentOptions)
+        }
+        this.paymentType = YandexPaymentType
+        this.paymentSource = YandexPay(yandexPayToken)
 
         sendToListener(PaymentState.CREATED)
         return this

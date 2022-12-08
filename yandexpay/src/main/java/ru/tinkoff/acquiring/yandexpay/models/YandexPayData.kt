@@ -11,7 +11,7 @@ data class YandexPayData(
     val merchantName: String,
     val merchantUrl: String,
     val gatewayMerchantId: String,
-    val gatewayAcqId: GatewayAcqId = GatewayAcqId.Tinkoff,
+    val gatewayAcqId: GatewayAcqId = GatewayAcqId.tinkoff
 ) : Serializable {
 
     internal val toYandexPayMethods
@@ -36,7 +36,6 @@ data class YandexPayData(
         )
 }
 
-
 enum class GatewayAcqId {
-    Tinkoff
+    tinkoff
 }
