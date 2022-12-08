@@ -59,7 +59,7 @@ dependencies {
     implementation "org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}"
     implementation "jp.wasabeef:blurry:${blurryVersion}"
     implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
-
+    implementation "com.google.android.material:material:${materialVersion}"
 
     testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlin}"
