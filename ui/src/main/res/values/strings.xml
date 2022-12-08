@@ -26,4 +26,11 @@
     <string name="acq_fps" translatable="false">fps</string>
     <string name="acq_tinkoff" translatable="false">Tinkoff</string>
 
+    <string name="acq_commonsheet_processing_title">Processing payment</string>
+    <string name="acq_commonsheet_processing_description">This will take some time</string>
+    <string name="acq_commonsheet_paid_title">Payment success</string>
+    <string name="acq_commonsheet_failed_title">Payment failed</string>
+    <string name="acq_commonsheet_clear_primarybutton">OK</string>
+    <string name="acq_commonsheet_changemethod_primarybutton">Choose another method</string>
+
 </resources>

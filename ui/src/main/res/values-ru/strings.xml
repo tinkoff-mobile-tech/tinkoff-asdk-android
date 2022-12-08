@@ -24,4 +24,11 @@
 
     <string name="acq_fps_chooser_title">Выберите приложение</string>
 
+    <string name="acq_commonsheet_processing_title">Обрабатываем платеж</string>
+    <string name="acq_commonsheet_processing_description">Это займет некоторое время</string>
+    <string name="acq_commonsheet_paid_title">Оплачено</string>
+    <string name="acq_commonsheet_failed_title">Ошибка при оплате</string>
+    <string name="acq_commonsheet_clear_primarybutton">Понятно</string>
+    <string name="acq_commonsheet_changemethod_primarybutton">Выбрать другой способ</string>
+
 </resources>

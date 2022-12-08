@@ -18,6 +18,7 @@
 <resources>
     <color name="acq_colorMain">#1C1C1E</color>
     <color name="acq_colorMainDark">#333333</color>
+    <color name="acq_colorButtonDisable">#0FFFFFFF</color>
     <color name="acq_colorShadow">@android:color/transparent</color>
     <color name="acq_colorCardBackground">@color/acq_colorMainDark</color>
     <color name="acq_colorFpsBackground">#FFFFFF</color>
@@ -25,8 +26,14 @@
 
     <color name="acq_colorTitle">#F6F7F8</color>
     <color name="acq_colorText">@color/acq_colorTitle</color>
-    <color name="acq_colorTextInvalid">#CF6679</color>
+    <color name="acq_colorTextTertiary">#4dffffff</color>
 
     <color name="acq_colorHint">#727272</color>
     <color name="acq_colorTextButton">@color/acq_colorMain</color>
+    <color name="acq_colorButtonTextDisabled">#4DFFFFFF</color>
+
+    <color name="acq_sf_text_field_bg">#1affffff</color>
+    <color name="acq_sf_text_field_bg_pressed">#26ffffff</color>
+
+    <color name="acq_colorShimmer">#333335</color>
 </resources>
