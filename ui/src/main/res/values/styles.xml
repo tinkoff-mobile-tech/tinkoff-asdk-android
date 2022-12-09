@@ -240,4 +240,9 @@
         <item name="acq_background">@drawable/acq_button_flat_bg</item>
     </style>
 
+    <style name="AcqBottomSheetAnim">
+        <item name="android:windowEnterAnimation">@anim/acq_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/acq_slide_down</item>
+    </style>
+
 </resources>
