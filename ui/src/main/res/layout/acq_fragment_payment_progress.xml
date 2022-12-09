@@ -17,6 +17,7 @@
         app:indicatorSize="72dp" />
 
     <TextView
+        android:id="@+id/acq_commonsheet_processing_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -26,6 +27,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/acq_commonsheet_processing_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

@@ -45,7 +45,6 @@ import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.AcqYandexPayResult
 import ru.tinkoff.acquiring.yandexpay.creteYandexPayButtonFragment
-import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
 import kotlin.math.abs

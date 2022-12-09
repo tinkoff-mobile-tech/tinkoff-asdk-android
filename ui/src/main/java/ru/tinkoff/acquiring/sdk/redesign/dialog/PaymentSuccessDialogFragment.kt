@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 
-class PaymentSuccessDialogFragment : BottomSheetDialogFragment() {
+internal class PaymentSuccessDialogFragment : BottomSheetDialogFragment() {
 
     private val buttonOk: LoaderButton by lazyView(R.id.acq_button_ok)
+
+    var paymentSuccessClick: OnPaymentSuccessClick? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,14 +27,11 @@ class PaymentSuccessDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        buttonOk.setOnClickListener { onOk() }
+        buttonOk.setOnClickListener { paymentSuccessClick?.invoke(this) }
     }
 
-    private fun onOk() {
-        ((parentFragment as? OnOk) ?: (activity as? OnOk))?.onPaymentSuccessOk(this)
-    }
 
-    fun interface OnOk {
-        fun onPaymentSuccessOk(fragment: PaymentSuccessDialogFragment)
+    fun interface OnPaymentSuccessClick {
+        operator fun invoke(fragment: PaymentSuccessDialogFragment)
     }
 }

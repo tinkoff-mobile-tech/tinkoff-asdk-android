@@ -16,37 +16,28 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.models.*
-import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
-import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
-import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
-import ru.tinkoff.acquiring.sdk.models.LoadState
-import ru.tinkoff.acquiring.sdk.models.LoadedState
-import ru.tinkoff.acquiring.sdk.models.LoadingState
-import ru.tinkoff.acquiring.sdk.models.Screen
-import ru.tinkoff.acquiring.sdk.models.ScreenState
-import ru.tinkoff.acquiring.sdk.models.SingleEvent
-import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
+import ru.tinkoff.acquiring.sdk.redesign.dialog.*
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.fragments.YandexPaymentStubFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
 
 /**
- * @author Mariya Chernyadieva
+ * @author Ivan Golovachev
  */
 internal class YandexPaymentActivity : TransparentActivity() {
 
     private lateinit var paymentViewModel: PaymentViewModel
     private lateinit var paymentOptions: PaymentOptions
     private var asdkState: AsdkState = DefaultState
-
-    private val progressDialog: NotificationDialog by lazy {
-        NotificationDialog(this).apply { showProgress() }
-    }
+    private var paymentLCEDialogFragment: PaymentLCEDialogFragment = PaymentLCEDialogFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,11 +46,13 @@ internal class YandexPaymentActivity : TransparentActivity() {
         asdkState = paymentOptions.asdkState
 
         initViews()
+        bottomContainer.isVisible = false
 
         paymentViewModel = provideViewModel(PaymentViewModel::class.java) as PaymentViewModel
         observeLiveData()
 
         showFragment(YandexPaymentStubFragment())
+
         (asdkState as? YandexPayState)?.let {
             paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken, it.needTokenSign)
         }
@@ -67,17 +60,14 @@ internal class YandexPaymentActivity : TransparentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (progressDialog.isShowing) {
-            progressDialog.dismiss()
-        }
+        dismissDialog()
     }
 
     override fun handleLoadState(loadState: LoadState) {
         super.handleLoadState(loadState)
-        if (asdkState is FpsState) {
-            when (loadState) {
-                is LoadingState -> progressDialog.show()
-                is LoadedState -> progressDialog.dismiss()
+        when (loadState) {
+            is LoadingState -> {
+                showDialog(paymentLCEDialogFragment)
             }
         }
     }
@@ -87,7 +77,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
             loadStateLiveData.observe(this@YandexPaymentActivity, Observer { handleLoadState(it) })
             screenStateLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenState(it) })
             screenChangeEventLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenChangeEvent(it) })
-            paymentResultLiveData.observe(this@YandexPaymentActivity, Observer { finishWithSuccess(it) })
+            paymentResultLiveData.observe(this@YandexPaymentActivity, Observer { paymentLCEDialogFragment.success { finishWithSuccess(it) } })
         }
     }
 
@@ -96,10 +86,11 @@ internal class YandexPaymentActivity : TransparentActivity() {
             when (screen) {
                 is ThreeDsScreenState -> paymentViewModel.coroutine.launchOnMain {
                     try {
-                        ThreeDsHelper.Launch(this@YandexPaymentActivity,
-                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                        ThreeDsHelper.Launch(
+                            this@YandexPaymentActivity, THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction
+                        )
                     } catch (e: Throwable) {
-                        finishWithError(e)
+                        paymentLCEDialogFragment.failure { finishWithError(e) }
                     }
                 }
                 else -> Unit
@@ -107,20 +98,34 @@ internal class YandexPaymentActivity : TransparentActivity() {
         }
     }
 
-    private fun handleScreenState(screenState: ScreenState) {
-        when (screenState) {
-            is FinishWithErrorScreenState -> finishWithError(screenState.error)
-            is ErrorScreenState -> {
-                showError(screenState.message)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == THREE_DS_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                paymentLCEDialogFragment.success {
+                    finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
+                }
+            } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
+                paymentLCEDialogFragment.failure {
+                    finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
+                }
+            } else {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
             }
-            else -> Unit
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
-    private fun showError(message: String) {
-        showErrorScreen(message) {
-            hideErrorScreen()
-            paymentViewModel.createEvent(ErrorButtonClickedEvent)
+    private fun handleScreenState(screenState: ScreenState) {
+        when (screenState) {
+            is FinishWithErrorScreenState -> paymentLCEDialogFragment.failure {
+                finishWithError(screenState.error)
+            }
+            is ErrorScreenState -> paymentLCEDialogFragment.failure {
+                finishWithError(IllegalStateException(screenState.message))
+            }
+            else -> Unit
         }
     }
 }
