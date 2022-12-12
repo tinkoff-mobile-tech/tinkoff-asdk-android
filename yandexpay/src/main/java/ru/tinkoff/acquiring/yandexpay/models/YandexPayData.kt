@@ -6,7 +6,7 @@ import java.io.Serializable
 /**
  * Created by i.golovachev
  */
-data class YandexPayData(
+data class YandexPayData internal constructor(
     val merchantId: String,
     val merchantName: String,
     val merchantUrl: String,

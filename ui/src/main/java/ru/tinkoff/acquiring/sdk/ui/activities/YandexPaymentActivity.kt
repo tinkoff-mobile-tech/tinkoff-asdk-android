@@ -19,11 +19,8 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
@@ -89,8 +86,9 @@ internal class YandexPaymentActivity : TransparentActivity() {
             when (screen) {
                 is ThreeDsScreenState -> paymentViewModel.coroutine.launchOnMain {
                     try {
-                        ThreeDsHelper.Launch(this@YandexPaymentActivity,
-                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                        ThreeDsHelper.Launch(
+                            this@YandexPaymentActivity, THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction
+                        )
                     } catch (e: Throwable) {
                         paymentLCEDialogFragment.failure { finishWithError(e) }
                     }
@@ -104,15 +102,13 @@ internal class YandexPaymentActivity : TransparentActivity() {
         if (requestCode == THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 paymentLCEDialogFragment.success {
-                    onF()
-                   // finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
+                    finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
                 }
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
                 paymentLCEDialogFragment.failure {
-                    onSucccess()
-                 //   finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
+                    finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
                 }
-            } else {
+            }  else {
                 setResult(Activity.RESULT_CANCELED)
                 finish()
             }
@@ -130,18 +126,6 @@ internal class YandexPaymentActivity : TransparentActivity() {
                 finishWithError(IllegalStateException(screenState.message))
             }
             else -> Unit
-        }
-    }
-
-    private fun onSucccess() {
-        paymentLCEDialogFragment.failure {
-            onF()
-        }
-    }
-
-    private fun onF() {
-        paymentLCEDialogFragment.success {
-            onSucccess()
         }
     }
 }

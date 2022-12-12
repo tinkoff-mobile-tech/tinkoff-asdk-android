@@ -180,7 +180,6 @@ internal constructor(
     fun createYandexPayPaymentProcess(paymentOptions: PaymentOptions, yandexPayToken: String, needTokenSign: Boolean): PaymentProcess {
 
         this.initRequest = sdk.init {
-            needSignToken = needTokenSign
             configure(paymentOptions)
         }
         this.paymentType = YandexPaymentType
