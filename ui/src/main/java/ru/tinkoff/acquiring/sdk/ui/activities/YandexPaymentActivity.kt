@@ -108,7 +108,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
                 paymentLCEDialogFragment.failure {
                     finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
                 }
-            } else {
+            }  else {
                 setResult(Activity.RESULT_CANCELED)
                 finish()
             }
