@@ -19,34 +19,8 @@
 <resources>
 
     <style name="AcquiringTheme.Base.Yandex">
-        <item name="acqYandexPayButtonWidth">match_parent</item>
-        <item name="acqYandexPayButtonHeight">54dp</item>
-        <item name="acqYandexPayButtonCornerRadius">0dp</item>
+        <item name="acqYandexPayButtonCornerRadius">8dp</item>
     </style>
-
-    <attr name="acqYandexPayButtonWidth" format="dimension">
-        <!-- The view should be as big as its parent (minus padding).
-             This constant is deprecated starting from API Level 8 and
-             is replaced by {@code match_parent}. -->
-        <enum name="fill_parent" value="-1" />
-        <!-- The view should be as big as its parent (minus padding).
-             Introduced in API Level 8. -->
-        <enum name="match_parent" value="-1" />
-        <!-- The view should be only big enough to enclose its content (plus padding). -->
-        <enum name="wrap_content" value="-2" />
-    </attr>
-
-    <attr name="acqYandexPayButtonHeight" format="dimension">
-        <!-- The view should be as big as its parent (minus padding).
-             This constant is deprecated starting from API Level 8 and
-             is replaced by {@code match_parent}. -->
-        <enum name="fill_parent" value="-1" />
-        <!-- The view should be as big as its parent (minus padding).
-             Introduced in API Level 8. -->
-        <enum name="match_parent" value="-1" />
-        <!-- The view should be only big enough to enclose its content (plus padding). -->
-        <enum name="wrap_content" value="-2" />
-    </attr>
 
     <attr name="acqYandexPayButtonCornerRadius" format="dimension">
     </attr>

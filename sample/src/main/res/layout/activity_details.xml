@@ -156,15 +156,16 @@
             android:layout_width="wrap_content"
             android:text="@string/buy_now" />
 
-    </LinearLayout>
+        <FrameLayout
+            android:id="@+id/btn_yandex_container"
+            android:background="@color/colorPrimary"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_margin="8dp">
+        </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/btn_yandex_container"
-        android:background="@color/colorPrimary"
-        android:paddingBottom="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </FrameLayout>
+    </LinearLayout>
 
 </LinearLayout>

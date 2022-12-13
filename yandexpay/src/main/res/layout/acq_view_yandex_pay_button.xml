@@ -18,6 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/acq_yandex_button"
     android:layout_width="match_parent"
+    android:layout_gravity="center"
     android:layout_height="match_parent"
     app:yandexpay_color_scheme="by_theme"
     app:yandexpay_corner_radius="?acqYandexPayButtonCornerRadius" />

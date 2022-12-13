@@ -1,15 +1,17 @@
 package ru.tinkoff.acquiring.yandexpay
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import androidx.annotation.StyleRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.yandex.pay.core.*
 import com.yandex.pay.core.data.*
 import com.yandex.pay.core.ui.YandexPayButton
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexOrder
@@ -22,18 +24,21 @@ class YandexButtonFragment : Fragment() {
     companion object {
 
         fun newInstance(
-            data: YandexPayData, options: PaymentOptions
+            data: YandexPayData,
+            options: PaymentOptions,
+            @StyleRes themeForYandexButton: Int? = null
         ): YandexButtonFragment {
             return YandexButtonFragment().apply {
                 arguments = bundleOf(
                     YandexButtonFragment::data.name to data,
-                    YandexButtonFragment::options.name to options
+                    YandexButtonFragment::options.name to options,
+                    YandexButtonFragment::theme.name to themeForYandexButton
                 )
             }
         }
     }
 
-    var listener : ((AcqYandexPayResult) -> Unit)? = null
+    internal var listener: AcqYandexPayCallback? = null
 
     private val data: YandexPayData by lazy {
         arguments?.getSerializable(YandexButtonFragment::data.name) as YandexPayData
@@ -41,6 +46,10 @@ class YandexButtonFragment : Fragment() {
 
     private val options: PaymentOptions by lazy {
         checkNotNull(arguments?.getParcelable(YandexButtonFragment::options.name))
+    }
+
+    private val theme: Int? by lazy {
+        arguments?.getInt(YandexButtonFragment::theme.name)
     }
 
     private val yandexPayLauncher = registerForActivityResult(OpenYandexPayContract()) { result ->
@@ -61,18 +70,20 @@ class YandexButtonFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        initYandexPay(data)
-        val view =
-            inflater.inflate(R.layout.acq_fragment_yandex_pay, container, false) as FrameLayout
+        initYandexPay(
+            yadata = data,
+            yandexPayEnvironment = if (AcquiringSdk.isDebug) YandexPayEnvironment.SANDBOX else YandexPayEnvironment.PROD,
+            logging = AcquiringSdk.isDeveloperMode
+        )
 
-        val button =
-            inflater.inflate(
-                R.layout.acq_view_yandex_pay_button,
-                view,
-                false
-            ) as YandexPayButton
+        val inf = theme?.let {
+            inflater.cloneInContext(ContextThemeWrapper(requireContext(), it))
+        } ?: inflater
 
-        view.addView(button)
+        val button = inf.inflate(
+            R.layout.acq_view_yandex_pay_button, container, false
+        ) as YandexPayButton
+
         button.setOnClickListener { ->
             val orderDetails = OrderDetails(
                 paymentMethods = data.toYandexPayMethods,
@@ -82,7 +93,7 @@ class YandexButtonFragment : Fragment() {
             yandexPayLauncher.launch(orderDetails)
         }
 
-        return view
+        return button
     }
 
     private fun initYandexPay(

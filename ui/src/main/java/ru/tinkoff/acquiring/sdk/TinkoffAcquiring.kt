@@ -143,14 +143,12 @@ class TinkoffAcquiring(
      * @param options         настройки платежной сессии и визуального отображения экрана
      * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
      * @param yandexPayToken  параметр платежной сессии от яндекса
-     * @param needInitSign    нужно ли подписывать init запрос токеном
      */
     fun openYandexPaymentScreen(activity: Activity,
                           options: PaymentOptions,
                           requestCode: Int,
-                          yandexPayToken: String,
-                          needInitSign: Boolean) {
-        options.asdkState = YandexPayState(yandexPayToken, needInitSign)
+                          yandexPayToken: String) {
+        options.asdkState = YandexPayState(yandexPayToken)
         val intent = prepareIntent(activity, options, YandexPaymentActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
     }

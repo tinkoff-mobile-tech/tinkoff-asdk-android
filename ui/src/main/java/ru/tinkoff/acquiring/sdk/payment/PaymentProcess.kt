@@ -177,7 +177,7 @@ internal constructor(
      * Создает объект процесса для проведения оплаты через yandex Pay
      * @return сконфигурированный объект для проведения оплаты
      */
-    fun createYandexPayPaymentProcess(paymentOptions: PaymentOptions, yandexPayToken: String, needTokenSign: Boolean): PaymentProcess {
+    fun createYandexPayPaymentProcess(paymentOptions: PaymentOptions, yandexPayToken: String): PaymentProcess {
 
         this.initRequest = sdk.init {
             configure(paymentOptions)

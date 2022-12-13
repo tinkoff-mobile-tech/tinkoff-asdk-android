@@ -25,6 +25,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
@@ -43,8 +44,8 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
-import ru.tinkoff.acquiring.yandexpay.AcqYandexPayResult
-import ru.tinkoff.acquiring.yandexpay.creteYandexPayButtonFragment
+import ru.tinkoff.acquiring.yandexpay.createYandexPayButtonFragment
+import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
 import kotlin.math.abs
@@ -158,7 +159,7 @@ open class PayableActivity : AppCompatActivity() {
         })
     }
 
-    protected fun setupYandexPay() {
+    protected fun setupYandexPay(theme: Int? = null) {
         if (!settings.yandexPayEnabled) return
 
         val yandexPayButtonContainer = findViewById<View>(R.id.btn_yandex_container)
@@ -166,7 +167,7 @@ open class PayableActivity : AppCompatActivity() {
         tinkoffAcquiring.checkTerminalInfo({ terminalInfo ->
             val yandexPayData = terminalInfo?.mapYandexPayData() ?: return@checkTerminalInfo
 
-            yandexPayButtonContainer.visibility = View.VISIBLE
+            yandexPayButtonContainer.isVisible = terminalInfo.enableYandexPay()
             val paymentOptions = createPaymentOptions().apply {
                 val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
                 this.setTerminalParams(
@@ -174,21 +175,17 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
 
-            val acqFragment = tinkoffAcquiring.creteYandexPayButtonFragment(yandexPayData, paymentOptions)
-            acqFragment.listener =  {
-                when (it) {
-                    is AcqYandexPayResult.Success -> tinkoffAcquiring.openYandexPaymentScreen(this,
-                        paymentOptions,
-                        YANDEX_PAY_REQUEST_CODE,
-                        it.token,
-                        terminalInfo.initTokenRequired)
-                    is AcqYandexPayResult.Error -> showErrorDialog()
-                    else -> Unit
-                }
-            }
+            val acqFragment = tinkoffAcquiring.createYandexPayButtonFragment(
+                activity = this,
+                yandexPayData = yandexPayData,
+                options = paymentOptions,
+                yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+                themeId = theme,
+                onYandexErrorCallback = { showErrorDialog() }
+            )
             supportFragmentManager.commit { replace(yandexPayButtonContainer.id, acqFragment) }
         },{
-            yandexPayButtonContainer.visibility = View.VISIBLE
+            yandexPayButtonContainer.visibility = View.GONE
             showErrorDialog()
         })
     }
