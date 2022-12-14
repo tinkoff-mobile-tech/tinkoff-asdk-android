@@ -54,7 +54,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
         showFragment(YandexPaymentStubFragment())
 
         (asdkState as? YandexPayState)?.let {
-            paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken, it.needTokenSign)
+            paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
         }
     }
 

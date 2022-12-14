@@ -77,6 +77,5 @@ class OpenTinkoffPayBankState(val paymentId: Long, val deepLink: String) : AsdkS
  * Состояние открытия приложения, при котором пользователь совершает платеж с помощью яндекс токена
  *
  * @param yandexToken плажетные данные полученные из яндекса
- * @param needTokenSign идентификатор, указывающий, нужно ли подписывать init токеном
  */
-class YandexPayState(val yandexToken: String, val needTokenSign:Boolean) : AsdkState()
+class YandexPayState(val yandexToken: String) : AsdkState()

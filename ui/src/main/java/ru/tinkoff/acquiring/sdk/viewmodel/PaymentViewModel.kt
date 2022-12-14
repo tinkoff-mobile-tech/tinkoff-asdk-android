@@ -167,9 +167,9 @@ internal class PaymentViewModel(
         paymentProcess.createTinkoffPayPaymentProcess(paymentOptions, tinkoffPayVersion).subscribe(paymentListener).start()
     }
 
-    fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String, needTokenSign: Boolean) {
+    fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String) {
         changeScreenState(LoadingState)
-        paymentProcess.createYandexPayPaymentProcess(paymentOptions, yandexPayToken, needTokenSign).subscribe(paymentListener).start()
+        paymentProcess.createYandexPayPaymentProcess(paymentOptions, yandexPayToken).subscribe(paymentListener).start()
     }
 
     fun finishPayment(paymentId: Long, paymentSource: PaymentSource, email: String? = null) {
