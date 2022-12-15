@@ -27,14 +27,14 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.redesign.dialog.*
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.fragments.YandexPaymentStubFragment
-import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
+import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
 
 /**
  * @author Ivan Golovachev
  */
 internal class YandexPaymentActivity : TransparentActivity() {
 
-    private lateinit var paymentViewModel: PaymentViewModel
+    private lateinit var paymentViewModel: YandexPaymentViewModel
     private lateinit var paymentOptions: PaymentOptions
     private var asdkState: AsdkState = DefaultState
     private var paymentLCEDialogFragment: PaymentLCEDialogFragment = PaymentLCEDialogFragment()
@@ -48,7 +48,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
         initViews()
         bottomContainer.isVisible = false
 
-        paymentViewModel = provideViewModel(PaymentViewModel::class.java) as PaymentViewModel
+        paymentViewModel = provideViewModel(YandexPaymentViewModel::class.java) as YandexPaymentViewModel
         observeLiveData()
 
         showFragment(YandexPaymentStubFragment())
@@ -56,6 +56,15 @@ internal class YandexPaymentActivity : TransparentActivity() {
         (asdkState as? YandexPayState)?.let {
             paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
         }
+
+        if (savedInstanceState == null) {
+            paymentViewModel.checkoutAsdkState(asdkState)
+        }
+    }
+
+    override fun onBackPressed() {
+        dismissDialog()
+        finish()
     }
 
     override fun onDestroy() {
@@ -84,14 +93,15 @@ internal class YandexPaymentActivity : TransparentActivity() {
     private fun handleScreenChangeEvent(screenChangeEvent: SingleEvent<Screen>) {
         screenChangeEvent.getValueIfNotHandled()?.let { screen ->
             when (screen) {
-                is ThreeDsScreenState -> paymentViewModel.coroutine.launchOnMain {
-                    try {
-                        ThreeDsHelper.Launch(
-                            this@YandexPaymentActivity, THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction
-                        )
-                    } catch (e: Throwable) {
-                        paymentLCEDialogFragment.failure { finishWithError(e) }
-                    }
+                is ThreeDsScreenState -> try {
+                    ThreeDsHelper.Launch.launchBrowserBased(
+                        this@YandexPaymentActivity,
+                        THREE_DS_REQUEST_CODE,
+                        options,
+                        screen.data,
+                    )
+                } catch (e: Throwable) {
+                    paymentLCEDialogFragment.failure { finishWithError(e) }
                 }
                 else -> Unit
             }

@@ -14,7 +14,7 @@ class GetTerminalPayMethodsRequest(
     paysource: Paysource = Paysource.SDK
 ) :
     AcquiringRequest<GetTerminalPayMethodsResponse>(
-        "$GET_TERMINAL_PAY_METHODS?TerminalKey=flightagent3DS&PaySource=$paysource") {
+        "$GET_TERMINAL_PAY_METHODS?TerminalKey=$terminalKey&PaySource=$paysource") {
 
     override val httpRequestMethod: String = AcquiringApi.API_REQUEST_METHOD_GET
 
