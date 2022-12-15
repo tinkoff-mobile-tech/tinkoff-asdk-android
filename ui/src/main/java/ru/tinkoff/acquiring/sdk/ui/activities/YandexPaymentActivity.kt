@@ -37,7 +37,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
     private lateinit var paymentViewModel: YandexPaymentViewModel
     private lateinit var paymentOptions: PaymentOptions
     private var asdkState: AsdkState = DefaultState
-    private var paymentLCEDialogFragment: PaymentLCEDialogFragment = PaymentLCEDialogFragment()
+    private var paymentLCEDialogFragment: PaymentLCEDialogFragment = PaymentLCEDialogFragment.create(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,25 +51,13 @@ internal class YandexPaymentActivity : TransparentActivity() {
         paymentViewModel = provideViewModel(YandexPaymentViewModel::class.java) as YandexPaymentViewModel
         observeLiveData()
 
-        showFragment(YandexPaymentStubFragment())
-
-        (asdkState as? YandexPayState)?.let {
-            paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
-        }
-
         if (savedInstanceState == null) {
             paymentViewModel.checkoutAsdkState(asdkState)
+
+            (asdkState as? YandexPayState)?.let {
+                paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
+            }
         }
-    }
-
-    override fun onBackPressed() {
-        dismissDialog()
-        finish()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        dismissDialog()
     }
 
     override fun handleLoadState(loadState: LoadState) {
