@@ -3,6 +3,8 @@ package yandex
 import android.content.Context
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.mockito.kotlin.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.payment.YandexPaymentProcess
@@ -11,6 +13,18 @@ import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.FinishAuthorizeResponse
 import ru.tinkoff.acquiring.sdk.responses.InitResponse
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
+
+private val yandexPay3dsDataMap = mapOf(
+    "threeDSCompInd" to "Y",
+    "language" to "ru-RU",
+    "timezone" to "",
+    "screen_height" to "120",
+    "screen_width" to "120",
+    "cresCallbackUrl" to ThreeDsActivity.TERM_URL_V2
+).toMutableMap()
 
 class YandexPaymentProcessEnv(
     val ioDispatcher: CoroutineDispatcher,
@@ -19,7 +33,8 @@ class YandexPaymentProcessEnv(
     val faRequestMock: FinishAuthorizeRequest = mock(),
     val sdk: AcquiringSdk = mock(),
     val context: Context = mock(),
-    val process: YandexPaymentProcess = YandexPaymentProcess(sdk, context, ioDispatcher)
+    val threeDsDataCollector: ThreeDsDataCollector = mock { on { invoke(any(), any()) } doReturn  yandexPay3dsDataMap },
+    val process: YandexPaymentProcess = YandexPaymentProcess(sdk, context, threeDsDataCollector, ioDispatcher)
 ) {
 
     init {
@@ -32,7 +47,21 @@ class YandexPaymentProcessEnv(
         reset(context)
     }
 
-    suspend fun setInitResult(paymentId: Long) {
+    suspend fun setInitResult(response: InitResponse) {
+        val result = Result.success(response)
+
+        whenever(initRequestMock.performSuspendRequest())
+            .doReturn(result)
+    }
+
+    suspend fun setInitResult(throwable: Throwable) {
+        val result = Result.failure<InitResponse>(throwable)
+
+        whenever(initRequestMock.performSuspendRequest())
+            .doReturn(result)
+    }
+
+    suspend fun setInitResult(paymentId: Long = 1) {
         val response = InitResponse(paymentId = paymentId)
         val result = Result.success(response)
 
@@ -40,10 +69,29 @@ class YandexPaymentProcessEnv(
             .doReturn(result)
     }
 
-    fun setFAResult(response : FinishAuthorizeResponse = FinishAuthorizeResponse()) {
+    suspend fun setFAResult(response : FinishAuthorizeResponse = FinishAuthorizeResponse()) {
         val result = Result.success(response)
 
-        whenever(faRequestMock.performRequestAsync(any()))
-            .doReturn(CompletableDeferred(result))
+        whenever(faRequestMock.performSuspendRequest())
+            .doReturn(result)
+    }
+
+    suspend fun setFAResult(throwable: Throwable) {
+        val result = Result.failure<FinishAuthorizeResponse>(throwable)
+
+        whenever(faRequestMock.performSuspendRequest())
+            .doReturn(result)
+    }
+}
+
+internal fun YandexPaymentProcessEnv.runWithEnv(
+    given: suspend YandexPaymentProcessEnv.() -> Unit,
+    `when`: suspend YandexPaymentProcessEnv.() -> Unit,
+    then: suspend YandexPaymentProcessEnv.() -> Unit
+) {
+    runBlocking {
+        launch { given.invoke(this@runWithEnv) }.join()
+        launch { `when`.invoke(this@runWithEnv) }.join()
+        launch { then.invoke(this@runWithEnv) }.join()
     }
 }

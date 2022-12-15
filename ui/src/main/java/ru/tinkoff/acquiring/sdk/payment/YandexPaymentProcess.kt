@@ -66,6 +66,7 @@ class YandexPaymentProcess(
      */
     suspend fun start() = scope.launch {
         sendToListener(YandexPaymentState.Started)
+        delay(100000)
         callInitRequest(initRequest!!)
     }
 
@@ -99,6 +100,7 @@ class YandexPaymentProcess(
         }
 
         val initResult = request.performSuspendRequest().getOrThrow()
+        delay(1000000)
         callFinishAuthorizeRequest(
             initResult.paymentId!!, paymentSource, email,
             data = threeDsDataCollector.invoke(context,null)
