@@ -19,7 +19,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 
 /**
@@ -28,8 +28,8 @@ import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 class YandexPaymentProcess(
     private val sdk: AcquiringSdk,
     private val context: Context,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val job: Job = SupervisorJob()
+    private val threeDsDataCollector: ThreeDsDataCollector,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
     /**
@@ -39,7 +39,7 @@ class YandexPaymentProcess(
     val state = _state.asStateFlow()
 
     private val scope = CoroutineScope(
-        ioDispatcher + CoroutineExceptionHandler { _, throwable -> handleException(throwable) } + job
+        ioDispatcher + CoroutineExceptionHandler { _, throwable -> handleException(throwable) }
     )
 
     private lateinit var paymentSource: YandexPay
@@ -101,7 +101,7 @@ class YandexPaymentProcess(
         val initResult = request.performSuspendRequest().getOrThrow()
         callFinishAuthorizeRequest(
             initResult.paymentId!!, paymentSource, email,
-            data = ThreeDsHelper.CollectData.invoke(context, null)
+            data = threeDsDataCollector.invoke(context,null)
         )
     }
 

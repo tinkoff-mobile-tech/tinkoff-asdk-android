@@ -17,6 +17,7 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.*
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
  * Created by i.golovachev
@@ -27,7 +28,7 @@ internal class YandexPaymentViewModel(
     sdk: AcquiringSdk
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
-    private val paymentProcess: YandexPaymentProcess = YandexPaymentProcess(sdk, context)
+    private val paymentProcess: YandexPaymentProcess = YandexPaymentProcess(sdk, context, ThreeDsHelper.CollectData)
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
 
