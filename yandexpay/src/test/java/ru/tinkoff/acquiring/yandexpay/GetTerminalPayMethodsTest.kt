@@ -20,6 +20,7 @@ import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 class GetTerminalPayMethodsTest {
 
     @Test
+    // #2347844
     fun `get terminal without yandex pay`() = runBlocking {
         val response = GetTerminalPayMethodsResponse(TerminalInfo())
         val requests = mock<GetTerminalPayMethodsRequest> {
@@ -36,6 +37,7 @@ class GetTerminalPayMethodsTest {
     }
 
     @Test
+    // 2347847
     fun `get terminal pay with yandex pay`() = runBlocking {
         val response = GetTerminalPayMethodsResponse(
             TerminalInfo(
@@ -66,6 +68,7 @@ class GetTerminalPayMethodsTest {
     }
 
     @Test
+    //#2355347
     fun `get terminal pay with error`() = runBlocking {
         val requests = mock<GetTerminalPayMethodsRequest> {
             on { performRequestAsync(any()) } doReturn CompletableDeferred(
@@ -76,5 +79,43 @@ class GetTerminalPayMethodsTest {
             requests.performRequestAsync(GetTerminalPayMethodsResponse::class.java)
 
         Assert.assertNotNull(getTerminalPayMethodsResponse.await().exceptionOrNull())
+    }
+
+    @Test
+    //#2355347
+    fun `get terminal pay return data with yandex and more others`() = runBlocking {
+        val response = GetTerminalPayMethodsResponse(
+            TerminalInfo(
+                paymethods = listOf(
+                    PaymethodData(
+                        paymethod = Paymethod.YandexPay,
+                        params = mapOf(
+                            "ShowcaseId" to "ShowcaseId",
+                            "MerchantName" to "MerchantName",
+                            "MerchantOrigin" to "MerchantOrigin",
+                            "MerchantId" to "MerchantId",
+                        )
+                    ),
+                    PaymethodData(
+                        paymethod = Paymethod.TinkoffPay,
+                        params = mapOf(
+                            "version" to "2.0",
+                        )
+                    ),
+                    PaymethodData(
+                        paymethod = Paymethod.SBP,
+                    )
+                )
+            )
+        )
+        val requests = mock<GetTerminalPayMethodsRequest> {
+            on { performRequestAsync(any()) } doReturn CompletableDeferred(Result.success(response))
+        }
+        val getTerminalPayMethodsResponse =
+            requests.performRequestAsync(GetTerminalPayMethodsResponse::class.java)
+
+        Assert.assertNotNull(
+            getTerminalPayMethodsResponse.await().getOrNull()?.terminalInfo?.mapYandexPayData()
+        )
     }
 }

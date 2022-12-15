@@ -84,7 +84,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         client.call(request, responseClass, onSuccess, onFailure)
     }
 
-    fun performRequestAsync(responseClass: Class<R>): Deferred<Result<R>> {
+    open fun performRequestAsync(responseClass: Class<R>): Deferred<Result<R>> {
         this.validate()
         val client = NetworkClient()
         val deferred: CompletableDeferred<Result<R>> = CompletableDeferred()
