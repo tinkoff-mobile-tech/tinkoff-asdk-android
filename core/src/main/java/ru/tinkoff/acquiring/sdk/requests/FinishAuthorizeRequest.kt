@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import kotlinx.coroutines.Deferred
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.paysources.*
@@ -113,6 +114,11 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
     override fun execute(onSuccess: (FinishAuthorizeResponse) -> Unit, onFailure: (Exception) -> Unit) {
         fillPaymentData()
         super.performRequest(this, FinishAuthorizeResponse::class.java, onSuccess, onFailure)
+    }
+
+    override fun performRequestAsync(responseClass: Class<FinishAuthorizeResponse>): Deferred<Result<FinishAuthorizeResponse>> {
+        fillPaymentData()
+        return super.performRequestAsync(responseClass)
     }
 
     fun attachedCard(attachedCard: AttachedCard.() -> Unit): PaymentSource {
