@@ -28,7 +28,8 @@ import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 class YandexPaymentProcess(
     private val sdk: AcquiringSdk,
     private val context: Context,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val job: Job = SupervisorJob()
 ) {
 
     /**
@@ -38,7 +39,7 @@ class YandexPaymentProcess(
     val state = _state.asStateFlow()
 
     private val scope = CoroutineScope(
-        ioDispatcher + CoroutineExceptionHandler { _, throwable -> handleException(throwable) }
+        ioDispatcher + CoroutineExceptionHandler { _, throwable -> handleException(throwable) } + job
     )
 
     private lateinit var paymentSource: YandexPay
@@ -63,11 +64,9 @@ class YandexPaymentProcess(
      * Запускает полный или подтверждающий процесс оплаты в зависимости от созданного процесса
      * @return сконфигурированный объект для проведения оплаты
      */
-    fun start() {
-        scope.launch {
-            sendToListener(YandexPaymentState.Started)
-            callInitRequest(initRequest!!)
-        }
+    suspend fun start() = scope.launch {
+        sendToListener(YandexPaymentState.Started)
+        callInitRequest(initRequest!!)
     }
 
     /**
