@@ -65,9 +65,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
         super.handleLoadState(loadState)
         when (loadState) {
             is LoadingState -> {
-                getStateDialog {
-                    it.loading()
-                }
+                getStateDialog { it.loading() }
             }
         }
     }
@@ -77,8 +75,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
             loadStateLiveData.observe(this@YandexPaymentActivity, Observer { handleLoadState(it) })
             screenStateLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenState(it) })
             screenChangeEventLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenChangeEvent(it) })
-            paymentResultLiveData.observe(this@YandexPaymentActivity,
-                Observer {
+            paymentResultLiveData.observe(this@YandexPaymentActivity, Observer {
                     getStateDialog { f ->
                         f.success { finishWithSuccess(it) }
                     }
@@ -106,6 +103,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        paymentViewModel.onDismissDialog()
         if (requestCode == THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 getStateDialog {
@@ -132,11 +130,13 @@ internal class YandexPaymentActivity : TransparentActivity() {
         when (screenState) {
             is FinishWithErrorScreenState -> getStateDialog {
                 it.failure {
+                    paymentViewModel.onDismissDialog()
                     finishWithError(screenState.error)
                 }
             }
             is ErrorScreenState -> getStateDialog {
                 it.failure {
+                    paymentViewModel.onDismissDialog()
                     finishWithError(IllegalStateException(screenState.message))
                 }
             }

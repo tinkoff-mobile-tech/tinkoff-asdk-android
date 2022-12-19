@@ -17,7 +17,8 @@ internal class PaymentLCEDialogFragment : BottomSheetDialogFragment() {
     private val isCancelableInternal: Boolean by lazyUnsafe {
         arguments?.getBoolean(PaymentLCEDialogFragment::isCancelableInternal.name) ?: false
     }
-    private lateinit var viewFlipper: ViewFlipper
+    private val viewFlipper: ViewFlipper
+            by lazyView(R.id.acq_fragment_payment_lce)
     private val buttonChooseAnotherMethod: LoaderButton
             by lazyView(R.id.acq_button_choose_another_method)
     private val buttonOk: LoaderButton by lazyView(R.id.acq_button_ok)
@@ -42,7 +43,6 @@ internal class PaymentLCEDialogFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.AcqBottomSheetAnim
         isCancelable = isCancelableInternal
-        viewFlipper = view.findViewById(R.id.acq_fragment_payment_lce)
         onViewCreated?.invoke(this)
     }
 

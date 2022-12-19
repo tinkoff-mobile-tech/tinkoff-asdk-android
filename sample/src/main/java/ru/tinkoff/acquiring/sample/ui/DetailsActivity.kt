@@ -90,7 +90,7 @@ class DetailsActivity : PayableActivity() {
             setupGooglePay()
         }
 
-        setupYandexPay()
+        setupYandexPay(savedInstanceState = savedInstanceState)
 
         fillViews()
     }

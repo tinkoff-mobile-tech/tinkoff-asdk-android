@@ -71,7 +71,7 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
 
         checkCartEmpty()
 
-        setupYandexPay(R.style.AcquiringTheme_Base_Yandex)
+        setupYandexPay(R.style.AcquiringTheme_Base_Yandex,savedInstanceState)
     }
 
     override fun onResume() {
