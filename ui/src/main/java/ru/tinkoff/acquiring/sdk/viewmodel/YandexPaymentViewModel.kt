@@ -52,6 +52,10 @@ internal class YandexPaymentViewModel(
         }
     }
 
+    fun onDismissDialog() {
+        paymentProcess.stop()
+    }
+
     private fun StateFlow<YandexPaymentState?>.launchAndCollect() {
         viewModelScope.launch {
             buffer(0, BufferOverflow.DROP_OLDEST)

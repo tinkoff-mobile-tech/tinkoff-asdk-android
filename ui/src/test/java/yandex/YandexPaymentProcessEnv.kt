@@ -1,10 +1,7 @@
 package yandex
 
 import android.content.Context
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.mockito.kotlin.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.payment.YandexPaymentProcess
@@ -14,7 +11,6 @@ import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.FinishAuthorizeResponse
 import ru.tinkoff.acquiring.sdk.responses.InitResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 private val yandexPay3dsDataMap = mapOf(
@@ -27,8 +23,18 @@ private val yandexPay3dsDataMap = mapOf(
 ).toMutableMap()
 
 class YandexPaymentProcessEnv(
-    val ioDispatcher: CoroutineDispatcher,
+    // const
     val yandexToken: String? = "yandexToken",
+    val paymentId: Long = 1,
+    val paReq: String = "paReq",
+    val md: String = "md",
+    val tdsServerTransId: String = "tdsServerTransId",
+    val acsTransId : String= "acsTransId",
+
+    // env
+    val ioDispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
+
+    // mocks
     val initRequestMock: InitRequest = mock(),
     val faRequestMock: FinishAuthorizeRequest = mock(),
     val sdk: AcquiringSdk = mock(),
@@ -61,8 +67,8 @@ class YandexPaymentProcessEnv(
             .doReturn(result)
     }
 
-    suspend fun setInitResult(paymentId: Long = 1) {
-        val response = InitResponse(paymentId = paymentId)
+    suspend fun setInitResult(definePaymentId: Long? = null) {
+        val response = InitResponse(paymentId = definePaymentId ?: paymentId)
         val result = Result.success(response)
 
         whenever(initRequestMock.performSuspendRequest())

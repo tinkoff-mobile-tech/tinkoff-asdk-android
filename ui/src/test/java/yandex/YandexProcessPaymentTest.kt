@@ -1,8 +1,5 @@
 package yandex
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito.times
@@ -18,13 +15,13 @@ import ru.tinkoff.acquiring.sdk.responses.FinishAuthorizeResponse
  */
 class YandexProcessPaymentTest {
 
-    private val processEnv = YandexPaymentProcessEnv(Dispatchers.Unconfined)
+    private val processEnv = YandexPaymentProcessEnv()
 
     @Test
     //#2354687
     fun `When Init complete Then FA called`() = processEnv.runWithEnv(
         given = {
-            setInitResult(1L)
+            setInitResult()
             setFAResult()
         },
         `when` = {
@@ -40,12 +37,12 @@ class YandexProcessPaymentTest {
     //#2354729
     fun `When FA complete and return paReq Then 3dsv1 redirected`() = processEnv.runWithEnv(
         given = {
-            setInitResult(1L)
+            setInitResult()
             setFAResult(
                 FinishAuthorizeResponse(
-                    paReq = "paReq",
-                    md = "md",
-                    paymentId = 1,
+                    paReq = paReq,
+                    md = md,
+                    paymentId = paymentId,
                     status = ResponseStatus.THREE_DS_CHECKING
                 )
             )
@@ -65,30 +62,31 @@ class YandexProcessPaymentTest {
 
     @Test
     //#2354750
-    fun `When FA complete and return TdsServerTransId Then 3dsv2 redirected`() = processEnv.runWithEnv(
-        given = {
-            setInitResult(1L)
-            setFAResult(
-                FinishAuthorizeResponse(
-                    tdsServerTransId = "tdsServerTransId",
-                    acsTransId = "acsTransId",
-                    paymentId = 1,
-                    status = ResponseStatus.THREE_DS_CHECKING
+    fun `When FA complete and return TdsServerTransId Then 3dsv2 redirected`() =
+        processEnv.runWithEnv(
+            given = {
+                setInitResult(1L)
+                setFAResult(
+                    FinishAuthorizeResponse(
+                        tdsServerTransId = tdsServerTransId,
+                        acsTransId = acsTransId,
+                        paymentId = paymentId,
+                        status = ResponseStatus.THREE_DS_CHECKING
+                    )
                 )
-            )
-        },
-        `when` = {
-            process.create(PaymentOptions(), yandexToken!!)
-            process.start().join()
-        },
-        then = {
-            val value = process.state.value
-            val asdkState = (value as YandexPaymentState.ThreeDsUiNeeded).asdkState
-            Assert.assertTrue(
-                asdkState.data.is3DsVersion2
-            )
-        }
-    )
+            },
+            `when` = {
+                process.create(PaymentOptions(), yandexToken!!)
+                process.start().join()
+            },
+            then = {
+                val value = process.state.value
+                val asdkState = (value as YandexPaymentState.ThreeDsUiNeeded).asdkState
+                Assert.assertTrue(
+                    asdkState.data.is3DsVersion2
+                )
+            }
+        )
 
     @Test
     //#2354714
@@ -104,7 +102,7 @@ class YandexProcessPaymentTest {
         then = {
             val value = process.state.value
             Assert.assertTrue(
-               value is YandexPaymentState.Error
+                value is YandexPaymentState.Error
             )
         }
     )
@@ -129,12 +127,12 @@ class YandexProcessPaymentTest {
 
     @Test
     //#2354715
-    fun `When FA can pass without 3ds Then give success state`() = processEnv.runWithEnv(
+    fun `When FA return CONFIRMED Then give success state`() = processEnv.runWithEnv(
         given = {
             setInitResult()
             setFAResult(
                 FinishAuthorizeResponse(
-                    paymentId = 1,
+                    paymentId = paymentId,
                     status = ResponseStatus.CONFIRMED
                 )
             )
@@ -158,7 +156,7 @@ class YandexProcessPaymentTest {
             setInitResult()
             setFAResult(
                 FinishAuthorizeResponse(
-                    paymentId = 1,
+                    paymentId = paymentId,
                     status = ResponseStatus.AUTHORIZED
                 )
             )

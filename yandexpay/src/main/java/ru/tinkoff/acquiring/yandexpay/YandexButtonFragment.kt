@@ -26,13 +26,17 @@ class YandexButtonFragment : Fragment() {
         fun newInstance(
             data: YandexPayData,
             options: PaymentOptions,
+            isProd: Boolean = false,
+            enableLogging: Boolean = false,
             @StyleRes themeForYandexButton: Int? = null
         ): YandexButtonFragment {
             return YandexButtonFragment().apply {
                 arguments = bundleOf(
                     YandexButtonFragment::data.name to data,
                     YandexButtonFragment::options.name to options,
-                    YandexButtonFragment::theme.name to themeForYandexButton
+                    YandexButtonFragment::isProd.name to isProd,
+                    YandexButtonFragment::enableLogging.name to enableLogging,
+                    YandexButtonFragment::theme.name to themeForYandexButton,
                 )
             }
         }
@@ -50,6 +54,14 @@ class YandexButtonFragment : Fragment() {
 
     private val theme: Int? by lazy {
         arguments?.getInt(YandexButtonFragment::theme.name)
+    }
+
+    private val enableLogging: Boolean by lazy {
+        arguments?.getBoolean(YandexButtonFragment::enableLogging.name) ?: false
+    }
+
+    private val isProd: Boolean by lazy {
+        arguments?.getBoolean(YandexButtonFragment::isProd.name) ?: false
     }
 
     private val yandexPayLauncher = registerForActivityResult(OpenYandexPayContract()) { result ->
@@ -72,8 +84,8 @@ class YandexButtonFragment : Fragment() {
     ): View {
         initYandexPay(
             yadata = data,
-            yandexPayEnvironment = if (AcquiringSdk.isDebug) YandexPayEnvironment.SANDBOX else YandexPayEnvironment.PROD,
-            logging = AcquiringSdk.isDeveloperMode
+            yandexPayEnvironment = if (isProd) YandexPayEnvironment.PROD else YandexPayEnvironment.SANDBOX,
+            logging = enableLogging
         )
 
         val inf = theme?.let {
