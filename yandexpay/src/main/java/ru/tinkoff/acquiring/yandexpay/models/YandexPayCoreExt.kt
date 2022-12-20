@@ -39,7 +39,6 @@ fun PaymentOptions.mapYandexOrder(): Order {
     )
 }
 
-
 fun Money.toYandexString(): String {
     val fractional = coins.rem(COINS_IN_RUBLE)
     val rub =  coins.div(COINS_IN_RUBLE)

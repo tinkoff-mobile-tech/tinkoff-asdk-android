@@ -14,24 +14,30 @@ data class YandexPayData internal constructor(
     val gatewayAcqId: GatewayAcqId = GatewayAcqId.tinkoff
 ) : Serializable {
 
+    internal val allowedAuthMethods = listOf(AuthMethod.PanOnly)
+    internal val type =  PaymentMethodType.Card
+    internal val gateway = Gateway.from(gatewayAcqId.name)
+    internal val allowedCardNetworks = listOf(
+        CardNetwork.Visa,
+        CardNetwork.MasterCard,
+        CardNetwork.MIR
+    )
+    internal val gatewayMerchantIdYandex = GatewayMerchantID.from(gatewayMerchantId)
+
     internal val toYandexPayMethods
         get() = listOf(
             PaymentMethod(
                 // Что будет содержаться в платежном токене: зашифрованные данные банковской карты
                 // или токенизированная карта
-                listOf(AuthMethod.PanOnly),
+                allowedAuthMethods,
                 // Метод оплаты
-                PaymentMethodType.Card,
+                type,
                 // ID поставщика платежных услуг
-                Gateway.from(gatewayAcqId.name),
+                gateway,
                 // Список поддерживаемых платежных систем
-                listOf(
-                    CardNetwork.Visa,
-                    CardNetwork.MasterCard,
-                    CardNetwork.MIR
-                ),
+                allowedCardNetworks,
                 // ID продавца в системе поставщика платежных услуг
-                GatewayMerchantID.from(gatewayMerchantId),
+                gatewayMerchantIdYandex,
             ),
         )
 }

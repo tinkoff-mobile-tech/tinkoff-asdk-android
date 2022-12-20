@@ -35,13 +35,13 @@ internal class YandexPaymentViewModel(
     fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String) {
         changeScreenState(LoadingState)
 
-        paymentProcess.apply {
-            create(paymentOptions, yandexPayToken)
-            start()
+        viewModelScope.launch {
+            paymentProcess.create(paymentOptions, yandexPayToken)
+            paymentProcess.start()
+        }
 
-            viewModelScope.launch {
-                state.launchAndCollect()
-            }
+        viewModelScope.launch {
+            paymentProcess.state.launchAndCollect()
         }
     }
 

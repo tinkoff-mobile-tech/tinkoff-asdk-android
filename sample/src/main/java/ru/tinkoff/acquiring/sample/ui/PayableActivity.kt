@@ -183,8 +183,11 @@ open class PayableActivity : AppCompatActivity() {
                 themeId = theme,
                 onYandexErrorCallback = { showErrorDialog() }
             )
-            supportFragmentManager.commit { replace(yandexPayButtonContainer.id, acqFragment) }
-        },{
+            val fm = supportFragmentManager
+            if (fm.isDestroyed.not()) {
+                supportFragmentManager.commit { replace(yandexPayButtonContainer.id, acqFragment) }
+            }
+        }, {
             yandexPayButtonContainer.visibility = View.GONE
             showErrorDialog()
         })

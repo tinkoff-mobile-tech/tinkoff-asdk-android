@@ -20,7 +20,6 @@ import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 
 /**
@@ -65,11 +64,9 @@ class YandexPaymentProcess(
      * Запускает полный или подтверждающий процесс оплаты в зависимости от созданного процесса
      * @return сконфигурированный объект для проведения оплаты
      */
-    fun start() {
-        scope.launch {
-            sendToListener(YandexPaymentState.Started)
-            callInitRequest(initRequest!!)
-        }
+    suspend fun start() = scope.launch {
+        sendToListener(YandexPaymentState.Started)
+        callInitRequest(initRequest!!)
     }
 
     /**

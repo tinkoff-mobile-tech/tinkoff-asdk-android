@@ -6,6 +6,7 @@
     android:outAnimation="@android:anim/fade_out"
     android:background="@drawable/acq_bottom_sheet_bg"
     android:id="@+id/acq_fragment_payment_lce"
+    android:measureAllChildren="false"
     android:layout_height="wrap_content">
 
     <include
