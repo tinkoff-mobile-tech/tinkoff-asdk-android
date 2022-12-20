@@ -117,7 +117,7 @@ open class PayableActivity : AppCompatActivity() {
             putBoolean(STATE_ERROR_SHOW, isErrorShowing)
         }
         acqFragment?.let {
-            supportFragmentManager.putFragment(outState, "ya", it)
+            supportFragmentManager.putFragment(outState, YANDEX_PAY_FRAGMENT_KEY, it)
         }
     }
 
@@ -181,19 +181,22 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
 
-            val yaFragment = if(savedInstanceState != null) {
-                 val fragment = supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as YandexButtonFragment
-                 tinkoffAcquiring.addYandexResultListener(fragment,this, paymentOptions, YANDEX_PAY_REQUEST_CODE) { showErrorDialog() }
-            } else {
-                 tinkoffAcquiring.createYandexPayButtonFragment(
-                    activity = this,
-                    yandexPayData = yandexPayData,
-                    options = paymentOptions,
-                    yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
-                    themeId = theme,
-                    onYandexErrorCallback = { showErrorDialog() }
-                )
-            }
+
+            val yaFragment = savedInstanceState?.let {
+                val f = supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as? YandexButtonFragment
+                if (f != null)
+                    tinkoffAcquiring.addYandexResultListener(f,this, paymentOptions, YANDEX_PAY_REQUEST_CODE) { showErrorDialog() }
+                f
+            } ?:
+            tinkoffAcquiring.createYandexPayButtonFragment(
+                activity = this,
+                yandexPayData = yandexPayData,
+                options = paymentOptions,
+                yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+                themeId = theme,
+                onYandexErrorCallback = { showErrorDialog() }
+            )
+
 
             if (supportFragmentManager.isDestroyed.not()) {
                 supportFragmentManager.commit { replace(yandexPayButtonContainer.id, yaFragment) }
