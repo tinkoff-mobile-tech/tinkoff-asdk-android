@@ -17,11 +17,15 @@ internal class PaymentLCEDialogFragment : BottomSheetDialogFragment() {
     private val isCancelableInternal: Boolean by lazyUnsafe {
         arguments?.getBoolean(PaymentLCEDialogFragment::isCancelableInternal.name) ?: false
     }
-    private val viewFlipper: ViewFlipper by lazyView(R.id.acq_fragment_payment_lce)
+    private val viewFlipper: ViewFlipper
+            by lazyView(R.id.acq_fragment_payment_lce)
     private val buttonChooseAnotherMethod: LoaderButton
             by lazyView(R.id.acq_button_choose_another_method)
     private val buttonOk: LoaderButton by lazyView(R.id.acq_button_ok)
+
     private var onDismissInternal: (() -> Unit)? = null
+
+    var onViewCreated: OnViewCreated? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +41,9 @@ internal class PaymentLCEDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getDialog()?.getWindow()
-            ?.getAttributes()?.windowAnimations = R.style.AcqBottomSheetAnim
+        dialog?.window?.attributes?.windowAnimations = R.style.AcqBottomSheetAnim
         isCancelable = isCancelableInternal
+        onViewCreated?.invoke(this)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -78,5 +82,9 @@ internal class PaymentLCEDialogFragment : BottomSheetDialogFragment() {
             f.arguments = arg
             return f
         }
+    }
+
+    fun interface OnViewCreated {
+        operator fun invoke(f: PaymentLCEDialogFragment)
     }
 }

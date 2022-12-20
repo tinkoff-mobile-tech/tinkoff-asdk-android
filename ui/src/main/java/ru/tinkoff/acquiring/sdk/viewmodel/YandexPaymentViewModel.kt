@@ -52,8 +52,7 @@ internal class YandexPaymentViewModel(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    fun onDismissDialog() {
         paymentProcess.stop()
     }
 

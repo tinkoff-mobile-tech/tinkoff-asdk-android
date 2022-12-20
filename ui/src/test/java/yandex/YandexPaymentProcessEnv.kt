@@ -11,7 +11,6 @@ import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.FinishAuthorizeResponse
 import ru.tinkoff.acquiring.sdk.responses.InitResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 private val yandexPay3dsDataMap = mapOf(

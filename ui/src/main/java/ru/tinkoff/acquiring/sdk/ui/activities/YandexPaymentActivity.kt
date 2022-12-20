@@ -26,7 +26,6 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.redesign.dialog.*
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.ui.fragments.YandexPaymentStubFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
 
 /**
@@ -37,7 +36,8 @@ internal class YandexPaymentActivity : TransparentActivity() {
     private lateinit var paymentViewModel: YandexPaymentViewModel
     private lateinit var paymentOptions: PaymentOptions
     private var asdkState: AsdkState = DefaultState
-    private var paymentLCEDialogFragment: PaymentLCEDialogFragment = PaymentLCEDialogFragment.create(false)
+    private var paymentLCEDialogFragment: PaymentLCEDialogFragment =
+        PaymentLCEDialogFragment.create(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,23 +48,24 @@ internal class YandexPaymentActivity : TransparentActivity() {
         initViews()
         bottomContainer.isVisible = false
 
-        paymentViewModel = provideViewModel(YandexPaymentViewModel::class.java) as YandexPaymentViewModel
+        paymentViewModel =
+            provideViewModel(YandexPaymentViewModel::class.java) as YandexPaymentViewModel
         observeLiveData()
 
         if (savedInstanceState == null) {
-            paymentViewModel.checkoutAsdkState(asdkState)
-
             (asdkState as? YandexPayState)?.let {
                 paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
             }
         }
+
+        paymentViewModel.checkoutAsdkState(asdkState)
     }
 
     override fun handleLoadState(loadState: LoadState) {
         super.handleLoadState(loadState)
         when (loadState) {
             is LoadingState -> {
-                showDialog(paymentLCEDialogFragment)
+                getStateDialog { it.loading() }
             }
         }
     }
@@ -74,7 +75,12 @@ internal class YandexPaymentActivity : TransparentActivity() {
             loadStateLiveData.observe(this@YandexPaymentActivity, Observer { handleLoadState(it) })
             screenStateLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenState(it) })
             screenChangeEventLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenChangeEvent(it) })
-            paymentResultLiveData.observe(this@YandexPaymentActivity, Observer { paymentLCEDialogFragment.success { finishWithSuccess(it) } })
+            paymentResultLiveData.observe(this@YandexPaymentActivity, Observer {
+                    getStateDialog { f ->
+                        f.success { finishWithSuccess(it) }
+                    }
+                }
+            )
         }
     }
 
@@ -89,7 +95,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
                         screen.data,
                     )
                 } catch (e: Throwable) {
-                    paymentLCEDialogFragment.failure { finishWithError(e) }
+                    getStateDialog { it.failure { finishWithError(e) } }
                 }
                 else -> Unit
             }
@@ -97,16 +103,21 @@ internal class YandexPaymentActivity : TransparentActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        paymentViewModel.onDismissDialog()
         if (requestCode == THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                paymentLCEDialogFragment.success {
-                    finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
+                getStateDialog {
+                    it.success {
+                        finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
+                    }
                 }
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
-                paymentLCEDialogFragment.failure {
-                    finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
+                getStateDialog {
+                    it.failure {
+                        finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
+                    }
                 }
-            }  else {
+            } else {
                 setResult(Activity.RESULT_CANCELED)
                 finish()
             }
@@ -117,13 +128,28 @@ internal class YandexPaymentActivity : TransparentActivity() {
 
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
-            is FinishWithErrorScreenState -> paymentLCEDialogFragment.failure {
-                finishWithError(screenState.error)
+            is FinishWithErrorScreenState -> getStateDialog {
+                it.failure {
+                    paymentViewModel.onDismissDialog()
+                    finishWithError(screenState.error)
+                }
             }
-            is ErrorScreenState -> paymentLCEDialogFragment.failure {
-                finishWithError(IllegalStateException(screenState.message))
+            is ErrorScreenState -> getStateDialog {
+                it.failure {
+                    paymentViewModel.onDismissDialog()
+                    finishWithError(IllegalStateException(screenState.message))
+                }
             }
             else -> Unit
+        }
+    }
+
+    private fun getStateDialog(block: PaymentLCEDialogFragment.OnViewCreated? = null) {
+        if (paymentLCEDialogFragment.isAdded.not()) {
+            paymentLCEDialogFragment.onViewCreated = block
+            showDialog(paymentLCEDialogFragment)
+        } else {
+            block?.invoke(paymentLCEDialogFragment)
         }
     }
 }
