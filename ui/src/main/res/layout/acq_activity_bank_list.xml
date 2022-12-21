@@ -34,15 +34,15 @@
         android:layout_height="match_parent">
 
         <include
-            android:id="@+id/acq_card_list_shimmer"
-            layout="@layout/acq_card_list_shimmer" />
+            android:id="@+id/acq_bank_list_shimmer"
+            layout="@layout/acq_bank_list_shimmer" />
 
         <include
-            android:id="@+id/acq_card_list_content"
-            layout="@layout/acq_card_list_content" />
+            android:id="@+id/acq_bank_list_content"
+            layout="@layout/acq_bank_list_content" />
 
         <include
-            android:id="@+id/acq_card_list_stub"
+            android:id="@+id/acq_bank_list_stub"
             layout="@layout/acq_list_stub" />
 
     </ViewFlipper>
