@@ -7,6 +7,15 @@ android {
     compileSdkVersion rootProject.compileSdk
     buildToolsVersion rootProject.buildTools
 
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+            storePassword 'android'
+            keyAlias 'androidDebugKey'
+            keyPassword 'android'
+        }
+    }
+
     defaultConfig {
         applicationId "ru.tinkoff.acquiring.sample"
         minSdkVersion rootProject.yandexPayMinSdk
