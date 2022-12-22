@@ -64,7 +64,7 @@ class YandexPaymentProcess(
      * Запускает полный или подтверждающий процесс оплаты в зависимости от созданного процесса
      * @return сконфигурированный объект для проведения оплаты
      */
-    suspend fun start() = scope.launch {
+    fun start() = scope.launch {
         sendToListener(YandexPaymentState.Started)
         callInitRequest(initRequest!!)
     }
@@ -73,8 +73,10 @@ class YandexPaymentProcess(
      * Останавливает процесс оплаты
      */
     fun stop() {
-        scope.cancel()
-        sendToListener(YandexPaymentState.Stopped)
+        if(_state.value != null) {
+            scope.cancel()
+            sendToListener(YandexPaymentState.Stopped)
+        }
     }
 
     private  fun sendToListener(state: YandexPaymentState?) {
@@ -99,6 +101,7 @@ class YandexPaymentProcess(
         }
 
         val initResult = request.performSuspendRequest().getOrThrow()
+        delay(4000)
         callFinishAuthorizeRequest(
             initResult.paymentId!!, paymentSource, email,
             data = threeDsDataCollector.invoke(context,null)

@@ -197,8 +197,7 @@ open class PayableActivity : AppCompatActivity() {
                 onYandexErrorCallback = { showErrorDialog() }
             )
 
-
-            if (supportFragmentManager.isDestroyed.not()) {
+            if (supportFragmentManager.isDestroyed.not() && supportFragmentManager.isStateSaved.not()) {
                 supportFragmentManager.commit { replace(yandexPayButtonContainer.id, yaFragment) }
             }
 

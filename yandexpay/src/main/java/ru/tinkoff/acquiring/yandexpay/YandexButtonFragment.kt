@@ -44,12 +44,10 @@ class YandexButtonFragment : Fragment() {
 
     internal var listener: AcqYandexPayCallback? = null
 
+    lateinit var options: PaymentOptions
+
     private val data: YandexPayData by lazy {
         arguments?.getSerializable(YandexButtonFragment::data.name) as YandexPayData
-    }
-
-    private val options: PaymentOptions by lazy {
-        checkNotNull(arguments?.getParcelable(YandexButtonFragment::options.name))
     }
 
     private val theme: Int? by lazy {
@@ -75,6 +73,11 @@ class YandexButtonFragment : Fragment() {
             is YandexPayResult.Cancelled -> AcqYandexPayResult.Cancelled
         }
         listener?.invoke(acqResult)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        options = checkNotNull(arguments?.getParcelable(YandexButtonFragment::options.name))
     }
 
     override fun onCreateView(

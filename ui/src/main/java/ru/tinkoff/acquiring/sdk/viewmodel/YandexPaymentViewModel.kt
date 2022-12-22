@@ -17,7 +17,6 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
  * Created by i.golovachev
@@ -25,35 +24,28 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 internal class YandexPaymentViewModel(
     application: Application,
     handleErrorsInSdk: Boolean,
-    sdk: AcquiringSdk
+    sdk: AcquiringSdk,
+    private val paymentProcess: YandexPaymentProcess
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
-    private val paymentProcess: YandexPaymentProcess = YandexPaymentProcess(sdk, context, ThreeDsHelper.CollectData)
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
+
+    init {
+        paymentProcess.state.launchAndCollect()
+    }
 
     fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String) {
         changeScreenState(LoadingState)
 
-        viewModelScope.launch {
-            paymentProcess.create(paymentOptions, yandexPayToken)
-            paymentProcess.start()
-        }
-
-        viewModelScope.launch {
-            paymentProcess.state.launchAndCollect()
+        with(paymentProcess) {
+            create(paymentOptions, yandexPayToken)
+            start()
         }
     }
 
-    fun checkoutAsdkState(state: AsdkState) {
-        when (state) {
-            is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data, state.transaction))
-            else -> changeScreenState(PaymentScreenState)
-        }
-    }
-
-    fun onDismissDialog() {
-        paymentProcess.stop()
+    fun onThreeDsReceiveResult(threeDsPaymentResult: PaymentResult) {
+        paymentResult.value = threeDsPaymentResult
     }
 
     private fun StateFlow<YandexPaymentState?>.launchAndCollect() {

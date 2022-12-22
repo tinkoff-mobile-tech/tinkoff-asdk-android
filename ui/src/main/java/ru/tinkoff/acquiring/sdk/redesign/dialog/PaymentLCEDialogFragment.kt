@@ -27,6 +27,10 @@ internal class PaymentLCEDialogFragment : BottomSheetDialogFragment() {
 
     var onViewCreated: OnViewCreated? = null
 
+    val isLoading get() = viewFlipper.displayedChild == 0
+    val isFailure get() = viewFlipper.displayedChild == 1
+    val isSuccess get() = viewFlipper.displayedChild == 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, theme)

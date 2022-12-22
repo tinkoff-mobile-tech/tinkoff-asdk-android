@@ -20,6 +20,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.payment.holder.YandexPaymentProcessHolder
 
 /**
  * @author Mariya Chernyadieva
@@ -36,7 +37,9 @@ internal class ViewModelProviderFactory(
         ThreeDsViewModel::class.java to ThreeDsViewModel(application, handleErrorsInSdk, sdk),
         SavedCardsViewModel::class.java to SavedCardsViewModel(application, handleErrorsInSdk, sdk),
         NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk),
-        YandexPaymentViewModel::class.java to YandexPaymentViewModel(application, handleErrorsInSdk, sdk)
+        YandexPaymentViewModel::class.java to YandexPaymentViewModel(application, handleErrorsInSdk, sdk,
+            (application as YandexPaymentProcessHolder).process
+        )
     )
 
     @Suppress("UNCHECKED_CAST")

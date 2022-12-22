@@ -19,11 +19,13 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
+import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.dialog.*
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
@@ -57,8 +59,6 @@ internal class YandexPaymentActivity : TransparentActivity() {
                 paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
             }
         }
-
-        paymentViewModel.checkoutAsdkState(asdkState)
     }
 
     override fun handleLoadState(loadState: LoadState) {
@@ -76,10 +76,8 @@ internal class YandexPaymentActivity : TransparentActivity() {
             screenStateLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenState(it) })
             screenChangeEventLiveData.observe(this@YandexPaymentActivity, Observer { handleScreenChangeEvent(it) })
             paymentResultLiveData.observe(this@YandexPaymentActivity, Observer {
-                    getStateDialog { f ->
-                        f.success { finishWithSuccess(it) }
-                    }
-                }
+                getStateDialog { f -> f.success { finishWithSuccess(it) } }
+            }
             )
         }
     }
@@ -103,14 +101,11 @@ internal class YandexPaymentActivity : TransparentActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        paymentViewModel.onDismissDialog()
         if (requestCode == THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                getStateDialog {
-                    it.success {
-                        finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
-                    }
-                }
+                paymentViewModel.onThreeDsReceiveResult(
+                    data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
+                )
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
                 getStateDialog {
                     it.failure {
@@ -130,13 +125,11 @@ internal class YandexPaymentActivity : TransparentActivity() {
         when (screenState) {
             is FinishWithErrorScreenState -> getStateDialog {
                 it.failure {
-                    paymentViewModel.onDismissDialog()
                     finishWithError(screenState.error)
                 }
             }
             is ErrorScreenState -> getStateDialog {
                 it.failure {
-                    paymentViewModel.onDismissDialog()
                     finishWithError(IllegalStateException(screenState.message))
                 }
             }

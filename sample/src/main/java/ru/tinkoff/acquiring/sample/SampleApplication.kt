@@ -23,12 +23,18 @@ import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.YandexPaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.holder.YandexPaymentProcessHolder
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.SampleAcquiringTokenGenerator
 
 /**
  * @author Mariya Chernyadieva
  */
-class SampleApplication : Application() {
+class SampleApplication : Application(), YandexPaymentProcessHolder {
+
+    override val process: YandexPaymentProcess
+        get() = yandexPaymentProcess!!
 
     override fun onCreate() {
         super.onCreate()
@@ -41,17 +47,20 @@ class SampleApplication : Application() {
     override fun onTerminate() {
         super.onTerminate()
         paymentProcess?.stop()
+        yandexPaymentProcess?.stop()
     }
 
     companion object {
         lateinit var tinkoffAcquiring: TinkoffAcquiring
             private set
         var paymentProcess: PaymentProcess? = null
+        var yandexPaymentProcess: YandexPaymentProcess? = null
 
         fun initSdk(context: Context, params: SessionParams) {
             tinkoffAcquiring = TinkoffAcquiring(context.applicationContext,
                 params.terminalKey, params.publicKey)
             AcquiringSdk.tokenGenerator = params.password?.let { SampleAcquiringTokenGenerator(it) }
+            yandexPaymentProcess = YandexPaymentProcess(tinkoffAcquiring.sdk, context, ThreeDsHelper.CollectData)
         }
     }
 }
