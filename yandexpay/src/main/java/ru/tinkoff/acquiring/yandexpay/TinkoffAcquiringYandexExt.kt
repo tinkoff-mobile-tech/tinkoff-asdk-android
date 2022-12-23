@@ -39,7 +39,7 @@ fun TinkoffAcquiring.createYandexPayButtonFragment(
     onYandexErrorCallback: AcqYandexPayErrorCallback? = null
 ): YandexButtonFragment {
     val fragment = YandexButtonFragment.newInstance(yandexPayData, options,  isProd, enableLogging, themeId)
-    addYandexResultListener(fragment, activity, options, yandexPayRequestCode, onYandexErrorCallback)
+    addYandexResultListener(fragment, activity, yandexPayRequestCode, onYandexErrorCallback)
     return fragment
 }
 
@@ -48,7 +48,6 @@ fun TinkoffAcquiring.createYandexPayButtonFragment(
  *
  * @param activity              контекст для дальнешей навигации платежного флоу из Activity
  * @param fragment              экземляр фрагмента - обертки над яндексом
- * @param options               настройки платежной сессии
  * @param yandexPayRequestCode  код для получения результата, по завершению работы экрана Acquiring SDK
  * @param onYandexErrorCallback дополнительный метод для возможности обработки ошибки от яндекса на
  *                              стороне клиентского приложения
@@ -56,7 +55,6 @@ fun TinkoffAcquiring.createYandexPayButtonFragment(
 fun TinkoffAcquiring.addYandexResultListener(
     fragment: YandexButtonFragment,
     activity: FragmentActivity,
-    options: PaymentOptions,
     yandexPayRequestCode: Int,
     onYandexErrorCallback: AcqYandexPayErrorCallback? = null
 ) {
@@ -64,7 +62,7 @@ fun TinkoffAcquiring.addYandexResultListener(
         when (it) {
             is AcqYandexPayResult.Success -> openYandexPaymentScreen(
                 activity,
-                options,
+                it.paymentOptions,
                 yandexPayRequestCode,
                 it.token
             )

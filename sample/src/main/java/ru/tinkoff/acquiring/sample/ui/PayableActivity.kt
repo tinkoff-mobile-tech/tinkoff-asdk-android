@@ -47,6 +47,7 @@ import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
 import ru.tinkoff.acquiring.yandexpay.addYandexResultListener
 import ru.tinkoff.acquiring.yandexpay.createYandexPayButtonFragment
+import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
@@ -181,22 +182,7 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
 
-
-            val yaFragment = savedInstanceState?.let {
-                val f = supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as? YandexButtonFragment
-                if (f != null)
-                    tinkoffAcquiring.addYandexResultListener(f,this, paymentOptions, YANDEX_PAY_REQUEST_CODE) { showErrorDialog() }
-                f
-            } ?:
-            tinkoffAcquiring.createYandexPayButtonFragment(
-                activity = this,
-                yandexPayData = yandexPayData,
-                options = paymentOptions,
-                yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
-                themeId = theme,
-                onYandexErrorCallback = { showErrorDialog() }
-            )
-
+            val yaFragment = createYandexButtonFragment(savedInstanceState, paymentOptions, yandexPayData, theme)
 
             if (supportFragmentManager.isDestroyed.not()) {
                 supportFragmentManager.commit { replace(yandexPayButtonContainer.id, yaFragment) }
@@ -352,6 +338,29 @@ open class PayableActivity : AppCompatActivity() {
             showErrorDialog()
         }
     }
+
+    private fun createYandexButtonFragment(savedInstanceState: Bundle?,
+                                           paymentOptions: PaymentOptions,
+                                           yandexPayData: YandexPayData,
+                                           theme: Int?) : YandexButtonFragment {
+        return savedInstanceState?.let {
+            try {
+                (supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as? YandexButtonFragment)?.also {
+                    tinkoffAcquiring.addYandexResultListener(it, this, YANDEX_PAY_REQUEST_CODE) { showErrorDialog() }
+                }
+            } catch (i: IllegalStateException) {
+                null
+            }
+        } ?: tinkoffAcquiring.createYandexPayButtonFragment(
+            activity = this,
+            yandexPayData = yandexPayData,
+            options = paymentOptions,
+            yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+            themeId = theme,
+            onYandexErrorCallback = { showErrorDialog() }
+        )
+    }
+
 
     protected fun showProgressDialog() {
         progressDialog.show()
