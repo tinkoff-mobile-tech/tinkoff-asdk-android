@@ -27,13 +27,13 @@
     <string name="acq_cardlist_bankname">%1$s • %2$s</string>
     <string name="acq_cardlist_title">Ваши карты</string>
 
-    <string name="acq_cardlist_alert_label"><![CDATA[У нас проблема, мы уже решаем ее]]></string>
-    <string name="acq_cardlist_stub_description">Попробуйте снова через пару минут</string>
-    <string name="acq_cardlist_alert_access">Понятно</string>
+    <string name="acq_generic_alert_label"><![CDATA[У нас проблема, мы уже решаем ее]]></string>
+    <string name="acq_generic_stub_description">Попробуйте снова через пару минут</string>
+    <string name="acq_generic_alert_access">Понятно</string>
 
-    <string name="acq_cardlist_stubnet_title">Не загрузилось</string>
-    <string name="acq_cardlist_stubnet_description"><![CDATA[Проверьте доступ к интернету и попробуйте еще раз]]></string>
-    <string name="acq_cardlist_button_stubnet">Обновить</string>
+    <string name="acq_generic_stubnet_title">Не загрузилось</string>
+    <string name="acq_generic_stubnet_description"><![CDATA[Проверьте доступ к интернету и попробуйте еще раз]]></string>
+    <string name="acq_generic_button_stubnet">Обновить</string>
     <string name="acq_cardlist_description">Здесь будут ваши карты</string>
     <string name="acq_cardlist_button_add">Добавить</string>
     <string name="acq_cardlist_addcard">Добавить новую</string>
@@ -72,5 +72,9 @@
     <string name="acq_bank_issuer_vtb">ВТБ</string>
     <string name="acq_bank_issuer_sberbank">Сбербанк</string>
     <string name="acq_bank_issuer_raiffeizen">Райффайзен</string>
+
+    <string name="acq_banklist_title">Выбор банка</string>
+    <string name="acq_stub_sbp_no_banks_description"><![CDATA[Для оплаты нужно приложение вашего банка с поддержкой СБП]]></string>
+    <string name="acq_stub_sbp_no_banks_details">Узнать подробности</string>
 
 </resources>

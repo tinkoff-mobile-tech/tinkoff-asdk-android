@@ -81,6 +81,16 @@
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme.Base"/>
 
+        <activity
+            android:name=".redesign.sbp.ui.BankListActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base"/>
+
+        <activity
+            android:name=".redesign.sbp.ui.SbpNoBanksStubActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base"/>
+
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />

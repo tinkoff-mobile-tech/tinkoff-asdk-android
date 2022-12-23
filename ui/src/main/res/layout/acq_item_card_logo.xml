@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
-    android:paddingEnd="16dp"
+    android:paddingEnd="12dp"
     tools:src="@drawable/acq_ic_card_mir_tinkoff">
 
 </ImageView>

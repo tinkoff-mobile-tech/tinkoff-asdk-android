@@ -62,9 +62,9 @@ internal class CardsListActivity : TransparentActivity() {
                     options.features.showOnlyRecurrentCards)
             }
             is AttachCard.Error -> showErrorDialog(
-                getString(R.string.acq_cardlist_alert_label),
-                ErrorResolver.resolve(result.error,  getString(R.string.acq_cardlist_stub_description)),
-                getString(R.string.acq_cardlist_alert_access)
+                getString(R.string.acq_generic_alert_label),
+                ErrorResolver.resolve(result.error,  getString(R.string.acq_generic_stub_description)),
+                getString(R.string.acq_generic_alert_access)
             )
             else -> Unit
         }
@@ -173,10 +173,10 @@ internal class CardsListActivity : TransparentActivity() {
                     }
                     is CardsListState.Error -> {
                         showStub(
-                            imageResId = R.drawable.acq_ic_cards_list_error_stub,
-                            titleTextRes = R.string.acq_cardlist_alert_label,
-                            subTitleTextRes = R.string.acq_cardlist_stub_description,
-                            buttonTextRes = R.string.acq_cardlist_alert_access
+                            imageResId = R.drawable.acq_ic_generic_error_stub,
+                            titleTextRes = R.string.acq_generic_alert_label,
+                            subTitleTextRes = R.string.acq_generic_stub_description,
+                            buttonTextRes = R.string.acq_generic_alert_access
                         )
                         stubButtonView.setOnClickListener { _ -> finishWithError(it.throwable) }
                     }
@@ -192,9 +192,9 @@ internal class CardsListActivity : TransparentActivity() {
                     is CardsListState.NoNetwork -> {
                         showStub(
                             imageResId = R.drawable.acq_ic_no_network,
-                            titleTextRes = R.string.acq_cardlist_stubnet_title,
-                            subTitleTextRes = R.string.acq_cardlist_stubnet_description,
-                            buttonTextRes = R.string.acq_cardlist_button_stubnet
+                            titleTextRes = R.string.acq_generic_stubnet_title,
+                            subTitleTextRes = R.string.acq_generic_stubnet_description,
+                            buttonTextRes = R.string.acq_generic_button_stubnet
                         )
                         stubButtonView.setOnClickListener {
                             viewModel.loadData(
@@ -242,9 +242,9 @@ internal class CardsListActivity : TransparentActivity() {
                     }
                     is CardListEvent.ShowError -> {
                         showErrorDialog(
-                            R.string.acq_cardlist_alert_label,
-                            R.string.acq_cardlist_stub_description,
-                            R.string.acq_cardlist_alert_access)
+                            R.string.acq_generic_alert_label,
+                            R.string.acq_generic_stub_description,
+                            R.string.acq_generic_alert_access)
                     }
                 }
             }

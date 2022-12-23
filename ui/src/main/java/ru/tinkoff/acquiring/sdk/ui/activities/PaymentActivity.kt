@@ -48,6 +48,7 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.fragments.PaymentFragment
@@ -212,7 +213,7 @@ internal class PaymentActivity : TransparentActivity() {
     @SuppressLint("QueryPermissionsNeeded")
     private fun openBankChooser(deepLink: String, banks: Set<Any?>?) {
         if (!banks.isNullOrEmpty()) {
-            val supportedBanks = getBankApps(deepLink, banks)
+            val supportedBanks = SbpHelper.getBankApps(packageManager, deepLink, banks)
             val intent = BankChooseActivity.createIntent(this, options, supportedBanks, deepLink)
             startActivityForResult(intent, SBP_BANK_CHOOSE_REQUEST_CODE)
         } else {
@@ -221,31 +222,6 @@ internal class PaymentActivity : TransparentActivity() {
             val chooserIntent = Intent.createChooser(intent, getString(R.string.acq_fps_chooser_title))
             startActivityForResult(chooserIntent, SBP_BANK_REQUEST_CODE)
         }
-    }
-
-    @SuppressLint("QueryPermissionsNeeded")
-    private fun getBankApps(link: String, banks: Set<Any?>): List<String> {
-        // get sbp packages
-        val sbpIntent = Intent(Intent.ACTION_VIEW)
-        sbpIntent.setDataAndNormalize(Uri.parse(link))
-        val sbpPackages = packageManager.queryIntentActivities(sbpIntent, 0)
-                .map { it.activityInfo.packageName }
-
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
-        val browserPackages = packageManager.queryIntentActivities(browserIntent, 0)
-                .map { it.activityInfo.packageName }
-        // filter out browsers
-        val nonBrowserSbpPackages = sbpPackages.filter { it !in browserPackages }
-
-        // get bank packages
-        val bankPackages = packageManager.getInstalledApplications(0)
-                .map { it.packageName }.filter { it in banks }
-
-        // merge two lists
-        return mutableListOf<String>().apply {
-            addAll(nonBrowserSbpPackages)
-            addAll(bankPackages)
-        }.distinct()
     }
 
     private fun openSbpDeepLinkInBank(packageName: String) {

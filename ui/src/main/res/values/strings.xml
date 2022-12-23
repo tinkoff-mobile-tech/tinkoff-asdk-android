@@ -35,13 +35,13 @@
     <string name="acq_label_card_cvv">Code</string>
     <string name="acq_addcard_button_add">Attach</string>
 
-    <string name="acq_cardlist_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>
-    <string name="acq_cardlist_stub_description">Try again in a couple of minutes</string>
-    <string name="acq_cardlist_alert_access">Clear</string>
+    <string name="acq_generic_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>
+    <string name="acq_generic_stub_description">Try again in a couple of minutes</string>
+    <string name="acq_generic_alert_access">Clear</string>
 
-    <string name="acq_cardlist_stubnet_title">Not loaded</string>
-    <string name="acq_cardlist_stubnet_description"><![CDATA[Check internet access and try again]]></string>
-    <string name="acq_cardlist_button_stubnet">Refresh</string>
+    <string name="acq_generic_stubnet_title">Not loaded</string>
+    <string name="acq_generic_stubnet_description"><![CDATA[Check internet access and try again]]></string>
+    <string name="acq_generic_button_stubnet">Refresh</string>
 
     <string name="acq_cardlist_description">This is where your cards will be</string>
     <string name="acq_cardlist_button_add">Add</string>
@@ -70,5 +70,9 @@
     <string name="acq_bank_issuer_sberbank">Sberbank</string>
     <string name="acq_bank_issuer_raiffeizen">Raiffeizen</string>
     <string name="acq_bank_issuer_gazprombank">Gazprombank</string>
+
+    <string name="acq_banklist_title">Choose bank</string>
+    <string name="acq_stub_sbp_no_banks_description">You need a bank app wit Fast Payment System support to make the payment</string>
+    <string name="acq_stub_sbp_no_banks_details">Details</string>
 
 </resources>

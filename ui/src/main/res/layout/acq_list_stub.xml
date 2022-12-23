@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/acq_ic_cards_list_error_stub"
+        android:src="@drawable/acq_ic_generic_error_stub"
         app:layout_constraintBottom_toTopOf="@+id/acq_stub_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -40,7 +40,7 @@
         android:layout_marginTop="24dp"
         android:fontFamily="@font/roboto_regular"
         android:gravity="center"
-        android:text="@string/acq_cardlist_stubnet_title"
+        android:text="@string/acq_generic_stubnet_title"
         app:layout_constraintBottom_toTopOf="@+id/acq_stub_subtitle"
         app:layout_constraintTop_toBottomOf="@+id/acq_stub_img" />
 
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        tools:text="@string/acq_cardlist_stubnet_description"
+        tools:text="@string/acq_generic_stubnet_description"
         app:layout_constraintBottom_toTopOf="@+id/acq_stub_retry_button"
         app:layout_constraintTop_toBottomOf="@+id/acq_stub_title" />
 
@@ -64,7 +64,7 @@
         android:gravity="center"
         android:paddingHorizontal="18dp"
         android:paddingVertical="14dp"
-        android:text="@string/acq_cardlist_button_stubnet"
+        android:text="@string/acq_generic_button_stubnet"
         android:textAllCaps="false"
         android:textColor="@color/acq_colorAccent"
         android:textSize="@dimen/acq_small_text_size"

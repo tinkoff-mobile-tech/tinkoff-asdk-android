@@ -81,4 +81,5 @@
     <string name="notification_channel_name">Payment notifications</string>
     <string name="notification_order_title_subscription_renewal">Subscription renewal</string>
     <string name="notification_payment_success">Subscription renewed successfully!</string>
+    <string name="bank_list">Bank list</string>
 </resources>

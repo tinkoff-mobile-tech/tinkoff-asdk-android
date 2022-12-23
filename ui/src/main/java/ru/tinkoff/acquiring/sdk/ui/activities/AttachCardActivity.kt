@@ -90,7 +90,7 @@ internal class AttachCardActivity : TransparentActivity() {
                     showErrorDialog(
                         getString(R.string.acq_attach_card_error),
                         screenState.message,
-                        getString(R.string.acq_cardlist_alert_access)
+                        getString(R.string.acq_generic_alert_access)
                     ) {
                         attachCardViewModel.createEvent(ErrorButtonClickedEvent)
                     }

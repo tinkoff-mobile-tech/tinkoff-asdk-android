@@ -61,6 +61,11 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/sbp_bank_list"
+        android:title="@string/bank_list"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/menu_action_about"
         android:title="@string/activity_title_about"
         app:showAsAction="never"/>
