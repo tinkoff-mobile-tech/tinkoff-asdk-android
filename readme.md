@@ -254,6 +254,36 @@ var paymentOptions = PaymentOptions().setOptions {
 предыдущем шаге); время и частота проверки статуса платежа зависит от нужд клиентского приложения и остается на ваше усмотрение (один из вариантов -
 проверять статус платежа при возвращении приложения из фона)
 
+
+### Yandex Pay
+
+AcquiringSdk имеет возможность использовать внутри себя Yandex Pay в качестве хранилища карт.
+Внимание, этот функционал поддерживается только с версии Android 6.0 Marshmallow и выше.
+
+Если вы хотите использовать Yandex Pay вместе с AcquiringSdk вам необходимо:
+1. Получить в личном кабинете Yandex значение `YANDEX_CLIENT_ID`
+2. Укажите полученный `YANDEX_CLIENT_ID` в сборочном скрипте [_build.gradle_] в качестве значения в manifestPlaceholders:
+```groovy
+android {
+  defaultConfig {
+    manifestPlaceholders = [
+      // Подставьте ваш yandex_client_id
+      YANDEX_CLIENT_ID: "12345678901234567890",
+    ]
+  }
+}
+```
+3. Добавить в [_build.gradle_][build-config]
+```groovy
+implementation 'ru.tinkoff.acquiring:yandexpay:$latestVersion'
+```
+Крайне не рекомендуется использовать `ru.tinkoff.acquiring:yandexpay` вместе с `com.yandex.pay:core` в рамках вашего приложения, так как
+могут возникнуть непредвиденные ошибки. 
+4. Включить прием платежей через Yandex Pay в Личном кабинете.
+5. Проверить Доступ функционала Yandex Pay проверяется через метод `TinkoffAcquiring#checkTerminalInfo`, который возвращает данные обо всех методах оплаты,извлечь данные касательно Yandex Pay  расширение `TerminalInfo#mapYandexPayData`.
+6. Кнопка Yandex Pay инкапсулирована во фрагменте `YandexButtonFragment`. Размеры фрагмента-кнопки можете создать самостоятельно, однако если рекомендации по минимальной ширине. Фрагмент можно создать с помощью метода `TinkoffAcquiring.createYandexPayButtonFragment`.
+После выбора карты процесс оплаты запуститься самостоятельно. Возможности кастомизации можно посмотреть в пейджес.
+
 ### Дополнительные возможности
 
 #### Настройка стилей
@@ -326,6 +356,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 -keep class ru.tinkoff.acquiring.sdk.localization.** { *; }
 -keep class ru.tinkoff.acquiring.sdk.requests.** { *; }
 -keep class ru.tinkoff.acquiring.sdk.models.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.yandexpay.models.** { *; } // если подключали яндекс
 -keep class ru.rtln.tds.sdk.** { *; }
 -keep class org.spongycastle.**
 -keep class org.bouncycastle.**
