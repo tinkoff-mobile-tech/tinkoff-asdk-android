@@ -274,7 +274,8 @@ android {
 implementation 'ru.tinkoff.acquiring:yandexpay:$latestVersion'
 ```
 Крайне не рекомендуется использовать `ru.tinkoff.acquiring:yandexpay` вместе с `com.yandex.pay:core` в рамках вашего приложения, так как
-могут возникнуть непредвиденные ошибки. 
+могут возникнуть непредвиденные ошибки.
+
 4. Включить прием платежей через Yandex Pay в Личном кабинете.
 5. Проверить Доступ функционала Yandex Pay проверяется через метод `TinkoffAcquiring#checkTerminalInfo`, который возвращает данные обо всех методах оплаты,извлечь данные касательно Yandex Pay  расширение `TerminalInfo#mapYandexPayData`.
 6. Кнопка Yandex Pay инкапсулирована во фрагменте `YandexButtonFragment`. Размеры фрагмента-кнопки можете создать самостоятельно, однако если рекомендации по минимальной ширине. Фрагмент можно создать с помощью метода `TinkoffAcquiring.createYandexPayButtonFragment`.
