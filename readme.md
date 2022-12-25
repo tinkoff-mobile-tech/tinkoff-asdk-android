@@ -257,8 +257,8 @@ AcquiringSdk имеет возможность использовать внут
 Внимание, этот функционал поддерживается только с версии Android 6.0 Marshmallow и выше.
 
 Если вы хотите использовать Yandex Pay вместе с AcquiringSdk вам необходимо:
-1. Получить в личном кабинете Yandex значение `YANDEX_CLIENT_ID`
-2. Укажите полученный `YANDEX_CLIENT_ID` в сборочном скрипте [_build.gradle_] в качестве значения в `manifestPlaceholders`:
+1. Получить в личном кабинете [Yandex](https://pay.yandex.ru/ru/docs/psp/android-sdk) значение `YANDEX_CLIENT_ID`
+2. Укажите полученный `YANDEX_CLIENT_ID` в сборочном скрипте [_build.gradle_][build-config] в качестве значения в `manifestPlaceholders`:
 ```groovy
 android {
   defaultConfig {
@@ -279,7 +279,7 @@ implementation 'ru.tinkoff.acquiring:yandexpay:$latestVersion'
 4. Включить прием платежей через Yandex Pay в Личном кабинете.
 5. Проверить Доступ функционала Yandex Pay проверяется через метод `TinkoffAcquiring#checkTerminalInfo`, который возвращает данные обо всех методах оплаты,извлечь данные касательно Yandex Pay  расширение `TerminalInfo#mapYandexPayData`.
 6. Кнопка Yandex Pay инкапсулирована во фрагменте `YandexButtonFragment`. Размеры фрагмента-кнопки можете создать самостоятельно, однако если рекомендации по минимальной ширине. Фрагмент можно создать с помощью метода `TinkoffAcquiring.createYandexPayButtonFragment`.
-После выбора карты процесс оплаты запуститься самостоятельно. Возможности кастомизации можно посмотреть в пейджес.
+После выбора карты процесс оплаты запуститься самостоятельно. Возможности кастомизации можно посмотреть в [pages](https://github.com/Tinkoff/AcquiringSdkAndroid/wiki/Yandex-pay-in-ASDK).
 
 ### Дополнительные возможности
 
