@@ -25,7 +25,7 @@ class YandexButtonFragment : Fragment() {
 
         fun newInstance(
             data: YandexPayData,
-            options: PaymentOptions,
+            options: PaymentOptions? = null,
             isProd: Boolean = false,
             enableLogging: Boolean = false,
             @StyleRes themeForYandexButton: Int? = null
@@ -48,9 +48,7 @@ class YandexButtonFragment : Fragment() {
         arguments?.getSerializable(YandexButtonFragment::data.name) as YandexPayData
     }
 
-    private val options: PaymentOptions by lazy {
-        checkNotNull(arguments?.getParcelable(YandexButtonFragment::options.name))
-    }
+    lateinit var options: PaymentOptions
 
     private val theme: Int? by lazy {
         arguments?.getInt(YandexButtonFragment::theme.name)
@@ -67,7 +65,7 @@ class YandexButtonFragment : Fragment() {
     private val yandexPayLauncher = registerForActivityResult(OpenYandexPayContract()) { result ->
         val acqResult = when (result) {
             is YandexPayResult.Success ->
-                AcqYandexPayResult.Success(result.paymentToken.value)
+                AcqYandexPayResult.Success(result.paymentToken.value, options)
             is YandexPayResult.Failure -> when (result) {
                 is YandexPayResult.Failure.Validation -> AcqYandexPayResult.Error(result.details.name)
                 is YandexPayResult.Failure.Internal -> AcqYandexPayResult.Error(result.message)
@@ -75,6 +73,14 @@ class YandexButtonFragment : Fragment() {
             is YandexPayResult.Cancelled -> AcqYandexPayResult.Cancelled
         }
         listener?.invoke(acqResult)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val options = arguments?.getParcelable<PaymentOptions>(YandexButtonFragment::options.name)
+        if (options != null) {
+            this.options = options
+        }
     }
 
     override fun onCreateView(
