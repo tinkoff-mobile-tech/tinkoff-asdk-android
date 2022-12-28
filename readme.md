@@ -44,12 +44,6 @@ implementation 'ru.tinkoff.acquiring:cardio:$latestVersion'
         <certificates src="@raw/acq_tinkoff_root_cert" />
         <certificates src="@raw/acq_ministry_of_digital_development_root_cert" />
     </base-config>
-    <debug-overrides>
-        <trust-anchors>
-            <!-- Trust user added CAs while debuggable only -->
-            <certificates src="user" />
-        </trust-anchors>
-    </debug-overrides>
 </network-security-config>
 ```
 
