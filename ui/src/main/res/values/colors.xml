@@ -21,10 +21,14 @@
     <color name="acq_colorAccent">#428BF9</color>
     <color name="acq_colorBrandGray">#3e4757</color>
     <color name="acq_colorButton">#FFDD2D</color>
-    <color name="acq_colorButtonPressed">#55ffdd2d</color>
-    <color name="acq_colorButtonDisable">#F6F7F8</color>
+    <color name="acq_colorButtonPressed">#FFCD33</color>
+    <color name="acq_colorButtonDisable">#08001024</color>
+    <color name="acq_colorButtonSecondary">@color/acq_colorButtonDisable</color>
+    <color name="acq_colorButtonSecondaryPressed">#08001024</color>
     <color name="acq_colorTitle">#000000</color>
     <color name="acq_colorText">#333333</color>
+    <color name="acq_colorTextSecondary">#ff9299a2</color>
+    <color name="acq_colorTextTertiary">#38001024</color>
     <color name="acq_colorHint">#C7C9CC</color>
     <color name="acq_colorCoins">#9E9E9E</color>
     <color name="acq_colorBackgroundTransparentGray">#4D000000</color>
@@ -46,4 +50,15 @@
     <color name="acq_colorKeyText">#FFFFFF</color>
     <color name="acq_colorKeyCircle">#2CFFFFFF</color>
     <color name="acq_colorKeyboardBackground">@color/acq_colorBrandGray</color>
+
+    <color name="acq_colorShimmer">#f7f7f7</color>
+
+    <color name="acq_sf_text_field_bg">#08001024</color>
+    <color name="acq_sf_text_field_bg_pressed">#0f001024</color>
+
+    <color name="acq_snackbar_bg">#333333</color>
+    <color name="acq_colorButtonText">#333333</color>
+    <color name="acq_colorButtonTextDisabled">#38001024</color>
+    <color name="acq_progress_bar_color">#FFDD2D</color>
+
 </resources>

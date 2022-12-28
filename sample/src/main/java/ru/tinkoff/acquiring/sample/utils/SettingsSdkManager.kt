@@ -53,6 +53,9 @@ class SettingsSdkManager(private val context: Context) {
     val isTinkoffPayEnabled: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_tinkoff_pay), true)
 
+    val yandexPayEnabled: Boolean
+        get() = preferences.getBoolean(context.getString(R.string.acq_sp_yandex_pay), true)
+
     val checkType: String
         get() {
             val defaultCheckType = context.getString(R.string.acq_sp_check_type_no)

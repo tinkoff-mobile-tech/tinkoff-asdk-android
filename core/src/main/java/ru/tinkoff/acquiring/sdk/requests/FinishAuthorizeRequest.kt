@@ -16,12 +16,10 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import kotlinx.coroutines.Deferred
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
-import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
-import ru.tinkoff.acquiring.sdk.models.paysources.CardData
-import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
-import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
+import ru.tinkoff.acquiring.sdk.models.paysources.*
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FINISH_AUTHORIZE_METHOD
 import ru.tinkoff.acquiring.sdk.responses.FinishAuthorizeResponse
 
@@ -71,7 +69,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
     private var cardId: String? = null
     private var cvv: String? = null
     private var source: String? = null
-    private var googlePayToken: String? = null
+    private var encryptedToken: String? = null
     private var encodedCardData: String? = null
 
     override val tokenIgnoreFields: HashSet<String>
@@ -93,7 +91,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
         map.putIfNotNull(CVV, cvv)
         map.putIfNotNull(EMAIL, email)
         map.putIfNotNull(SOURCE, source)
-        map.putIfNotNull(ANDROID_PAY_TOKEN, googlePayToken)
+        map.putIfNotNull(ENCRYPTED_PAYMENT_DATA, encryptedToken)
         map.putIfNotNull(IP, ip)
         if (data != null) map.putDataIfNonNull(data)
 
@@ -106,7 +104,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
 
         when (paymentSource) {
             is CardData, is AttachedCard -> encodedCardData.validate(CARD_DATA)
-            is GooglePay -> googlePayToken.validate(ANDROID_PAY_TOKEN)
+            is GooglePay, is YandexPay -> encryptedToken.validate(ENCRYPTED_PAYMENT_DATA)
         }
     }
 
@@ -116,6 +114,11 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
     override fun execute(onSuccess: (FinishAuthorizeResponse) -> Unit, onFailure: (Exception) -> Unit) {
         fillPaymentData()
         super.performRequest(this, FinishAuthorizeResponse::class.java, onSuccess, onFailure)
+    }
+
+    override fun performRequestAsync(responseClass: Class<FinishAuthorizeResponse>): Deferred<Result<FinishAuthorizeResponse>> {
+        fillPaymentData()
+        return super.performRequestAsync(responseClass)
     }
 
     fun attachedCard(attachedCard: AttachedCard.() -> Unit): PaymentSource {
@@ -143,10 +146,14 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
             }
             is GooglePay -> {
                 data = paymentSource as GooglePay
-                this.googlePayToken = data.googlePayToken
+                this.encryptedToken = data.googlePayToken
                 this.source = GOOGLE_PAY
             }
-
+            is YandexPay ->{
+                data = paymentSource as YandexPay
+                this.encryptedToken = data.yandexPayToken
+                this.source = YANDEX_PAY
+            }
             else -> throw AcquiringSdkException(IllegalStateException("Unknown type in 'paymentSource'"))
         }
     }
@@ -160,5 +167,6 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
     companion object {
 
         private const val GOOGLE_PAY = "GooglePay"
+        private const val YANDEX_PAY = "YandexPay"
     }
 }

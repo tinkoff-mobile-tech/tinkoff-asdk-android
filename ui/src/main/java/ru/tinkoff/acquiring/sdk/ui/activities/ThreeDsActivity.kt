@@ -159,13 +159,6 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
         private var canceled = false
 
-        override fun shouldInterceptRequest(
-            view: WebView?,
-            request: WebResourceRequest?
-        ): WebResourceResponse? {
-            return provideThreeDsSubmitV2Delegate().shouldInterceptRequest(request, data)
-        }
-
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
 

@@ -89,7 +89,7 @@ class FinishAuthorizeResponse(
                     ThreeDsData(paymentId, acsUrl).apply {
                         md = this@FinishAuthorizeResponse.md
                         paReq = this@FinishAuthorizeResponse.paReq
-                        version = threeDsVersion
+                        version = threeDsVersion ?: "1.0.0"
                     }
                 } else if (tdsServerTransId != null && acsTransId != null) {
                     ThreeDsData(paymentId, acsUrl).apply {
@@ -97,7 +97,7 @@ class FinishAuthorizeResponse(
                         acsTransId = this@FinishAuthorizeResponse.acsTransId
                         acsRefNumber = this@FinishAuthorizeResponse.acsRefNumber
                         acsSignedContent = this@FinishAuthorizeResponse.acsSignedContent
-                        version = threeDsVersion
+                        version = threeDsVersion ?: "2.1.0"
                     }
                 } else throw AcquiringSdkException(IllegalStateException("Invalid 3DS params"))
             }

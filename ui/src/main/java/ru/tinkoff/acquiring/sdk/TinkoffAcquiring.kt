@@ -25,29 +25,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
-import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.DefaultState
-import ru.tinkoff.acquiring.sdk.models.FpsState
-import ru.tinkoff.acquiring.sdk.models.GooglePayParams
-import ru.tinkoff.acquiring.sdk.models.PaymentSource
+import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.*
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.ui.activities.*
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.ThreeDsActivity
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -144,6 +139,23 @@ class TinkoffAcquiring(
     /**
      * Запуск экрана Acquiring SDK для проведения оплаты
      *
+     * @param activity        контекст для запуска экрана из Activity
+     * @param options         настройки платежной сессии и визуального отображения экрана
+     * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
+     * @param yandexPayToken  параметр платежной сессии от яндекса
+     */
+    fun openYandexPaymentScreen(activity: Activity,
+                          options: PaymentOptions,
+                          requestCode: Int,
+                          yandexPayToken: String) {
+        options.asdkState = YandexPayState(yandexPayToken)
+        val intent = prepareIntent(activity, options, YandexPaymentActivity::class.java)
+        activity.startActivityForResult(intent, requestCode)
+    }
+
+    /**
+     * Запуск экрана Acquiring SDK для проведения оплаты
+     *
      * @param fragment    контекст для запуска экрана из Fragment
      * @param options     настройки платежной сессии и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
@@ -206,6 +218,26 @@ class TinkoffAcquiring(
     }
 
     /**
+     * Проверка доступных спосбов оплаты
+     */
+    fun checkTerminalInfo(onSuccess: (TerminalInfo?) -> Unit,
+                          onFailure: ((Throwable) -> Unit)? = null) {
+
+        val onFailureOrThrow = onFailure ?: { throw it }
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = sdk.getTerminalPayMethods()
+                .performSuspendRequest()
+                .map { it.terminalInfo }
+
+            launch(Dispatchers.Main) {
+                result.fold(onSuccess, onFailureOrThrow)
+            }
+        }
+    }
+
+    /**
      * Запуск SDK для оплаты через Tinkoff Pay. У возвращенгого объекта следует указать
      * слушатель событий с помощью метода [PaymentProcess.subscribe] и вызвать метод
      * [PaymentProcess.start] для запуска сценария оплаты.
@@ -216,6 +248,7 @@ class TinkoffAcquiring(
     fun payWithTinkoffPay(options: PaymentOptions, version: String): PaymentProcess {
         return PaymentProcess(sdk, applicationContext).createTinkoffPayPaymentProcess(options, version)
     }
+
 
     /**
      * Запуск экрана Acquiring SDK для привязки новой карты

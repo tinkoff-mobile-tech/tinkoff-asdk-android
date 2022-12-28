@@ -60,4 +60,11 @@
         <attr name="spi_lastPlus" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="LoaderButton">
+        <attr name="acq_text" />
+        <attr name="acq_text_color" format="color" />
+        <attr name="acq_background" format="reference" />
+        <attr name="acq_progress_color" format="color" />
+    </declare-styleable>
+
 </resources>

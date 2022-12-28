@@ -156,6 +156,17 @@
             android:layout_width="wrap_content"
             android:text="@string/buy_now" />
 
+        <FrameLayout
+            android:id="@+id/btn_yandex_container"
+            android:background="@color/colorPrimary"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:minWidth="120dp"
+            android:layout_height="40dp"
+            android:layout_margin="8dp">
+        </FrameLayout>
+
     </LinearLayout>
 
 </LinearLayout>
