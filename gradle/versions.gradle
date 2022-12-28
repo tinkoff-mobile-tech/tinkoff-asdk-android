@@ -3,8 +3,8 @@ ext {
     versionName = isRelease ? VERSION_NAME : "$VERSION_NAME-SNAPSHOT"
 
     compileSdk = 31
-    minSdk = 21
-    yandexPayMinSdk = 23
+    minSdk = 24
+    yandexPayMinSdk = 24
     targetSdk = 31
     buildTools = '30.0.3'
 
