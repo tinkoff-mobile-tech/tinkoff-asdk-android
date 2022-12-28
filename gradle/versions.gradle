@@ -3,7 +3,7 @@ ext {
     versionName = isRelease ? VERSION_NAME : "$VERSION_NAME-SNAPSHOT"
 
     compileSdk = 31
-    minSdk = 21
+    minSdk = 24
     targetSdk = 31
     buildTools = '29.0.2'
 
