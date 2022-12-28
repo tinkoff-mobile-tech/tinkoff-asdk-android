@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/acq_bottom_sheet_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/acq_commonsheet_title_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/acq_ic_cross_circle" />
+
+    <TextView
+        android:id="@+id/acq_commonsheet_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/acq_commonsheet_failed_title"
+        android:textColor="@color/acq_colorText"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/acq_commonsheet_subtitle_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/acq_commonsheet_changemethod_primarybutton"
+        android:textColor="@color/acq_colorTextSecondary"
+        android:textSize="17sp" />
+
+    <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+        android:id="@+id/acq_button_choose_another_method"
+        style="@style/AcqLoaderButton.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="24dp"
+        app:acq_text="@string/acq_commonsheet_clear_primarybutton" />
+
+</LinearLayout>

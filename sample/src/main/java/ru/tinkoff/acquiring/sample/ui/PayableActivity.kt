@@ -25,6 +25,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.fragment.app.commit
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.utils.SessionParams
@@ -42,6 +44,12 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
+import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
+import ru.tinkoff.acquiring.yandexpay.addYandexResultListener
+import ru.tinkoff.acquiring.yandexpay.createYandexPayButtonFragment
+import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
+import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
+import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
 import kotlin.math.abs
 
@@ -61,9 +69,10 @@ open class PayableActivity : AppCompatActivity() {
     private val paymentListener = createPaymentListener()
     private var isProgressShowing = false
     private var isErrorShowing = false
-    private var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
+    protected var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
     private val orderId: String
         get() = abs(Random().nextInt()).toString()
+    private var acqFragment: YandexButtonFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +117,9 @@ open class PayableActivity : AppCompatActivity() {
             putBoolean(STATE_LOADING_SHOW, isProgressShowing)
             putBoolean(STATE_ERROR_SHOW, isErrorShowing)
         }
+        acqFragment?.let {
+            supportFragmentManager.putFragment(outState, YANDEX_PAY_FRAGMENT_KEY, it)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -151,6 +163,36 @@ open class PayableActivity : AppCompatActivity() {
                         .subscribe(paymentListener)
                         .start()
             }
+        })
+    }
+
+    protected fun setupYandexPay(theme: Int? = null, savedInstanceState: Bundle?) {
+        if (!settings.yandexPayEnabled) return
+
+        val yandexPayButtonContainer = findViewById<View>(R.id.btn_yandex_container)
+
+        tinkoffAcquiring.checkTerminalInfo({ terminalInfo ->
+            val yandexPayData = terminalInfo?.mapYandexPayData() ?: return@checkTerminalInfo
+
+            yandexPayButtonContainer.isVisible = terminalInfo.enableYandexPay()
+            val paymentOptions = createPaymentOptions().apply {
+                val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
+                this.setTerminalParams(
+                     terminalKey = session.terminalKey, publicKey = session.publicKey
+                )
+            }
+
+            val yaFragment = createYandexButtonFragment(savedInstanceState, paymentOptions, yandexPayData, theme)
+
+            if (supportFragmentManager.isDestroyed.not()) {
+                supportFragmentManager.commit { replace(yandexPayButtonContainer.id, yaFragment) }
+            }
+
+            acqFragment = yaFragment
+
+        }, {
+            yandexPayButtonContainer.visibility = View.GONE
+            showErrorDialog()
         })
     }
 
@@ -255,6 +297,7 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     private fun handleGooglePayResult(resultCode: Int, data: Intent?) {
+        val a = createPaymentOptions()
         if (data != null && resultCode == Activity.RESULT_OK) {
             val token = GooglePayHelper.getGooglePayToken(data)
             if (token == null) {
@@ -296,12 +339,35 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun showProgressDialog() {
+    private fun createYandexButtonFragment(savedInstanceState: Bundle?,
+                                           paymentOptions: PaymentOptions,
+                                           yandexPayData: YandexPayData,
+                                           theme: Int?) : YandexButtonFragment {
+        return savedInstanceState?.let {
+            try {
+                (supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as? YandexButtonFragment)?.also {
+                    tinkoffAcquiring.addYandexResultListener(it, this, YANDEX_PAY_REQUEST_CODE) { showErrorDialog() }
+                }
+            } catch (i: IllegalStateException) {
+                null
+            }
+        } ?: tinkoffAcquiring.createYandexPayButtonFragment(
+            activity = this,
+            yandexPayData = yandexPayData,
+            options = paymentOptions,
+            yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+            themeId = theme,
+            onYandexErrorCallback = { showErrorDialog() }
+        )
+    }
+
+
+    protected fun showProgressDialog() {
         progressDialog.show()
         isProgressShowing = true
     }
 
-    private fun hideProgressDialog() {
+    protected fun hideProgressDialog() {
         progressDialog.dismiss()
         isProgressShowing = false
     }
@@ -311,9 +377,12 @@ open class PayableActivity : AppCompatActivity() {
         const val PAYMENT_REQUEST_CODE = 1
         const val DYNAMIC_QR_PAYMENT_REQUEST_CODE = 2
         const val GOOGLE_PAY_REQUEST_CODE = 5
+        const val YANDEX_PAY_REQUEST_CODE = 6
 
         private const val STATE_PAYMENT_AMOUNT = "payment_amount"
         private const val STATE_LOADING_SHOW = "loading_show"
         private const val STATE_ERROR_SHOW = "error_show"
+
+        private const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
     }
 }

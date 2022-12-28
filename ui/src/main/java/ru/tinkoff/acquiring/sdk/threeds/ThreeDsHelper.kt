@@ -153,7 +153,7 @@ object ThreeDsHelper {
         else -> CERTS_CONFIG_URL_PROD
     }
 
-    object CollectData {
+    object CollectData : ThreeDsDataCollector {
 
         private const val THREE_DS_CALLED_FLAG = "Y"
         private const val THREE_DS_NOT_CALLED_FLAG = "N"
@@ -161,9 +161,9 @@ object ThreeDsHelper {
         private val NOTIFICATION_URL = "${AcquiringApi.getUrl(COMPLETE_3DS_METHOD_V2)}/$COMPLETE_3DS_METHOD_V2"
         private val TERM_URL_V2 = ThreeDsActivity.TERM_URL_V2
 
-        operator fun invoke(context: Context, response: Check3dsVersionResponse): MutableMap<String, String> {
+        override operator fun invoke(context: Context, response: Check3dsVersionResponse?): MutableMap<String, String> {
             var threeDSCompInd = THREE_DS_NOT_CALLED_FLAG
-            if (response.threeDsMethodUrl != null) {
+            if (response?.threeDsMethodUrl != null) {
                 val hiddenWebView = WebView(context)
 
                 val threeDsMethodData = JSONObject().apply {
@@ -408,3 +408,8 @@ class ThreeDsAppBasedTransaction(
     val wrapper: ThreeDSWrapper,
     val transaction: Transaction
 )
+
+interface ThreeDsDataCollector {
+
+    operator fun invoke(context: Context, response: Check3dsVersionResponse?): MutableMap<String, String>
+}

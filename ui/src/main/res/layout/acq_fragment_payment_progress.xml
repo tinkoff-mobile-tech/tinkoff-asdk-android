@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/acq_bottom_sheet_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="16dp"
+        android:indeterminate="true"
+        app:indicatorColor="@color/acq_progress_bar_color"
+        app:indicatorSize="72dp" />
+
+    <TextView
+        android:id="@+id/acq_commonsheet_processing_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/acq_commonsheet_processing_title"
+        android:textColor="@color/acq_colorText"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/acq_commonsheet_processing_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/acq_commonsheet_processing_description"
+        android:textColor="@color/acq_colorTextSecondary"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp"/>
+
+</LinearLayout>
