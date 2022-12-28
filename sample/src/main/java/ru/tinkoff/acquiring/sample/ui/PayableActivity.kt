@@ -106,6 +106,7 @@ open class PayableActivity : AppCompatActivity() {
         when (requestCode) {
             PAYMENT_REQUEST_CODE, DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode, data)
             GOOGLE_PAY_REQUEST_CODE -> handleGooglePayResult(resultCode, data)
+            YANDEX_PAY_REQUEST_CODE -> handleYandexPayResult(resultCode, data)
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -296,6 +297,19 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
+    private fun handleYandexPayResult(resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            RESULT_OK -> {
+                acqFragment?.options = createPaymentOptions()
+            }
+            RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
+            RESULT_ERROR -> {
+                Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
+                (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)?.printStackTrace()
+            }
+        }
+    }
+
     private fun handleGooglePayResult(resultCode: Int, data: Intent?) {
         val a = createPaymentOptions()
         if (data != null && resultCode == Activity.RESULT_OK) {
@@ -357,10 +371,12 @@ open class PayableActivity : AppCompatActivity() {
             options = paymentOptions,
             yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
             themeId = theme,
-            onYandexErrorCallback = { showErrorDialog() }
+            onYandexErrorCallback = { showErrorDialog() },
+            onYandexCancelCallback = {
+                Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
+            }
         )
     }
-
 
     protected fun showProgressDialog() {
         progressDialog.show()
