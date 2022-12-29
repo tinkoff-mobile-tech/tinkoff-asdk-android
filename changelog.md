@@ -1,3 +1,12 @@
+## 2.11.0
+
+#### Fixed
+#### Changes
+- New module for `yandex pay` libraray in `ru.tinkoff.acquiring:yandexpay`
+- update read.me
+- update pages
+#### Additions
+
 ## 2.10.0
 
 #### Fixed
