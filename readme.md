@@ -20,7 +20,7 @@ Acquiring SDK позволяет интегрировать [Интернет-Э
 - Совершение оплаты из уведомления
 
 ### Требования
-Для работы Tinkoff Acquiring SDK необходим Android версии 5.0 и выше (API level 21).
+Для работы Tinkoff Acquiring SDK необходим Android версии 7.0 и выше (API level 24).
 
 ### Подключение
 Для подключения SDK добавьте в [_build.gradle_][build-config] вашего проекта следующие зависимости:
@@ -32,6 +32,19 @@ implementation 'ru.tinkoff.acquiring:threeds-wrapper:$latestVersion'
 Если вы хотите внедрить сканирование с помощью библиотеки Card-IO, то необходимо добавить в [_build.gradle_][build-config]
 ```groovy
 implementation 'ru.tinkoff.acquiring:cardio:$latestVersion'
+```
+
+Так же необходимо добавить в [_network-security-config_][network-security-config] содержащий 
+сертификаты от минцифр и доп. сертификат от тинькофф. Пример можно посмотреть в `sample` выглядит он так:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config>
+        <certificates src="system" />
+        <certificates src="@raw/acq_tinkoff_root_cert" />
+        <certificates src="@raw/acq_ministry_of_digital_development_root_cert" />
+    </base-config>
+</network-security-config>
 ```
 
 ### Подготовка к работе
@@ -382,3 +395,4 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
 [google-pay-brand]: https://developers.google.com/pay/api/android/guides/brand-guidelines
 [full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
+[network-security-config]:https://developer.android.com/training/articles/security-config
