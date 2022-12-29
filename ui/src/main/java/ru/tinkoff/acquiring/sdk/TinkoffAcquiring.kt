@@ -42,6 +42,7 @@ import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -208,10 +209,11 @@ class TinkoffAcquiring(
         onFailure: ((Throwable) -> Unit)? = null
     ) {
         CoroutineScope(Dispatchers.IO).launch {
+            val mainScope = this
             val result = sdk.tinkoffPayStatus().performSuspendRequest()
             withContext(Dispatchers.Main) {
                 result.fold(onSuccess = onSuccess, onFailure = { onFailure?.invoke(it) })
-                cancel()
+                mainScope.cancel()
             }
         }
     }
@@ -223,12 +225,13 @@ class TinkoffAcquiring(
                           onFailure: ((Throwable) -> Unit)? = null
     ) {
         CoroutineScope(Dispatchers.IO).launch {
+            val mainScope = this
             val result = sdk.getTerminalPayMethods()
                 .performSuspendRequest()
                 .map { it.terminalInfo }
             withContext(Dispatchers.Main) {
                 result.fold(onSuccess = onSuccess, onFailure = { onFailure?.invoke(it) })
-                cancel()
+                mainScope.cancel()
             }
         }
     }
