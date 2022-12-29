@@ -10,7 +10,7 @@ android {
     buildToolsVersion rootProject.buildTools
 
     defaultConfig {
-        minSdkVersion rootProject.yandexPayMinSdk
+        minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.targetSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME

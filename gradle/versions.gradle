@@ -4,7 +4,6 @@ ext {
 
     compileSdk = 31
     minSdk = 24
-    yandexPayMinSdk = 24
     targetSdk = 31
     buildTools = '30.0.3'
 

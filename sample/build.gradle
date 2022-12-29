@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId "ru.tinkoff.acquiring.sample"
-        minSdkVersion rootProject.yandexPayMinSdk
+        minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.compileSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
