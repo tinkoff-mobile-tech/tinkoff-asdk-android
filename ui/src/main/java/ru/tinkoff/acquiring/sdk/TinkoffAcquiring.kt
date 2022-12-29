@@ -21,9 +21,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
@@ -33,6 +31,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
@@ -43,6 +42,7 @@ import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -209,11 +209,12 @@ class TinkoffAcquiring(
         onFailure: ((Throwable) -> Unit)? = null
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            sdk.tinkoffPayStatus().execute({
-                launch(Dispatchers.Main) { onSuccess(it) }
-            }, {
-                launch(Dispatchers.Main) { onFailure?.invoke(it) }
-            })
+            val mainScope = this
+            val result = sdk.tinkoffPayStatus().performSuspendRequest()
+            withContext(Dispatchers.Main) {
+                result.fold(onSuccess = onSuccess, onFailure = { onFailure?.invoke(it) })
+                mainScope.cancel()
+            }
         }
     }
 
@@ -221,18 +222,16 @@ class TinkoffAcquiring(
      * Проверка доступных спосбов оплаты
      */
     fun checkTerminalInfo(onSuccess: (TerminalInfo?) -> Unit,
-                          onFailure: ((Throwable) -> Unit)? = null) {
-
-        val onFailureOrThrow = onFailure ?: { throw it }
-
+                          onFailure: ((Throwable) -> Unit)? = null
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-
+            val mainScope = this
             val result = sdk.getTerminalPayMethods()
                 .performSuspendRequest()
                 .map { it.terminalInfo }
-
-            launch(Dispatchers.Main) {
-                result.fold(onSuccess, onFailureOrThrow)
+            withContext(Dispatchers.Main) {
+                result.fold(onSuccess = onSuccess, onFailure = { onFailure?.invoke(it) })
+                mainScope.cancel()
             }
         }
     }
