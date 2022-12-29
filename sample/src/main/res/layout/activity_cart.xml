@@ -118,6 +118,15 @@
                 android:textSize="@dimen/acq_medium_text_size"
                 tools:visibility="visible" />
 
+            <FrameLayout
+                android:id="@+id/btn_yandex_container"
+                android:paddingBottom="12dp"
+                android:layout_margin="4dp"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="72dp">
+            </FrameLayout>
+
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

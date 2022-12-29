@@ -52,6 +52,7 @@ dependencies {
     implementation project(':threeds-wrapper')
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "com.squareup.okhttp3:okhttp:${okHttpVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
     implementation "androidx.security:security-crypto:${cryptoVersion}"
 
     // threeds dependencies
@@ -62,6 +63,7 @@ dependencies {
     implementation "org.bouncycastle:bcprov-jdk15on:${bouncyCastleVersion}"
     implementation "jp.wasabeef:blurry:${blurryVersion}"
     implementation "com.scottyab:rootbeer-lib:${rootBeerVersion}"
+    implementation "com.google.android.material:material:${materialVersion}"
 
     testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlin}"

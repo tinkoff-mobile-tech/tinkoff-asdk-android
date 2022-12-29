@@ -24,5 +24,6 @@ internal sealed class PaymentType
 internal object SbpPaymentType: PaymentType()
 internal object InitializedSbpPaymentType: PaymentType()
 internal object TinkoffPayPaymentType: PaymentType()
+internal object YandexPaymentType:  PaymentType()
 internal object CardPaymentType : PaymentType()
 internal object FinishPaymentType : PaymentType()

@@ -16,6 +16,9 @@
 
 package ru.tinkoff.acquiring.sdk.payment
 
+import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.models.ThreeDsState
+
 /**
  * Состояние процесса оплаты
  *
@@ -32,4 +35,22 @@ enum class PaymentState {
     CHARGE_REJECTED,
     SUCCESS,
     ERROR
+}
+
+
+/**
+ * Состояние процесса оплаты для яндекса
+ *
+ */
+sealed interface YandexPaymentState {
+    object Created : YandexPaymentState
+    object Started : YandexPaymentState
+    class Registred(val paymentId: Long): YandexPaymentState
+
+    object ThreeDsRejected : YandexPaymentState
+    class ThreeDsUiNeeded(val asdkState: ThreeDsState) : YandexPaymentState
+
+    class Error(val paymentId: Long?, val throwable: Throwable) : YandexPaymentState
+    class Success(val paymentId: Long,val cardId: String?, val rebillId: String?) : YandexPaymentState
+    object Stopped : YandexPaymentState
 }

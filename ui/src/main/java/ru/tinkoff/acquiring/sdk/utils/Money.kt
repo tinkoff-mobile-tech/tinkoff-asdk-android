@@ -99,7 +99,7 @@ class Money private constructor(val coins: Long) : Serializable, Comparable<Mone
 
     companion object {
 
-        private const val COINS_IN_RUBLE: Byte = 100
+        const val COINS_IN_RUBLE: Byte = 100
         private const val PRECISION: Byte = 2
         const val DEFAULT_INT_DIVIDER = " "
         const val DEFAULT_INT_FRACT_DIVIDER = ","
