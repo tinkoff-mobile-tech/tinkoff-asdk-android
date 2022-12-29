@@ -360,7 +360,15 @@ open class PayableActivity : AppCompatActivity() {
         return savedInstanceState?.let {
             try {
                 (supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as? YandexButtonFragment)?.also {
-                    tinkoffAcquiring.addYandexResultListener(it, this, YANDEX_PAY_REQUEST_CODE) { showErrorDialog() }
+                    tinkoffAcquiring.addYandexResultListener(
+                        fragment = it,
+                        activity = this,
+                        yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+                        onYandexErrorCallback = { showErrorDialog() },
+                        onYandexCancelCallback = {
+                            Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
             } catch (i: IllegalStateException) {
                 null
