@@ -1,3 +1,12 @@
+## 2.12.0
+
+#### Fixed
+#### Changes
+- !up minSdk version to 24!
+- network config for self-signed certs
+- add tinkoff and min.digital self-signed certs in ui module
+#### Additions
+
 ## 2.11.0
 
 #### Fixed
