@@ -1,4 +1,5 @@
 apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
 apply from: 'gradle/versions.gradle'
 
 buildscript {
@@ -27,4 +28,8 @@ allprojects {
             options.addStringOption('encoding', 'UTF-8')
         }
     }
+}
+
+dokkaHtmlMultiModule.configure {
+    outputDirectory.set(new File("$buildDir/dokka"))
 }

@@ -331,6 +331,16 @@ TinkoffAcquiring.initPayment(token, paymentOptions) // создание проц
                 .start()                            // запуск процесса
 ```
 
+#### Завершение оплаты с уже существующим paymentId
+Для отображения платежной формы и проведения платежа без вызова метода Init можно передать
+значение `SelectCardAndPayState` при вызове `openPaymentScreen`, пример вызова:
+```kotlin
+val paymentId = 123456789L // некоторый paymentId, полученный ранее при вызове метода Init
+tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE, SelectCardAndPayState(paymentId))
+```
+
+Для завершения платежа без отображения платежной формы можно использовать метод `TinkoffAcquiring.finishPayment`.
+
 ### Структура
 SDK состоит из следующих модулей:
 
@@ -375,6 +385,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 ### Поддержка
 - По возникающим вопросам просьба обращаться на [oplata@tinkoff.ru][support-email]
 - Баги и feature-реквесты можно направлять в раздел [issues][issues]
+- Документация на [GitHub Pages](https://tinkoff.github.io/AcquiringSdkAndroid/ui/ru.tinkoff.acquiring.sdk/-tinkoff-acquiring/index.html)
 
 [search.maven]: http://search.maven.org/#search|ga|1|ru.tinkoff.acquiring.ui
 [build-config]: https://developer.android.com/studio/build/index.html

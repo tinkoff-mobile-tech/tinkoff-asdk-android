@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply from: '../gradle/dokka.gradle'
+apply plugin: 'org.jetbrains.dokka'
 apply from: rootProject.file('gradle/versions.gradle')
 apply from: '../gradle/publish.gradle'
 
@@ -27,6 +27,10 @@ android {
     lintOptions {
         disable 'VectorRaster', 'UseRequireDrawableLoadingForDrawables', 'ObsoleteSdkInt', 'UnusedResources', 'IconDipSize', 'IconLocation'
     }
+}
+
+tasks.dokkaHtmlPartial.configure {
+    outputDirectory = file("../build/dokka/ui")
 }
 
 dependencies {
