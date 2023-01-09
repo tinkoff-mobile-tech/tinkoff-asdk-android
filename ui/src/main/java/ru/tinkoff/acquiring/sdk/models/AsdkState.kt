@@ -71,3 +71,11 @@ class BrowseFpsBankState(val paymentId: Long, val deepLink: String, val banks: S
  * @param deepLink диплинк ведущий на форму оплаты, используется для открытия приложения банка
  */
 class OpenTinkoffPayBankState(val paymentId: Long, val deepLink: String) : AsdkState()
+
+
+/**
+ * Состояние открытия приложения, при котором пользователь совершает платеж с помощью яндекс токена
+ *
+ * @param yandexToken плажетные данные полученные из яндекса
+ */
+class YandexPayState(val yandexToken: String) : AsdkState()

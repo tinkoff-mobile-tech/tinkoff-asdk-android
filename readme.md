@@ -20,7 +20,7 @@ Acquiring SDK позволяет интегрировать [Интернет-Э
 - Совершение оплаты из уведомления
 
 ### Требования
-Для работы Tinkoff Acquiring SDK необходим Android версии 5.0 и выше (API level 21).
+Для работы Tinkoff Acquiring SDK необходим Android версии 7.0 и выше (API level 24).
 
 ### Подключение
 Для подключения SDK добавьте в [_build.gradle_][build-config] вашего проекта следующие зависимости:
@@ -32,6 +32,19 @@ implementation 'ru.tinkoff.acquiring:threeds-wrapper:$latestVersion'
 Если вы хотите внедрить сканирование с помощью библиотеки Card-IO, то необходимо добавить в [_build.gradle_][build-config]
 ```groovy
 implementation 'ru.tinkoff.acquiring:cardio:$latestVersion'
+```
+
+Так же необходимо добавить в [_network-security-config_][network-security-config] содержащий 
+сертификаты от минцифр и доп. сертификат от тинькофф. Пример можно посмотреть в `sample` выглядит он так:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config>
+        <certificates src="system" />
+        <certificates src="@raw/acq_tinkoff_root_cert" />
+        <certificates src="@raw/acq_ministry_of_digital_development_root_cert" />
+    </base-config>
+</network-security-config>
 ```
 
 ### Подготовка к работе
@@ -70,6 +83,8 @@ val paymentOptions =
                 title = "НАЗВАНИЕ ПЛАТЕЖА"          // название платежа, видимое пользователю
                 description = "ОПИСАНИЕ ПЛАТЕЖА"    // описание платежа, видимое пользователю
                 recurrentPayment = false            // флаг определяющий является ли платеж рекуррентным [1]
+                successURL  = "URL"                 // URL, куда будет переведен покупатель в случае успешной оплаты (см. полную документацию)
+                failURL = "URL"                     // URL, куда будет переведен покупатель в случае неуспешной оплаты (см. полную документацию)
             }   
             customerOptions {                       // данные покупателя
                 checkType = CheckType.NO.toString() // тип привязки карты
@@ -250,6 +265,35 @@ var paymentOptions = PaymentOptions().setOptions {
 предыдущем шаге); время и частота проверки статуса платежа зависит от нужд клиентского приложения и остается на ваше усмотрение (один из вариантов -
 проверять статус платежа при возвращении приложения из фона)
 
+### Yandex Pay
+AcquiringSdk имеет возможность использовать внутри себя Yandex Pay в качестве хранилища карт.
+Внимание, этот функционал поддерживается только с версии Android 6.0 Marshmallow и выше.
+
+Если вы хотите использовать Yandex Pay вместе с AcquiringSdk вам необходимо:
+1. Получить в личном кабинете [Yandex](https://pay.yandex.ru/ru/docs/psp/android-sdk) значение `YANDEX_CLIENT_ID`
+2. Укажите полученный `YANDEX_CLIENT_ID` в сборочном скрипте [_build.gradle_][build-config] в качестве значения в `manifestPlaceholders`:
+```groovy
+android {
+  defaultConfig {
+    manifestPlaceholders = [
+      // Подставьте ваш yandex_client_id
+      YANDEX_CLIENT_ID: "12345678901234567890",
+    ]
+  }
+}
+```
+3. Добавить в [_build.gradle_][build-config]
+```groovy
+implementation 'ru.tinkoff.acquiring:yandexpay:$latestVersion'
+```
+Крайне не рекомендуется использовать `ru.tinkoff.acquiring:yandexpay` вместе с `com.yandex.pay:core` в рамках вашего приложения, так как
+могут возникнуть непредвиденные ошибки.
+
+4. Включить прием платежей через Yandex Pay в Личном кабинете.
+5. Проверить Доступ функционала Yandex Pay проверяется через метод `TinkoffAcquiring#checkTerminalInfo`, который возвращает данные обо всех методах оплаты,извлечь данные касательно Yandex Pay  расширение `TerminalInfo#mapYandexPayData`.
+6. Кнопка Yandex Pay инкапсулирована во фрагменте `YandexButtonFragment`. Размеры фрагмента-кнопки можете создать самостоятельно, однако если рекомендации по минимальной ширине. Фрагмент можно создать с помощью метода `TinkoffAcquiring.createYandexPayButtonFragment`.
+После выбора карты процесс оплаты запуститься самостоятельно. Возможности кастомизации можно посмотреть в [pages](https://github.com/Tinkoff/AcquiringSdkAndroid/wiki/Yandex-pay-in-ASDK).
+
 ### Дополнительные возможности
 
 #### Настройка стилей
@@ -287,6 +331,16 @@ TinkoffAcquiring.initPayment(token, paymentOptions) // создание проц
                 .start()                            // запуск процесса
 ```
 
+#### Завершение оплаты с уже существующим paymentId
+Для отображения платежной формы и проведения платежа без вызова метода Init можно передать
+значение `SelectCardAndPayState` при вызове `openPaymentScreen`, пример вызова:
+```kotlin
+val paymentId = 123456789L // некоторый paymentId, полученный ранее при вызове метода Init
+tinkoffAcquiring.openPaymentScreen(this@MainActivity, paymentOptions, PAYMENT_REQUEST_CODE, SelectCardAndPayState(paymentId))
+```
+
+Для завершения платежа без отображения платежной формы можно использовать метод `TinkoffAcquiring.finishPayment`.
+
 ### Структура
 SDK состоит из следующих модулей:
 
@@ -322,6 +376,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 -keep class ru.tinkoff.acquiring.sdk.localization.** { *; }
 -keep class ru.tinkoff.acquiring.sdk.requests.** { *; }
 -keep class ru.tinkoff.acquiring.sdk.models.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.yandexpay.models.** { *; } // если подключали яндекс
 -keep class ru.rtln.tds.sdk.** { *; }
 -keep class org.spongycastle.**
 -keep class org.bouncycastle.**
@@ -330,6 +385,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 ### Поддержка
 - По возникающим вопросам просьба обращаться на [oplata@tinkoff.ru][support-email]
 - Баги и feature-реквесты можно направлять в раздел [issues][issues]
+- Документация на [GitHub Pages](https://tinkoff.github.io/AcquiringSdkAndroid/ui/ru.tinkoff.acquiring.sdk/-tinkoff-acquiring/index.html)
 
 [search.maven]: http://search.maven.org/#search|ga|1|ru.tinkoff.acquiring.ui
 [build-config]: https://developer.android.com/studio/build/index.html
@@ -339,3 +395,4 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
 [google-pay-brand]: https://developers.google.com/pay/api/android/guides/brand-guidelines
 [full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
+[network-security-config]:https://developer.android.com/training/articles/security-config

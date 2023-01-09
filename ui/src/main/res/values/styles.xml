@@ -129,9 +129,9 @@
 
     <style name="AcquiringEditCardStyle">
         <item name="android:textColorHint">@color/acq_colorHint</item>
-        <item name="textColorInvalid">@color/acq_colorTextInvalid</item>
-        <item name="keyboardBackgroundColor">@color/acq_colorKeyboardBackground</item>
-        <item name="keyboardKeyTextColor">@color/acq_colorKeyText</item>
+        <item name="acqTextColorInvalid">@color/acq_colorTextInvalid</item>
+        <item name="acqKeyboardBackgroundColor">@color/acq_colorKeyboardBackground</item>
+        <item name="acqKeyboardKeyTextColor">@color/acq_colorKeyText</item>
     </style>
 
     <style name="AcquiringTitleTextStyle">
@@ -223,6 +223,35 @@
         <item name="android:textColor">?colorAccent</item>
     </style>
 
+    <style name="AcqLoaderButton">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
+    <style name="AcqLoaderButton.Primary" parent="AcqLoaderButton">
+        <item name="acq_text_color">@color/acq_button_text_selector</item>
+        <item name="acq_progress_color">@color/acq_colorButtonText</item>
+        <item name="acq_background">@drawable/acq_button_yellow_bg</item>
+    </style>
+
+    <style name="AcqLoaderButton.Secondary" parent="AcqLoaderButton">
+        <item name="acq_text_color">@color/acq_secondary_button_text_selector</item>
+        <item name="acq_progress_color">@color/acq_colorAccent</item>
+        <item name="acq_background">@drawable/acq_button_secondary_bg</item>
+    </style>
+
+    <style name="AcqLoaderButton.Flat" parent="AcqLoaderButton">
+        <item name="acq_text_color">@color/acq_secondary_button_text_selector</item>
+        <item name="acq_progress_color">@color/acq_colorAccent</item>
+        <item name="acq_background">@drawable/acq_button_flat_bg</item>
+    </style>
+
+    <style name="AcqBottomSheetAnim">
+        <item name="android:windowEnterAnimation">@anim/acq_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/acq_slide_down</item>
+    </style>
+
     <style name="AcqTextInputLayout">
         <item name="android:minHeight">56dp</item>
         <item name="android:clipChildren">false</item>
@@ -248,30 +277,6 @@
     <style name="AcqMenuItem" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
         <item name="textAllCaps">false</item>
         <item name="android:textSize">@dimen/acq_medium_text_size</item>
-    </style>
-
-    <style name="AcqLoaderButton">
-        <item name="android:minHeight">56dp</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-    </style>
-
-    <style name="AcqLoaderButton.Primary" parent="AcqLoaderButton">
-        <item name="acq_text_color">@color/acq_button_text_selector</item>
-        <item name="acq_progress_color">@color/acq_colorButtonText</item>
-        <item name="acq_background">@drawable/acq_button_yellow_bg</item>
-    </style>
-
-    <style name="AcqLoaderButton.Secondary" parent="AcqLoaderButton">
-        <item name="acq_text_color">@color/acq_secondary_button_text_selector</item>
-        <item name="acq_progress_color">@color/acq_colorAccent</item>
-        <item name="acq_background">@drawable/acq_button_secondary_bg</item>
-    </style>
-
-    <style name="AcqLoaderButton.Flat" parent="AcqLoaderButton">
-        <item name="acq_text_color">@color/acq_secondary_button_text_selector</item>
-        <item name="acq_progress_color">@color/acq_colorAccent</item>
-        <item name="acq_background">@drawable/acq_button_flat_bg</item>
     </style>
 
     <style name="MySnackbar" parent="Widget.MaterialComponents.Snackbar">

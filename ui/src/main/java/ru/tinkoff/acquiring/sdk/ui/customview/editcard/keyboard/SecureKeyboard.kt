@@ -61,8 +61,8 @@ internal class SecureKeyboard @JvmOverloads constructor(
         try {
             attrsArray.apply {
                 val defaultColor = ContextCompat.getColor(context, R.color.acq_colorKeyboardBackground)
-                keyboardBackgroundColor = getColor(R.styleable.SecureKeyboard_keyboardBackgroundColor, defaultColor)
-                keyboardKeyTextColor = getColor(R.styleable.SecureKeyboard_keyboardKeyTextColor, Color.WHITE)
+                keyboardBackgroundColor = getColor(R.styleable.SecureKeyboard_acqKeyboardBackgroundColor, defaultColor)
+                keyboardKeyTextColor = getColor(R.styleable.SecureKeyboard_acqKeyboardKeyTextColor, Color.WHITE)
             }
         } finally {
             attrsArray.recycle()

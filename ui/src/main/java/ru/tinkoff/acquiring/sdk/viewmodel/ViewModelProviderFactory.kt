@@ -45,7 +45,8 @@ internal class ViewModelProviderFactory(
             application,
             handleErrorsInSdk,
             sdk
-        )
+        ),
+        YandexPaymentViewModel::class.java to YandexPaymentViewModel(application, handleErrorsInSdk, sdk)
     )
 
     private val redesignViewModels = mapOf<Class<out ViewModel>, ViewModel>(

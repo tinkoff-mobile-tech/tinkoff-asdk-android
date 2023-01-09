@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply from: '../gradle/dokka.gradle'
+apply from: rootProject.file('gradle/versions.gradle')
+apply from: '../gradle/publish.gradle'
+
+android {
+    compileSdkVersion rootProject.compileSdk
+    buildToolsVersion rootProject.buildTools
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
+        buildConfigField("String", "ASDK_VERSION_NAME", "\"$VERSION_NAME\"")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains("AndroidTest")) {
+            task.enabled = false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleExtensionsVersion"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    
+    api project(':core')
+    implementation project(':ui')
+
+    implementation "androidx.appcompat:appcompat:${appCompatVersion}"
+    implementation("com.yandex.pay:core:${yandexPayVersion}")
+
+
+    testImplementation 'junit:junit:4.13'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlinVersion}"
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+}

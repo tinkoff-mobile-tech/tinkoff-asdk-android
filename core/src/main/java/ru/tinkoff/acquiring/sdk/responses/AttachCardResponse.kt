@@ -57,7 +57,10 @@ class AttachCardResponse(
         val md: String? = null,
 
         @SerializedName("PaReq")
-        val paReq: String? = null
+        val paReq: String? = null,
+
+        @SerializedName("AcsTransId")
+        val acsTransId: String? = null
 
 ) : AcquiringResponse() {
 

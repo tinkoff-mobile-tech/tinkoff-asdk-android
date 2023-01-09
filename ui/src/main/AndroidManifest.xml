@@ -15,6 +15,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.tinkoff.acquiring.sdk">
 
     <queries>
@@ -41,6 +42,12 @@
 
         <activity
             android:name=".ui.activities.PaymentActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
+            android:name=".ui.activities.YandexPaymentActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"
             android:windowSoftInputMode="adjustNothing" />

@@ -1,3 +1,21 @@
+## 2.12.0
+
+#### Fixed
+#### Changes
+- !up minSdk version to 24!
+- network config for self-signed certs
+- add tinkoff and min.digital self-signed certs in ui module
+#### Additions
+
+## 2.11.0
+
+#### Fixed
+#### Changes
+- New module for `yandex pay` libraray in `ru.tinkoff.acquiring:yandexpay`
+- update read.me
+- update pages
+#### Additions
+
 ## 2.10.0
 
 #### Fixed
@@ -6,6 +24,8 @@
 - Changed `NetworkClient` to utilize okhttp 
 - Tinkoff Pay button redesign
 - Changed card pan validation mechanism; added Union Pay system recognition
+- Changed names of some view attributes ([migration](/migration.md))
+- Add 3DS v2 flow for attach card
 #### Additions
 
 ## 2.9.0

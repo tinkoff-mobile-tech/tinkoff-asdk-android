@@ -282,17 +282,17 @@ internal class EditCard @JvmOverloads constructor(
                 textColor = getColor(R.styleable.EditCard_android_textColor, R.styleable.EditCard_android_textColor)
                 fontFamily = getString(R.styleable.EditCard_android_fontFamily)
                 textColorHint = getColor(R.styleable.EditCard_android_textColorHint, R.styleable.EditCard_android_textColorHint)
-                textColorInvalid = getColor(R.styleable.EditCard_textColorInvalid, Color.RED)
-                cursorColor = getColor(R.styleable.EditCard_cursorColor, typedValue.data)
+                textColorInvalid = getColor(R.styleable.EditCard_acqTextColorInvalid, Color.RED)
+                cursorColor = getColor(R.styleable.EditCard_acqCursorColor, typedValue.data)
 
-                cardNumberHint = getString(R.styleable.EditCard_numberHint) ?: "Card number"
-                cardDateHint = getString(R.styleable.EditCard_dateHint) ?: "MM/YY"
-                cardCvcHint = getString(R.styleable.EditCard_cvcHint) ?: "CVC"
+                cardNumberHint = getString(R.styleable.EditCard_acqNumberHint) ?: "Card number"
+                cardDateHint = getString(R.styleable.EditCard_acqDateHint) ?: "MM/YY"
+                cardCvcHint = getString(R.styleable.EditCard_acqCvcHint) ?: "CVC"
 
-                nextIconResId = getResourceId(R.styleable.EditCard_nextIcon, R.drawable.acq_icon_next)
-                scanIconResId = getResourceId(R.styleable.EditCard_scanIcon, R.drawable.acq_icon_scan_card)
+                nextIconResId = getResourceId(R.styleable.EditCard_acqNextIcon, R.drawable.acq_icon_next)
+                scanIconResId = getResourceId(R.styleable.EditCard_acqScanIcon, R.drawable.acq_icon_scan_card)
 
-                mode = EditCardMode.fromInt(getInteger(R.styleable.EditCard_mode, DEFAULT.value))
+                mode = EditCardMode.fromInt(getInteger(R.styleable.EditCard_acqMode, DEFAULT.value))
             }
         } finally {
             attrsArray.recycle()
@@ -678,7 +678,7 @@ internal class EditCard @JvmOverloads constructor(
                         }
                         checkFlags(FLAG_CARD_SYSTEM_LOGO) -> {
                             if (isValid(CARD_NUMBER) && mode != NUMBER_ONLY && !checkFlags(FLAG_PASTED_TEXT) &&
-                                cardNumber.length >= MIN_LENGTH_FOR_AUTO_SWITCH) {
+                                shouldAutoSwitchFromCardNumber()) {
                                 showDateAndCvc()
                             }
                         }
@@ -922,6 +922,11 @@ internal class EditCard @JvmOverloads constructor(
             EXPIRE_DATE -> CardValidator.validateExpireDate(cardDate, validateNotExpired)
             SECURE_CODE -> CardValidator.validateSecurityCode(cardCvc)
         }
+    }
+
+    private fun shouldAutoSwitchFromCardNumber(): Boolean {
+        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
+        return cardNumber.length == paymentSystem.range.last
     }
 
     private fun isFilled(field: EditCardField): Boolean {
@@ -1415,7 +1420,7 @@ internal class EditCard @JvmOverloads constructor(
     private fun defineCardLogo(): Boolean {
         if (!isInEditMode) {
             val newLogo = cardSystemIconsHolder.getCardSystemLogo(cardNumber)
-            if (newLogo != null && viewState != CARD_LOGO_ANIMATION_STATE) {
+            if (newLogo != null) {
                 cardLogo = newLogo
             }
         }
@@ -1592,8 +1597,6 @@ internal class EditCard @JvmOverloads constructor(
         private const val CARD_LOGO_ANIMATION_DURATION = 150L
 
         private const val MASK_CHAR = '*'
-
-        private const val MIN_LENGTH_FOR_AUTO_SWITCH = 16
     }
 
     enum class EditCardMode(val value: Int) {

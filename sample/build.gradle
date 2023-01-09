@@ -7,12 +7,24 @@ android {
     compileSdkVersion rootProject.compileSdk
     buildToolsVersion rootProject.buildTools
 
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+            storePassword 'android'
+            keyAlias 'androidDebugKey'
+            keyPassword 'android'
+        }
+    }
+
     defaultConfig {
         applicationId "ru.tinkoff.acquiring.sample"
         minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.compileSdk
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
+        manifestPlaceholders = [
+                YANDEX_CLIENT_ID: "9dc6814e39204c638222dede9561ea6f"
+        ]
     }
     buildTypes {
         release {
@@ -47,6 +59,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     implementation project(':ui')
+    implementation project(':yandexpay')
     implementation project(':cardio')
     implementation project(':threeds-sdk')
     implementation project(':threeds-wrapper')

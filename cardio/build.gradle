@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply from: '../gradle/dokka.gradle'
+apply plugin: 'org.jetbrains.dokka'
 apply from: rootProject.file('gradle/versions.gradle')
 apply from: '../gradle/publish.gradle'
 
@@ -24,6 +24,10 @@ android {
     }
 }
 
+tasks.dokkaHtmlPartial.configure {
+    outputDirectory = file("../build/dokka/cardio")
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
@@ -34,6 +38,4 @@ dependencies {
     implementation project(':ui')
 
     testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
