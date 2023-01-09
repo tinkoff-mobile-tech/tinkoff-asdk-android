@@ -37,15 +37,13 @@ import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.*
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import kotlin.coroutines.suspendCoroutine
+import ru.tinkoff.acquiring.sdk.ui.activities.YandexPaymentActivity
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK

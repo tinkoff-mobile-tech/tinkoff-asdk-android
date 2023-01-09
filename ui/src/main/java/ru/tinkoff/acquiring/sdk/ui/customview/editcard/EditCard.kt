@@ -925,7 +925,7 @@ internal class EditCard @JvmOverloads constructor(
     }
 
     private fun shouldAutoSwitchFromCardNumber(): Boolean {
-        val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
         return cardNumber.length == paymentSystem.range.last
     }
 
