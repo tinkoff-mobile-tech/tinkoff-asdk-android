@@ -22,7 +22,7 @@ class AcqSnackBarHelper(private val view: View) {
 
     fun showProgress(textValue: String) {
         snackbar?.takeIf { it.isShown }?.dismiss()
-        val bar = Snackbar.make(view, "", Snackbar.LENGTH_SHORT).apply { snackbar = this }
+        val bar = Snackbar.make(view, "", Snackbar.LENGTH_LONG).apply { snackbar = this }
         val customSnackView: View =
             LayoutInflater.from(view.context).inflate(R.layout.acq_snackbar_progress_layout, null)
         val textView = customSnackView.findViewById<TextView>(R.id.acq_snackbar_text)

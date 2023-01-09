@@ -63,6 +63,7 @@ internal class CardsListViewModel(
             return
         }
 
+        eventFlow.value = CardListEvent.RemoveCardProgress
         deleteJob = manager.launchOnBackground {
             if (connectionChecker.isOnline().not()) {
                 eventFlow.value = CardListEvent.ShowError
@@ -77,7 +78,6 @@ internal class CardsListViewModel(
                 this.customerKey = customerKey
             }
                 .executeFlow()
-                .onStart { eventFlow.value = CardListEvent.RemoveCardProgress }
                 .collect {
                     it.process(
                         onSuccess = {
@@ -106,6 +106,12 @@ internal class CardsListViewModel(
                 )
             }
             CardsListState.Content(mode, false, cards)
+        }
+    }
+
+    fun onBackPressed() {
+        if(eventFlow.value !is CardListEvent.RemoveCardProgress) {
+            eventFlow.value = CardListEvent.CloseScreen
         }
     }
 
