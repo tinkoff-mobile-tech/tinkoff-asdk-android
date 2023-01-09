@@ -20,6 +20,7 @@ plugins {
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
 apply from: 'gradle/versions.gradle'
 
 allprojects {
@@ -44,4 +45,7 @@ tasks.register("realeaseNotes") {
                 .join("\n\n")
         print log
     }
+}
+dokkaHtmlMultiModule.configure {
+    outputDirectory.set(new File("$buildDir/dokka"))
 }

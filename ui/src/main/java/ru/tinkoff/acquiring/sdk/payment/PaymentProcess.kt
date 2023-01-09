@@ -34,6 +34,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
+import ru.tinkoff.acquiring.sdk.models.paysources.YandexPay
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.FAIL_MAPI_SESSION_ID
@@ -173,6 +174,22 @@ internal constructor(
     }
 
     /**
+     * Создает объект процесса для проведения оплаты через yandex Pay
+     * @return сконфигурированный объект для проведения оплаты
+     */
+    fun createYandexPayPaymentProcess(paymentOptions: PaymentOptions, yandexPayToken: String): PaymentProcess {
+
+        this.initRequest = sdk.init {
+            configure(paymentOptions)
+        }
+        this.paymentType = YandexPaymentType
+        this.paymentSource = YandexPay(yandexPayToken)
+
+        sendToListener(PaymentState.CREATED)
+        return this
+    }
+
+    /**
      * Позволяет подписаться на события процесса
      * @return сконфигурированный объект для проведения оплаты
      */
@@ -195,7 +212,7 @@ internal constructor(
      */
     fun start(): PaymentProcess {
         when (paymentType) {
-            SbpPaymentType, CardPaymentType, TinkoffPayPaymentType -> callInitRequest(initRequest!!)
+            SbpPaymentType, CardPaymentType, TinkoffPayPaymentType, YandexPaymentType -> callInitRequest(initRequest!!)
             FinishPaymentType -> finishPayment(paymentId!!, paymentSource)
             InitializedSbpPaymentType -> callGetQr(paymentId!!)
         }
@@ -228,6 +245,9 @@ internal constructor(
             paymentSource is AttachedCard && paymentSource.rebillId != null -> {
                 callChargeRequest(paymentId, paymentSource)
             }
+            paymentSource is YandexPay -> {
+                callFinishAuthorizeRequest(paymentId, paymentSource, email, data = ThreeDsHelper.CollectData.invoke(context, null))
+            }
             paymentSource is GooglePay || state == PaymentState.THREE_DS_V2_REJECTED -> {
                 callFinishAuthorizeRequest(paymentId, paymentSource, email)
             }
@@ -248,7 +268,7 @@ internal constructor(
             onSuccess = {
                 paymentId = it.paymentId
                 when (paymentType) {
-                    CardPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
+                    CardPaymentType, YandexPaymentType -> finishPayment(it.paymentId!!, paymentSource, email)
                     SbpPaymentType -> callGetQr(it.paymentId!!)
                     TinkoffPayPaymentType -> callTinkoffPayLinkRequest(it.paymentId!!, tinkoffPayVersion!!)
                     else -> Unit

@@ -69,6 +69,7 @@
     <string name="settings_title_google_pay">GooglePay</string>
     <string name="settings_title_fps">Система быстрых платежей</string>
     <string name="settings_title_tinkoff_pay">Tinkoff Pay</string>
+    <string name="settings_title_yandex_pay">Yandex Pay</string>
     <string name="settings_title_style_id">Стиль</string>
     <string name="settings_title_dark_mode_id">Темная тема</string>
     <string name="settings_title_check_type_id">CheckType</string>

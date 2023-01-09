@@ -22,6 +22,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="actionBarStyle">@style/AppTheme.ActionBarStyle</item>
+        <item name="acqYandexPayButtonCornerRadius">5dp</item>
     </style>
 
     <style name="AppTheme.ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">

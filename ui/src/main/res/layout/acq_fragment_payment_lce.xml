@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:gravity="center_horizontal"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out"
+    android:background="@drawable/acq_bottom_sheet_bg"
+    android:id="@+id/acq_fragment_payment_lce"
+    android:measureAllChildren="false"
+    android:layout_height="wrap_content">
+
+    <include
+        android:id="@+id/acq_fragment_payment_progress"
+        layout="@layout/acq_fragment_payment_progress" />
+
+    <include
+        android:id="@+id/acq_fragment_payment_failure"
+        layout="@layout/acq_fragment_payment_failure" />
+
+    <include
+        android:id="@+id/acq_fragment_payment_success"
+        layout="@layout/acq_fragment_payment_success" />
+
+</ViewFlipper>

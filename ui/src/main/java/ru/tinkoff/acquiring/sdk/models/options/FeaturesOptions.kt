@@ -74,6 +74,11 @@ class FeaturesOptions() : Options(), Parcelable {
     var tinkoffPayEnabled: Boolean = true
 
     /**
+     * Включение приема платежа через Yandex Pay
+     */
+    var yandexPayEnabled: Boolean = false
+
+    /**
      * Идентификатор карты в системе банка.
      * Если передан на экран оплаты - в списке карт на экране отобразится первой карта с этим cardId.
      * Если передан на экран списка карт - в списке карт отобразится выбранная карта.

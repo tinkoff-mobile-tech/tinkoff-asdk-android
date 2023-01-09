@@ -152,6 +152,11 @@ internal class NetworkClient {
             builder.header("User-Agent", System.getProperty("http.agent"))
             builder.header("Accept", JSON)
         }
+
+        getHeaders().forEach { (key, value) ->
+            builder.header(key, value)
+        }
+
     }.build()
 
     private fun <R : AcquiringResponse> checkResult(
@@ -184,6 +189,7 @@ internal class NetworkClient {
 
         fun createGson(): Gson {
             return GsonBuilder()
+                .disableHtmlEscaping()
                 .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
                 .setExclusionStrategies(SerializableExclusionStrategy())
                 .registerTypeAdapter(CardStatus::class.java, CardStatusSerializer())

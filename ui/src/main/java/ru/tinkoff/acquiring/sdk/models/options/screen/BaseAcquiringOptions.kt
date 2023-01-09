@@ -27,7 +27,7 @@ import ru.tinkoff.acquiring.sdk.models.options.Options
  *
  * @author Mariya Chernyadieva
  */
-open class BaseAcquiringOptions() : Options(), Parcelable  {
+open class BaseAcquiringOptions() : Options(), Parcelable {
 
     lateinit var terminalKey: String
         private set

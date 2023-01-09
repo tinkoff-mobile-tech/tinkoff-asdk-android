@@ -9,7 +9,7 @@ import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 
-class PaymentFailureDialogFragment : BottomSheetDialogFragment() {
+internal class PaymentFailureDialogFragment : BottomSheetDialogFragment() {
 
     private val buttonChooseAnotherMethod: LoaderButton
             by lazyView(R.id.acq_button_choose_another_method)
@@ -19,21 +19,18 @@ class PaymentFailureDialogFragment : BottomSheetDialogFragment() {
         setStyle(STYLE_NO_FRAME, theme)
     }
 
+    var onChooseAnotherMethod: OnChooseAnotherMethod? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.acq_fragment_payment_failure, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        buttonChooseAnotherMethod.setOnClickListener { onChooseAnotherMethod() }
-    }
-
-    private fun onChooseAnotherMethod() {
-        ((parentFragment as? OnChooseAnotherMethod) ?: (activity as? OnChooseAnotherMethod))
-            ?.onPaymentFailureChooseAnotherMethod(this)
+        buttonChooseAnotherMethod.setOnClickListener { onChooseAnotherMethod?.invoke(this) }
     }
 
     fun interface OnChooseAnotherMethod {
-        fun onPaymentFailureChooseAnotherMethod(fragment: PaymentFailureDialogFragment)
+        operator fun invoke(fragment: PaymentFailureDialogFragment)
     }
 }
