@@ -26,6 +26,8 @@ sealed class CardListEvent {
         val indexAt: Int?) : CardListEvent()
 
     object ShowError : CardListEvent()
+
+    object CloseScreen : CardListEvent()
 }
 
 enum class CardListMode {

@@ -79,13 +79,14 @@ internal class CardsDeleteViewModelTest {
     fun `when card delete without key`() = runBlocking {
         with(Environment(initState = defaultContent)) {
 
-            eventCollector.takeValues(1)
+            eventCollector.takeValues(2)
             setResponse(RequestResult.Failure(Exception()))
 
             vm.deleteCard(createCard("1"), null)
 
             eventCollector.joinWithTimeout()
             eventCollector.flow.test {
+                awaitItem()
                 assertByClassName(CardListEvent.ShowError, awaitItem())
                 awaitComplete()
             }
@@ -96,13 +97,14 @@ internal class CardsDeleteViewModelTest {
     fun `when card delete is offline`() = runBlocking {
         with(Environment(initState = defaultContent)) {
 
-            eventCollector.takeValues(1)
+            eventCollector.takeValues(2)
             setResponse(RequestResult.Failure(Exception()))
             setOnline(false)
 
             vm.deleteCard(createCard("1"), "")
             eventCollector.joinWithTimeout()
             eventCollector.flow.test {
+                awaitItem()
                 assertByClassName(CardListEvent.ShowError, awaitItem())
                 awaitComplete()
             }

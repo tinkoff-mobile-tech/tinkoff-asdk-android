@@ -3,10 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.ViewGroup
-import android.view.View
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
@@ -28,29 +25,31 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
-import ru.tinkoff.acquiring.sdk.utils.AcqSnackBarHelper
-import ru.tinkoff.acquiring.sdk.utils.ErrorResolver
+import ru.tinkoff.acquiring.sdk.utils.*
+import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
-import ru.tinkoff.acquiring.sdk.utils.showById
 
 internal class CardsListActivity : TransparentActivity() {
 
     private lateinit var viewModel: CardsListViewModel
     private lateinit var savedCardsOptions: SavedCardsOptions
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var cardsListAdapter: CardsListAdapter
-    private lateinit var viewFlipper: ViewFlipper
-    private lateinit var cardShimmer: ViewGroup
-    private lateinit var snackBarHelper: AcqSnackBarHelper
-
     private var mode = CardListMode.STUB
 
+    private val recyclerView: RecyclerView by lazyView(R.id.acq_card_list_view)
+    private val viewFlipper: ViewFlipper by lazyView(R.id.acq_view_flipper)
+    private val cardShimmer: ViewGroup by lazyView(R.id.acq_card_list_shimmer)
+    private val root: ViewGroup by lazyView(R.id.acq_card_list_root)
     private val stubImage: ImageView by lazyView(R.id.acq_stub_img)
     private val stubTitleView: TextView by lazyView(R.id.acq_stub_title)
     private val stubSubtitleView: TextView by lazyView(R.id.acq_stub_subtitle)
     private val stubButtonView: TextView by lazyView(R.id.acq_stub_retry_button)
     private val addNewCard: TextView by lazyView(R.id.acq_add_new_card)
+    private lateinit var cardsListAdapter: CardsListAdapter
+
+    private val snackBarHelper: AcqSnackBarHelper by lazyUnsafe {
+        AcqSnackBarHelper(root)
+    }
 
     private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
         when (result) {
@@ -59,11 +58,15 @@ internal class CardsListActivity : TransparentActivity() {
 
                 viewModel.loadData(
                     savedCardsOptions.customer.customerKey,
-                    options.features.showOnlyRecurrentCards)
+                    options.features.showOnlyRecurrentCards
+                )
             }
             is AttachCard.Error -> showErrorDialog(
                 getString(R.string.acq_generic_alert_label),
-                ErrorResolver.resolve(result.error,  getString(R.string.acq_generic_stub_description)),
+                ErrorResolver.resolve(
+                    result.error,
+                    getString(R.string.acq_generic_stub_description)
+                ),
                 getString(R.string.acq_generic_alert_access)
             )
             else -> Unit
@@ -116,7 +119,7 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     override fun onBackPressed() {
-        finish()
+        viewModel.onBackPressed()
     }
 
     private fun initToolbar() {
@@ -127,15 +130,11 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun initViews() {
-        recyclerView = findViewById(R.id.acq_card_list_view)
-        viewFlipper = findViewById(R.id.acq_view_flipper)
-        cardShimmer = viewFlipper.findViewById(R.id.acq_card_list_shimmer)
         cardsListAdapter = CardsListAdapter(onDeleteClick = {
             viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!)
         })
         recyclerView.adapter = cardsListAdapter
         addNewCard.setOnClickListener { startAttachCard() }
-        snackBarHelper = AcqSnackBarHelper(findViewById(R.id.acq_card_list_root))
     }
 
     private fun subscribeOnState() {
@@ -221,30 +220,34 @@ internal class CardsListActivity : TransparentActivity() {
 
     private fun CardItemUiModel.handleCardAttached() {
         attachedCardId = null
-        snackBarHelper.showWithIcon(R.drawable.acq_ic_card_sparkle,
-            getString(R.string.acq_cardlist_snackbar_add, tail))
+        snackBarHelper.showWithIcon(
+            R.drawable.acq_ic_card_sparkle,
+            getString(R.string.acq_cardlist_snackbar_add, tail)
+        )
     }
 
     private fun CoroutineScope.subscribeOnEvents() {
         launch {
             viewModel.eventFlow.filterNotNull().collect {
-                recyclerView.alpha = if (it is CardListEvent.RemoveCardProgress) 0.5f else 1f
-                recyclerView.isEnabled = it !is CardListEvent.RemoveCardProgress
-
+                handleDeleteInProgress(it is CardListEvent.RemoveCardProgress)
                 when (it) {
-                    is CardListEvent.RemoveCardProgress -> {
-                        snackBarHelper.showProgress(R.string.acq_cardlist_snackbar_remove_progress)
-                    }
+                    is CardListEvent.RemoveCardProgress -> Unit
                     is CardListEvent.RemoveCardSuccess -> {
                         it.indexAt?.let(cardsListAdapter::onRemoveCard)
-                        snackBarHelper.showWithIcon(R.drawable.acq_ic_card_sparkle,
-                            getString(R.string.acq_cardlist_snackbar_remove, it.deletedCard.tail))
+                        snackBarHelper.showWithIcon(
+                            R.drawable.acq_ic_card_sparkle,
+                            getString(R.string.acq_cardlist_snackbar_remove, it.deletedCard.tail)
+                        )
                     }
                     is CardListEvent.ShowError -> {
                         showErrorDialog(
                             R.string.acq_generic_alert_label,
                             R.string.acq_generic_stub_description,
-                            R.string.acq_generic_alert_access)
+                            R.string.acq_generic_alert_access
+                        )
+                    }
+                    is CardListEvent.CloseScreen -> {
+                        finish()
                     }
                 }
             }
@@ -283,5 +286,19 @@ internal class CardsListActivity : TransparentActivity() {
             setResult(Activity.RESULT_OK, intent)
         }
         super.finish()
+    }
+
+    private fun handleDeleteInProgress(inProgress: Boolean) {
+        root.alpha = if (inProgress) 0.5f else 1f
+        if (inProgress) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+            snackBarHelper.showProgress(R.string.acq_cardlist_snackbar_remove_progress)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            snackBarHelper.hide()
+        }
     }
 }
