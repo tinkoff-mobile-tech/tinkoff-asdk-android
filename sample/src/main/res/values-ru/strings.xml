@@ -31,6 +31,7 @@
     <string name="activity_title_saved_cards">Сохраненные карты</string>
     <string name="activity_title_send_notification">Отправить уведомление</string>
     <string name="activity_title_book_subscription">Подписка на книги</string>
+    <string name="activity_title_environment">Окружение</string>
 
     <string name="author">Автор</string>
     <string name="year">Год выпуска</string>

@@ -86,6 +86,9 @@ object AcquiringApi {
     private const val API_URL_RELEASE = "https://securepay.tinkoff.ru/$API_VERSION"
     private const val API_URL_DEBUG = "https://rest-api-test.tinkoff.ru/$API_VERSION"
 
+    private const val API_URL_PREPROD_OLD = "https://qa-mapi.tcsbank.ru/rest"
+    private const val API_URL_PREPROD = "https://qa-mapi.tcsbank.ru/$API_VERSION"
+
     private val oldMethodsList = listOf("Submit3DSAuthorization")
 
     /**
@@ -93,10 +96,29 @@ object AcquiringApi {
      * Зависит от режима работы SDK [AcquiringSdk.isDeveloperMode]
      */
     fun getUrl(apiMethod: String): String {
+
         return if (useV1Api(apiMethod)) {
-            if (AcquiringSdk.isDeveloperMode) API_URL_DEBUG_OLD else API_URL_RELEASE_OLD
+            if (AcquiringSdk.isDeveloperMode) {
+
+                if (AcquiringSdk.isPreprodMode)
+                    API_URL_PREPROD_OLD
+                else
+                    API_URL_DEBUG_OLD
+
+            } else {
+                API_URL_RELEASE_OLD
+            }
         } else {
-            if (AcquiringSdk.isDeveloperMode) API_URL_DEBUG else API_URL_RELEASE
+            if (AcquiringSdk.isDeveloperMode) {
+
+                if (AcquiringSdk.isPreprodMode)
+                    API_URL_PREPROD
+                else
+                    API_URL_DEBUG
+
+            } else {
+                API_URL_RELEASE
+            }
         }
     }
 

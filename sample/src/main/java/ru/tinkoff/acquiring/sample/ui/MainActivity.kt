@@ -170,6 +170,10 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 SettingsActivity.start(this)
                 true
             }
+            R.id.menu_action_environment -> {
+                AcqEnvironmentDialog().show(supportFragmentManager, AcqEnvironmentDialog.TAG)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
