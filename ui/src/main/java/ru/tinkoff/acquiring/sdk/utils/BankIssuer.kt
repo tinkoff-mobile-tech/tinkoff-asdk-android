@@ -218,6 +218,8 @@ private val TINKOFF_BINS = setOf(
     "551960",
     "553420",
     "553691",
+    "626301",
+    "626429",
 )
 
 private val RAIFFEISEN_BINS = setOf(
