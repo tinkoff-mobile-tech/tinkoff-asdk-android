@@ -32,7 +32,7 @@ internal class YandexPaymentViewModel(
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
 
-    fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String) {
+    fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String, paymentId: Long?) {
         changeScreenState(LoadingState)
 
         viewModelScope.launch {

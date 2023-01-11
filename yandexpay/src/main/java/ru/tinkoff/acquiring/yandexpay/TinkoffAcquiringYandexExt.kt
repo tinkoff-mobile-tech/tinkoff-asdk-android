@@ -13,6 +13,7 @@ import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 internal typealias AcqYandexPayCallback = (AcqYandexPayResult) -> Unit
 typealias AcqYandexPayErrorCallback = (Throwable) -> Unit
 typealias AcqYandexPayCancelCallback = () -> Unit
+typealias AcqYandexPaySuccessCallback = (AcqYandexPayResult.Success) -> Unit
 
 
 /**
@@ -39,10 +40,18 @@ fun TinkoffAcquiring.createYandexPayButtonFragment(
     enableLogging: Boolean = false,
     themeId: Int? = null,
     onYandexErrorCallback: AcqYandexPayErrorCallback? = null,
-    onYandexCancelCallback: AcqYandexPayCancelCallback? = null
+    onYandexCancelCallback: AcqYandexPayCancelCallback? = null,
+    onYandexSuccessCallback: AcqYandexPaySuccessCallback? =  {
+        openYandexPaymentScreen(
+            activity,
+            it.paymentOptions,
+            yandexPayRequestCode,
+            it.token
+        )
+    }
 ): YandexButtonFragment {
     val fragment = YandexButtonFragment.newInstance(yandexPayData, options,  isProd, enableLogging, themeId)
-    addYandexResultListener(fragment, activity, yandexPayRequestCode, onYandexErrorCallback, onYandexCancelCallback)
+    addYandexResultListener(fragment, activity, yandexPayRequestCode, onYandexErrorCallback, onYandexCancelCallback, onYandexSuccessCallback)
     return fragment
 }
 
@@ -61,16 +70,19 @@ fun TinkoffAcquiring.addYandexResultListener(
     activity: FragmentActivity,
     yandexPayRequestCode: Int,
     onYandexErrorCallback: AcqYandexPayErrorCallback? = null,
-    onYandexCancelCallback: AcqYandexPayCancelCallback? = null
+    onYandexCancelCallback: AcqYandexPayCancelCallback? = null,
+    onYandexSuccessCallback: AcqYandexPaySuccessCallback? =  {
+        openYandexPaymentScreen(
+            activity,
+            it.paymentOptions,
+            yandexPayRequestCode,
+            it.token
+        )
+    }
 ) {
     fragment.listener = {
         when (it) {
-            is AcqYandexPayResult.Success -> openYandexPaymentScreen(
-                activity,
-                it.paymentOptions,
-                yandexPayRequestCode,
-                it.token
-            )
+            is AcqYandexPayResult.Success ->onYandexSuccessCallback?.invoke(it)
             is AcqYandexPayResult.Error -> onYandexErrorCallback?.invoke(it.throwable)
             else -> onYandexCancelCallback?.invoke()
         }

@@ -147,8 +147,10 @@ class TinkoffAcquiring(
     fun openYandexPaymentScreen(activity: Activity,
                           options: PaymentOptions,
                           requestCode: Int,
-                          yandexPayToken: String) {
-        options.asdkState = YandexPayState(yandexPayToken)
+                          yandexPayToken: String,
+                          paymentId: Long? = null
+    ) {
+        options.asdkState = YandexPayState(yandexPayToken, paymentId)
         val intent = prepareIntent(activity, options, YandexPaymentActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
     }
