@@ -54,7 +54,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
 
         if (savedInstanceState == null) {
             (asdkState as? YandexPayState)?.let {
-                paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken)
+                paymentViewModel.startYandexPayPayment(paymentOptions, it.yandexToken, it.paymentId)
             }
         }
 

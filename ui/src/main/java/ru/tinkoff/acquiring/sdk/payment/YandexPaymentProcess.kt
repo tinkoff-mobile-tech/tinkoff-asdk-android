@@ -45,6 +45,7 @@ class YandexPaymentProcess(
     private lateinit var paymentSource: YandexPay
     private var initRequest: InitRequest? = null
     private var email: String? = null
+    private var paymentId: Long? = null
 
     private var paymentResult: PaymentResult? = null
     private var sdkState: AsdkState? = null
@@ -60,13 +61,21 @@ class YandexPaymentProcess(
         this.paymentSource = YandexPay(yandexPayToken)
     }
 
+    fun create(paymentId: Long, yandexPayToken: String) {
+        this.paymentSource = YandexPay(yandexPayToken)
+        this.paymentId = paymentId
+    }
+
     /**
      * Запускает полный или подтверждающий процесс оплаты в зависимости от созданного процесса
      * @return сконфигурированный объект для проведения оплаты
      */
     suspend fun start() = scope.launch {
         sendToListener(YandexPaymentState.Started)
-        callInitRequest(initRequest!!)
+        initRequest?.let { callInitRequest(it) } ?: callFinishAuthorizeRequest(
+            paymentId!!, paymentSource, email,
+            data = threeDsDataCollector.invoke(context,null)
+        )
     }
 
     /**
