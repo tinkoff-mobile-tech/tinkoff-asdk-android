@@ -1,6 +1,6 @@
 package ru.tinkoff.acquiring.sdk.payment
 
-import android.content.Context
+import android.app.Application
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +20,7 @@ import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 
 /**
@@ -27,7 +28,7 @@ import ru.tinkoff.acquiring.sdk.utils.getIpAddress
  */
 class YandexPaymentProcess(
     private val sdk: AcquiringSdk,
-    private val context: Context,
+    private val app: Application,
     private val threeDsDataCollector: ThreeDsDataCollector,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
@@ -74,7 +75,7 @@ class YandexPaymentProcess(
         sendToListener(YandexPaymentState.Started)
         initRequest?.let { callInitRequest(it) } ?: callFinishAuthorizeRequest(
             paymentId!!, paymentSource, email,
-            data = threeDsDataCollector.invoke(context,null)
+            data = threeDsDataCollector.invoke(app.applicationContext, null)
         )
     }
 
@@ -82,11 +83,11 @@ class YandexPaymentProcess(
      * Останавливает процесс оплаты
      */
     fun stop() {
-        scope.cancel()
+        scope.coroutineContext.cancelChildren()
         sendToListener(YandexPaymentState.Stopped)
     }
 
-    private  fun sendToListener(state: YandexPaymentState?) {
+    private fun sendToListener(state: YandexPaymentState?) {
         this._state.update { state }
     }
 
@@ -110,7 +111,7 @@ class YandexPaymentProcess(
         val initResult = request.performSuspendRequest().getOrThrow()
         callFinishAuthorizeRequest(
             initResult.paymentId!!, paymentSource, email,
-            data = threeDsDataCollector.invoke(context,null)
+            data = threeDsDataCollector.invoke(app.applicationContext, null)
         )
     }
 
@@ -145,7 +146,6 @@ class YandexPaymentProcess(
             ip = ipAddress
             sendEmail = email != null
         }
-
         val response = finishRequest.performSuspendRequest().getOrThrow()
         val threeDsData = response.getThreeDsData(threeDsVersion)
 
@@ -163,6 +163,35 @@ class YandexPaymentProcess(
                     response.rebillId
                 )
             )
+        }
+    }
+
+    /**
+     * Рекомендуется сопоставлять жизненный цикл процесса с жизненным
+     * циклом приложения, что бы процесс не прерывался при пересоздании экрана.
+     */
+    companion object {
+
+        @Volatile
+        private var _instance: YandexPaymentProcess? = null
+
+        val instance: YandexPaymentProcess get() {
+            return checkNotNull(_instance) {
+                "YandexPaymentProcess is not initialize yet"
+            }
+        }
+
+        fun init(
+            sdk: AcquiringSdk,
+            context: Application,
+        ) {
+            if (_instance == null) {
+                synchronized(this) {
+                    if (_instance == null) {
+                        _instance = YandexPaymentProcess(sdk, context, ThreeDsHelper.CollectData)
+                    }
+                }
+            }
         }
     }
 }
