@@ -15,7 +15,7 @@ Acquiring SDK позволяет интегрировать [Интернет-Э
 - Поддержка локализации;  
 - Кастомизация экранов SDK;  
 - Интеграция с онлайн-кассами; 
-- Поддержка Google Pay и Системы быстрых платежей
+- Поддержка Системы быстрых платежей
 - Оплата через Tinkoff Pay
 - Совершение оплаты из уведомления
 
@@ -156,64 +156,6 @@ tinkoffAcquiring.openAttachCardScreen(this@MainActivity, attachCardOptions, ATTA
 - при неуспешной привязке (_TinkoffAcquiring.RESULT_ERROR_) возвращается ошибка _TinkoffAcquiring.EXTRA_ERROR_ типа Throwable (подробнее о возвращаемых ошибках в [документации][full-doc])
 
 
-### Google Pay
-
-[Документация](https://developers.google.com/pay)
-
-Для включения Google Pay необходимо:
-
-Добавить мета информацию в манифест приложения
-
-```xml
-<meta-data
-    android:name="com.google.android.gms.wallet.api.enabled"
-    android:value="true" />
-```
-
-Вставить кнопку в разметку интерфейса в соответствии с [Правилами использования бренда Google Pay][google-pay-brand]
-
-Сконфигурировать параметры в коде приложения.
-Для упрощения работы с Google Pay, Acquiring SDK берет на себя работу по настройке параметров, конфигурации Google Pay, предоставляя интерфейс для вызова необходимых методов **GooglePayHelper**.
-
-Пример работы с Google Pay:
-```kotlin
-fun setupGooglePay() {
-    val googlePayButton = findViewById<View>(R.id.btn_google_pay) // определяем кнопку, вставленную в разметку
-
-    val googleParams = GooglePayParams("TERMINAL_KEY",     // конфигурируем основные параметры
-            environment = WalletConstants.ENVIRONMENT_TEST // тестовое окружение
-    )
-
-    val googlePayHelper = GooglePayHelper(googleParams) // передаем параметры в класс-помощник
-
-    googlePayHelper.initGooglePay(this) { ready ->      // вызываем метод для определения доступности Google Pay на девайсе
-        if (ready) {                                    // если Google Pay доступен и настроен правильно, по клику на кнопку открываем экран оплаты Google Pay
-            googlePayButton.setOnClickListener {
-                googlePayHelper.openGooglePay(this@MainActivity, Money.ofRubles(1000), GOOGLE_PAY_REQUEST_CODE)
-            }
-        } else {
-            googlePayButton.visibility = View.GONE      // если Google Pay недоступен на девайсе, необходимо скрыть кнопку
-        }         
-    }
-}
-```
-При открытии экрана Google Pay с помощью метода **GooglePayHelper**#_openGooglePay_, необходимо передать в метод контекст, сумму к оплате и requestCode. После завершения работы экрана Google Pay, в метод **onActivityResult** придут данные с результатом проведения операции и токеном Google Pay. 
-Токен и параметры заказа необходимо далее передать в Acquiring SDK, вызвав соответствующий метод совершения платежа без открытия экрана:
-
-```kotlin
-fun handleGooglePayResult(resultCode: Int, data: Intent?) {
-    if (data != null && resultCode == Activity.RESULT_OK) {
-    
-        val token = GooglePayHelper.getGooglePayToken(data) // получаем токен Google Pay из Intent
-        
-        val tinkoffAcquiring = TinkoffAcquiring(applicationContext, "TERMINAL_KEY", "PUBLIC_KEY")
-        tinkoffAcquiring.initPayment(token, paymentOptions) // вызывов метода совершения платежа
-                .subscribe(paymentListener)                 // подписываемся на события в процессе оплаты
-                .start()                                    // запуск процесса оплаты
-    }
-}
-```
-
 ### Система быстрых платежей
 Включение причема платежей через Систему быстрых платежей осуществляется в Личном кабинете.
 #### Включение приема оплаты через СБП по кнопке для покупателя:
@@ -320,7 +262,7 @@ var paymentOptions = PaymentOptions().setOptions {
 
 #### Проведение платежа без открытия экрана оплаты
 Для проведения платежа без открытия экрана необходимо вызвать метод **TinkoffAcquiring**#_initPayment_, который запустит процесс оплаты с инициацией и подтверждением платежа (будут вызваны методы API Init и FinishAuthorize). 
-В параметры метода необходимо передать карточные данные для оплаты или Google Pay токен, и параметры платежа PaymentOptions
+В параметры метода необходимо передать карточные данные для оплаты и параметры платежа PaymentOptions
 За выполнение методов отвечает объект SDK PaymentProcess, который имеет возможность уведомлять слушателя о событиях в процессе выполнения, методы подписки и отписки от событий, а также методы старта и остановки процесса. 
 Методы выполняются асинхронно.
 
@@ -393,6 +335,5 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [issues]: https://github.com/Tinkoff/AcquiringSdkAndroid/issues
 [acquiring]: https://www.tinkoff.ru/kassa/
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
-[google-pay-brand]: https://developers.google.com/pay/api/android/guides/brand-guidelines
 [full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
 [network-security-config]:https://developer.android.com/training/articles/security-config
