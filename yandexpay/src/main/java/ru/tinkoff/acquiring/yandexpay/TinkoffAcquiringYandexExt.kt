@@ -19,17 +19,20 @@ typealias AcqYandexPaySuccessCallback = (AcqYandexPayResult.Success) -> Unit
 /**
  * Создает обертку для элемента yandex-pay-button для выбора средства оплаты
  *
- * @param activity               контекст для дальнешей навигации платежного флоу из Activity
- * @param yandexPayData          параметры, для настройки yandex-pay библиотеки, полученные от бэка
- * @param options                настройки платежной сессии
- * @param yandexPayRequestCode   код для получения результата, по завершению работы экрана Acquiring SDK
- * @param isProd                 выбор окружения для яндекса YandexPayEnvironment.Prod или YandexPayEnvironment.Sandbox
- * @param enableLogging          включение логгирования событий YandexPay
- * @param themeId                идентификатор темы приложения, параметры которого будет использованы для
- *                               отображение yandex-pay-button
- * @param onYandexErrorCallback  дополнительный метод для возможности обработки ошибки от яндекса на
- *                               стороне клиентского приложения
- * @param onYandexCancelCallback дополнительный метод для возможности обработки отмены
+ * @param activity                контекст для дальнешей навигации платежного флоу из Activity
+ * @param yandexPayData           параметры, для настройки yandex-pay библиотеки, полученные от бэка
+ * @param options                 настройки платежной сессии
+ * @param yandexPayRequestCode    код для получения результата, по завершению работы экрана Acquiring SDK
+ * @param isProd                  выбор окружения для яндекса YandexPayEnvironment.Prod или YandexPayEnvironment.Sandbox
+ * @param enableLogging           включение логгирования событий YandexPay
+ * @param themeId                 идентификатор темы приложения, параметры которого будет использованы для
+ *                                отображение yandex-pay-button
+ * @param onYandexErrorCallback   дополнительный метод для возможности обработки ошибки от яндекса на
+ *                                стороне клиентского приложения
+ * @param onYandexCancelCallback  дополнительный метод для возможности обработки отмены
+ * @param onYandexSuccessCallback дополнительный метод для возможности обработки успеха оплаты
+ *                                рекомендует переопределять только в случае, если запрос инициализации платежа
+ *                                реализован на вашем бэкенде.
  */
 fun TinkoffAcquiring.createYandexPayButtonFragment(
     activity: FragmentActivity,
@@ -64,6 +67,9 @@ fun TinkoffAcquiring.createYandexPayButtonFragment(
  * @param onYandexErrorCallback   дополнительный метод для возможности обработки ошибки от яндекса на
  *                                стороне клиентского приложения
  * @param onYandexCancelCallback  дополнительный метод для возможности обработки отмены
+ * @param onYandexSuccessCallback дополнительный метод для возможности обработки успеха оплаты
+ *                                рекомендует переопределять только в случае, если запрос инициализации платежа
+ *                                реализован на вашем бэкенде.
  */
 fun TinkoffAcquiring.addYandexResultListener(
     fragment: YandexButtonFragment,

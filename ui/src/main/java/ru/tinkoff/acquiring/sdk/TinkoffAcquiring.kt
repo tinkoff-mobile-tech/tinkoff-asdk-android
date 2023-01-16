@@ -386,6 +386,7 @@ class TinkoffAcquiring(
      * @return настроенный PendingIntent
      */
     @JvmOverloads
+    @Deprecated("Not supported yet")
     fun createGooglePayPendingIntent(context: Context,
                                      googlePayParams: GooglePayParams,
                                      options: PaymentOptions,

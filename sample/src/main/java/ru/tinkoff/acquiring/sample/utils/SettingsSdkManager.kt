@@ -44,9 +44,6 @@ class SettingsSdkManager(private val context: Context) {
     val isRecurrentPayment: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_recurrent_payment), false)
 
-    val isGooglePayEnabled: Boolean
-        get() = preferences.getBoolean(context.getString(R.string.acq_sp_android_pay), true)
-
     val isFpsEnabled: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_fps), false)
 

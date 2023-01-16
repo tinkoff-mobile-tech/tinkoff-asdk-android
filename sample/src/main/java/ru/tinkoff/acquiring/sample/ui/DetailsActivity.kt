@@ -86,10 +86,6 @@ class DetailsActivity : PayableActivity() {
 
         setupTinkoffPay()
 
-        if (settings.isGooglePayEnabled) {
-            setupGooglePay()
-        }
-
         setupYandexPay(savedInstanceState = savedInstanceState)
 
         fillViews()
