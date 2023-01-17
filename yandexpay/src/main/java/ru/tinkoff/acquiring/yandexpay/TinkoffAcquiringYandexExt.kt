@@ -1,10 +1,12 @@
 package ru.tinkoff.acquiring.yandexpay
 
+import android.app.Activity
 import androidx.fragment.app.FragmentActivity
 import com.yandex.pay.core.OpenYandexPayContract
 import com.yandex.pay.core.YandexPayResult
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.payment.YandexPaymentProcess
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 
 /**
@@ -53,6 +55,7 @@ fun TinkoffAcquiring.createYandexPayButtonFragment(
         )
     }
 ): YandexButtonFragment {
+    YandexPaymentProcess.init(sdk, activity.application)
     val fragment = YandexButtonFragment.newInstance(yandexPayData, options,  isProd, enableLogging, themeId)
     addYandexResultListener(fragment, activity, yandexPayRequestCode, onYandexErrorCallback, onYandexCancelCallback, onYandexSuccessCallback)
     return fragment
@@ -88,9 +91,32 @@ fun TinkoffAcquiring.addYandexResultListener(
 ) {
     fragment.listener = {
         when (it) {
-            is AcqYandexPayResult.Success ->onYandexSuccessCallback?.invoke(it)
+            is AcqYandexPayResult.Success -> onYandexSuccessCallback?.invoke(it)
             is AcqYandexPayResult.Error -> onYandexErrorCallback?.invoke(it.throwable)
             else -> onYandexCancelCallback?.invoke()
         }
     }
+}
+
+fun TinkoffAcquiring.openYandexPaymentScreen(
+    activity: FragmentActivity,
+    requestCode: Int,
+    success: AcqYandexPayResult.Success,
+    paymentId: Long? = null
+) = openYandexPaymentScreen(activity, success.paymentOptions, requestCode, success.token, paymentId)
+
+/**
+ * Запуск экрана Acquiring SDK для проведения оплаты
+ *
+ * @param activity        контекст для запуска экрана из Activity
+ * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
+ * @param successResult   данные, полученные от фрагмента с yandex pay(подразумевается только успешный результат)
+ */
+fun TinkoffAcquiring.openYandexPaymentScreen(
+    activity: Activity,
+    requestCode: Int,
+    successResult: AcqYandexPayResult.Success,
+    paymentId: Long? = null
+) {
+    openYandexPaymentScreen(activity, successResult.paymentOptions, requestCode, successResult.token, paymentId)
 }

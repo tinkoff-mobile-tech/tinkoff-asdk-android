@@ -288,7 +288,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun showErrorDialog() {
+    protected fun showErrorDialog() {
         errorDialog = AlertDialog.Builder(this).apply {
             setTitle(R.string.error_title)
             setMessage(getString(R.string.error_message))
@@ -314,7 +314,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun createYandexButtonFragment(savedInstanceState: Bundle?,
+    open fun createYandexButtonFragment(savedInstanceState: Bundle?,
                                            paymentOptions: PaymentOptions,
                                            yandexPayData: YandexPayData,
                                            theme: Int?) : YandexButtonFragment {
@@ -367,6 +367,6 @@ open class PayableActivity : AppCompatActivity() {
         private const val STATE_LOADING_SHOW = "loading_show"
         private const val STATE_ERROR_SHOW = "error_show"
 
-        private const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
+        const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
     }
 }

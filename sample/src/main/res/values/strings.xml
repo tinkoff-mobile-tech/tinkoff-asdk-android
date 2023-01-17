@@ -65,7 +65,6 @@
     <string name="settings_title_validate_expiry_date">Validate expiry date</string>
     <string name="settings_title_recurrent_payment">Recurrent payment</string>
     <string name="settings_title_handle_cards_list_error">Handle cards list error in SDK</string>
-    <string name="settings_title_google_pay">GooglePay</string>
     <string name="settings_title_fps">Fast payment system</string>
     <string name="settings_title_tinkoff_pay">Tinkoff Pay</string>
     <string name="settings_title_yandex_pay">Yandex Pay</string>

@@ -20,12 +20,15 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.payment.YandexPaymentProcess
 
 /**
  * @author Mariya Chernyadieva
  */
 internal class ViewModelProviderFactory(
-    application: Application, handleErrorsInSdk: Boolean, sdk: AcquiringSdk
+    application: Application,
+    handleErrorsInSdk: Boolean,
+    sdk: AcquiringSdk
 ) : ViewModelProvider.AndroidViewModelFactory(application) {
 
     private val viewModelCollection: Map<Class<out ViewModel>, BaseAcquiringViewModel> = mapOf(
@@ -36,9 +39,8 @@ internal class ViewModelProviderFactory(
         ThreeDsViewModel::class.java to ThreeDsViewModel(application, handleErrorsInSdk, sdk),
         SavedCardsViewModel::class.java to SavedCardsViewModel(application, handleErrorsInSdk, sdk),
         NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk),
-        YandexPaymentViewModel::class.java to YandexPaymentViewModel(application, handleErrorsInSdk, sdk)
+        YandexPaymentViewModel::class.java to YandexPaymentViewModel(application, handleErrorsInSdk, sdk, YandexPaymentProcess.instance)
     )
-
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return (viewModelCollection)[modelClass] as T
