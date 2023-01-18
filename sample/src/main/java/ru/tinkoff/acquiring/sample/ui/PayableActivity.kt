@@ -17,7 +17,6 @@
 package ru.tinkoff.acquiring.sample.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -105,7 +104,6 @@ open class PayableActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             PAYMENT_REQUEST_CODE, DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode, data)
-            GOOGLE_PAY_REQUEST_CODE -> handleGooglePayResult(resultCode, data)
             YANDEX_PAY_REQUEST_CODE -> handleYandexPayResult(resultCode, data)
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
@@ -195,26 +193,6 @@ open class PayableActivity : AppCompatActivity() {
             yandexPayButtonContainer.visibility = View.GONE
             showErrorDialog()
         })
-    }
-
-    protected fun setupGooglePay() {
-        val googlePayButton = findViewById<View>(R.id.btn_google_pay)
-
-        val googleParams = GooglePayParams(TerminalsManager.selectedTerminalKey,
-                environment = SessionParams.GPAY_TEST_ENVIRONMENT)
-
-        val googlePayHelper = GooglePayHelper(googleParams)
-
-        googlePayHelper.initGooglePay(this) { ready ->
-            if (ready) {
-                googlePayButton.visibility = View.VISIBLE
-                googlePayButton.setOnClickListener {
-                    googlePayHelper.openGooglePay(this@PayableActivity, totalPrice, GOOGLE_PAY_REQUEST_CODE)
-                }
-            } else {
-                googlePayButton.visibility = View.GONE
-            }
-        }
     }
 
     private fun createPaymentOptions(): PaymentOptions {
@@ -310,24 +288,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleGooglePayResult(resultCode: Int, data: Intent?) {
-        val a = createPaymentOptions()
-        if (data != null && resultCode == Activity.RESULT_OK) {
-            val token = GooglePayHelper.getGooglePayToken(data)
-            if (token == null) {
-                showErrorDialog()
-            } else {
-                SampleApplication.paymentProcess = tinkoffAcquiring
-                        .initPayment(token, createPaymentOptions())
-                        .subscribe(paymentListener)
-                        .start()
-            }
-        } else if (resultCode != Activity.RESULT_CANCELED) {
-            showErrorDialog()
-        }
-    }
-
-    private fun showErrorDialog() {
+    protected fun showErrorDialog() {
         errorDialog = AlertDialog.Builder(this).apply {
             setTitle(R.string.error_title)
             setMessage(getString(R.string.error_message))
@@ -353,7 +314,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun createYandexButtonFragment(savedInstanceState: Bundle?,
+    open fun createYandexButtonFragment(savedInstanceState: Bundle?,
                                            paymentOptions: PaymentOptions,
                                            yandexPayData: YandexPayData,
                                            theme: Int?) : YandexButtonFragment {
@@ -400,13 +361,12 @@ open class PayableActivity : AppCompatActivity() {
 
         const val PAYMENT_REQUEST_CODE = 1
         const val DYNAMIC_QR_PAYMENT_REQUEST_CODE = 2
-        const val GOOGLE_PAY_REQUEST_CODE = 5
         const val YANDEX_PAY_REQUEST_CODE = 6
 
         private const val STATE_PAYMENT_AMOUNT = "payment_amount"
         private const val STATE_LOADING_SHOW = "loading_show"
         private const val STATE_ERROR_SHOW = "error_show"
 
-        private const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
+        const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
     }
 }

@@ -135,12 +135,6 @@
             android:adjustViewBounds="true"/>
 
         <include
-            layout="@layout/googlepay_button_white"
-            android:id="@+id/btn_google_pay"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <include
             layout="@layout/sbp_button_white"
             android:id="@+id/btn_fps_pay"
             android:visibility="visible"

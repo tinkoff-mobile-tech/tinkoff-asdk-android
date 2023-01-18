@@ -79,15 +79,6 @@
 
     </LinearLayout>
 
-    <include
-        layout="@layout/googlepay_button_black"
-        android:id="@+id/googlePayButton"
-        android:layout_height="48sp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="25dp"
-        android:layout_width="match_parent" />
-
     <Button
         style="?android:attr/borderlessButtonStyle"
         android:id="@+id/buttonPayOther"
