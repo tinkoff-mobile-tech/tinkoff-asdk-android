@@ -44,9 +44,6 @@ import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.BankList
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
@@ -73,17 +70,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             is SavedCards.Success -> selectedCardIdForDemo = result.selectedCardId
             is SavedCards.Error -> toast(result.error.message ?: getString(R.string.error_title))
             else -> Unit
-        }
-    }
-
-    private val chooseBank = registerForActivityResult(BankList.Contract) { result ->
-        when (result) {
-            is BankList.Success -> {
-                SbpHelper.openSbpDeeplink(result.deeplink, result.packageName, this)
-            }
-            is BankList.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is BankList.NoBanks -> SbpNoBanksStubActivity.show(this)
-            is BankList.Canceled -> toast("SBP canceled")
         }
     }
 
@@ -147,10 +133,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             }
             R.id.terminals -> {
                 startActivity(Intent(this, TerminalsActivity::class.java))
-                true
-            }
-            R.id.sbp_bank_list -> {
-                chooseBank.launch("https://qr.nspk.ru/test_link")
                 true
             }
             R.id.menu_action_about -> {

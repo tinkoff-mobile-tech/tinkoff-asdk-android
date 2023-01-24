@@ -89,7 +89,7 @@
             android:theme="@style/AcquiringTheme.Base"/>
 
         <activity
-            android:name=".redesign.sbp.ui.BankListActivity"
+            android:name=".redesign.sbp.ui.SbpPaymentActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme.Base"/>
 

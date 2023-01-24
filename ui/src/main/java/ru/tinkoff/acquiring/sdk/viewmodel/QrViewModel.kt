@@ -66,7 +66,7 @@ internal class QrViewModel(
 
         coroutine.call(request,
                 onSuccess = { response ->
-                    qrImageResult.value = response.data
+                    qrImageResult.value = response.data!!
                     changeScreenState(LoadedState)
                 })
     }
@@ -99,7 +99,7 @@ internal class QrViewModel(
                 onSuccess = {
                     when (type) {
                         DataTypeQr.IMAGE -> {
-                            qrImageResult.value = it.data
+                            qrImageResult.value = it.data!!
                             coroutine.runWithDelay(15000) {
                                 getState(paymentId)
                             }
@@ -118,7 +118,7 @@ internal class QrViewModel(
         coroutine.call(request,
                 onSuccess = { response ->
                     if (response.status == ResponseStatus.CONFIRMED || response.status == ResponseStatus.AUTHORIZED) {
-                        paymentResult.value = response.paymentId
+                        paymentResult.value = response.paymentId!!
                     } else {
                         coroutine.runWithDelay(5000) {
                             getState(paymentId)

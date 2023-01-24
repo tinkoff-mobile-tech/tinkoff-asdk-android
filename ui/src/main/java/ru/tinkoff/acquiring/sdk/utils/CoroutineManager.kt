@@ -26,37 +26,46 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * @author Mariya Chernyadieva
  */
-internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Unit,
-                                private val io: CoroutineDispatcher = IO,
-                                private val main : CoroutineDispatcher = Main) {
+internal class CoroutineManager(
+    private val exceptionHandler: (Throwable) -> Unit,
+    private val io: CoroutineDispatcher = IO,
+    private val main: CoroutineDispatcher = Main
+) {
 
-    constructor(io: CoroutineDispatcher = IO,
-                main : CoroutineDispatcher = Main) : this({}, io, main)
+    constructor(
+        io: CoroutineDispatcher = IO,
+        main: CoroutineDispatcher = Main
+    ) : this({}, io, main)
 
     private val job = SupervisorJob()
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable -> launchOnMain { exceptionHandler(throwable) } }
+    private val coroutineExceptionHandler =
+        CoroutineExceptionHandler { _, throwable -> launchOnMain { exceptionHandler(throwable) } }
     private val coroutineScope = CoroutineScope(Main + coroutineExceptionHandler + job)
     private val disposableSet = hashSetOf<Disposable>()
 
-    fun <R> call(request: Request<R>, onSuccess: (R) -> Unit, onFailure: ((Exception) -> Unit)? = null) {
+    fun <R> call(
+        request: Request<R>,
+        onSuccess: (R) -> Unit,
+        onFailure: ((Exception) -> Unit)? = null
+    ) {
         disposableSet.add(request)
 
         launchOnBackground {
             request.execute(
-                    onSuccess = {
-                        launchOnMain {
-                            onSuccess(it)
+                onSuccess = {
+                    launchOnMain {
+                        onSuccess(it)
+                    }
+                },
+                onFailure = {
+                    launchOnMain {
+                        if (onFailure == null) {
+                            exceptionHandler.invoke(it)
+                        } else {
+                            onFailure(it)
                         }
-                    },
-                    onFailure = {
-                        launchOnMain {
-                            if (onFailure == null) {
-                                exceptionHandler.invoke(it)
-                            } else {
-                                onFailure(it)
-                            }
-                        }
-                    })
+                    }
+                })
         }
     }
 
@@ -97,6 +106,21 @@ internal class CoroutineManager(private val exceptionHandler: (Throwable) -> Uni
     fun launchOnBackground(block: suspend CoroutineScope.() -> Unit): Job {
         return coroutineScope.launch(io) {
             block.invoke(this)
+        }
+    }
+
+    fun launchOnBackground(
+        block: suspend CoroutineScope.() -> Unit,
+        onError: (Throwable) -> Unit
+    ): Job {
+        return coroutineScope.launch(io) {
+            try {
+                block.invoke(this)
+            } catch (e: Throwable) {
+                if(e is CancellationException) {
+                    onError(e)
+                }
+            }
         }
     }
 }

@@ -33,7 +33,8 @@
 
             <item>
                 <shape android:shape="rectangle">
-                    <solid android:color="@android:color/transparent" />
+                    <corners android:radius="16dp" />
+                    <solid android:color="@color/acq_colorButtonSecondary" />
                 </shape>
             </item>
         </ripple>

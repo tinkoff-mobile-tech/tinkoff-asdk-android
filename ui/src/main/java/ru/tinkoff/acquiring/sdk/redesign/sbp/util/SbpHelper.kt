@@ -5,10 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
-import ru.tinkoff.acquiring.sdk.redesign.dialog.OpenBankProgressDialogFragment
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.BankListActivity
 
 object SbpHelper {
 
@@ -23,6 +19,7 @@ object SbpHelper {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(deeplink)
         intent.setPackage(packageName)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
     }
 

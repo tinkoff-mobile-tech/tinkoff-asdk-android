@@ -27,8 +27,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
+import ru.tinkoff.acquiring.sample.ui.MainActivity.Companion.toast
+import ru.tinkoff.acquiring.sample.utils.CombInitDelegate
 import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
@@ -42,6 +47,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
+import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -73,6 +79,16 @@ open class PayableActivity : AppCompatActivity() {
     private val orderId: String
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
+    private val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
+    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) { result ->
+        when (result) {
+            is TinkoffAcquiring.SbpScreen.Success -> {
+                toast("SBP Success")
+            }
+            is TinkoffAcquiring.SbpScreen.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is TinkoffAcquiring.SbpScreen.Canceled -> toast("SBP canceled")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,7 +161,29 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     protected fun startSbpPayment() {
-        tinkoffAcquiring.payWithSbp(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
+        lifecycleScope.launch {
+            val opt = createPaymentOptions()
+            opt.setTerminalParams(
+                TerminalsManager.selectedTerminal.terminalKey,
+                TerminalsManager.selectedTerminal.publicKey
+            )
+            if (settings.isEnableCombiInit) {
+                showProgressDialog()
+                runCatching { combInitDelegate.sendInit(opt).paymentId!! }
+                    .onFailure {
+                        hideProgressDialog()
+                        showErrorDialog()
+                    }
+                    .onSuccess {
+                        hideProgressDialog()
+                        tinkoffAcquiring.initSbpPaymentSession()
+                        spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(it,opt))
+                    }
+            } else {
+                tinkoffAcquiring.initSbpPaymentSession()
+                spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(opt))
+            }
+        }
     }
 
     protected fun setupTinkoffPay() {

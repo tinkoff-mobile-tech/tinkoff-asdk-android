@@ -75,7 +75,7 @@ object AcquiringApi {
     internal const val API_REQUEST_METHOD_POST = "POST"
     internal const val API_REQUEST_METHOD_GET = "GET"
 
-    internal const val JSON = "application/json"
+    const val JSON = "application/json"
     internal const val FORM_URL_ENCODED = "application/x-www-form-urlencoded"
     internal const val TIMEOUT = 40000L
 

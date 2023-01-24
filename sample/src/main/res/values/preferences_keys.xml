@@ -22,6 +22,7 @@
     <string name="acq_sp_recurrent_payment" translatable="false">acq_sp_recurrent_payment</string>
     <string name="acq_sp_android_pay" translatable="false">acq_sp_android_pay</string>
     <string name="acq_sp_yandex_pay" translatable="false">acq_sp_yandex_pay</string>
+    <string name="acq_sp_combi_init" translatable="false">acq_sp_combi_init</string>
     <string name="acq_sp_fps" translatable="false">acq_sp_fps</string>
     <string name="acq_sp_tinkoff_pay" translatable="false">acq_sp_tinkoff_pay</string>
     <string name="acq_sp_handle_cards_error" translatable="false">acq_sp_handle_cards_error</string>

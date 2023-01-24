@@ -81,7 +81,16 @@
     <string name="acq_commonsheet_processing_description">Это займет некоторое время</string>
     <string name="acq_commonsheet_paid_title">Оплачено</string>
     <string name="acq_commonsheet_failed_title">Не получилось оплатить</string>
+    <string name="acq_commonsheet_failed_description">Попробуйте другой способ оплаты</string>
+    <string name="acq_commonsheet_failed_primary_button">Выбрать другой способ оплаты</string>
     <string name="acq_commonsheet_clear_primarybutton">Понятно</string>
     <string name="acq_commonsheet_changemethod_primarybutton">Воспользуйтесь другим\nспособом оплаты</string>
+    <string name="acq_commonsheet_payment_waiting_title">Ждем оплату в приложении банка</string>
+    <string name="acq_commonsheet_payment_waiting_flat_button">Закрыть</string>
+
+    <string name="acq_commonsheet_timeout_failed_title">Время оплаты истекло</string>
+    <string name="acq_commonsheet_timeout_failed_description">Попробуйте оплатить снова или выберите другой способ оплаты</string>
+    <string name="acq_commonsheet_timeout_failed_primary_button">Оплатить еще раз</string>
+    <string name="acq_commonsheet_timeout_failed_flat_button">Другой способ оплаты</string>
 
 </resources>

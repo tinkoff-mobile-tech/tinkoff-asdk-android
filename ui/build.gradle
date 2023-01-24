@@ -58,6 +58,7 @@ dependencies {
 
     // threeds dependencies
     implementation "androidx.appcompat:appcompat:${appCompatVersion}"
+    implementation "androidx.fragment:fragment-ktx:1.5.5"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:${lifecycleRuntimeVersion}"
     implementation "androidx.constraintlayout:constraintlayout:${constraintLayoutVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
