@@ -77,7 +77,7 @@ class YandexPaymentProcess(
         sendToListener(YandexPaymentState.Stopped)
     }
 
-    private  fun sendToListener(state: YandexPaymentState?) {
+    private fun sendToListener(state: YandexPaymentState?) {
         this._state.update { state }
     }
 

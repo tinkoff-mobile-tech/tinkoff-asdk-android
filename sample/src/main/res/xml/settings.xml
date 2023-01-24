@@ -63,6 +63,12 @@
         android:title="@string/settings_title_yandex_pay"
         app:iconSpaceReserved="false" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/acq_sp_combi_init"
+        android:title="@string/settings_title_combi_init"
+        app:iconSpaceReserved="false" />
+
     <ListPreference
         android:defaultValue="@string/acq_sp_default_style_id"
         android:entries="@array/acq_sp_styles_keys"

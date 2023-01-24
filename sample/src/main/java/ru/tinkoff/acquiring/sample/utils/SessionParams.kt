@@ -63,6 +63,8 @@ data class SessionParams(
             SessionParams("1578942570730", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "SBP 3"),
             SessionParams("1661351612593", "45tnvz0kkyyz82mw", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "With token"),
             SessionParams("1661161705205", null, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "Without token"),
+            SessionParams("1584440932619", "dniplpm7ct3tg9e3", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "Sbp pay with token"),
+            SessionParams("1674123391307", "rpcmn7osqle5sj2r", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "new merchant")
         )
     }
 }
