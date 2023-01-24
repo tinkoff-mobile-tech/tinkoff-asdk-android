@@ -29,6 +29,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
+import ru.tinkoff.acquiring.sample.ui.MainActivity.Companion.toast
 import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
@@ -39,9 +40,14 @@ import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.paysources.SbpPay
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
+import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
+import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
+import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpResult
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -73,6 +79,19 @@ open class PayableActivity : AppCompatActivity() {
     private val orderId: String
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
+
+
+    private val spbPayment = registerForActivityResult(SbpResult.Contract) { result ->
+        when (result) {
+            is SbpResult.Success -> {
+                toast("SBP Success")
+            }
+            is SbpResult.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is SbpResult.NoBanks -> SbpNoBanksStubActivity.show(this)
+            is SbpResult.Canceled -> toast("SBP canceled")
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,7 +164,13 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     protected fun startSbpPayment() {
-        tinkoffAcquiring.payWithSbp(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
+        SbpPaymentProcess.init(SampleApplication.tinkoffAcquiring.sdk, packageManager)
+        spbPayment.launch(createPaymentOptions().apply {
+            this.setTerminalParams(
+                terminalKey = TerminalsManager.selectedTerminal.terminalKey,
+                publicKey = TerminalsManager.selectedTerminal.publicKey
+            )
+        })
     }
 
     protected fun setupTinkoffPay() {

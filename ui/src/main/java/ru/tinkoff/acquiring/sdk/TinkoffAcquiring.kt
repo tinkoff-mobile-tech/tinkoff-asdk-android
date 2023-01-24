@@ -33,7 +33,6 @@ import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
-import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
