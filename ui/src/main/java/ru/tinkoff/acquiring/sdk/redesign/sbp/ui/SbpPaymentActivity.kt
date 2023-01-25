@@ -122,7 +122,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                 viewModel.cancelPayment()
                 statusFragment.dismiss()
             }
-            is PaymentSheetStatus.Success -> finishWithResult(status.paymentId)
+            is PaymentSheetStatus.Success -> finishWithResult(status.resultData as Long)
             else -> Unit
         }
     }

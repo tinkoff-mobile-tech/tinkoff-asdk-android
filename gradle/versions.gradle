@@ -12,6 +12,7 @@ ext {
     dokkaVersion = '1.7.10'
 
     appCompatVersion = '1.4.0'
+    fragmentKtxVersion = '1.5.5'
     preferenceVersion = '1.1.1'
     lifecycleExtensionsVersion = '2.5.1'
     cardIoVersion = '5.5.1'

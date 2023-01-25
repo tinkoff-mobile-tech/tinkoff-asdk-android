@@ -40,7 +40,7 @@ sealed class PaymentSheetStatus(
         title: Int = R.string.acq_commonsheet_paid_title,
         subtitle: Int? = null,
         mainButton: Int? = R.string.acq_commonsheet_clear_primarybutton,
-        val paymentId: Long
+        val resultData: java.io.Serializable
     ) : PaymentSheetStatus(title, subtitle, mainButton)
 
     object Hide : PaymentSheetStatus(null)

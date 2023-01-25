@@ -103,6 +103,12 @@ internal class CoroutineManager(
         }
     }
 
+    suspend fun withMain(block: suspend CoroutineScope.() -> Unit) {
+        withContext(main) {
+            block.invoke(this)
+        }
+    }
+
     fun launchOnBackground(block: suspend CoroutineScope.() -> Unit): Job {
         return coroutineScope.launch(io) {
             block.invoke(this)
@@ -117,7 +123,7 @@ internal class CoroutineManager(
             try {
                 block.invoke(this)
             } catch (e: Throwable) {
-                if(e is CancellationException) {
+                if (e is CancellationException) {
                     onError(e)
                 }
             }

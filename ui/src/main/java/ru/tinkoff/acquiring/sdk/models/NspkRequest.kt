@@ -54,13 +54,4 @@ internal class NspkRequest : Request<NspkResponse> {
         })
         return deferred.await()
     }
-
-    suspend fun execute(): NspkResponse {
-        return suspendCoroutine { continuation ->
-            execute(
-                onSuccess = { continuation.resume(it) },
-                onFailure = { continuation.resumeWithException(it) }
-            )
-        }
-    }
 }

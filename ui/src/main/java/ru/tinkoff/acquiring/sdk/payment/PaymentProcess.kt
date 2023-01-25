@@ -308,9 +308,6 @@ internal constructor(
             onSuccess = { response ->
                 val data = mutableMapOf<String, String>()
                 if (response.serverTransId != null) {
-                    if (!response.threeDsMethodUrl.isNullOrEmpty()) {
-                        this.check3dsVersionResponse = response
-                    }
                     data.putAll(ThreeDsHelper.CollectData(context, response))
                 }
 

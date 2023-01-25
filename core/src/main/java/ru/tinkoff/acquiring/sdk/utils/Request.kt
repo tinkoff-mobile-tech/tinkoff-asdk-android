@@ -16,10 +16,18 @@
 
 package ru.tinkoff.acquiring.sdk.utils
 
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
 /**
  * @author Mariya Chernyadieva
  */
 interface Request<R> : Disposable {
 
     fun execute(onSuccess: (R) -> Unit, onFailure: (Exception) -> Unit)
+
+    suspend fun execute(): R = suspendCoroutine { cttn ->
+        execute(onSuccess = { cttn.resume(it) }, onFailure = { cttn.resumeWithException(it) })
+    }
 }
