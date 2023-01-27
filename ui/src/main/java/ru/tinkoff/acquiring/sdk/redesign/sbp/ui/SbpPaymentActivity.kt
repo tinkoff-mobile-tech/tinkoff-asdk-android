@@ -19,7 +19,6 @@ package ru.tinkoff.acquiring.sdk.redesign.sbp.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -115,14 +114,14 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         finish()
     }
 
-    override fun onClose(status: PaymentSheetStatus) {
+    override fun onClose(status: PaymentStatusSheetState) {
         when (status) {
-            is PaymentSheetStatus.Error -> finishWithError(status.throwable)
-            is PaymentSheetStatus.Progress -> {
+            is PaymentStatusSheetState.Error -> finishWithError(status.throwable)
+            is PaymentStatusSheetState.Progress -> {
                 viewModel.cancelPayment()
                 statusFragment.dismiss()
             }
-            is PaymentSheetStatus.Success -> finishWithResult(status.resultData as Long)
+            is PaymentStatusSheetState.Success -> finishWithResult(status.resultData as Long)
             else -> Unit
         }
     }
@@ -182,10 +181,10 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         viewModel.paymentStateFlow.collect {
             statusFragment.state = it
             when (it) {
-                is PaymentSheetStatus.Hide -> if (statusFragment.isAdded) {
+                is PaymentStatusSheetState.Hide -> if (statusFragment.isAdded) {
                     statusFragment.dismiss()
                 }
-                is PaymentSheetStatus.NotYet -> Unit
+                is PaymentStatusSheetState.NotYet -> Unit
                 else -> if (statusFragment.isAdded.not()) {
                     statusFragment.show(supportFragmentManager, null)
                 }

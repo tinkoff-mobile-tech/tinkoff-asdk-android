@@ -10,16 +10,27 @@ import kotlinx.coroutines.flow.update
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
-import ru.tinkoff.acquiring.sdk.utils.getExtra
 
 internal class PaymentByCardViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val paymentByCardProcess: PaymentByCardProcess
 ) : ViewModel() {
+
+    private val startData =
+        savedStateHandle.get<PaymentByCard.StartData>(PaymentByCard.Contract.EXTRA_SAVED_CARDS)!!
+
     val paymentProcessState = paymentByCardProcess.state
 
     val state: MutableStateFlow<State> =
-        MutableStateFlow(State(paymentOptions = savedStateHandle.getExtra()))
+        MutableStateFlow(
+            State(
+                isValidEmail = startData.paymentOptions.customer.email.isNullOrBlank().not(),
+                sendReceipt = startData.paymentOptions.customer.email.isNullOrBlank().not(),
+                email = startData.paymentOptions.customer.email,
+                paymentOptions = startData.paymentOptions,
+                hasSavedCard = startData.list.isNotEmpty()
+            )
+        )
 
     fun setCardDate(
         cardNumber: String? = null,
@@ -35,11 +46,9 @@ internal class PaymentByCardViewModel(
         )
     }
 
-    fun rememberCardChange(isSelect: Boolean) = state.update {
-        it.copy(rememberCard = isSelect)
-    }
+    fun setCvc(cvc: String) = state.update { it.copy(cvc = cvc) }
 
-    fun saveEmailChange(isSelect: Boolean) = state.update {
+    fun sendReceiptChange(isSelect: Boolean) = state.update {
         it.copy(sendReceipt = isSelect)
     }
 
@@ -48,7 +57,9 @@ internal class PaymentByCardViewModel(
     }
 
     fun pay() {
-        paymentByCardProcess.start(state.value.cardData, state.value.paymentOptions)
+        val _state = state.value
+        val emailForPayment = if (_state.sendReceipt) _state.email else null
+        paymentByCardProcess.start(_state.cardData, _state.paymentOptions, emailForPayment)
     }
 
     fun cancelPayment() {
@@ -60,10 +71,11 @@ internal class PaymentByCardViewModel(
         private val cvc: String? = null,
         private val dateExpired: String? = null,
         private val isValidCardData: Boolean = false,
-        private val rememberCard: Boolean = false,
-        private val email: String? = null,
         private val isValidEmail: Boolean = false,
-        private val sendReceipt: Boolean = false,
+
+        val hasSavedCard: Boolean = false,
+        val sendReceipt: Boolean = false,
+        val email: String? = null,
 
         val paymentOptions: PaymentOptions,
     ) {
@@ -86,7 +98,6 @@ internal class PaymentByCardViewModel(
                     validate()
                 }
             }
-
     }
 
     companion object {

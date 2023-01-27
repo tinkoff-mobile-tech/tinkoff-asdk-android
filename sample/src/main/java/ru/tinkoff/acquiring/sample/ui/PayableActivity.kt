@@ -40,12 +40,10 @@ import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.paysources.SbpPay
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCardResult
+import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
 import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpResult
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
@@ -56,6 +54,7 @@ import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 /**
@@ -90,15 +89,15 @@ open class PayableActivity : AppCompatActivity() {
             is SbpResult.Canceled -> toast("SBP canceled")
         }
     }
-    private val byCardPayment = registerForActivityResult(PaymentByCardResult.Contract) { result ->
+    private val byCardPayment = registerForActivityResult(PaymentByCard.Contract) { result ->
         when (result) {
-            is PaymentByCardResult.Success -> {
+            is PaymentByCard.Success -> {
                 toast("Payment Success")
             }
-            is PaymentByCardResult.Error -> toast(
+            is PaymentByCard.Error -> toast(
                 result.error.message ?: getString(R.string.error_title)
             )
-            is PaymentByCardResult.Canceled -> toast("Payment canceled")
+            is PaymentByCard.Canceled -> toast("Payment canceled")
         }
     }
 
@@ -178,7 +177,7 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        byCardPayment.launch(options)
+        byCardPayment.launch(PaymentByCard.StartData(options, ArrayList()))
     }
 
     protected fun openDynamicQrScreen() {

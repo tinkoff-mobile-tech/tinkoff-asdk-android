@@ -6,7 +6,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
-import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentSheetStatus
+import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpStateMapper
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
@@ -20,7 +20,7 @@ internal class SbpPaymentViewModel(
 ) : ViewModel() {
 
     val stateUiFlow = MutableStateFlow<SpbBankListState>(SpbBankListState.Shimmer)
-    val paymentStateFlow = MutableStateFlow<PaymentSheetStatus>(PaymentSheetStatus.NotYet)
+    val paymentStateFlow = MutableStateFlow<PaymentStatusSheetState>(PaymentStatusSheetState.NotYet)
 
     init {
         manager.launchOnBackground {
