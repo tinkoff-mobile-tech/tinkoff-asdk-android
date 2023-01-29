@@ -16,7 +16,8 @@ import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
  * Created by Ivan Golovachev
  */
 class CardsListAdapter(
-    private val onDeleteClick: (CardItemUiModel) -> Unit
+    private val onDeleteClick: (CardItemUiModel) -> Unit,
+    private val onChooseClick: (CardItemUiModel) -> Unit
 ) : RecyclerView.Adapter<CardsListAdapter.CardViewHolder>() {
 
     private val cards = mutableListOf<CardItemUiModel>()
@@ -45,7 +46,7 @@ class CardsListAdapter(
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(cards[position], onDeleteClick)
+        holder.bind(cards[position], onDeleteClick, onChooseClick)
     }
 
     override fun onBindViewHolder(
@@ -72,10 +73,13 @@ class CardsListAdapter(
             itemView.findViewById<TextView>(R.id.acq_card_list_item_masked_name)
         private val cardDeleteIcon =
             itemView.findViewById<ImageView>(R.id.acq_card_list_item_delete)
+        private val cardChooseIcon =
+            itemView.findViewById<ImageView>(R.id.acq_card_list_item_choose)
 
         fun bind(
             card: CardItemUiModel,
-            onDeleteClick: (CardItemUiModel) -> Unit
+            onDeleteClick: (CardItemUiModel) -> Unit,
+            onChooseClick: (CardItemUiModel) -> Unit
         ) {
             cardLogo.setImageResource(CardLogoProvider.getCardLogo(card.pan))
             cardNameView.text = itemView.context.getString(
@@ -84,11 +88,21 @@ class CardsListAdapter(
                 card.tail
             )
             bindDeleteVisibility(card.showDelete)
+            bindChooseVisibility(card.showChoose)
             cardDeleteIcon.setOnClickListener { onDeleteClick(card) }
+            itemView.setOnClickListener {
+                onChooseClick(card)
+            }
         }
 
         fun bindDeleteVisibility(showDelete: Boolean) {
             cardDeleteIcon.isVisible = showDelete
+            cardChooseIcon.isVisible = false
+        }
+
+        fun bindChooseVisibility(showChosen: Boolean) {
+            cardDeleteIcon.isVisible = false
+            cardChooseIcon.isVisible = showChosen
         }
     }
 

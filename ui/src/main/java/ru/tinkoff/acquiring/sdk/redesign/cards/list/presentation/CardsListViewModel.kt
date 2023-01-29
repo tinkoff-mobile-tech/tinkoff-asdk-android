@@ -1,12 +1,17 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation
 
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
+import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListEvent
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListMode
@@ -15,16 +20,21 @@ import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
+import ru.tinkoff.acquiring.sdk.utils.getExtra
 
 /**
  * Created by Ivan Golovachev
  */
 internal class CardsListViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val sdk: AcquiringSdk,
     private val connectionChecker: ConnectionChecker,
     private val bankCaptionProvider: BankCaptionProvider,
     private val manager: CoroutineManager = CoroutineManager()
 ) : ViewModel() {
+
+    private val selectedCardId =
+        savedStateHandle.getExtra<SavedCardsOptions>().features.selectedCardId
 
     private var deleteJob: Job? = null
 
@@ -109,19 +119,32 @@ internal class CardsListViewModel(
         }
     }
 
+    fun chooseCard(model: CardItemUiModel) {
+        if(stateFlow.value.mode === CardListMode.CHOOSE) {
+            eventFlow.value = CardListEvent.CloseScreen(model.card)
+        }
+    }
+
     fun onBackPressed() {
-        if(eventFlow.value !is CardListEvent.RemoveCardProgress) {
-            eventFlow.value = CardListEvent.CloseScreen
+        if (eventFlow.value !is CardListEvent.RemoveCardProgress) {
+            val state = stateFlow.value as CardsListState.Content
+            val card = state.cards.firstOrNull { it.id == selectedCardId }
+            eventFlow.value = CardListEvent.CloseScreen(card?.card)
         }
     }
 
     private fun handleGetCardListResponse(it: GetCardListResponse, recurrentOnly: Boolean) {
         try {
             val uiCards = filterCards(it.cards, recurrentOnly)
+            val mode = if (selectedCardId != null) {
+                CardListMode.CHOOSE
+            } else {
+                CardListMode.ADD
+            }
             stateFlow.value = if (uiCards.isEmpty()) {
                 CardsListState.Empty
             } else {
-                CardsListState.Content(CardListMode.ADD, false, uiCards)
+                CardsListState.Content(mode, false, uiCards)
             }
         } catch (e: Exception) {
             handleGetCardListError(e)
@@ -139,7 +162,11 @@ internal class CardsListViewModel(
 
         return activeCards.map {
             val cardNumber = checkNotNull(it.pan)
-            CardItemUiModel(card = it, bankName = bankCaptionProvider(cardNumber))
+            CardItemUiModel(
+                card = it,
+                bankName = bankCaptionProvider(cardNumber),
+                showChoose = selectedCardId == it.cardId
+            )
         }
     }
 
@@ -164,5 +191,24 @@ internal class CardsListViewModel(
     override fun onCleared() {
         manager.cancelAll()
         super.onCleared()
+    }
+
+    companion object {
+        fun factory(
+            sdk: AcquiringSdk,
+            connectionChecker: ConnectionChecker,
+            bankCaptionProvider: BankCaptionProvider,
+            manager: CoroutineManager = CoroutineManager()
+        ) = viewModelFactory {
+            initializer {
+                CardsListViewModel(
+                    createSavedStateHandle(),
+                    sdk,
+                    connectionChecker,
+                    bankCaptionProvider,
+                    manager
+                )
+            }
+        }
     }
 }

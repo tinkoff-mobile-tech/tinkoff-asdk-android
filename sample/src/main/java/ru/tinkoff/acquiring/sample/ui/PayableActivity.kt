@@ -41,6 +41,7 @@ import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.*
+import ru.tinkoff.acquiring.sdk.redesign.mainform.MainPaymentFormStub
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
 import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpResult
@@ -87,17 +88,6 @@ open class PayableActivity : AppCompatActivity() {
             is SbpResult.Error -> toast(result.error.message ?: getString(R.string.error_title))
             is SbpResult.NoBanks -> SbpNoBanksStubActivity.show(this)
             is SbpResult.Canceled -> toast("SBP canceled")
-        }
-    }
-    private val byCardPayment = registerForActivityResult(PaymentByCard.Contract) { result ->
-        when (result) {
-            is PaymentByCard.Success -> {
-                toast("Payment Success")
-            }
-            is PaymentByCard.Error -> toast(
-                result.error.message ?: getString(R.string.error_title)
-            )
-            is PaymentByCard.Canceled -> toast("Payment canceled")
         }
     }
 
@@ -177,7 +167,7 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        byCardPayment.launch(PaymentByCard.StartData(options, ArrayList()))
+        startActivity(MainPaymentFormStub.intent(options, this))
     }
 
     protected fun openDynamicQrScreen() {

@@ -548,9 +548,15 @@ class TinkoffAcquiring(
     object ChoseCard {
 
         sealed class Result
-        class Success(val card: CardData) : Result()
+        class Success(val card: Card) : Result()
         class Canceled : Result()
         class Error(val error: Throwable) : Result()
+
+        fun createSuccessIntent(card: Card): Intent {
+            val intent = Intent()
+            intent.putExtra(EXTRA_CHOSEN_CARD, card)
+            return intent
+        }
 
         object Contract : ActivityResultContract<SavedCardsOptions, Result>() {
 
@@ -561,7 +567,7 @@ class TinkoffAcquiring(
 
             override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
                 AppCompatActivity.RESULT_OK -> Success(
-                    intent?.getSerializableExtra(EXTRA_CHOSEN_CARD) as CardData
+                    intent?.getSerializableExtra(EXTRA_CHOSEN_CARD) as Card
                 )
                 RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
                 else -> Canceled()

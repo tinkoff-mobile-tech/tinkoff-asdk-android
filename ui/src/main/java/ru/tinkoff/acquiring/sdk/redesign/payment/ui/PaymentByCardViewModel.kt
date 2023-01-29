@@ -1,23 +1,32 @@
 package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
+import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
 
 internal class PaymentByCardViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val paymentByCardProcess: PaymentByCardProcess
+    private val paymentByCardProcess: PaymentByCardProcess,
+    private val bankCaptionProvider: BankCaptionProvider,
 ) : ViewModel() {
 
     private val startData =
         savedStateHandle.get<PaymentByCard.StartData>(PaymentByCard.Contract.EXTRA_SAVED_CARDS)!!
+    private val chosenCard = startData.list.firstOrNull { it.status == CardStatus.ACTIVE }?.let {
+        CardChosenModel(it, bankCaptionProvider(it.pan!!))
+    }
 
     val paymentProcessState = paymentByCardProcess.state
 
@@ -28,7 +37,7 @@ internal class PaymentByCardViewModel(
                 sendReceipt = startData.paymentOptions.customer.email.isNullOrBlank().not(),
                 email = startData.paymentOptions.customer.email,
                 paymentOptions = startData.paymentOptions,
-                hasSavedCard = startData.list.isNotEmpty()
+                chosenCard = chosenCard
             )
         )
 
@@ -36,17 +45,28 @@ internal class PaymentByCardViewModel(
         cardNumber: String? = null,
         cvc: String? = null,
         dateExpired: String? = null,
-        isValidCardData: Boolean = false
+        isValidCardData: Boolean = false,
     ) = state.update {
         it.copy(
             cardNumber = cardNumber,
             cvc = cvc,
             dateExpired = dateExpired,
-            isValidCardData = isValidCardData
+            isValidCardData = isValidCardData,
         )
     }
 
-    fun setCvc(cvc: String) = state.update { it.copy(cvc = cvc) }
+    fun setSavedCard(card: Card) = state.update {
+        it.copy(
+            cardNumber = card.pan,
+            cvc = null,
+            dateExpired = card.expDate,
+            isValidCardData = false,
+            chosenCard = CardChosenModel(card, bankCaptionProvider(card.pan!!))
+        )
+    }
+
+    fun setCvc(cvc: String, isValid: Boolean) =
+        state.update { it.copy(cvc = cvc, isValidCardData = isValid) }
 
     fun sendReceiptChange(isSelect: Boolean) = state.update {
         it.copy(sendReceipt = isSelect)
@@ -72,11 +92,9 @@ internal class PaymentByCardViewModel(
         private val dateExpired: String? = null,
         private val isValidCardData: Boolean = false,
         private val isValidEmail: Boolean = false,
-
-        val hasSavedCard: Boolean = false,
+        val chosenCard: CardChosenModel? = null,
         val sendReceipt: Boolean = false,
         val email: String? = null,
-
         val paymentOptions: PaymentOptions,
     ) {
 
@@ -101,9 +119,12 @@ internal class PaymentByCardViewModel(
     }
 
     companion object {
-        fun factory() = viewModelFactory {
+        fun factory(application: Application) = viewModelFactory {
             initializer {
-                PaymentByCardViewModel(createSavedStateHandle(), PaymentByCardProcess.get())
+                PaymentByCardViewModel(
+                    createSavedStateHandle(), PaymentByCardProcess.get(),
+                    BankCaptionResourceProvider(application)
+                )
             }
         }
     }

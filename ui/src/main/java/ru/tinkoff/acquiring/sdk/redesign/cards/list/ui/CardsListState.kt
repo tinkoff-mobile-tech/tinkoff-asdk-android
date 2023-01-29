@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 
 /**
@@ -27,9 +28,9 @@ sealed class CardListEvent {
 
     object ShowError : CardListEvent()
 
-    object CloseScreen : CardListEvent()
+    class CloseScreen(val selectedCard: Card?) : CardListEvent()
 }
 
 enum class CardListMode {
-    ADD, DELETE, STUB
+    ADD, DELETE, STUB, CHOOSE
 }

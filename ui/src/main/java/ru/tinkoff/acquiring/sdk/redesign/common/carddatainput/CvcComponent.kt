@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.carddatainput
 
 import android.text.method.PasswordTransformationMethod
+import android.view.View
 import android.view.ViewGroup
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
@@ -18,10 +19,10 @@ import ru.tinkoff.decoro.watchers.MaskFormatWatcher
 class CvcComponent(
     val root: ViewGroup,
     val onInputComplete: (String) -> Unit = {},
-    val onDataChange: (Boolean) -> Unit = {}
+    val onDataChange: (Boolean, String) -> Unit = { _, _ ->}
 ) : UiComponent<String?> {
 
-    private val cvcInput: AcqTextFieldView = root.findViewById(R.id.card_number_input)
+    private val cvcInput: AcqTextFieldView = root.findViewById(R.id.cvc_input)
     val cvc get() = cvcInput.text.orEmpty()
 
     init {
@@ -33,29 +34,30 @@ class CvcComponent(
                 errorHighlighted = false
 
                 val cvc = cvc
-                if (cvc.length >= CVC_MASK.length) {
-                    if (CardValidator.validateSecurityCode(cvc)) {
+                if (cvc.length > CVC_MASK.length) {
+                    if (validate(cvc)) {
                         cvcInput.clearViewFocus()
-                        if (validate()) {
-                            onInputComplete(cvc)
-                        }
+                        onInputComplete(cvc)
                     } else {
                         errorHighlighted = true
                     }
                 }
 
-                onDataChange(validate())
+                onDataChange(validate(cvc), cvc)
+            }
+
+            editText.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
+                if (hasFocus.not()) {
+                    val isValid = validate(cvc)
+                    errorHighlighted = isValid.not()
+                    onDataChange(isValid, cvc)
+                }
             }
         }
     }
 
-    fun validate(): Boolean {
-        var result = true
-        if (CardValidator.validateSecurityCode(cvc)) {
-            cvcInput.errorHighlighted = true
-            result = false
-        }
-        return result
+    private fun validate(code: String): Boolean {
+        return CardValidator.validateSecurityCode(code)
     }
 
     override fun render(state: String?) {
@@ -67,6 +69,8 @@ class CvcComponent(
     }
 
     companion object {
+
+        const val EXPIRY_DATE_MASK = "__/__"
         const val CVC_MASK = "___"
         fun createCvcMask(): MaskImpl = MaskImpl
             .createTerminated(UnderscoreDigitSlotsParser().parseSlots(CVC_MASK))

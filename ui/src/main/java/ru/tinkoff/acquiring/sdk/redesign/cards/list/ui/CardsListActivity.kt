@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
+import androidx.activity.viewModels
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.AttachCard
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
@@ -31,7 +33,13 @@ import ru.tinkoff.acquiring.sdk.utils.lazyView
 
 internal class CardsListActivity : TransparentActivity() {
 
-    private lateinit var viewModel: CardsListViewModel
+    private val viewModel: CardsListViewModel by viewModels {
+        CardsListViewModel.factory(
+            intent.getSdk(application).sdk,
+            ConnectionChecker(application),
+            BankCaptionResourceProvider(application)
+        )
+    }
     private lateinit var savedCardsOptions: SavedCardsOptions
 
     private var mode = CardListMode.STUB
@@ -82,8 +90,6 @@ internal class CardsListActivity : TransparentActivity() {
         super.onCreate(savedInstanceState)
         savedCardsOptions = options as SavedCardsOptions
         setContentView(R.layout.acq_activity_card_list)
-
-        viewModel = provideViewModel(CardsListViewModel::class.java) as CardsListViewModel
         viewModel.loadData(
             savedCardsOptions.customer.customerKey,
             options.features.showOnlyRecurrentCards
@@ -95,6 +101,7 @@ internal class CardsListActivity : TransparentActivity() {
 
         // todo
         // options.features.selectedCardId
+        selectedCardId = intent.getOptions<SavedCardsOptions>().features.selectedCardId
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -118,6 +125,11 @@ internal class CardsListActivity : TransparentActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        viewModel.onBackPressed()
+        return true
+    }
+
     override fun onBackPressed() {
         viewModel.onBackPressed()
     }
@@ -130,9 +142,10 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun initViews() {
-        cardsListAdapter = CardsListAdapter(onDeleteClick = {
-            viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!)
-        })
+        cardsListAdapter = CardsListAdapter(
+            onDeleteClick = { viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!) },
+            onChooseClick = { viewModel.chooseCard(it) }
+        )
         recyclerView.adapter = cardsListAdapter
         addNewCard.setOnClickListener { startAttachCard() }
     }
@@ -247,7 +260,11 @@ internal class CardsListActivity : TransparentActivity() {
                         )
                     }
                     is CardListEvent.CloseScreen -> {
-                        finish()
+                        if (it.selectedCard != null) {
+                            finishWithCard(it.selectedCard)
+                        } else {
+                            finish()
+                        }
                     }
                 }
             }
@@ -279,9 +296,15 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     override fun finish() {
+
+        if (selectedCardId == null) {
+            setResult(Activity.RESULT_CANCELED, intent)
+            super.finish()
+        }
+
         if (!isErrorOccurred) {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, selectedCardId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_CHOSEN_CARD, selectedCardId)
             intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, isCardListChanged)
             setResult(Activity.RESULT_OK, intent)
         }
@@ -300,5 +323,10 @@ internal class CardsListActivity : TransparentActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             snackBarHelper.hide()
         }
+    }
+
+    private fun finishWithCard(card: Card) {
+        setResult(Activity.RESULT_OK, TinkoffAcquiring.ChoseCard.createSuccessIntent(card))
+        super.finish()
     }
 }

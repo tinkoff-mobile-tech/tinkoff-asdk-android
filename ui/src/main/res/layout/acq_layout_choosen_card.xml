@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="20dp">
 
@@ -43,22 +44,21 @@
 
         <TextView
             android:id="@+id/acq_card_change"
-            style="@style/AcqEditText"
             android:layout_width="0dp"
-            android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="14dp"
             android:layout_weight="1"
             android:fontFamily="@font/roboto_regular"
+            android:text="@string/acq_chosen_card_change"
             android:textColor="?attr/colorAccent"
             android:textSize="@dimen/acq_small_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/cvc_container"
             app:layout_constraintStart_toEndOf="@+id/acq_card_choosen_item_logo"
-            app:layout_constraintTop_toBottomOf="@+id/acq_card_choosen_item"
-            tools:text="Сменить карту" />
+            app:layout_constraintTop_toBottomOf="@+id/acq_card_choosen_item" />
 
         <FrameLayout
             android:id="@+id/cvc_container"

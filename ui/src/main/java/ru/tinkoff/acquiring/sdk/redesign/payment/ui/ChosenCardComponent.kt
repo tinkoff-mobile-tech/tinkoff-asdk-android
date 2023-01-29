@@ -15,22 +15,26 @@ import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
 internal class ChosenCardComponent(
     private val root: ViewGroup,
     private val onChangeCard: (CardChosenModel) -> Unit = {},
-    private val onCvcCompleted: (String) -> Unit = {}
+    private val onCvcCompleted: (String, Boolean) -> Unit = { _, _ -> }
 ) : UiComponent<CardChosenModel> {
 
     private val cardLogo: ImageView = root.findViewById(R.id.acq_card_choosen_item_logo)
     private val cardName: TextView = root.findViewById(R.id.acq_card_choosen_item)
     private val cardChange: TextView = root.findViewById(R.id.acq_card_change)
     private val cardCvc: CvcComponent = CvcComponent(
-        root.findViewById(R.id.cvc_container), onInputComplete = onCvcCompleted
+        root.findViewById(R.id.cvc_container), onDataChange = { b, s ->
+            onCvcCompleted(s, b)
+        }
     )
 
     override fun render(state: CardChosenModel) = with(state) {
         cardLogo.setImageResource(CardLogoProvider.getCardLogo(pan))
         cardName.text = root.context.getString(
-            R.string.acq_cardlist_bankname, bankName, tail
+            R.string.acq_cardlist_bankname, bankName.orEmpty(), tail
         )
-        cardChange.setOnClickListener { onChangeCard(state) }
+        root.setOnClickListener { onChangeCard(state) }
+        cardCvc.root.setOnClickListener {
+            cardCvc.requestViewFocus()
+        }
     }
-
 }

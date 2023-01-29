@@ -96,5 +96,6 @@
     <string name="acq_commonsheet_timeout_failed_description">Попробуйте оплатить снова или выберите другой способ оплаты</string>
     <string name="acq_commonsheet_timeout_failed_primary_button">Оплатить еще раз</string>
     <string name="acq_commonsheet_timeout_failed_flat_button">Другой способ оплаты</string>
+    <string name="acq_chosen_card_change">Сменить карту</string>
 
 </resources>

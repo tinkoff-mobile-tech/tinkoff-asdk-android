@@ -4,7 +4,7 @@
     android:id="@+id/cvc_input"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:inputType="textEmailAddress"
+    android:inputType="number"
     android:minWidth="64dp"
     android:minHeight="48dp"
     android:gravity="center"

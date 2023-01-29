@@ -180,7 +180,6 @@ class PaymentByCardProcess internal constructor(
     }
 }
 
-
 sealed interface PaymentByCardState {
     object Created : PaymentByCardState
 
