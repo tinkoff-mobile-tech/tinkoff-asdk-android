@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
+import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
@@ -33,6 +35,7 @@ internal class PaymentByCardViewModel(
     val state: MutableStateFlow<State> =
         MutableStateFlow(
             State(
+                cardId = chosenCard?.id,
                 isValidEmail = startData.paymentOptions.customer.email.isNullOrBlank().not(),
                 sendReceipt = startData.paymentOptions.customer.email.isNullOrBlank().not(),
                 email = startData.paymentOptions.customer.email,
@@ -41,22 +44,30 @@ internal class PaymentByCardViewModel(
             )
         )
 
+    // ручной ввод карты
     fun setCardDate(
         cardNumber: String? = null,
         cvc: String? = null,
         dateExpired: String? = null,
         isValidCardData: Boolean = false,
-    ) = state.update {
-        it.copy(
-            cardNumber = cardNumber,
-            cvc = cvc,
-            dateExpired = dateExpired,
-            isValidCardData = isValidCardData,
-        )
+    ) {
+        if (chosenCard != null) return
+
+        state.update {
+            it.copy(
+                cardNumber = cardNumber,
+                cvc = cvc,
+                dateExpired = dateExpired,
+                isValidCardData = isValidCardData,
+                cardId = null
+            )
+        }
     }
 
+    // ввод сохраненной карты
     fun setSavedCard(card: Card) = state.update {
         it.copy(
+            cardId = card.cardId,
             cardNumber = card.pan,
             cvc = null,
             dateExpired = card.expDate,
@@ -65,6 +76,7 @@ internal class PaymentByCardViewModel(
         )
     }
 
+    // ввод кода сохраненной карты
     fun setCvc(cvc: String, isValid: Boolean) =
         state.update { it.copy(cvc = cvc, isValidCardData = isValid) }
 
@@ -79,7 +91,8 @@ internal class PaymentByCardViewModel(
     fun pay() {
         val _state = state.value
         val emailForPayment = if (_state.sendReceipt) _state.email else null
-        paymentByCardProcess.start(_state.cardData, _state.paymentOptions, emailForPayment)
+
+        paymentByCardProcess.start(_state.cardSource, _state.paymentOptions, emailForPayment)
     }
 
     fun cancelPayment() {
@@ -87,6 +100,7 @@ internal class PaymentByCardViewModel(
     }
 
     data class State(
+        private val cardId: String? = null,
         private val cardNumber: String? = null,
         private val cvc: String? = null,
         private val dateExpired: String? = null,
@@ -106,15 +120,12 @@ internal class PaymentByCardViewModel(
 
         val amount = paymentOptions.order.amount.toHumanReadableString()
 
-        val cardData: CardData
+        val cardSource: CardSource
             get() {
-                return CardData(
-                    pan = cardNumber!!,
-                    expiryDate = dateExpired!!,
-                    securityCode = cvc!!
-                ).apply {
-                    validate()
-                }
+                return if (cardId != null)
+                    AttachedCard(cardId, cvc)
+                else
+                    CardData(cardNumber!!, dateExpired!!, cvc!!)
             }
     }
 
