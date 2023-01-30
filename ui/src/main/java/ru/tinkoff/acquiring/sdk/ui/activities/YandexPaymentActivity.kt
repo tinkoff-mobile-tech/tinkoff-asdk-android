@@ -48,8 +48,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
         initViews()
         bottomContainer.isVisible = false
 
-        paymentViewModel =
-            provideViewModel(YandexPaymentViewModel::class.java) as YandexPaymentViewModel
+        paymentViewModel = provideYandexViewModelFactory().create(YandexPaymentViewModel::class.java)
         observeLiveData()
 
         if (savedInstanceState == null) {

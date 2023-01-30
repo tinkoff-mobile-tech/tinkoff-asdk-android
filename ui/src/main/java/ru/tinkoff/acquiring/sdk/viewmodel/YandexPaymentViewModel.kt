@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
@@ -17,7 +19,6 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
  * Created by i.golovachev
@@ -90,6 +91,18 @@ internal class YandexPaymentViewModel(
                         else -> Unit
                     }
                 }
+        }
+    }
+
+    companion object {
+        fun factory(
+            application: Application,
+            handleErrorsInSdk: Boolean,
+            sdk: AcquiringSdk,
+        ) = viewModelFactory {
+            initializer {
+                YandexPaymentViewModel(application,handleErrorsInSdk,sdk, YandexPaymentProcess.instance)
+            }
         }
     }
 }
