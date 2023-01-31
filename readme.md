@@ -52,7 +52,9 @@ implementation 'ru.tinkoff.acquiring:cardio:$latestVersion'
 * Terminal key
 * Public key
 
-Которые выдаются после подключения к [Интернет-Эквайрингу][acquiring].
+Которые выдаются после подключения к [Интернет-Эквайрингу][acquiring]
+
+Подробнее о настройке Личного кабинета можно прочитать [тут](./PersonalAccountSettings.md)
 
 SDK позволяет настроить режим работы (debug/prod). По умолчанию - режим prod.
 Чтобы настроить debug режим, установите параметры:
