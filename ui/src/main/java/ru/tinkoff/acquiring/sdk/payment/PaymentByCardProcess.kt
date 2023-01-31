@@ -104,7 +104,7 @@ class PaymentByCardProcess internal constructor(
                 return
             }
         }
-
+        delay(12000)
         callFinishAuthorizeRequest(
             paymentId,
             paymentSource,

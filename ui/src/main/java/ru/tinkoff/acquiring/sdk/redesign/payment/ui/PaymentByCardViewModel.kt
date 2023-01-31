@@ -59,7 +59,7 @@ internal class PaymentByCardViewModel(
                 cvc = cvc,
                 dateExpired = dateExpired,
                 isValidCardData = isValidCardData,
-                cardId = null
+                cardId = null,
             )
         }
     }
@@ -79,6 +79,18 @@ internal class PaymentByCardViewModel(
     // ввод кода сохраненной карты
     fun setCvc(cvc: String, isValid: Boolean) =
         state.update { it.copy(cvc = cvc, isValidCardData = isValid) }
+
+    fun setInputNewCard() = state.update {
+        it.copy(
+            cardId = null,
+            cardNumber = null,
+            cvc = null,
+            dateExpired = null,
+            isValidCardData = false,
+            isValidEmail = false,
+            chosenCard = null
+        )
+    }
 
     fun sendReceiptChange(isSelect: Boolean) = state.update {
         it.copy(sendReceipt = isSelect)

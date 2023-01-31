@@ -56,6 +56,9 @@ class SettingsSdkManager(private val context: Context) {
     val yandexPayEnabled: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_yandex_pay), true)
 
+    val isEnableCombiInit: Boolean
+        get() = preferences.getBoolean(context.getString(R.string.acq_sp_combi_init), true)
+
     val checkType: String
         get() {
             val defaultCheckType = context.getString(R.string.acq_sp_check_type_no)

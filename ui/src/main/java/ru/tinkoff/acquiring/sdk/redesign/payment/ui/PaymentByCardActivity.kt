@@ -79,6 +79,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) { result ->
             when (result) {
                 is TinkoffAcquiring.ChoseCard.Success -> viewModel.setSavedCard(result.card)
+                is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> viewModel.setInputNewCard()
                 else -> Unit
             }
         }
@@ -90,32 +91,32 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         initToolbar()
         initViews()
 
-        lifecycleScope.launchWhenCreated { processState() }
+        lifecycleScope.launchWhenResumed { processState() }
         lifecycleScope.launchWhenCreated { uiState() }
         lifecycleScope.launch { selectedCardState() }
 
         chosenCardComponent.bindKtx(lifecycleScope, viewModel.state.mapNotNull { it.chosenCard })
     }
 
-    override fun onResume() {
-        super.onResume()
 
-        if (statusSheetStatus.state != null
-            && statusSheetStatus.state != PaymentStatusSheetState.NotYet
-            && statusSheetStatus.state != PaymentStatusSheetState.Hide
-            && statusSheetStatus.isAdded.not()
-        ) {
-            statusSheetStatus.showNow(supportFragmentManager, null)
+    override fun onStop() {
+        super.onStop()
+        if(statusSheetStatus.isAdded) {
+            statusSheetStatus.dismissAllowingStateLoss()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
+                val result =
+                    data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
                 statusSheetStatus.state = PaymentStatusSheetState.Success(
                     title = R.string.acq_commonsheet_paid_title,
                     mainButton = R.string.acq_commonsheet_clear_primarybutton,
-                    resultData = data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult
+                    paymentId = result.paymentId!!,
+                    cardId = result.cardId,
+                    rebillId = result.rebillId
                 )
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
                 statusSheetStatus.state = PaymentStatusSheetState.Error(
@@ -167,10 +168,10 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     override fun onClose(state: PaymentStatusSheetState) {
         when (state) {
             is PaymentStatusSheetState.Error -> statusSheetStatus.dismissAllowingStateLoss()
-            is PaymentStatusSheetState.Success -> finishWithSuccess(state.resultData as PaymentResult)
+            is PaymentStatusSheetState.Success -> finishWithSuccess(state.getPaymentResult())
             else -> {
-                setResult(RESULT_CANCELED)
-                finish()
+                //setResult(RESULT_CANCELED)
+                //finish()
             }
         }
     }
@@ -181,7 +182,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         setSupportActionBar(findViewById(R.id.acq_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setTitle(R.string.acq_banklist_title)
+        supportActionBar?.setTitle(R.string.acq_cardpay_title)
     }
 
     private fun initViews() {
@@ -217,6 +218,10 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             payButton.isLoading = it is PaymentByCardState.Started
 
             when (it) {
+                is PaymentByCardState.Started ->  statusSheetStatus.showIfNeed(supportFragmentManager).state =
+                    PaymentStatusSheetState.Progress(
+                        title = R.string.acq_commonsheet_failed_title,
+                    )
                 is PaymentByCardState.Created -> Unit
                 is PaymentByCardState.Error -> {
                     statusSheetStatus.showIfNeed(supportFragmentManager).state =
@@ -226,13 +231,14 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                             throwable = it.throwable
                         )
                 }
-                is PaymentByCardState.Started -> Unit
                 is PaymentByCardState.Success -> {
                     statusSheetStatus.showIfNeed(supportFragmentManager).state =
                         PaymentStatusSheetState.Success(
                             title = R.string.acq_commonsheet_paid_title,
                             mainButton = R.string.acq_commonsheet_clear_primarybutton,
-                            resultData = PaymentResult(it.paymentId, it.cardId, it.rebillId)
+                            paymentId = it.paymentId,
+                            cardId = it.cardId,
+                            rebillId = it.rebillId
                         )
                 }
                 is PaymentByCardState.ThreeDsUiNeeded -> try {

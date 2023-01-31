@@ -33,8 +33,8 @@ internal class CardsListViewModel(
     private val manager: CoroutineManager = CoroutineManager()
 ) : ViewModel() {
 
-    private val selectedCardId =
-        savedStateHandle.getExtra<SavedCardsOptions>().features.selectedCardId
+    private val selectedCardIdFlow =
+        MutableStateFlow(savedStateHandle.getExtra<SavedCardsOptions>().features.selectedCardId)
 
     private var deleteJob: Job? = null
 
@@ -112,7 +112,8 @@ internal class CardsListViewModel(
             val cards = prev.cards.map {
                 it.copy(
                     showDelete = mode == CardListMode.DELETE,
-                    isBlocked = it.isBlocked
+                    isBlocked = it.isBlocked,
+                    showChoose = selectedCardIdFlow.value == it.id
                 )
             }
             CardsListState.Content(mode, false, cards)
@@ -120,27 +121,33 @@ internal class CardsListViewModel(
     }
 
     fun chooseCard(model: CardItemUiModel) {
-        if(stateFlow.value.mode === CardListMode.CHOOSE) {
+        if (stateFlow.value.mode === CardListMode.CHOOSE) {
             eventFlow.value = CardListEvent.CloseScreen(model.card)
+        }
+    }
+
+    fun chooseNewCard() {
+        if (stateFlow.value.mode === CardListMode.CHOOSE) {
+            eventFlow.value = CardListEvent.CloseWithoutCard
         }
     }
 
     fun onBackPressed() {
         if (eventFlow.value !is CardListEvent.RemoveCardProgress) {
             val state = stateFlow.value as CardsListState.Content
-            val card = state.cards.firstOrNull { it.id == selectedCardId }
+            val card = state.cards.firstOrNull { it.id == selectedCardIdFlow.value }
             eventFlow.value = CardListEvent.CloseScreen(card?.card)
         }
     }
 
     private fun handleGetCardListResponse(it: GetCardListResponse, recurrentOnly: Boolean) {
         try {
-            val uiCards = filterCards(it.cards, recurrentOnly)
-            val mode = if (selectedCardId != null) {
+            val mode = if (selectedCardIdFlow.value != null) {
                 CardListMode.CHOOSE
             } else {
                 CardListMode.ADD
             }
+            val uiCards = filterCards(it.cards, recurrentOnly, mode)
             stateFlow.value = if (uiCards.isEmpty()) {
                 CardsListState.Empty
             } else {
@@ -151,7 +158,7 @@ internal class CardsListViewModel(
         }
     }
 
-    private fun filterCards(it: Array<Card>, recurrentOnly: Boolean): List<CardItemUiModel> {
+    private fun filterCards(it: Array<Card>, recurrentOnly: Boolean, mode: CardListMode): List<CardItemUiModel> {
         var activeCards = it.filter { card ->
             card.status == CardStatus.ACTIVE
         }
@@ -165,7 +172,7 @@ internal class CardsListViewModel(
             CardItemUiModel(
                 card = it,
                 bankName = bankCaptionProvider(cardNumber),
-                showChoose = selectedCardId == it.cardId
+                showChoose = (selectedCardIdFlow.value == it.cardId) && mode === CardListMode.CHOOSE
             )
         }
     }
@@ -183,6 +190,9 @@ internal class CardsListViewModel(
             stateFlow.value = CardsListState.Empty
             eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, null)
         } else {
+            if (deletedCard.showChoose) {
+                selectedCardIdFlow.value = list.firstOrNull()?.id
+            }
             stateFlow.update { CardsListState.Content(it.mode, true, list) }
             eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, indexAt)
         }

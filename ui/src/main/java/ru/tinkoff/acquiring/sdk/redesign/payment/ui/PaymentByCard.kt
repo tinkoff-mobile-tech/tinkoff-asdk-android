@@ -23,7 +23,6 @@ object PaymentByCard {
     object Canceled : Result()
     class Error(val error: Throwable) : Result()
 
-
     @Parcelize
     class StartData(
         val paymentOptions: PaymentOptions,
