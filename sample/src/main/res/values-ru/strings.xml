@@ -75,6 +75,7 @@
     <string name="settings_title_dark_mode_id">Темная тема</string>
     <string name="settings_title_check_type_id">CheckType</string>
     <string name="settings_title_camera">Модуль камеры</string>
+    <string name="settings_title_combi_init">Combi - Init</string>
 
     <string name="attachment_failed">Невозможно завершить привязку карты</string>
     <string name="attachment_cancelled">Привязка карты была отменена</string>

@@ -8,8 +8,8 @@ import org.mockito.kotlin.whenever
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
 import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpPaymentViewModel
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankProvider
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpBankAppsProvider
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.requests.GetQrRequest
 import ru.tinkoff.acquiring.sdk.requests.GetStateRequest
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
@@ -29,8 +29,8 @@ internal class SbpTestEnvironment(
     val connectionChecker: ConnectionChecker = mock {
         on { isOnline() } doReturn true
     },
-    val bankAppsProvider: SbpBankAppsProvider = SbpBankAppsProvider { _, _ -> nspkApps.toList() },
-    val nspkBankProvider: NspkBankProvider = NspkBankProvider { nspkApps },
+    val bankAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { _, _ -> nspkApps.toList() },
+    val nspkBankAppsProvider: NspkBankAppsProvider = NspkBankAppsProvider { nspkApps },
 
     // env
     val dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
@@ -50,7 +50,7 @@ internal class SbpTestEnvironment(
         on { getState(any()) } doReturn getState
     }
 
-    val sbpPaymentProgress = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankProvider, CoroutineScope( dispatcher + processJob))
+    val sbpPaymentProgress = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankAppsProvider, CoroutineScope( dispatcher + processJob))
     val viewModel: SbpPaymentViewModel = SbpPaymentViewModel(
         connectionChecker,
         sbpPaymentProgress,

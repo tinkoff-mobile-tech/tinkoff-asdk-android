@@ -17,7 +17,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.sbp.ui
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,7 +26,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ViewFlipper
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
@@ -37,11 +35,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.redesign.dialog.*
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpPaymentActivity.Companion.EXTRA_PAYMENT_ID
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpPaymentActivity.Companion.SBP_BANK_RESULT_CODE_NO_BANKS
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper.openSbpDeeplink
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
@@ -50,8 +45,8 @@ import ru.tinkoff.acquiring.sdk.utils.showById
 
 internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseListener {
 
-    private val paymentOptions: PaymentOptions by lazyUnsafe {
-        intent.getParcelableExtra(EXTRA_PAYMENT_OPTIONS)!!
+    private val startData: TinkoffAcquiring.SbpScreen.StartData by lazyUnsafe {
+        intent.getParcelableExtra(EXTRA_PAYMENT_DATA)!!
     }
 
     private val viewModel: SbpPaymentViewModel by viewModels {
@@ -83,7 +78,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         setContentView(R.layout.acq_activity_bank_list)
 
         if (savedInstanceState == null) {
-            viewModel.loadData(paymentOptions)
+            viewModel.loadData(startData.paymentOptions, startData.paymentId)
         }
 
         initToolbar()
@@ -166,7 +161,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                         buttonTextRes = R.string.acq_generic_button_stubnet
                     )
                     stubButtonView.setOnClickListener {
-                        viewModel.loadData(paymentOptions)
+                        viewModel.loadData(startData.paymentOptions, startData.paymentId)
                     }
                 }
                 is SpbBankListState.Empty -> {
@@ -268,9 +263,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
 
     companion object {
         internal const val EXTRA_PAYMENT_ID = "extra_payment_id"
-        internal const val EXTRA_DEEPLINK = "extra_deeplink"
-        internal const val EXTRA_PACKAGE_NAME = "extra_package_name"
-        internal const val EXTRA_PAYMENT_OPTIONS = "extra_payment_options"
+        internal const val EXTRA_PAYMENT_DATA = "extra_payment_data"
 
         internal const val SBP_BANK_RESULT_CODE_NO_BANKS = 501
     }
@@ -282,31 +275,4 @@ sealed class SpbBankListState {
     class Error(val throwable: Throwable) : SpbBankListState()
     object NoNetwork : SpbBankListState()
     class Content(val banks: List<String>, val deeplink: String) : SpbBankListState()
-}
-
-object SbpResult {
-
-    sealed class Result
-    class Success(val payment: Long) : Result()
-    class Canceled : Result()
-    class Error(val error: Throwable) : Result()
-    class NoBanks() : Result()
-
-
-    object Contract : ActivityResultContract<PaymentOptions, Result>() {
-
-        override fun createIntent(context: Context, paymentOptions: PaymentOptions): Intent =
-            Intent(context, SbpPaymentActivity::class.java).apply {
-                putExtra(SbpPaymentActivity.EXTRA_PAYMENT_OPTIONS, paymentOptions)
-            }
-
-        override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
-            AppCompatActivity.RESULT_OK -> Success(
-                intent!!.getLongExtra(EXTRA_PAYMENT_ID, 0),
-            )
-            TinkoffAcquiring.RESULT_ERROR -> Error(intent!!.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)!! as Throwable)
-            SBP_BANK_RESULT_CODE_NO_BANKS -> NoBanks()
-            else -> Canceled()
-        }
-    }
 }
