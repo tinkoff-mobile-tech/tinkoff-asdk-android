@@ -44,9 +44,6 @@ import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpResult
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
@@ -73,17 +70,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             is SavedCards.Success -> selectedCardIdForDemo = result.selectedCardId
             is SavedCards.Error -> toast(result.error.message ?: getString(R.string.error_title))
             else -> Unit
-        }
-    }
-
-    private val chooseBank = registerForActivityResult(SbpResult.Contract) { result ->
-        when (result) {
-            is SbpResult.Success -> {
-                toast("успешная оплата")
-            }
-            is SbpResult.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is SbpResult.NoBanks -> SbpNoBanksStubActivity.show(this)
-            is SbpResult.Canceled -> toast("SBP canceled")
         }
     }
 
