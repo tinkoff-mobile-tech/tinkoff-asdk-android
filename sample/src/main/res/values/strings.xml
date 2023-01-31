@@ -74,6 +74,7 @@
     <string name="settings_title_dark_mode_id">Dark Mode</string>
     <string name="settings_title_check_type_id">CheckType</string>
     <string name="settings_title_camera">Camera module</string>
+    <string name="settings_title_combi_init">Combi - Init</string>
 
     <string name="attachment_failed">Attachment failed. Try later.</string>
     <string name="attachment_cancelled">Attachment canceled</string>

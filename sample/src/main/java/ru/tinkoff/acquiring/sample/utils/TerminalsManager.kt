@@ -25,7 +25,7 @@ object TerminalsManager {
                 value.find { it.terminalKey == SessionParams.TEST_SDK.terminalKey } != null -> value
                 else -> value.toMutableList().apply { add(0, SessionParams.TEST_SDK) }
             }
-            prefs.edit().putString(TERMINALS_KEY, gson.toJson(_terminals)).apply()
+            prefs.edit().putString(TERMINALS_KEY, gson.toJson(_terminals)).commit()
 
             if (terminals.find { it.terminalKey == _selectedTerminalKey } == null) {
                 selectedTerminalKey = terminals.first().terminalKey
@@ -37,7 +37,7 @@ object TerminalsManager {
         get() = _selectedTerminalKey!!
         set(value) {
             _selectedTerminalKey = value
-            prefs.edit().putString(SELECTED_TERMINAL_KEY, value).apply()
+            prefs.edit().putString(SELECTED_TERMINAL_KEY, value).commit()
             SampleApplication.initSdk(context, selectedTerminal)
         }
 
@@ -65,7 +65,10 @@ object TerminalsManager {
         selectedTerminalKey = terminals.first().terminalKey
     }
 
-    fun findTerminal(terminalKey: String) = terminals.find { it.terminalKey == terminalKey }
+    fun findTerminal(terminalKey: String): SessionParams? {
+        val terminal = terminals.find { it.terminalKey == terminalKey }
+        return terminal
+    }
 
     fun requireTerminal(terminalKey: String) = findTerminal(terminalKey)!!
 }

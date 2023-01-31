@@ -19,12 +19,14 @@ package ru.tinkoff.acquiring.sdk.utils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
+import okhttp3.OkHttpClient
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.models.NspkResponse
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URL
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Mariya Chernyadieva
@@ -33,25 +35,35 @@ internal class NspkClient {
 
     companion object {
         private const val NSPK_ANDROID_APPS_URL = "https://qr.nspk.ru/.well-known/assetlinks.json"
-        private const val STREAM_BUFFER_SIZE = 4096
     }
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(40000, TimeUnit.MILLISECONDS)
+        .readTimeout(40000, TimeUnit.MILLISECONDS)
+        .build()
 
     private val gson: Gson = GsonBuilder().create()
 
-    fun call(request: Request<NspkResponse>, onSuccess: (NspkResponse) -> Unit, onFailure: (Exception) -> Unit) {
-        var responseReader: InputStreamReader? = null
+    fun call(
+        request: Request<NspkResponse>,
+        onSuccess: (NspkResponse) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+
+        val okHttpRequest = okhttp3.Request.Builder().url(NSPK_ANDROID_APPS_URL).get()
+            .header("User-Agent", System.getProperty("http.agent")!!)
+            .header("Accept", AcquiringApi.JSON)
+            .build()
+        val call = okHttpClient.newCall(okHttpRequest)
+        AcquiringSdk.log("=== Sending GET request to $NSPK_ANDROID_APPS_URL")
+        val okHttpResponse = call.execute()
+        val responseCode = okHttpResponse.code
+        val response = okHttpResponse.body?.string()
 
         try {
-            val targetUrl = URL(NSPK_ANDROID_APPS_URL)
-            val connection = targetUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connect()
-
-            val responseCode = connection.responseCode
-
+            AcquiringSdk.log("=== Got server response code: $responseCode")
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                responseReader = InputStreamReader(connection.inputStream)
-                val response = read(responseReader)
+                AcquiringSdk.log("=== Got server response: $response")
                 val banks: Set<Any?> = (gson.fromJson(response, List::class.java) as List).map {
                     ((it as Map<*, *>)["target"] as Map<*, *>)["package_name"]
                 }.toSet()
@@ -59,34 +71,22 @@ internal class NspkClient {
                     onSuccess(NspkResponse(banks))
                 }
             } else {
+                AcquiringSdk.log("=== Got server response: $response")
                 if (!request.isDisposed()) {
                     onFailure(NetworkException("Got server error response code $responseCode"))
                 }
             }
 
         } catch (e: IOException) {
+            AcquiringSdk.log("=== handle error on GET request to $NSPK_ANDROID_APPS_URL")
             if (!request.isDisposed()) {
                 onFailure(e)
             }
         } catch (e: JsonParseException) {
+            AcquiringSdk.log("=== handle error on GET request to $NSPK_ANDROID_APPS_URL")
             if (!request.isDisposed()) {
                 onFailure(e)
             }
-        } finally {
-            responseReader?.close()
         }
-    }
-
-    @Throws(IOException::class)
-    private fun read(reader: InputStreamReader): String {
-        val buffer = CharArray(STREAM_BUFFER_SIZE)
-        var read: Int = -1
-        val result = StringBuilder()
-
-        while ({ read = reader.read(buffer, 0, STREAM_BUFFER_SIZE); read }() != -1) {
-            result.append(buffer, 0, read)
-        }
-
-        return result.toString()
     }
 }

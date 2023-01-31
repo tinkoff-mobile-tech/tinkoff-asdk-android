@@ -20,9 +20,12 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.*
@@ -32,10 +35,11 @@ import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
-import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
+import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpPaymentActivity
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 import ru.tinkoff.acquiring.sdk.ui.activities.*
 import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
@@ -177,8 +181,23 @@ class TinkoffAcquiring(
      * @param options     настройки платежной сессии
      * @param requestCode код для получения результата, по завершению работы SDK
      */
+    @Deprecated("registerForActivityResult(SbpScreen.Contract) { result -> }.launch(options)",
+        ReplaceWith("registerForActivityResult(SbpScreen.Contract) { cardId ->\n" +
+                "    // handle result\n" +
+                "}.launch(attachCardOptions {\n" +
+                "    //setup options\n" +
+                "})"))
     fun payWithSbp(activity: Activity, options: PaymentOptions, requestCode: Int) {
         openPaymentScreen(activity, options, requestCode, FpsState)
+    }
+
+    /**
+     * Контракт оплаты через Систему быстрых платежей
+     */
+    @MainThread
+    fun payWithSbpContract(): SbpScreen.Contract {
+        SbpPaymentProcess.init(sdk, applicationContext.packageManager)
+        return SbpScreen.Contract()
     }
 
     /**
@@ -188,6 +207,12 @@ class TinkoffAcquiring(
      * @param options     настройки платежной сессии
      * @param requestCode код для получения результата, по завершению работы SDK
      */
+    @Deprecated("registerForActivityResult(SbpScreen.Contract) { result -> }.launch(options)",
+        ReplaceWith("registerForActivityResult(SbpScreen.Contract) { cardId ->\n" +
+                "    // handle result\n" +
+                "}.launch(attachCardOptions {\n" +
+                "    //setup options\n" +
+                "})"))
     fun payWithSbp(fragment: Fragment, options: PaymentOptions, requestCode: Int) {
         openPaymentScreen(fragment, options, requestCode, FpsState)
     }
@@ -538,6 +563,44 @@ class TinkoffAcquiring(
                     intent?.getStringExtra(EXTRA_CARD_ID),
                     intent?.getBooleanExtra(EXTRA_CARD_LIST_CHANGED, false)!!)
                 RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
+                else -> Canceled()
+            }
+        }
+    }
+
+    object SbpScreen {
+
+        sealed class Result
+        class Success(val payment: Long) : Result()
+        class Canceled : Result()
+        class Error(val error: Throwable) : Result()
+        class NoBanks() : Result()
+
+        @Parcelize
+        class StartData private constructor(
+            val paymentOptions: PaymentOptions, val paymentId: Long?
+            ) : Parcelable {
+
+            // для обычного платежа
+            constructor(paymentOptions: PaymentOptions) : this(paymentOptions, null)
+
+            // если вызов init был на стороне вашего сервера
+            constructor(paymentId: Long, paymentOptions: PaymentOptions) : this(paymentOptions, paymentId)
+        }
+
+        class Contract internal constructor(): ActivityResultContract<StartData, Result>() {
+
+            override fun createIntent(context: Context, data: StartData): Intent =
+                Intent(context, SbpPaymentActivity::class.java).apply {
+                    putExtra(SbpPaymentActivity.EXTRA_PAYMENT_DATA, data)
+                }
+
+            override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
+                AppCompatActivity.RESULT_OK -> Success(
+                    intent!!.getLongExtra(SbpPaymentActivity.EXTRA_PAYMENT_ID, 0),
+                )
+                TinkoffAcquiring.RESULT_ERROR -> Error(intent!!.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)!! as Throwable)
+                SbpPaymentActivity.SBP_BANK_RESULT_CODE_NO_BANKS -> NoBanks()
                 else -> Canceled()
             }
         }
