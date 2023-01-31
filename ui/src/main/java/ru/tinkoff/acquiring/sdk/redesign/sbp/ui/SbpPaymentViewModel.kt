@@ -31,13 +31,13 @@ internal class SbpPaymentViewModel(
         }
     }
 
-    fun loadData(paymentOptions: PaymentOptions) {
+    fun loadData(paymentOptions: PaymentOptions, paymentId: Long?) {
         if (connectionChecker.isOnline().not()) {
             stateUiFlow.value = SpbBankListState.NoNetwork
             return
         }
         stateUiFlow.value = SpbBankListState.Shimmer
-        sbpPaymentProcess.start(paymentOptions)
+        sbpPaymentProcess.start(paymentOptions, paymentId)
     }
 
     fun onGoingToBankApp() {

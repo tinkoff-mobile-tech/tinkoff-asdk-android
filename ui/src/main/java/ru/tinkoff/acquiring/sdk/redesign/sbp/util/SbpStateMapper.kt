@@ -46,7 +46,7 @@ class SbpStateMapper {
                 }
             }
             is SbpPaymentState.Success ->
-                PaymentSheetStatus.Success(resultData = it.paymentId)
+                PaymentSheetStatus.Success(paymentId = it.paymentId)
             is SbpPaymentState.PaymentFailed ->
                 if (it.throwable is AcquiringSdkTimeoutException) {
                     PaymentSheetStatus.Error(

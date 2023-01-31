@@ -35,7 +35,6 @@ internal class NspkClient {
 
     companion object {
         private const val NSPK_ANDROID_APPS_URL = "https://qr.nspk.ru/.well-known/assetlinks.json"
-        private const val STREAM_BUFFER_SIZE = 4096
     }
 
     private val okHttpClient = OkHttpClient.Builder()

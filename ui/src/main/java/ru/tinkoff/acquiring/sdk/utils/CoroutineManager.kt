@@ -123,7 +123,7 @@ internal class CoroutineManager(
             try {
                 block.invoke(this)
             } catch (e: Throwable) {
-                if (e is CancellationException) {
+                if(e is CancellationException) {
                     onError(e)
                 }
             }

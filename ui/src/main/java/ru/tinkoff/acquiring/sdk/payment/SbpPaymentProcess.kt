@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.payment
 
 import android.content.pm.PackageManager
+import androidx.annotation.MainThread
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -10,8 +11,8 @@ import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankProvider
-import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpBankAppsProvider
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 
@@ -20,33 +21,33 @@ import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
  */
 class SbpPaymentProcess internal constructor(
     private val sdk: AcquiringSdk,
-    private val bankAppsProvider: SbpBankAppsProvider,
-    private val nspkBankProvider: NspkBankProvider,
+    private val bankAppsProvider: NspkInstalledAppsChecker,
+    private val nspkBankProvider: NspkBankAppsProvider,
     private val scope: CoroutineScope
 ) {
     internal constructor(
         sdk: AcquiringSdk,
-        bankAppsProvider: SbpBankAppsProvider,
-        nspkBankProvider: NspkBankProvider,
+        bankAppsProvider: NspkInstalledAppsChecker,
+        nspkBankAppsProvider: NspkBankAppsProvider,
         ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-    ) : this(sdk, bankAppsProvider, nspkBankProvider, CoroutineScope(ioDispatcher))
+    ) : this(sdk, bankAppsProvider, nspkBankAppsProvider, CoroutineScope(ioDispatcher))
 
     val state = MutableStateFlow<SbpPaymentState>(SbpPaymentState.Created)
     private var looperJob: Job = Job()
 
-    fun start(paymentOptions: PaymentOptions) {
+    fun start(paymentOptions: PaymentOptions, paymentId: Long? = null) {
         scope.launch {
             runOrCatch {
                 val nspkApps =
                     nspkBankProvider.getNspkApps()
-                val init = sendInit(paymentOptions)
-                state.value = SbpPaymentState.Started(init.paymentId!!)
-                val deeplink = sendGetQr(init.paymentId)
+                val id = paymentId ?: sendInit(paymentOptions).paymentId!!
+                state.value = SbpPaymentState.Started(id)
+                val deeplink = sendGetQr(paymentId)
 
                 val installedApps =
                     bankAppsProvider.checkInstalledApps(nspkApps, deeplink)
                 state.value =
-                    SbpPaymentState.NeedChooseOnUi(init.paymentId!!, installedApps, deeplink)
+                    SbpPaymentState.NeedChooseOnUi(id, installedApps, deeplink)
             }
         }
     }
@@ -64,12 +65,10 @@ class SbpPaymentProcess internal constructor(
     }
 
     fun startCheckingStatus(retriesCount: Int = 10) {
-        looperJob = scope.launch {
-            // выйдем из функции если стейт уже проверяется или вызов некорректен
-            val _state = state.value
-            if (_state is SbpPaymentState.LeaveOnBankApp || _state is SbpPaymentState.Stopped) {
-                StatusLooper(_state.paymentId!!, sdk, state).start(retriesCount)
-            }
+        // выйдем из функции если стейт уже проверяется или вызов некорректен
+        val _state = state.value
+        if (_state is SbpPaymentState.LeaveOnBankApp) {
+            looperJob = scope.launch { StatusLooper(_state.paymentId, sdk, state).start(retriesCount) }
         }
     }
 
@@ -147,19 +146,19 @@ class SbpPaymentProcess internal constructor(
         private const val LOOPER_DELAY_MS = 3000L
         private var instance: SbpPaymentProcess? = null
 
-        @Synchronized
+        @MainThread
         fun init(
             sdk: AcquiringSdk,
             packageManager: PackageManager,
-            bankAppsProvider: SbpBankAppsProvider = SbpBankAppsProvider { nspkBanks, dl ->
+            bankAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
                 SbpHelper.getBankApps(packageManager, dl, nspkBanks)
             },
-            nspkBankProvider: NspkBankProvider = NspkBankProvider {
+            nspkBankAppsProvider: NspkBankAppsProvider = NspkBankAppsProvider {
                 NspkRequest().execute().banks
             }
         ) {
             instance?.scope?.cancel()
-            instance = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankProvider)
+            instance = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankAppsProvider)
         }
 
         fun get() = instance!!

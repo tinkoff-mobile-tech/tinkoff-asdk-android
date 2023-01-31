@@ -153,10 +153,14 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
+                val result =
+                    data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
                 statusSheetStatus.state = PaymentSheetStatus.Success(
                     title = R.string.acq_commonsheet_paid_title,
                     mainButton = R.string.acq_commonsheet_clear_primarybutton,
-                    resultData = data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult
+                    paymentId = result.paymentId!!,
+                    cardId = result.cardId,
+                    rebillId = result.rebillId
                 )
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
                 statusSheetStatus.state = PaymentSheetStatus.Error(
