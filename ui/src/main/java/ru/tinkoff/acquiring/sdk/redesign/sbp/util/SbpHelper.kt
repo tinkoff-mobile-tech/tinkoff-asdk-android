@@ -19,6 +19,7 @@ object SbpHelper {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(deeplink)
         intent.setPackage(packageName)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
     }
 
