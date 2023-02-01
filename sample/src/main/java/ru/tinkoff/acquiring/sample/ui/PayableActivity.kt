@@ -84,15 +84,12 @@ open class PayableActivity : AppCompatActivity() {
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
     private val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
-
-
-    private val spbPayment = registerForActivityResult(tinkoffAcquiring.payWithSbpContract()) { result ->
+    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) { result ->
         when (result) {
             is TinkoffAcquiring.SbpScreen.Success -> {
                 toast("SBP Success")
             }
             is TinkoffAcquiring.SbpScreen.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is TinkoffAcquiring.SbpScreen.NoBanks -> SbpNoBanksStubActivity.show(this)
             is TinkoffAcquiring.SbpScreen.Canceled -> toast("SBP canceled")
         }
     }
@@ -107,7 +104,6 @@ open class PayableActivity : AppCompatActivity() {
             is PaymentByCardResult.Canceled -> toast("Payment canceled")
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -204,9 +200,11 @@ open class PayableActivity : AppCompatActivity() {
                     }
                     .onSuccess {
                         hideProgressDialog()
+                        tinkoffAcquiring.initSbpPaymentSession()
                         spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(it,opt))
                     }
             } else {
+                tinkoffAcquiring.initSbpPaymentSession()
                 spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(opt))
             }
         }

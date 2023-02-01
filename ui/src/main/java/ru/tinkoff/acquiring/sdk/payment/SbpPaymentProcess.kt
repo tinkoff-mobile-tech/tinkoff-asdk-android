@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.models.NspkRequest
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
@@ -15,6 +16,7 @@ import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.sdk.responses.GetStateResponse
 
 /**
  * Created by i.golovachev
@@ -40,9 +42,9 @@ class SbpPaymentProcess internal constructor(
             runOrCatch {
                 val nspkApps =
                     nspkBankProvider.getNspkApps()
-                val id = paymentId ?: sendInit(paymentOptions).paymentId!!
+                val id = paymentId ?: sendInit(paymentOptions)
                 state.value = SbpPaymentState.Started(id)
-                val deeplink = sendGetQr(paymentId)
+                val deeplink = sendGetQr(id)
 
                 val installedApps =
                     bankAppsProvider.checkInstalledApps(nspkApps, deeplink)
@@ -68,7 +70,10 @@ class SbpPaymentProcess internal constructor(
         // выйдем из функции если стейт уже проверяется или вызов некорректен
         val _state = state.value
         if (_state is SbpPaymentState.LeaveOnBankApp) {
-            looperJob = scope.launch { StatusLooper(_state.paymentId, sdk, state).start(retriesCount) }
+            state.value = SbpPaymentState.CheckingStatus(_state.paymentId, null)
+            looperJob = scope.launch {
+                StatusLooper(_state.paymentId, sdk, state).start(retriesCount)
+            }
         }
     }
 
@@ -91,10 +96,12 @@ class SbpPaymentProcess internal constructor(
         }
     }
 
-    private suspend fun sendInit(paymentOptions: PaymentOptions) =
-        sdk.init { configure(paymentOptions) }.performSuspendRequest().getOrThrow()
+    private suspend fun sendInit(paymentOptions: PaymentOptions): Long {
+        val response = sdk.init { configure(paymentOptions) }.performSuspendRequest().getOrThrow()
+        return response.paymentId!!
+    }
 
-    private suspend fun sendGetQr(paymentId: Long?) = checkNotNull(
+    private suspend fun sendGetQr(paymentId: Long) = checkNotNull(
         sdk.getQr {
             this.paymentId = paymentId
             this.dataType = DataTypeQr.PAYLOAD
@@ -109,11 +116,8 @@ class SbpPaymentProcess internal constructor(
         suspend fun start(retriesCount: Int) {
             var tries = 0
             while (retriesCount > tries) {
-                val response =
-                    sdk.getState { this.paymentId = _paymentId }.performSuspendRequest()
-                        .getOrThrow()
-                delay(LOOPER_DELAY_MS)
-                val status = response.status
+                val response = getStateOrNull()
+                val status = response?.status
                 when (status) {
                     ResponseStatus.AUTHORIZED, ResponseStatus.CONFIRMED -> {
                         state.value = SbpPaymentState.Success(
@@ -128,17 +132,30 @@ class SbpPaymentProcess internal constructor(
                         )
                         return
                     }
+                    ResponseStatus.DEADLINE_EXPIRED -> {
+                        state.value = SbpPaymentState.PaymentFailed(
+                            _paymentId,
+                            AcquiringSdkTimeoutException(IllegalStateException("PaymentState = $status"))
+                        )
+                        return
+                    }
                     else -> {
                         tries += 1
                         state.value =
-                            SbpPaymentState.CheckingStatus(_paymentId, response.status)
+                            SbpPaymentState.CheckingStatus(_paymentId, response?.status)
                     }
                 }
+                delay(LOOPER_DELAY_MS)
             }
             state.value = SbpPaymentState.PaymentFailed(
                 _paymentId,
-                AcquiringSdkException(IllegalStateException("retriesCount is over"))
+                AcquiringSdkTimeoutException(IllegalStateException("timeout, retries count is over"))
             )
+        }
+
+        private suspend fun getStateOrNull(): GetStateResponse? {
+            // в рамках алгоритма проверки статуса игнорируем ошибки
+            return sdk.getState { this.paymentId = _paymentId }.performSuspendRequest().getOrNull()
         }
     }
 
@@ -147,7 +164,7 @@ class SbpPaymentProcess internal constructor(
         private var instance: SbpPaymentProcess? = null
 
         @MainThread
-        fun init(
+        internal fun init(
             sdk: AcquiringSdk,
             packageManager: PackageManager,
             bankAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
@@ -161,7 +178,9 @@ class SbpPaymentProcess internal constructor(
             instance = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankAppsProvider)
         }
 
-        fun get() = instance!!
+        internal fun getRequired() = instance!!
+
+        fun get() = instance
     }
 }
 
