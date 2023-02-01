@@ -70,6 +70,7 @@ class SbpPaymentProcess internal constructor(
         // выйдем из функции если стейт уже проверяется или вызов некорректен
         val _state = state.value
         if (_state is SbpPaymentState.LeaveOnBankApp) {
+            state.value = SbpPaymentState.CheckingStatus(_state.paymentId, null)
             looperJob = scope.launch {
                 StatusLooper(_state.paymentId, sdk, state).start(retriesCount)
             }
@@ -177,7 +178,9 @@ class SbpPaymentProcess internal constructor(
             instance = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankAppsProvider)
         }
 
-        internal fun get() = instance!!
+        internal fun getRequired() = instance!!
+
+        fun get() = instance
     }
 }
 

@@ -62,7 +62,7 @@ internal class SbpPaymentViewModel(
         fun factory(
             connectionChecker: ConnectionChecker,
         ) = viewModelFactory {
-            initializer { SbpPaymentViewModel(connectionChecker, SbpPaymentProcess.get()) }
+            initializer { SbpPaymentViewModel(connectionChecker, SbpPaymentProcess.getRequired()) }
         }
     }
 }

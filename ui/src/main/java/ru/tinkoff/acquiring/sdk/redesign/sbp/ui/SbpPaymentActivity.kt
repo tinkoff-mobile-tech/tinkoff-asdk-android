@@ -84,8 +84,8 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         subscribeOnState()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         viewModel.startCheckingStatus()
     }
 
