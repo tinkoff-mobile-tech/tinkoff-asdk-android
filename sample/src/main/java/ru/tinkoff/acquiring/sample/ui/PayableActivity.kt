@@ -47,7 +47,6 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
