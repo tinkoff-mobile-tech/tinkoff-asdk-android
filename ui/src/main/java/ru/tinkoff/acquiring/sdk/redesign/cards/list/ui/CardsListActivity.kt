@@ -39,7 +39,7 @@ internal class CardsListActivity : TransparentActivity() {
     private val recyclerView: RecyclerView by lazyView(R.id.acq_card_list_view)
     private val viewFlipper: ViewFlipper by lazyView(R.id.acq_view_flipper)
     private val cardShimmer: ViewGroup by lazyView(R.id.acq_card_list_shimmer)
-    private val root: ViewGroup by lazyView(R.id.acq_card_list_root)
+    private val root: ViewGroup by lazyView(R.id.acq_card_list_base)
     private val stubImage: ImageView by lazyView(R.id.acq_stub_img)
     private val stubTitleView: TextView by lazyView(R.id.acq_stub_title)
     private val stubSubtitleView: TextView by lazyView(R.id.acq_stub_subtitle)
@@ -48,7 +48,7 @@ internal class CardsListActivity : TransparentActivity() {
     private lateinit var cardsListAdapter: CardsListAdapter
 
     private val snackBarHelper: AcqSnackBarHelper by lazyUnsafe {
-        AcqSnackBarHelper(root)
+        AcqSnackBarHelper(findViewById(R.id.acq_card_list_root))
     }
 
     private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
@@ -84,10 +84,12 @@ internal class CardsListActivity : TransparentActivity() {
         setContentView(R.layout.acq_activity_card_list)
 
         viewModel = provideViewModel(CardsListViewModel::class.java) as CardsListViewModel
-        viewModel.loadData(
-            savedCardsOptions.customer.customerKey,
-            options.features.showOnlyRecurrentCards
-        )
+        if (savedInstanceState == null) {
+            viewModel.loadData(
+                savedCardsOptions.customer.customerKey,
+                options.features.showOnlyRecurrentCards
+            )
+        }
 
         initToolbar()
         initViews()
@@ -229,7 +231,10 @@ internal class CardsListActivity : TransparentActivity() {
     private fun CoroutineScope.subscribeOnEvents() {
         launch {
             viewModel.eventFlow.filterNotNull().collect {
-                handleDeleteInProgress(it is CardListEvent.RemoveCardProgress)
+                handleDeleteInProgress(
+                    it is CardListEvent.RemoveCardProgress,
+                    (it as? CardListEvent.RemoveCardProgress)?.deletedCard?.tail
+                )
                 when (it) {
                     is CardListEvent.RemoveCardProgress -> Unit
                     is CardListEvent.RemoveCardSuccess -> {
@@ -248,6 +253,13 @@ internal class CardsListActivity : TransparentActivity() {
                     }
                     is CardListEvent.CloseScreen -> {
                         finish()
+                    }
+                    is CardListEvent.ShowCardDeleteError -> {
+                        showErrorDialog(
+                            R.string.acq_cardlist_alert_deletecard_label,
+                            null,
+                            R.string.acq_generic_alert_access
+                        )
                     }
                 }
             }
@@ -288,14 +300,19 @@ internal class CardsListActivity : TransparentActivity() {
         super.finish()
     }
 
-    private fun handleDeleteInProgress(inProgress: Boolean) {
+    private fun handleDeleteInProgress(inProgress: Boolean, cardTail: String?) {
         root.alpha = if (inProgress) 0.5f else 1f
         if (inProgress) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             )
-            snackBarHelper.showProgress(R.string.acq_cardlist_snackbar_remove_progress)
+            snackBarHelper.showProgress(
+                getString(
+                    R.string.acq_cardlist_snackbar_remove_progress,
+                    cardTail
+                )
+            )
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             snackBarHelper.hide()

@@ -15,7 +15,7 @@
   ~  limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="acq_nfc_need_enable">Для сканирования карты необходимо включить NFC</string>
     <string name="acq_nfc_is_disable">NFC выключен</string>
@@ -44,12 +44,14 @@
     <string name="acq_label_card_cvv">Код</string>
     <string name="acq_addcard_button_add">Добавить</string>
 
-    <string name="acq_cardlist_snackbar_add">Карта •%1$s добавлена</string>
-    <string name="acq_cardlist_snackbar_remove">Карта •%1$s удалена</string>
-    <string name="acq_cardlist_snackbar_remove_progress">Удаляем карту</string>
+    <string name="acq_cardlist_snackbar_add">Карта ·%1$s добавлена</string>
+    <string name="acq_cardlist_snackbar_remove">Карта ·%1$s удалена</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Удаляем карту ·%1$s</string>
 
     <string name="acq_cardlist_button_change">Изменить</string>
     <string name="acq_cardlist_button_done">Готово</string>
+
+    <string name="acq_cardlist_alert_deletecard_label">Не получилось удалить карту</string>
 
     <string name="acq_attach_card_error">Ошибка добавления карты</string>
 
