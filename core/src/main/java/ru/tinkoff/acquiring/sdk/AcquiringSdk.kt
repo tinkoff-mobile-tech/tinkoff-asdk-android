@@ -141,8 +141,6 @@ class AcquiringSdk(
      */
     fun getQr(request: GetQrRequest.() -> Unit): GetQrRequest {
         return GetQrRequest().apply(request).apply {
-            println("Tinkoff Acquiring SDK: === $this")
-            println("Tinkoff Acquiring SDK: === ${this@AcquiringSdk.terminalKey}")
             terminalKey = this@AcquiringSdk.terminalKey
         }
     }

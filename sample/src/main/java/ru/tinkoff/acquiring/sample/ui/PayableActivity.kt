@@ -47,7 +47,7 @@ import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.*
 import ru.tinkoff.acquiring.sdk.redesign.mainform.MainPaymentFormStub
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
+import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
@@ -61,7 +61,6 @@ import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 /**
@@ -85,19 +84,15 @@ open class PayableActivity : AppCompatActivity() {
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
     private val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
-
-
-    private val spbPayment = registerForActivityResult(tinkoffAcquiring.payWithSbpContract()) { result ->
+    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) { result ->
         when (result) {
             is TinkoffAcquiring.SbpScreen.Success -> {
                 toast("SBP Success")
             }
             is TinkoffAcquiring.SbpScreen.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is TinkoffAcquiring.SbpScreen.NoBanks -> SbpNoBanksStubActivity.show(this)
             is TinkoffAcquiring.SbpScreen.Canceled -> toast("SBP canceled")
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -194,9 +189,11 @@ open class PayableActivity : AppCompatActivity() {
                     }
                     .onSuccess {
                         hideProgressDialog()
+                        tinkoffAcquiring.initSbpPaymentSession()
                         spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(it,opt))
                     }
             } else {
+                tinkoffAcquiring.initSbpPaymentSession()
                 spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(opt))
             }
         }

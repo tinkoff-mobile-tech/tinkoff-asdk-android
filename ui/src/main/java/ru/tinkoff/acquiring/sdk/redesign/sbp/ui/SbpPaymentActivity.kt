@@ -50,9 +50,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
     }
 
     private val viewModel: SbpPaymentViewModel by viewModels {
-        SbpPaymentViewModel.factory(
-            ConnectionChecker(application),
-        )
+        SbpPaymentViewModel.factory(ConnectionChecker(application))
     }
 
     private val statusFragment: PaymentStatusSheet = createPaymentSheetWrapper()
@@ -86,8 +84,8 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         subscribeOnState()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         viewModel.startCheckingStatus()
     }
 
@@ -165,8 +163,8 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                     }
                 }
                 is SpbBankListState.Empty -> {
-                    setResult(SBP_BANK_RESULT_CODE_NO_BANKS)
                     finish()
+                    SbpNoBanksStubActivity.show(this)
                 }
             }
         }

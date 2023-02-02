@@ -195,12 +195,11 @@ class TinkoffAcquiring(
     }
 
     /**
-     * Контракт оплаты через Систему быстрых платежей
+     * Создает платежную сессию в рамках оплаты по Системе быстрых платежей
      */
     @MainThread
-    fun payWithSbpContract(): SbpScreen.Contract {
+    fun initSbpPaymentSession(){
         SbpPaymentProcess.init(sdk, applicationContext.packageManager)
-        return SbpScreen.Contract()
     }
 
     /**
@@ -591,7 +590,7 @@ class TinkoffAcquiring(
             constructor(paymentId: Long, paymentOptions: PaymentOptions) : this(paymentOptions, paymentId)
         }
 
-        class Contract internal constructor(): ActivityResultContract<StartData, Result>() {
+        object Contract: ActivityResultContract<StartData, Result>() {
 
             override fun createIntent(context: Context, data: StartData): Intent =
                 Intent(context, SbpPaymentActivity::class.java).apply {

@@ -15,9 +15,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
-import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
@@ -29,7 +27,6 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.ui.component.bindKtx
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
-import ru.tinkoff.acquiring.sdk.utils.*
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 
@@ -98,12 +95,9 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         chosenCardComponent.bindKtx(lifecycleScope, viewModel.state.mapNotNull { it.chosenCard })
     }
 
-
     override fun onStop() {
         super.onStop()
-        if(statusSheetStatus.isAdded) {
-            statusSheetStatus.dismissAllowingStateLoss()
-        }
+        statusSheetStatus.takeIf { it.isAdded }?.dismissAllowingStateLoss()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -170,8 +164,8 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             is PaymentStatusSheetState.Error -> statusSheetStatus.dismissAllowingStateLoss()
             is PaymentStatusSheetState.Success -> finishWithSuccess(state.getPaymentResult())
             else -> {
-                //setResult(RESULT_CANCELED)
-                //finish()
+                setResult(RESULT_CANCELED)
+                finish()
             }
         }
     }
@@ -218,10 +212,6 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             payButton.isLoading = it is PaymentByCardState.Started
 
             when (it) {
-                is PaymentByCardState.Started ->  statusSheetStatus.showIfNeed(supportFragmentManager).state =
-                    PaymentStatusSheetState.Progress(
-                        title = R.string.acq_commonsheet_failed_title,
-                    )
                 is PaymentByCardState.Created -> Unit
                 is PaymentByCardState.Error -> {
                     statusSheetStatus.showIfNeed(supportFragmentManager).state =
@@ -231,6 +221,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                             throwable = it.throwable
                         )
                 }
+                is PaymentByCardState.Started -> Unit
                 is PaymentByCardState.Success -> {
                     statusSheetStatus.showIfNeed(supportFragmentManager).state =
                         PaymentStatusSheetState.Success(

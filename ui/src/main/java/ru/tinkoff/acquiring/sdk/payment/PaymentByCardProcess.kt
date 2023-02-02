@@ -68,6 +68,8 @@ class PaymentByCardProcess internal constructor(
             }
         }.execute()
 
+        delay(10000)
+
         callCheck3DsVersion(init.paymentId!!, cardData, paymentOptions, email)
     }
 

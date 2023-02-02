@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
@@ -24,7 +25,7 @@ internal class SbpPaymentViewModel(
 
     init {
         manager.launchOnBackground {
-            sbpPaymentProcess.state.collect {
+            sbpPaymentProcess.state.collectLatest {
                 stateUiFlow.updateIfNotNull(stateMapper.mapUiState(it))
                 paymentStateFlow.updateIfNotNull(stateMapper.mapStatusForm(it))
             }
@@ -61,7 +62,7 @@ internal class SbpPaymentViewModel(
         fun factory(
             connectionChecker: ConnectionChecker,
         ) = viewModelFactory {
-            initializer { SbpPaymentViewModel(connectionChecker, SbpPaymentProcess.get()) }
+            initializer { SbpPaymentViewModel(connectionChecker, SbpPaymentProcess.getRequired()) }
         }
     }
 }
