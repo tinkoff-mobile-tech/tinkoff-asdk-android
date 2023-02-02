@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.acq_fragment_card_data_input.*
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner
 import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
@@ -48,7 +47,7 @@ internal class CardDataInputFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(card_number_input) {
+        with(cardNumberInput) {
             BaubleCardLogo().attach(this)
             BaubleClearButton().attach(this)
             val cardNumberFormatter = CardNumberFormatter().also {
@@ -71,7 +70,7 @@ internal class CardDataInputFragment : Fragment() {
                         errorHighlighted = true
                     } else if (cardNumberFormatter.isSingleInsert &&
                         shouldAutoSwitchFromCardNumber(cardNumber, paymentSystem)) {
-                        expiry_date_input.requestViewFocus()
+                        cardNumberInput.requestViewFocus()
                     }
                 }
 
@@ -79,7 +78,7 @@ internal class CardDataInputFragment : Fragment() {
             }
         }
 
-        with(expiry_date_input) {
+        with(expiryDateInput) {
             BaubleClearButton().attach(this)
             MaskFormatWatcher(createExpiryDateMask()).installOn(editText)
 
@@ -89,7 +88,7 @@ internal class CardDataInputFragment : Fragment() {
                 val expiryDate = expiryDate
                 if (expiryDate.length >= EXPIRY_DATE_MASK.length) {
                     if (CardValidator.validateExpireDate(expiryDate, false)) {
-                        cvc_input.requestViewFocus()
+                        cvcInput.requestViewFocus()
                     } else {
                         errorHighlighted = true
                     }
@@ -99,7 +98,7 @@ internal class CardDataInputFragment : Fragment() {
             }
         }
 
-        with(cvc_input) {
+        with(cvcInput) {
             BaubleClearButton().attach(this)
             transformationMethod = PasswordTransformationMethod()
             MaskFormatWatcher(createCvcMask()).installOn(editText)
@@ -110,7 +109,7 @@ internal class CardDataInputFragment : Fragment() {
                 val cvc = cvc
                 if (cvc.length >= EXPIRY_DATE_MASK.length) {
                     if (CardValidator.validateSecurityCode(cvc)) {
-                        cvc_input.clearViewFocus()
+                        cvcInput.clearViewFocus()
                         if (validate()) {
                             onComplete?.invoke(this@CardDataInputFragment)
                         }
@@ -162,15 +161,15 @@ internal class CardDataInputFragment : Fragment() {
     fun validate(): Boolean {
         var result = true
         if (CardValidator.validateCardNumber(cardNumber)) {
-            card_number_input.errorHighlighted = true
+            cardNumberInput.errorHighlighted = true
             result = false
         }
         if (CardValidator.validateExpireDate(expiryDate, false)) {
-            expiry_date_input.errorHighlighted = true
+            expiryDateInput.errorHighlighted = true
             result = false
         }
         if (CardValidator.validateSecurityCode(cvc)) {
-            cvc_input.errorHighlighted = true
+            cvcInput.errorHighlighted = true
             result = false
         }
         return result

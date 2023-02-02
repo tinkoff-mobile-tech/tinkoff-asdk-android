@@ -608,6 +608,30 @@ class TinkoffAcquiring(
         }
     }
 
+    object ChoseCard {
+
+        sealed class Result
+        class Success(val card: CardData) : Result()
+        class Canceled : Result()
+        class Error(val error: Throwable) : Result()
+
+        object Contract : ActivityResultContract<SavedCardsOptions, Result>() {
+
+            override fun createIntent(context: Context, input: SavedCardsOptions): Intent =
+                BaseAcquiringActivity.createIntent(context, input.apply {
+                    setTerminalParams(terminalKey, publicKey)
+                }, CardsListActivity::class.java)
+
+            override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
+                AppCompatActivity.RESULT_OK -> Success(
+                    intent?.getSerializableExtra(EXTRA_CHOSEN_CARD) as CardData
+                )
+                RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
+                else -> Canceled()
+            }
+        }
+    }
+
     companion object {
 
         const val RESULT_ERROR = 500
@@ -617,5 +641,6 @@ class TinkoffAcquiring(
         const val EXTRA_REBILL_ID = "extra_rebill_id"
 
         const val EXTRA_CARD_LIST_CHANGED = "extra_cards_changed"
+        const val EXTRA_CHOSEN_CARD = "extra_chosen_card"
     }
 }

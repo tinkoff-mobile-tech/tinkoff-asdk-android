@@ -107,14 +107,14 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         finish()
     }
 
-    override fun onClose(status: PaymentSheetStatus) {
+    override fun onClose(status: PaymentStatusSheetState) {
         when (status) {
-            is PaymentSheetStatus.Error -> finishWithError(status.throwable)
-            is PaymentSheetStatus.Progress -> {
+            is PaymentStatusSheetState.Error -> finishWithError(status.throwable)
+            is PaymentStatusSheetState.Progress -> {
                 viewModel.cancelPayment()
                 statusFragment.dismiss()
             }
-            is PaymentSheetStatus.Success -> finishWithResult(status.paymentId)
+            is PaymentStatusSheetState.Success -> finishWithResult(status.paymentId)
             else -> Unit
         }
     }
@@ -174,10 +174,10 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         viewModel.paymentStateFlow.collect {
             statusFragment.state = it
             when (it) {
-                is PaymentSheetStatus.Hide -> if (statusFragment.isAdded) {
+                is PaymentStatusSheetState.Hide -> if (statusFragment.isAdded) {
                     statusFragment.dismiss()
                 }
-                is PaymentSheetStatus.NotYet -> Unit
+                is PaymentStatusSheetState.NotYet -> Unit
                 else -> if (statusFragment.isAdded.not()) {
                     statusFragment.show(supportFragmentManager, null)
                 }

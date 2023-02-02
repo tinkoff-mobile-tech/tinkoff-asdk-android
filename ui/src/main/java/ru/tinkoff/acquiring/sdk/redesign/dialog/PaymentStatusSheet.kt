@@ -32,7 +32,7 @@ class PaymentStatusSheet internal constructor(): BottomSheetDialogFragment() {
             }
         }
 
-    var state: PaymentSheetStatus? = null
+    var state: PaymentStatusSheetState? = null
         set(value) {
             field = value
             if (value != null && isResumed) {
@@ -110,7 +110,7 @@ class PaymentStatusSheet internal constructor(): BottomSheetDialogFragment() {
         this.isCancelable = isCancelable
     }
 
-    private fun showState(state: PaymentSheetStatus) {
+    private fun showState(state: PaymentStatusSheetState) {
         set(
             icon = defineIcon(state),
             title = state.title,
@@ -123,11 +123,11 @@ class PaymentStatusSheet internal constructor(): BottomSheetDialogFragment() {
         this.secondButton.setOnClickListener { onCloseListener.onClose(state) }
     }
 
-    private fun defineIcon(state: PaymentSheetStatus) = when (state) {
-        is PaymentSheetStatus.Error -> R.drawable.acq_ic_cross_circle
-        is PaymentSheetStatus.NotYet -> null
-        is PaymentSheetStatus.Progress -> null
-        is PaymentSheetStatus.Hide -> null
-        is PaymentSheetStatus.Success -> R.drawable.acq_ic_check_circle_positive
+    private fun defineIcon(state: PaymentStatusSheetState) = when (state) {
+        is PaymentStatusSheetState.Error -> R.drawable.acq_ic_cross_circle
+        is PaymentStatusSheetState.NotYet -> null
+        is PaymentStatusSheetState.Progress -> null
+        is PaymentStatusSheetState.Hide -> null
+        is PaymentStatusSheetState.Success -> R.drawable.acq_ic_check_circle_positive
     }
 }

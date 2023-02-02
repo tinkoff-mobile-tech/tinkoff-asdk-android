@@ -46,8 +46,7 @@ import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCardResult
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpNoBanksStubActivity
+import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
@@ -93,15 +92,15 @@ open class PayableActivity : AppCompatActivity() {
             is TinkoffAcquiring.SbpScreen.Canceled -> toast("SBP canceled")
         }
     }
-    private val byCardPayment = registerForActivityResult(PaymentByCardResult.Contract) { result ->
+    private val byCardPayment = registerForActivityResult(PaymentByCard.Contract) { result ->
         when (result) {
-            is PaymentByCardResult.Success -> {
+            is PaymentByCard.Success -> {
                 toast("Payment Success")
             }
-            is PaymentByCardResult.Error -> toast(
+            is PaymentByCard.Error -> toast(
                 result.error.message ?: getString(R.string.error_title)
             )
-            is PaymentByCardResult.Canceled -> toast("Payment canceled")
+            is PaymentByCard.Canceled -> toast("Payment canceled")
         }
     }
 
@@ -177,7 +176,7 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        byCardPayment.launch(options)
+        byCardPayment.launch(PaymentByCard.StartData(options, ArrayList()))
     }
 
     protected fun openDynamicQrScreen() {

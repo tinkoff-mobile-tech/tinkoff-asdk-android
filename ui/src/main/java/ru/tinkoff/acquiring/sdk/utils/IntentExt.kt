@@ -14,7 +14,11 @@ private const val EXTRA_OPTIONS = "options"
 
 fun bundleOfOptions(options: BaseAcquiringOptions) = bundleOf(EXTRA_OPTIONS to options)
 
-fun BaseAcquiringOptions.toBundle() =  bundleOf(EXTRA_OPTIONS to this)
+fun BaseAcquiringOptions.toBundle() = bundleOf(EXTRA_OPTIONS to this)
+
+fun Intent.putOptions(options: BaseAcquiringOptions) {
+    putExtra(EXTRA_OPTIONS, options)
+}
 
 fun <T : BaseAcquiringOptions> Intent.getOptions(): T {
     return checkNotNull(getParcelableExtra<T>(EXTRA_OPTIONS)) {
