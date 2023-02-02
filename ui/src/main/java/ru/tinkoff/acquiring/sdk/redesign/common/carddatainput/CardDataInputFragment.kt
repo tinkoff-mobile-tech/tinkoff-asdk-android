@@ -125,12 +125,26 @@ internal class CardDataInputFragment : Fragment() {
 
         cardNumberInput.requestViewFocus()
 
+        savedInstanceState?.run {
+            cardNumberInput.text = getString(SAVE_CARD_NUMBER, cardNumber)
+            expiryDateInput.text = getString(SAVE_EXPIRY_DATE, expiryDate)
+            cvcInput.text = getString(SAVE_CVC, cvc)
+        }
+
         onDataChanged()
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         cardScanner = CardScanner(context)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        with(outState) {
+            putString(SAVE_CARD_NUMBER, cardNumber)
+            putString(SAVE_EXPIRY_DATE, expiryDate)
+            putString(SAVE_CVC, cvc)
+        }
     }
 
     // todo results api
@@ -201,6 +215,10 @@ internal class CardDataInputFragment : Fragment() {
 
         const val EXPIRY_DATE_MASK = "__/__"
         const val CVC_MASK = "___"
+
+        private const val SAVE_CARD_NUMBER = "extra_card_number"
+        private const val SAVE_EXPIRY_DATE = "extra_expiry_date"
+        private const val SAVE_CVC = "extra_save_cvc"
 
         fun shouldAutoSwitchFromCardNumber(cardNumber: String, paymentSystem: CardPaymentSystem): Boolean {
             if (cardNumber.length == paymentSystem.range.last) return true

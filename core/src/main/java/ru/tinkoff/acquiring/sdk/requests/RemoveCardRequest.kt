@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.requests
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.REMOVE_CARD_METHOD
 import ru.tinkoff.acquiring.sdk.responses.RemoveCardResponse
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
