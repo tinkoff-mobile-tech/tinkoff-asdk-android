@@ -21,15 +21,21 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="qr.nspk.ru" />
+            <data
+                android:host="qr.nspk.ru"
+                android:scheme="https" />
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="tinkoff.ru" />
+            <data
+                android:host="tinkoff.ru"
+                android:scheme="https" />
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="www.tinkoff.ru" />
+            <data
+                android:host="www.tinkoff.ru"
+                android:scheme="https" />
         </intent>
     </queries>
 
@@ -86,17 +92,22 @@
         <activity
             android:name=".redesign.cards.list.ui.CardsListActivity"
             android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base"/>
+            android:theme="@style/AcquiringTheme.Base" />
 
         <activity
             android:name=".redesign.sbp.ui.SbpPaymentActivity"
             android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base"/>
+            android:theme="@style/AcquiringTheme.Base" />
 
         <activity
             android:name=".redesign.sbp.ui.SbpNoBanksStubActivity"
             android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base"/>
+            android:theme="@style/AcquiringTheme.Base" />
+
+        <activity
+            android:name=".redesign.payment.ui.PaymentByCardActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

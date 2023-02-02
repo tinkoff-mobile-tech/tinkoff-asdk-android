@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.dialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 
 interface OnPaymentSheetCloseListener {
     fun onClose(state: PaymentSheetStatus)
@@ -40,8 +41,13 @@ sealed class PaymentSheetStatus(
         title: Int = R.string.acq_commonsheet_paid_title,
         subtitle: Int? = null,
         mainButton: Int? = R.string.acq_commonsheet_clear_primarybutton,
-        val paymentId: Long
+        var paymentId: Long,
+        var cardId: String? = null,
+        var rebillId: String? = null
     ) : PaymentSheetStatus(title, subtitle, mainButton)
 
     object Hide : PaymentSheetStatus(null)
 }
+
+internal fun PaymentSheetStatus.Success.getPaymentResult() =
+    PaymentResult(paymentId, cardId, rebillId)

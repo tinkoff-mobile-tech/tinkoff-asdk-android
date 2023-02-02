@@ -16,7 +16,6 @@
 
 package ru.tinkoff.acquiring.sdk.models
 
-import kotlinx.coroutines.CompletableDeferred
 import ru.tinkoff.acquiring.sdk.utils.NspkClient
 import ru.tinkoff.acquiring.sdk.utils.Request
 import kotlin.coroutines.resume
@@ -42,14 +41,5 @@ internal class NspkRequest : Request<NspkResponse> {
     override fun execute(onSuccess: (NspkResponse) -> Unit, onFailure: (Exception) -> Unit) {
         val client = NspkClient()
         client.call(this, onSuccess, onFailure)
-    }
-
-    suspend fun execute(): NspkResponse {
-        return suspendCoroutine { continuation ->
-            execute(
-                onSuccess = { continuation.resume(it) },
-                onFailure = { continuation.resumeWithException(it) }
-            )
-        }
     }
 }

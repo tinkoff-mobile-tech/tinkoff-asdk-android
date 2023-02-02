@@ -78,6 +78,7 @@ class TinkoffAcquiring(
      * @param paymentOptions настройки платежной сессии
      * @return объект для проведения оплаты
      */
+    // todo переход на новый payment process
     fun initPayment(attachedCard: AttachedCard, paymentOptions: PaymentOptions): PaymentProcess {
         paymentOptions.setTerminalParams(terminalKey, publicKey)
         return PaymentProcess(sdk, applicationContext).createPaymentProcess(attachedCard, paymentOptions)
@@ -135,6 +136,7 @@ class TinkoffAcquiring(
      *                    с заданного состояния
      */
     @JvmOverloads
+    // todo переход на новую форму
     fun openPaymentScreen(activity: Activity, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
         options.asdkState = state
         val intent = prepareIntent(activity, options, PaymentActivity::class.java)
@@ -168,6 +170,7 @@ class TinkoffAcquiring(
      *                    с заданного состояния
      */
     @JvmOverloads
+    // todo переход на новую форму
     fun openPaymentScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
         options.asdkState = state
         val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)
