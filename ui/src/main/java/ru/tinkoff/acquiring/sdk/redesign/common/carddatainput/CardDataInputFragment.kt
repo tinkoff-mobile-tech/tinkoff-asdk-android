@@ -69,8 +69,7 @@ internal class CardDataInputFragment : Fragment() {
                 if (cardNumber.length in paymentSystem.range) {
                     if (!CardValidator.validateCardNumber(cardNumber)) {
                         errorHighlighted = true
-                    } else if (cardNumberFormatter.isSingleInsert &&
-                        shouldAutoSwitchFromCardNumber(cardNumber, paymentSystem)) {
+                    } else if (cardNumberFormatter.isSingleInsert || shouldAutoSwitchFromCardNumber(cardNumber, paymentSystem)) {
                         expiry_date_input.requestViewFocus()
                     }
                 }
