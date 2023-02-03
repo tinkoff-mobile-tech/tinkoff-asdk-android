@@ -61,7 +61,7 @@ internal class AttachCardFragment : BaseAcquiringFragment(),
 
         requireActivity().intent.extras?.let { extras ->
             attachCardOptions = extras.getParcelable(BaseAcquiringActivity.EXTRA_OPTIONS)!!
-            cardDataInput.setupScanner(attachCardOptions.features.cameraCardScanner)
+            cardDataInput.setupCameraCardScanner(attachCardOptions.features.cameraCardScannerContract)
             cardDataInput.validateNotExpired = attachCardOptions.features.validateExpiryDate
             // todo secure keyboard?
         }

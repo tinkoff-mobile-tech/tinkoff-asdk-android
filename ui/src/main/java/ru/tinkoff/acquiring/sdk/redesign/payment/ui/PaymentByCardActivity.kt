@@ -12,8 +12,6 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.paysources.CardData
-import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
@@ -23,6 +21,8 @@ import ru.tinkoff.acquiring.sdk.redesign.dialog.createPaymentSheetWrapper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+import ru.tinkoff.acquiring.sdk.utils.getOptions
+import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 import ru.tinkoff.acquiring.sdk.utils.toBundle
 
@@ -43,10 +43,17 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     private var onPaymentInternal: OnPaymentSheetCloseListener? = null
 
+    private val paymentOptions : PaymentOptions by lazyUnsafe {
+        intent.getOptions()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_payment_by_card_new_activity)
         initToolbar()
+
+        cardDataInput.setupCameraCardScanner(paymentOptions.features.cameraCardScannerContract)
+        cardDataInput.validateNotExpired = paymentOptions.features.validateExpiryDate
 
         lifecycleScope.launchWhenCreated { buttonState() }
         lifecycleScope.launch { processState() }
@@ -147,33 +154,6 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                     )
                 }
             }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val result =
-                    data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
-                statusSheetStatus.state = PaymentSheetStatus.Success(
-                    title = R.string.acq_commonsheet_paid_title,
-                    mainButton = R.string.acq_commonsheet_clear_primarybutton,
-                    paymentId = result.paymentId!!,
-                    cardId = result.cardId,
-                    rebillId = result.rebillId
-                )
-            } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
-                statusSheetStatus.state = PaymentSheetStatus.Error(
-                    title = R.string.acq_commonsheet_failed_title,
-                    mainButton = R.string.acq_commonsheet_failed_primary_button,
-                    throwable = data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable
-                )
-            } else {
-                setResult(Activity.RESULT_CANCELED)
-                finish()
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 

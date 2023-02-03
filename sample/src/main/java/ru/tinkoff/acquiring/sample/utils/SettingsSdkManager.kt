@@ -21,10 +21,13 @@ import android.content.SharedPreferences
 import androidx.annotation.StyleRes
 import androidx.preference.PreferenceManager
 import ru.tinkoff.acquiring.sample.R
+import ru.tinkoff.acquiring.sample.camera.DemoCameraScanActivity
 import ru.tinkoff.acquiring.sample.camera.DemoCameraScanner
 import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner
+import ru.tinkoff.acquiring.sdk.cardscanners.delegate.CardScannerContract
 import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
 import ru.tinkoff.cardio.CameraCardIOScanner
+import ru.tinkoff.cardio.CameraCardIOScannerContract
 
 /**
  * @author Mariya Chernyadieva
@@ -73,6 +76,13 @@ class SettingsSdkManager(private val context: Context) {
             return if (cardIOCameraScan == cameraScan) {
                 CameraCardIOScanner()
             } else DemoCameraScanner()
+        }
+
+    val cameraScannerContract: CardScannerContract
+        get() {
+            val cardIOCameraScan = context.getString(R.string.acq_sp_camera_type_card_io)
+            val cameraScan = preferences.getString(context.getString(R.string.acq_sp_camera_type_id), cardIOCameraScan)
+            return if (cardIOCameraScan == cameraScan) CameraCardIOScannerContract else DemoCameraScanActivity.Contract
         }
 
     val handleCardListErrorInSdk: Boolean

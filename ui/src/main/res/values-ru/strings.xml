@@ -20,6 +20,11 @@
     <string name="acq_nfc_need_enable">Для сканирования карты необходимо включить NFC</string>
     <string name="acq_nfc_is_disable">NFC выключен</string>
 
+    <string name="acq_scan_by_nfc">Сканирование с помощью NFC</string>
+    <string name="acq_scan_by_nfc_close">Закрыть</string>
+    <string name="acq_scan_by_nfc_description">Поднесите карту к задней крышке телефона</string>
+    <string name="acq_scan_by_camera">Сканирование с помощью камеры</string>
+
     <string name="googlepay_button_content_description">Google Pay</string>
 
     <string name="acq_fps_chooser_title">Выберите приложение</string>
