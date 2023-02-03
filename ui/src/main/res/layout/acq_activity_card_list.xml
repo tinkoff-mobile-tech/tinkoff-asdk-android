@@ -13,38 +13,45 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/acq_card_list_root"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/acq_card_list_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?colorPrimary"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/acq_toolbar"
-        style="?attr/acqToolbarStyle"
+    <LinearLayout
+        android:id="@+id/acq_card_list_base"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:titleTextAppearance="@style/AcqToolbarTitleStyle" />
+        android:layout_height="match_parent"
+        android:background="?colorPrimary"
+        android:orientation="vertical">
 
-    <ViewFlipper
-        android:id="@+id/acq_view_flipper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/acq_toolbar"
+            style="?attr/acqToolbarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:titleTextAppearance="@style/AcqToolbarTitleStyle" />
 
-        <include
-            android:id="@+id/acq_card_list_shimmer"
-            layout="@layout/acq_card_list_shimmer" />
+        <ViewFlipper
+            android:id="@+id/acq_view_flipper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/acq_card_list_content"
-            layout="@layout/acq_card_list_content" />
+            <include
+                android:id="@+id/acq_card_list_shimmer"
+                layout="@layout/acq_card_list_shimmer" />
 
-        <include
-            android:id="@+id/acq_card_list_stub"
-            layout="@layout/acq_list_stub" />
+            <include
+                android:id="@+id/acq_card_list_content"
+                layout="@layout/acq_card_list_content" />
 
-    </ViewFlipper>
+            <include
+                android:id="@+id/acq_card_list_stub"
+                layout="@layout/acq_list_stub" />
 
-</LinearLayout>
+        </ViewFlipper>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
@@ -39,13 +40,13 @@ internal class CardsListViewModel(
 
     fun loadData(customerKey: String?, recurrentOnly: Boolean) {
         if (connectionChecker.isOnline().not()) {
-            stateFlow.tryEmit(CardsListState.NoNetwork)
+            stateFlow.value = CardsListState.NoNetwork
             return
         }
-        stateFlow.tryEmit(CardsListState.Shimmer)
+        stateFlow.value = CardsListState.Shimmer
         manager.launchOnBackground {
             if (customerKey == null) {
-                stateFlow.tryEmit(CardsListState.Error(Throwable()))
+                stateFlow.value = CardsListState.Error(Throwable())
                 return@launchOnBackground
             }
 
@@ -63,7 +64,7 @@ internal class CardsListViewModel(
             return
         }
 
-        eventFlow.value = CardListEvent.RemoveCardProgress
+        eventFlow.value = CardListEvent.RemoveCardProgress(model)
         deleteJob = manager.launchOnBackground {
             if (connectionChecker.isOnline().not()) {
                 eventFlow.value = CardListEvent.ShowError
@@ -88,7 +89,7 @@ internal class CardsListViewModel(
                             val list =
                                 checkNotNull((stateFlow.value as? CardsListState.Content)?.cards)
                             stateFlow.update { CardsListState.Content(it.mode, true, list) }
-                            eventFlow.value = CardListEvent.ShowError
+                            eventFlow.value = CardListEvent.ShowCardDeleteError(it)
                             deleteJob?.cancel()
                         }
                     )
