@@ -12,6 +12,7 @@ internal class CardNumberFormatter : TextWatcher {
     var isSingleInsert = false
     private var deleteAt = -1
 
+
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         prev = normalize(s?.toString())
     }
