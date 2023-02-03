@@ -49,7 +49,7 @@ internal class CardsDeleteViewModelTest {
 
             eventCollector.joinWithTimeout()
             eventCollector.flow.test {
-                assertByClassName(CardListEvent.RemoveCardProgress, awaitItem())
+                assertByClassName(CardListEvent.RemoveCardProgress(mock()), awaitItem())
                 assertByClassName(CardListEvent.RemoveCardSuccess(card, null), awaitItem())
                 awaitComplete()
             }
@@ -67,8 +67,8 @@ internal class CardsDeleteViewModelTest {
 
             eventCollector.joinWithTimeout()
             eventCollector.flow.test {
-                assertByClassName(CardListEvent.RemoveCardProgress, awaitItem())
-                assertByClassName(CardListEvent.ShowError, awaitItem())
+                assertByClassName(CardListEvent.RemoveCardProgress(mock()), awaitItem())
+                assertByClassName(CardListEvent.ShowCardDeleteError(mock()), awaitItem())
                 awaitComplete()
             }
         }

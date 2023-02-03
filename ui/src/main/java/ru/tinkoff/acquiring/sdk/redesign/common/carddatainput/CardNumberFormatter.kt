@@ -11,7 +11,7 @@ internal class CardNumberFormatter : TextWatcher {
     private var prev: CharSequence? = null
     var isSingleInsert = false
     private var deleteAt = -1
-
+    private var prevPayment: CardPaymentSystem = CardPaymentSystem.UNKNOWN
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         prev = normalize(s?.toString())
@@ -30,10 +30,10 @@ internal class CardNumberFormatter : TextWatcher {
             cardNumber = normalize(source.toString().removeRange(deleteAt - 1, deleteAt))
         }
 
-        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
+        val paymentSystem = resolvePaymentSystem(cardNumber)
 
-        if (cardNumber.length > paymentSystem.range.last) {
-            cardNumber = cardNumber.substring(0, paymentSystem.range.last)
+        if (cardNumber.length > prevPayment.range.last && prevPayment != CardPaymentSystem.UNKNOWN) {
+            cardNumber = cardNumber.substring(0, prevPayment.range.last)
         }
 
         val mask = CardFormatter.resolveCardNumberMask(cardNumber)
@@ -44,6 +44,7 @@ internal class CardNumberFormatter : TextWatcher {
         selfChange = true
         source.replace(0, source.length, cardNumber)
         selfChange = false
+        prevPayment = paymentSystem
     }
 
     private fun applyMask(source: String, mask: String): String = StringBuilder().apply {
@@ -56,6 +57,15 @@ internal class CardNumberFormatter : TextWatcher {
             }
         }
     }.toString()
+
+    private fun resolvePaymentSystem(cardNumber: String): CardPaymentSystem {
+        val new =  CardPaymentSystem.resolve(cardNumber)
+        return if(new == CardPaymentSystem.UNKNOWN &&  prevPayment != CardPaymentSystem.UNKNOWN) {
+            prevPayment
+        }else{
+            new
+        }
+    }
 
     companion object {
 
