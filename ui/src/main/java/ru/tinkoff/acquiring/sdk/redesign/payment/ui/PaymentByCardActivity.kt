@@ -12,8 +12,6 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.paysources.CardData
-import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
@@ -23,6 +21,8 @@ import ru.tinkoff.acquiring.sdk.redesign.dialog.createPaymentSheetWrapper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+import ru.tinkoff.acquiring.sdk.utils.getOptions
+import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 import ru.tinkoff.acquiring.sdk.utils.toBundle
 
@@ -43,10 +43,17 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     private var onPaymentInternal: OnPaymentSheetCloseListener? = null
 
+    private val paymentOptions : PaymentOptions by lazyUnsafe {
+        intent.getOptions()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_payment_by_card_new_activity)
         initToolbar()
+
+        cardDataInput.setupScanner(paymentOptions.features.cameraCardScanner)
+        cardDataInput.validateNotExpired = paymentOptions.features.validateExpiryDate
 
         lifecycleScope.launchWhenCreated { buttonState() }
         lifecycleScope.launch { processState() }
