@@ -14,7 +14,7 @@
   ~  limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="acq_nfc_need_enable">Turn on NFC to scan a card</string>
     <string name="acq_nfc_is_disable">NFC is turn off</string>
@@ -56,7 +56,7 @@
 
     <string name="acq_generic_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>
     <string name="acq_generic_stub_description">Try again in a couple of minutes</string>
-    <string name="acq_generic_alert_access">Clear</string>
+    <string name="acq_generic_alert_access">OK</string>
 
     <string name="acq_generic_stubnet_title">Not loaded</string>
     <string name="acq_generic_stubnet_description"><![CDATA[Check internet access and try again]]></string>
@@ -65,12 +65,14 @@
     <string name="acq_cardlist_description">This is where your cards will be</string>
     <string name="acq_cardlist_button_add">Add</string>
 
-    <string name="acq_cardlist_snackbar_add">Card •%1$s added</string>
-    <string name="acq_cardlist_snackbar_remove">Card •%1$s deleted</string>
-    <string name="acq_cardlist_snackbar_remove_progress">Delete in progress</string>
+    <string name="acq_cardlist_snackbar_add">Card ·%1$s added</string>
+    <string name="acq_cardlist_snackbar_remove">Card ·%1$s deleted</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Card is deleting ·%1$s</string>
     <string name="acq_cardlist_addcard">Add new</string>
     <string name="acq_cardlist_button_change">Сhange</string>
     <string name="acq_cardlist_button_done">Done</string>
+
+    <string name="acq_cardlist_alert_deletecard_label">Couldn\'t delete the card</string>
 
     <string name="acq_attach_card_error">Error attaching card</string>
 

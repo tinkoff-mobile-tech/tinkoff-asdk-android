@@ -21,13 +21,17 @@ sealed class CardsListState(val mode: CardListMode, val isInternal: Boolean = fa
 }
 
 sealed class CardListEvent {
-    object RemoveCardProgress : CardListEvent()
+    class RemoveCardProgress(
+        val deletedCard: CardItemUiModel
+    ) : CardListEvent()
 
     class RemoveCardSuccess(
         val deletedCard: CardItemUiModel,
         val indexAt: Int?) : CardListEvent()
 
     object ShowError : CardListEvent()
+
+    class ShowCardDeleteError(val it: Throwable) : CardListEvent()
 
     class CloseScreen(val selectedCard: Card?) : CardListEvent()
 

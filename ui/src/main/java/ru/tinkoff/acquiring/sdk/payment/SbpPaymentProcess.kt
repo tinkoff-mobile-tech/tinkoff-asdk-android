@@ -154,8 +154,8 @@ class SbpPaymentProcess internal constructor(
         }
 
         private suspend fun getStateOrNull(): GetStateResponse? {
-            // в рамках алгоритма проверки статуса игнорируем ошибки
-            return sdk.getState { this.paymentId = _paymentId }.performSuspendRequest().getOrNull()
+            return sdk.getState { this.paymentId = _paymentId }.performSuspendRequest()
+                .getOrNull()
         }
     }
 
