@@ -330,6 +330,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 - По возникающим вопросам просьба обращаться на [oplata@tinkoff.ru][support-email]
 - Баги и feature-реквесты можно направлять в раздел [issues][issues]
 - Документация на [GitHub Pages](https://tinkoff.github.io/AcquiringSdkAndroid/ui/ru.tinkoff.acquiring.sdk/-tinkoff-acquiring/index.html)
+- Ошибки можно посмотреть в [этой документации](https://tinkoff.github.io/api_asdk/#section/Kody-oshibok)
 
 [search.maven]: http://search.maven.org/#search|ga|1|ru.tinkoff.acquiring.ui
 [build-config]: https://developer.android.com/studio/build/index.html
@@ -337,5 +338,5 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [issues]: https://github.com/Tinkoff/AcquiringSdkAndroid/issues
 [acquiring]: https://www.tinkoff.ru/kassa/
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
-[full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
+[full-doc]: https://tinkoff.github.io/api_asdk/
 [network-security-config]:https://developer.android.com/training/articles/security-config
