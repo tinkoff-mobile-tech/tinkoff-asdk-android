@@ -1,7 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.carddatainput
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
@@ -9,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.acq_fragment_card_data_input.*
 import ru.tinkoff.acquiring.sdk.R
@@ -17,6 +17,7 @@ import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleCardLogo
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearButton
+import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearOrScanButton
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MASTER_CARD
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.VISA
@@ -50,7 +51,7 @@ internal class CardDataInputFragment : Fragment() {
 
         with(card_number_input) {
             BaubleCardLogo().attach(this)
-            BaubleClearButton().attach(this)
+            BaubleClearOrScanButton().attach(this, cardScanner)
             val cardNumberFormatter = CardNumberFormatter().also {
                 editText.addTextChangedListener(it)
             }
@@ -69,7 +70,7 @@ internal class CardDataInputFragment : Fragment() {
                 if (cardNumber.length in paymentSystem.range) {
                     if (!CardValidator.validateCardNumber(cardNumber)) {
                         errorHighlighted = true
-                    } else if (cardNumberFormatter.isSingleInsert || shouldAutoSwitchFromCardNumber(cardNumber, paymentSystem)) {
+                    } else if (shouldAutoSwitchFromCardNumber(cardNumber, paymentSystem)) {
                         expiry_date_input.requestViewFocus()
                     }
                 }
@@ -133,11 +134,6 @@ internal class CardDataInputFragment : Fragment() {
         onDataChanged()
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        cardScanner = CardScanner(context)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         with(outState) {
             putString(SAVE_CARD_NUMBER, cardNumber)
@@ -165,10 +161,6 @@ internal class CardDataInputFragment : Fragment() {
     fun setupScanner(cameraCardScanner: CameraCardScanner?) {
         cardScanner = CardScanner(requireContext()).apply {
             this.cameraCardScanner = cameraCardScanner
-
-            if (cardScanAvailable) {
-                // add scan button
-            }
         }
     }
 
