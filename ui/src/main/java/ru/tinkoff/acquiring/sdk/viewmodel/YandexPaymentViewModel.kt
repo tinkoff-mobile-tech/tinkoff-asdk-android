@@ -101,7 +101,11 @@ internal class YandexPaymentViewModel(
             sdk: AcquiringSdk,
         ) = viewModelFactory {
             initializer {
-                YandexPaymentViewModel(application,handleErrorsInSdk,sdk, YandexPaymentProcess.instance)
+                YandexPaymentViewModel(application,
+                    handleErrorsInSdk,
+                    sdk,
+                    YandexPaymentProcess.instance
+                )
             }
         }
     }

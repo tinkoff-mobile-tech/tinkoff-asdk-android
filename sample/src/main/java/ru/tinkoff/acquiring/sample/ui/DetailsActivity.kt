@@ -33,6 +33,7 @@ import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.models.Cart
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
@@ -178,6 +179,7 @@ class DetailsActivity : PayableActivity() {
         showProgressDialog()
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                AcquiringSdk.log("=== ASDK combi init call")
                 val result = tinkoffAcquiring.sdk.init { configure(it.paymentOptions) }.performSuspendRequest().getOrThrow()
                 hideProgressDialog()
                 tinkoffAcquiring.openYandexPaymentScreen(
