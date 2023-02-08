@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewmodel.CreationExtras
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
@@ -48,7 +49,10 @@ internal class YandexPaymentActivity : TransparentActivity() {
         initViews()
         bottomContainer.isVisible = false
 
-        paymentViewModel = provideYandexViewModelFactory().create(YandexPaymentViewModel::class.java)
+        paymentViewModel = provideYandexViewModelFactory().create(
+            YandexPaymentViewModel::class.java,
+            CreationExtras.Empty
+        )
         observeLiveData()
 
         if (savedInstanceState == null) {
