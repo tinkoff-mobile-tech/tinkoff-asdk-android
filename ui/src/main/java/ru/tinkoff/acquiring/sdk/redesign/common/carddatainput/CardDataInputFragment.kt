@@ -209,15 +209,11 @@ internal class CardDataInputFragment : Fragment() {
         private const val SAVE_EXPIRY_DATE = "extra_expiry_date"
         private const val SAVE_CVC = "extra_save_cvc"
 
-        fun shouldAutoSwitchFromCardNumber(
-            cardNumber: String,
-            paymentSystem: CardPaymentSystem
-        ): Boolean {
+        fun shouldAutoSwitchFromCardNumber(cardNumber: String, paymentSystem: CardPaymentSystem): Boolean {
             if (cardNumber.length == paymentSystem.range.last) return true
 
             if ((paymentSystem == VISA || paymentSystem == MASTER_CARD) &&
-                cardNumber.length >= MIN_LENGTH_FOR_AUTO_SWITCH
-            ) {
+                cardNumber.length >= MIN_LENGTH_FOR_AUTO_SWITCH) {
                 return true
             }
             return false
