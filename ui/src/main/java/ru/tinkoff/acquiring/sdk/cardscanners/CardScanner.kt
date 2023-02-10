@@ -63,7 +63,8 @@ internal class CardScanner(private val context: Context) {
 
     private fun openScanTypeDialog() {
         val localization = AsdkLocalization.resources
-        val itemsArray = arrayOf(localization.payDialogCardScanCamera, localization.payDialogCardScanNfc)
+        val itemsArray =
+            arrayOf(localization.payDialogCardScanCamera, localization.payDialogCardScanNfc)
         AlertDialog.Builder(context).apply {
             setItems(itemsArray) { dialog, item ->
                 when (item) {
@@ -75,9 +76,8 @@ internal class CardScanner(private val context: Context) {
         }.show()
     }
 
-    private fun startNfcScan() {
-        val cardFromNfcIntent = Intent(context, AsdkNfcScanActivity::class.java)
-        (context as Activity).startActivityForResult(cardFromNfcIntent, REQUEST_CARD_NFC)
+    private fun startNfcScan(): Intent {
+        return Intent(context, AsdkNfcScanActivity::class.java)
     }
 
     private fun startCameraScan() {

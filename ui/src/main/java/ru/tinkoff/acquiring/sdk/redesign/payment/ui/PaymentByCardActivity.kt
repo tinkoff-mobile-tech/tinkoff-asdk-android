@@ -52,7 +52,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         setContentView(R.layout.acq_payment_by_card_new_activity)
         initToolbar()
 
-        cardDataInput.setupScanner(paymentOptions.features.cameraCardScanner)
+        cardDataInput.setupCameraCardScanner(paymentOptions.features.cameraCardScannerContract)
         cardDataInput.validateNotExpired = paymentOptions.features.validateExpiryDate
 
         lifecycleScope.launchWhenCreated { buttonState() }
@@ -154,33 +154,6 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                     )
                 }
             }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val result =
-                    data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
-                statusSheetStatus.state = PaymentSheetStatus.Success(
-                    title = R.string.acq_commonsheet_paid_title,
-                    mainButton = R.string.acq_commonsheet_clear_primarybutton,
-                    paymentId = result.paymentId!!,
-                    cardId = result.cardId,
-                    rebillId = result.rebillId
-                )
-            } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
-                statusSheetStatus.state = PaymentSheetStatus.Error(
-                    title = R.string.acq_commonsheet_failed_title,
-                    mainButton = R.string.acq_commonsheet_failed_primary_button,
-                    throwable = data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable
-                )
-            } else {
-                setResult(Activity.RESULT_CANCELED)
-                finish()
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 

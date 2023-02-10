@@ -19,6 +19,11 @@
     <string name="acq_nfc_need_enable">Turn on NFC to scan a card</string>
     <string name="acq_nfc_is_disable">NFC is turn off</string>
 
+    <string name="acq_scan_by_nfc">Scan card by NFC</string>
+    <string name="acq_scan_by_nfc_close">close</string>
+    <string name="acq_scan_by_nfc_description">Hold the card up to the back of the phone</string>
+    <string name="acq_scan_by_camera">Scan card by photo</string>
+
     <string name="googlepay_button_content_description">Google Pay</string>
 
     <string name="acq_fps_chooser_title">Choose app</string>

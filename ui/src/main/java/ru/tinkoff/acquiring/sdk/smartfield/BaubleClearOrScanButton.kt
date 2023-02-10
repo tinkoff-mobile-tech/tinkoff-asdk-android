@@ -7,6 +7,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
+import ru.tinkoff.acquiring.sdk.cardscanners.delegate.CardScannerWrapper
+import ru.tinkoff.acquiring.sdk.cardscanners.delegate.isEnabled
 import ru.tinkoff.acquiring.sdk.utils.SimpleTextWatcher
 import ru.tinkoff.acquiring.sdk.utils.dpToPx
 
@@ -15,9 +17,9 @@ internal class BaubleClearOrScanButton {
     private lateinit var textFieldView: AcqTextFieldView
     private lateinit var clear: ImageView
     private lateinit var scan: ImageView
-    private var cardScanner: CardScanner? = null
+    private var cardScanner: CardScannerWrapper? = null
 
-    fun attach(textFieldView: AcqTextFieldView, scanner: CardScanner?) {
+    fun attach(textFieldView: AcqTextFieldView, scanner: CardScannerWrapper?) {
         this.textFieldView = textFieldView
         this.cardScanner = scanner
 
@@ -35,7 +37,7 @@ internal class BaubleClearOrScanButton {
             setImageResource(R.drawable.acq_ic_card_frame)
             layoutParams = ViewGroup.LayoutParams(context.dpToPx(16), context.dpToPx(16))
         }
-        scan.setOnClickListener { scanner?.scanCard() }
+        scan.setOnClickListener { scanner?.start() }
         textFieldView.addRightBauble(scan)
 
         textFieldView.addViewFocusChangeListener { update() }
@@ -46,6 +48,6 @@ internal class BaubleClearOrScanButton {
 
     private fun update() {
         clear.isVisible = textFieldView.isEnabled && textFieldView.text.isNullOrBlank().not()
-        scan.isVisible = textFieldView.isEnabled && cardScanner?.cardScanAvailable == true && textFieldView.text.isNullOrBlank()
+        scan.isVisible = textFieldView.isEnabled && cardScanner.isEnabled() && textFieldView.text.isNullOrBlank()
     }
 }

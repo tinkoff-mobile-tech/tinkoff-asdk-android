@@ -58,14 +58,13 @@ internal class AsdkNfcScanActivity : AppCompatActivity() {
             override fun onNfcDisabled() = showDialog()
         })
 
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setupTranslucentStatusBar()
 
         val nfsDescription = findViewById<TextView>(R.id.acq_nfc_tv_description)
-        nfsDescription.text = AsdkLocalization.resources.nfcDescription
+        nfsDescription.setText(R.string.acq_scan_by_nfc_description)
 
         val closeBtn = findViewById<Button>(R.id.acq_nfc_btn_close)
-        closeBtn.text = AsdkLocalization.resources.nfcCloseButton
+        closeBtn.setText(R.string.acq_scan_by_nfc_close)
         closeBtn.setOnClickListener { finish() }
 
         applyBackgroundColor()
@@ -111,8 +110,8 @@ internal class AsdkNfcScanActivity : AppCompatActivity() {
 
     private fun showDialog() {
         AlertDialog.Builder(this)
-            .setTitle(AsdkLocalization.resources.nfcDialogDisableMessage ?: getString(R.string.acq_nfc_is_disable))
-            .setMessage(AsdkLocalization.resources.nfcDialogDisableMessage ?: getString(R.string.acq_nfc_is_disable))
+            .setTitle(getString(R.string.acq_nfc_is_disable))
+            .setMessage(getString(R.string.acq_nfc_is_disable))
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 NfcUtils.openNfcSettingsForResult(this, REQUEST_CODE_SETTINGS)
             }.setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
