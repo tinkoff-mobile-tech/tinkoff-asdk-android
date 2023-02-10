@@ -17,7 +17,6 @@
 package ru.tinkoff.acquiring.sdk.requests
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.REMOVE_CARD_METHOD
 import ru.tinkoff.acquiring.sdk.responses.RemoveCardResponse
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
@@ -64,7 +63,6 @@ class RemoveCardRequest : AcquiringRequest<RemoveCardResponse>(REMOVE_CARD_METHO
      * Реактивный вызов метода API
      */
     fun executeFlow(): Flow<RequestResult<out RemoveCardResponse>> {
-        return flowOf(RequestResult.Failure(Exception()))
-       // return super.performRequestFlow(this, RemoveCardResponse::class.java)
+        return super.performRequestFlow(this, RemoveCardResponse::class.java)
     }
 }

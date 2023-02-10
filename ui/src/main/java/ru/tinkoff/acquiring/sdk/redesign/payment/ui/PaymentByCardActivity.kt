@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
@@ -27,6 +28,8 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.ui.component.bindKtx
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
+import ru.tinkoff.acquiring.sdk.utils.getOptions
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 
@@ -98,6 +101,14 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     override fun onStop() {
         super.onStop()
         statusSheetStatus.takeIf { it.isAdded }?.dismissAllowingStateLoss()
+        cardDataInput.setupCameraCardScanner(startData.paymentOptions.features.cameraCardScannerContract)
+        cardDataInput.validateNotExpired = startData.paymentOptions.features.validateExpiryDate
+
+        lifecycleScope.launchWhenCreated { uiState() }
+        lifecycleScope.launch { processState() }
+        payButton.setOnClickListener {
+            viewModel.pay()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -223,6 +223,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 useSecureKeyboard = settings.isCustomKeyboardEnabled
                 validateExpiryDate = settings.validateExpiryDate
                 cameraCardScanner = settings.cameraScanner
+                cameraCardScannerContract = settings.cameraScannerContract
                 darkThemeMode = settings.resolveDarkThemeMode()
                 theme = settings.resolveAttachCardStyle()
             }
@@ -255,6 +256,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 useSecureKeyboard = settings.isCustomKeyboardEnabled
                 validateExpiryDate = settings.validateExpiryDate
                 cameraCardScanner = settings.cameraScanner
+                cameraCardScannerContract = settings.cameraScannerContract
                 darkThemeMode = settings.resolveDarkThemeMode()
                 theme = settings.resolveAttachCardStyle()
                 userCanSelectCard = true

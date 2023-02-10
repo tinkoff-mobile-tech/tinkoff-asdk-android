@@ -1,21 +1,18 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.carddatainput
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner
-import ru.tinkoff.acquiring.sdk.cardscanners.CardScanner
+import ru.tinkoff.acquiring.sdk.cardscanners.delegate.*
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleCardLogo
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearButton
+import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearOrScanButton
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.MASTER_CARD
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.CardPaymentSystem.VISA
@@ -28,8 +25,6 @@ import ru.tinkoff.decoro.watchers.MaskFormatWatcher
 
 internal class CardDataInputFragment : Fragment() {
 
-    private var cardScanner: CardScanner? = null
-
     var onComplete: ((CardDataInputFragment) -> Unit)? = null
     var validateNotExpired = false
 
@@ -41,7 +36,28 @@ internal class CardDataInputFragment : Fragment() {
     val expiryDate get() = expiryDateInput.text.orEmpty()
     val cvc get() = cvcInput.text.orEmpty()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    private val scannedCardCallback = { it: ScannedCardResult ->
+        when (it) {
+            is ScannedCardResult.Success -> {
+                cardNumberInput.text = it.data.cardNumber
+                expiryDateInput.text = it.data.expireDate
+            }
+            is ScannedCardResult.Cancel -> Unit
+            is ScannedCardResult.Failure -> Unit
+        }
+    }
+    private lateinit var cardScannerWrapper: CardScannerWrapper
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        cardScannerWrapper = CardScannerWrapper(requireActivity(), scannedCardCallback)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.acq_fragment_card_data_input, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,7 +65,7 @@ internal class CardDataInputFragment : Fragment() {
 
         with(cardNumberInput) {
             BaubleCardLogo().attach(this)
-            BaubleClearButton().attach(this)
+            BaubleClearOrScanButton().attach(this, cardScannerWrapper)
             val cardNumberFormatter = CardNumberFormatter().also {
                 editText.addTextChangedListener(it)
             }
@@ -132,11 +148,6 @@ internal class CardDataInputFragment : Fragment() {
         onDataChanged()
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        cardScanner = CardScanner(context)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         with(outState) {
             putString(SAVE_CARD_NUMBER, cardNumber)
@@ -145,30 +156,8 @@ internal class CardDataInputFragment : Fragment() {
         }
     }
 
-    // todo results api
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            CameraCardScanner.REQUEST_CAMERA_CARD_SCAN, CardScanner.REQUEST_CARD_NFC -> {
-                val scannedCardData = cardScanner?.getScanResult(requestCode, resultCode, data)
-                if (scannedCardData != null) {
-                    cardNumberInput.text = scannedCardData.cardNumber
-                    expiryDateInput.text = scannedCardData.expireDate
-                } else if (resultCode != Activity.RESULT_CANCELED) {
-                    Toast.makeText(activity, "todo", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun setupScanner(cameraCardScanner: CameraCardScanner?) {
-        cardScanner = CardScanner(requireContext()).apply {
-            this.cameraCardScanner = cameraCardScanner
-
-            if (cardScanAvailable) {
-                // add scan button
-            }
-        }
+    fun setupCameraCardScanner(contract: CardScannerContract?) {
+        cardScannerWrapper.cameraCardScannerContract = contract
     }
 
     fun validate(): Boolean {

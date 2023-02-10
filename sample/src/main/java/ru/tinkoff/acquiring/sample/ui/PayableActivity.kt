@@ -304,6 +304,7 @@ open class PayableActivity : AppCompatActivity() {
                     useSecureKeyboard = settings.isCustomKeyboardEnabled
                     validateExpiryDate = settings.validateExpiryDate
                     cameraCardScanner = settings.cameraScanner
+                    cameraCardScannerContract = settings.cameraScannerContract
                     fpsEnabled = settings.isFpsEnabled
                     tinkoffPayEnabled = settings.isTinkoffPayEnabled
                     darkThemeMode = settings.resolveDarkThemeMode()
