@@ -608,14 +608,53 @@ class TinkoffAcquiring(
         }
     }
 
+    object ChoseCard {
+
+        sealed class Result
+        class Success(val card: Card) : Result()
+        class Canceled : Result()
+        class Error(val error: Throwable) : Result()
+        object NeedInputNewCard : Result()
+
+        fun createSuccessIntent(card: Card): Intent {
+            val intent = Intent()
+            intent.putExtra(EXTRA_CHOSEN_CARD, card)
+            return intent
+        }
+
+        object Contract : ActivityResultContract<SavedCardsOptions, Result>() {
+
+            override fun createIntent(context: Context, input: SavedCardsOptions): Intent =
+                BaseAcquiringActivity.createIntent(context, input.apply {
+                    setTerminalParams(terminalKey, publicKey)
+                }, CardsListActivity::class.java)
+
+            override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
+                AppCompatActivity.RESULT_OK -> {
+                    val card = intent?.getSerializableExtra(EXTRA_CHOSEN_CARD) as Card?
+                    if (card != null) {
+                        Success(card)
+                    }else {
+                        NeedInputNewCard
+                    }
+                }
+                NEW_CARD_CHOSEN -> NeedInputNewCard
+                RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
+                else -> Canceled()
+            }
+        }
+    }
+
     companion object {
 
         const val RESULT_ERROR = 500
+        internal const val NEW_CARD_CHOSEN = 509
         const val EXTRA_ERROR = "extra_error"
         const val EXTRA_CARD_ID = "extra_card_id"
         const val EXTRA_PAYMENT_ID = "extra_payment_id"
         const val EXTRA_REBILL_ID = "extra_rebill_id"
 
         const val EXTRA_CARD_LIST_CHANGED = "extra_cards_changed"
+        const val EXTRA_CHOSEN_CARD = "extra_chosen_card"
     }
 }

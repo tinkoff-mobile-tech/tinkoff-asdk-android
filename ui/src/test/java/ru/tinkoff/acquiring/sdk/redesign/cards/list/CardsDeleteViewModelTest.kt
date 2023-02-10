@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import common.MutableCollector
 import common.assertByClassName
@@ -11,6 +12,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListEvent
@@ -18,10 +20,7 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListMode
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.RemoveCardRequest
 import ru.tinkoff.acquiring.sdk.responses.RemoveCardResponse
-import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
-import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
-import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
-import ru.tinkoff.acquiring.sdk.utils.RequestResult
+import ru.tinkoff.acquiring.sdk.utils.*
 import java.lang.Exception
 import java.util.concurrent.Executors
 
@@ -136,12 +135,14 @@ internal class CardsDeleteViewModelTest {
     class Environment(
         initState: CardsListState,
         val connectionMock: ConnectionChecker = mock { on { isOnline() } doReturn true },
-        val asdk: AcquiringSdk = mock { }
+        val asdk: AcquiringSdk = mock { },
+        val savedStateHandler: SavedStateHandle = mock { on { get<SavedCardsOptions>(any()) } doReturn SavedCardsOptions()  }
     ) {
         val dispatcher: CoroutineDispatcher =
             Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
         val vm = CardsListViewModel(
+            savedStateHandle = savedStateHandler,
             asdk,
             connectionMock,
             BankCaptionProvider { "Tinkoff" },

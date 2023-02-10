@@ -10,6 +10,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
+import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
@@ -17,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.RequestResult
+import ru.tinkoff.acquiring.sdk.utils.getExtra
 import turbineDelay
 import java.lang.Exception
 
@@ -142,7 +144,7 @@ internal class CardsListViewModelTest {
         val provider = BankCaptionProvider {
             "Tinkoff"
         }
-        return CardsListViewModel(sdk, connectionChecker, provider)
+        return CardsListViewModel(mock { on { get<SavedCardsOptions>(any()) } doReturn SavedCardsOptions()  },sdk, connectionChecker, provider)
     }
 
 }

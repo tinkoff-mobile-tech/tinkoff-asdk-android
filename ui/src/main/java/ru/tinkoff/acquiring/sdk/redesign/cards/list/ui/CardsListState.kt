@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 
 /**
@@ -14,7 +15,8 @@ sealed class CardsListState(val mode: CardListMode, val isInternal: Boolean = fa
     class Content(
         mode: CardListMode,
         isInternal: Boolean,
-        val cards: List<CardItemUiModel>
+        val cards: List<CardItemUiModel>,
+        val selectedCardId: Long? = null
     ) : CardsListState(mode, isInternal)
 }
 
@@ -31,9 +33,11 @@ sealed class CardListEvent {
 
     class ShowCardDeleteError(val it: Throwable) : CardListEvent()
 
-    object CloseScreen : CardListEvent()
+    class CloseScreen(val selectedCard: Card?) : CardListEvent()
+
+    object CloseWithoutCard : CardListEvent()
 }
 
 enum class CardListMode {
-    ADD, DELETE, STUB
+    ADD, DELETE, STUB, CHOOSE
 }

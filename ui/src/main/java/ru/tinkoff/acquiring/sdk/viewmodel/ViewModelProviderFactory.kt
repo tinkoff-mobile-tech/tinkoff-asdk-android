@@ -49,16 +49,8 @@ internal class ViewModelProviderFactory(
         YandexPaymentViewModel::class.java to YandexPaymentViewModel(application, handleErrorsInSdk, sdk)
     )
 
-    private val redesignViewModels = mapOf<Class<out ViewModel>, ViewModel>(
-        CardsListViewModel::class.java to CardsListViewModel(
-            sdk,
-            ConnectionChecker(application),
-            BankCaptionResourceProvider(application)
-        )
-    )
-
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return (redesignViewModels + viewModelCollection)[modelClass] as T
+        return (viewModelCollection)[modelClass] as T
     }
 }

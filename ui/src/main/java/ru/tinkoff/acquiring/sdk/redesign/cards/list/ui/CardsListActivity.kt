@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
+import androidx.activity.viewModels
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.AttachCard
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
@@ -31,7 +33,13 @@ import ru.tinkoff.acquiring.sdk.utils.lazyView
 
 internal class CardsListActivity : TransparentActivity() {
 
-    private lateinit var viewModel: CardsListViewModel
+    private val viewModel: CardsListViewModel by viewModels {
+        CardsListViewModel.factory(
+            intent.getSdk(application).sdk,
+            ConnectionChecker(application),
+            BankCaptionResourceProvider(application)
+        )
+    }
     private lateinit var savedCardsOptions: SavedCardsOptions
 
     private var mode = CardListMode.STUB
@@ -50,6 +58,10 @@ internal class CardsListActivity : TransparentActivity() {
     private val snackBarHelper: AcqSnackBarHelper by lazyUnsafe {
         AcqSnackBarHelper(findViewById(R.id.acq_card_list_root))
     }
+    private val selectedCardIdFromPrevScreen: String? by lazyUnsafe {
+        intent.getOptions<SavedCardsOptions>().features.selectedCardId
+    }
+    private val needReturnCardId by lazyUnsafe { selectedCardIdFromPrevScreen != null }
 
     private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
         when (result) {
@@ -74,7 +86,6 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private var selectedCardId: String? = null
-    private var isCardListChanged = false
     private var isErrorOccurred = false
     private var attachedCardId: String? = null
 
@@ -82,8 +93,6 @@ internal class CardsListActivity : TransparentActivity() {
         super.onCreate(savedInstanceState)
         savedCardsOptions = options as SavedCardsOptions
         setContentView(R.layout.acq_activity_card_list)
-
-        viewModel = provideViewModel(CardsListViewModel::class.java) as CardsListViewModel
         if (savedInstanceState == null) {
             viewModel.loadData(
                 savedCardsOptions.customer.customerKey,
@@ -95,13 +104,12 @@ internal class CardsListActivity : TransparentActivity() {
         initViews()
         subscribeOnState()
 
-        // todo
-        // options.features.selectedCardId
+        selectedCardId = selectedCardIdFromPrevScreen
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.acq_card_list_menu, menu)
-        menu.findItem(R.id.acq_card_list_action_change)?.isVisible = mode === CardListMode.ADD
+        menu.findItem(R.id.acq_card_list_action_change)?.isVisible = (mode === CardListMode.ADD || mode === CardListMode.CHOOSE)
         menu.findItem(R.id.acq_card_list_action_complete)?.isVisible = mode === CardListMode.DELETE
         return true
     }
@@ -113,11 +121,20 @@ internal class CardsListActivity : TransparentActivity() {
                 true
             }
             R.id.acq_card_list_action_complete -> {
-                viewModel.changeMode(CardListMode.ADD)
+                val _mode = if (selectedCardIdFromPrevScreen == null)
+                    CardListMode.ADD
+                else
+                    CardListMode.CHOOSE
+                viewModel.changeMode(_mode)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        viewModel.onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {
@@ -132,11 +149,18 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun initViews() {
-        cardsListAdapter = CardsListAdapter(onDeleteClick = {
-            viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!)
-        })
+        cardsListAdapter = CardsListAdapter(
+            onDeleteClick = { viewModel.deleteCard(it, savedCardsOptions.customer.customerKey!!) },
+            onChooseClick = { viewModel.chooseCard(it) }
+        )
         recyclerView.adapter = cardsListAdapter
-        addNewCard.setOnClickListener { startAttachCard() }
+        addNewCard.setOnClickListener {
+            if(mode === CardListMode.CHOOSE) {
+                payNewCard()
+            }else {
+                startAttachCard()
+            }
+        }
     }
 
     private fun subscribeOnState() {
@@ -152,7 +176,7 @@ internal class CardsListActivity : TransparentActivity() {
             viewModel.modeFlow.collectLatest {
                 mode = it
                 invalidateOptionsMenu()
-                addNewCard.isVisible = mode === CardListMode.ADD
+                addNewCard.isVisible = mode === CardListMode.ADD || mode === CardListMode.CHOOSE
             }
         }
     }
@@ -188,7 +212,13 @@ internal class CardsListActivity : TransparentActivity() {
                             subTitleTextRes = R.string.acq_cardlist_description,
                             buttonTextRes = R.string.acq_cardlist_button_add
                         )
-                        stubButtonView.setOnClickListener { startAttachCard() }
+                        stubButtonView.setOnClickListener {
+                            if (needReturnCardId) {
+                                finishWithNewCard()
+                            } else {
+                                startAttachCard()
+                            }
+                        }
                     }
                     is CardsListState.NoNetwork -> {
                         showStub(
@@ -218,6 +248,10 @@ internal class CardsListActivity : TransparentActivity() {
             }
             features = savedCardsOptions.features
         })
+    }
+
+    private fun payNewCard() {
+        viewModel.chooseNewCard()
     }
 
     private fun CardItemUiModel.handleCardAttached() {
@@ -252,7 +286,21 @@ internal class CardsListActivity : TransparentActivity() {
                         )
                     }
                     is CardListEvent.CloseScreen -> {
-                        finish()
+                        when {
+                            it.selectedCard != null -> {
+                                finishWithCard(it.selectedCard)
+                            }
+                            else -> {
+                                if (needReturnCardId) {
+                                    finishWithNewCard()
+                                } else {
+                                    finish()
+                                }
+                            }
+                        }
+                    }
+                    is CardListEvent.CloseWithoutCard -> {
+                        finishWithoutCard()
                     }
                     is CardListEvent.ShowCardDeleteError -> {
                         showErrorDialog(
@@ -294,7 +342,6 @@ internal class CardsListActivity : TransparentActivity() {
         if (!isErrorOccurred) {
             val intent = Intent()
             intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, selectedCardId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED, isCardListChanged)
             setResult(Activity.RESULT_OK, intent)
         }
         super.finish()
@@ -317,5 +364,20 @@ internal class CardsListActivity : TransparentActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             snackBarHelper.hide()
         }
+    }
+
+    private fun finishWithCard(card: Card) {
+        setResult(Activity.RESULT_OK, TinkoffAcquiring.ChoseCard.createSuccessIntent(card))
+        super.finish()
+    }
+
+    private fun finishWithNewCard() {
+        setResult(Activity.RESULT_OK, null)
+        super.finish()
+    }
+
+    private fun finishWithoutCard() {
+        setResult(TinkoffAcquiring.NEW_CARD_CHOSEN)
+        super.finish()
     }
 }

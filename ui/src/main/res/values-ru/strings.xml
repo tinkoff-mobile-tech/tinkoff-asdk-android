@@ -45,8 +45,10 @@
 
     <string name="acq_cardlist_addcard_title">Добавить карту</string>
     <string name="acq_label_card_number">Номер</string>
+    <string name="acq_label_email">Электронная почта</string>
     <string name="acq_label_expiry_date">Срок</string>
     <string name="acq_label_card_cvv">Код</string>
+    <string name="acq_label_card_secure">CVV</string>
     <string name="acq_addcard_button_add">Добавить</string>
 
     <string name="acq_cardlist_snackbar_add">Карта ·%1$s добавлена</string>
@@ -59,6 +61,9 @@
     <string name="acq_cardlist_alert_deletecard_label">Не получилось удалить карту</string>
 
     <string name="acq_attach_card_error">Ошибка добавления карты</string>
+
+    <string name="acq_cardpay_title">Оплата картой</string>
+    <string name="acq_cardpay_pay">%1$s pay</string>
 
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">Доступен %d символ</item>
@@ -99,5 +104,6 @@
     <string name="acq_commonsheet_timeout_failed_description">Попробуйте оплатить снова или выберите другой способ оплаты</string>
     <string name="acq_commonsheet_timeout_failed_primary_button">Оплатить еще раз</string>
     <string name="acq_commonsheet_timeout_failed_flat_button">Другой способ оплаты</string>
+    <string name="acq_chosen_card_change">Сменить карту</string>
 
 </resources>

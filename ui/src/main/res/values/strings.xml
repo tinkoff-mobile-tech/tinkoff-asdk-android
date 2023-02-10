@@ -53,8 +53,10 @@
 
     <string name="acq_cardlist_addcard_title">Attach card</string>
     <string name="acq_label_card_number">Number</string>
+    <string name="acq_label_email">Email address</string>
     <string name="acq_label_expiry_date">Expiry date</string>
     <string name="acq_label_card_cvv">Code</string>
+    <string name="acq_label_card_secure">CVV</string>
     <string name="acq_addcard_button_add">Attach</string>
 
     <string name="acq_generic_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>
@@ -79,6 +81,9 @@
 
     <string name="acq_attach_card_error">Error attaching card</string>
 
+    <string name="acq_cardpay_title">Payment by card</string>
+    <string name="acq_cardpay_pay">%1$s pay</string>
+
     <plurals name="acq_sf_max_symbol_counter_empty">
         <item quantity="one">%d symbol available</item>
         <item quantity="other">%d symbols available</item>
@@ -98,5 +103,6 @@
     <string name="acq_banklist_title">Choose bank</string>
     <string name="acq_stub_sbp_no_banks_description">You need a bank app wit Fast Payment System support to make the payment</string>
     <string name="acq_stub_sbp_no_banks_details">Details</string>
+    <string name="acq_chosen_card_change">Change card</string>
 
 </resources>

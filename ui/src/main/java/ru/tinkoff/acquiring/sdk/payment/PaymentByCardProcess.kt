@@ -32,12 +32,12 @@ class PaymentByCardProcess internal constructor(
     private val coroutineManager: CoroutineManager = CoroutineManager()
 ) {
 
-    private lateinit var paymentSource: CardData
+    private lateinit var paymentSource: CardSource
     private val _state = MutableStateFlow<PaymentByCardState>(PaymentByCardState.Created)
     val state = _state.asStateFlow()
 
     fun start(
-        cardData: CardData,
+        cardData: CardSource,
         paymentOptions: PaymentOptions,
         email: String? = null
     ) {
@@ -56,7 +56,7 @@ class PaymentByCardProcess internal constructor(
     }
 
     private suspend fun callInitRequest(
-        cardData: CardData,
+        cardData: CardSource,
         paymentOptions: PaymentOptions,
         email: String?
     ) {
@@ -67,6 +67,8 @@ class PaymentByCardProcess internal constructor(
                 receipt?.email = email
             }
         }.execute()
+
+        delay(10000)
 
         callCheck3DsVersion(init.paymentId!!, cardData, paymentOptions, email)
     }
@@ -104,7 +106,7 @@ class PaymentByCardProcess internal constructor(
                 return
             }
         }
-
+        delay(12000)
         callFinishAuthorizeRequest(
             paymentId,
             paymentSource,
@@ -179,7 +181,6 @@ class PaymentByCardProcess internal constructor(
         }
     }
 }
-
 
 sealed interface PaymentByCardState {
     object Created : PaymentByCardState

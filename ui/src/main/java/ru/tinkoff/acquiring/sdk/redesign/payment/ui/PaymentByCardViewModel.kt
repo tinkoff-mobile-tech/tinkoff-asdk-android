@@ -1,45 +1,98 @@
 package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
+import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
-import ru.tinkoff.acquiring.sdk.utils.getExtra
+import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
 
 internal class PaymentByCardViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val paymentByCardProcess: PaymentByCardProcess
+    private val paymentByCardProcess: PaymentByCardProcess,
+    private val bankCaptionProvider: BankCaptionProvider,
 ) : ViewModel() {
+
+    private val startData =
+        savedStateHandle.get<PaymentByCard.StartData>(PaymentByCard.Contract.EXTRA_SAVED_CARDS)!!
+    private val chosenCard = startData.list.firstOrNull { it.status == CardStatus.ACTIVE }?.let {
+        CardChosenModel(it, bankCaptionProvider(it.pan!!))
+    }
+
     val paymentProcessState = paymentByCardProcess.state
 
     val state: MutableStateFlow<State> =
-        MutableStateFlow(State(paymentOptions = savedStateHandle.getExtra()))
+        MutableStateFlow(
+            State(
+                cardId = chosenCard?.id,
+                isValidEmail = startData.paymentOptions.customer.email.isNullOrBlank().not(),
+                sendReceipt = startData.paymentOptions.customer.email.isNullOrBlank().not(),
+                email = startData.paymentOptions.customer.email,
+                paymentOptions = startData.paymentOptions,
+                chosenCard = chosenCard
+            )
+        )
 
+    // ручной ввод карты
     fun setCardDate(
         cardNumber: String? = null,
         cvc: String? = null,
         dateExpired: String? = null,
-        isValidCardData: Boolean = false
-    ) = state.update {
+        isValidCardData: Boolean = false,
+    ) {
+        if (chosenCard != null) return
+
+        state.update {
+            it.copy(
+                cardNumber = cardNumber,
+                cvc = cvc,
+                dateExpired = dateExpired,
+                isValidCardData = isValidCardData,
+                cardId = null,
+            )
+        }
+    }
+
+    // ввод сохраненной карты
+    fun setSavedCard(card: Card) = state.update {
         it.copy(
-            cardNumber = cardNumber,
-            cvc = cvc,
-            dateExpired = dateExpired,
-            isValidCardData = isValidCardData
+            cardId = card.cardId,
+            cardNumber = card.pan,
+            cvc = null,
+            dateExpired = card.expDate,
+            isValidCardData = false,
+            chosenCard = CardChosenModel(card, bankCaptionProvider(card.pan!!))
         )
     }
 
-    fun rememberCardChange(isSelect: Boolean) = state.update {
-        it.copy(rememberCard = isSelect)
+    // ввод кода сохраненной карты
+    fun setCvc(cvc: String, isValid: Boolean) =
+        state.update { it.copy(cvc = cvc, isValidCardData = isValid) }
+
+    fun setInputNewCard() = state.update {
+        it.copy(
+            cardId = null,
+            cardNumber = null,
+            cvc = null,
+            dateExpired = null,
+            isValidCardData = false,
+            isValidEmail = false,
+            chosenCard = null
+        )
     }
 
-    fun saveEmailChange(isSelect: Boolean) = state.update {
+    fun sendReceiptChange(isSelect: Boolean) = state.update {
         it.copy(sendReceipt = isSelect)
     }
 
@@ -48,7 +101,10 @@ internal class PaymentByCardViewModel(
     }
 
     fun pay() {
-        paymentByCardProcess.start(state.value.cardData, state.value.paymentOptions)
+        val _state = state.value
+        val emailForPayment = if (_state.sendReceipt) _state.email else null
+
+        paymentByCardProcess.start(_state.cardSource, _state.paymentOptions, emailForPayment)
     }
 
     fun cancelPayment() {
@@ -56,15 +112,15 @@ internal class PaymentByCardViewModel(
     }
 
     data class State(
+        private val cardId: String? = null,
         private val cardNumber: String? = null,
         private val cvc: String? = null,
         private val dateExpired: String? = null,
         private val isValidCardData: Boolean = false,
-        private val rememberCard: Boolean = false,
-        private val email: String? = null,
         private val isValidEmail: Boolean = false,
-        private val sendReceipt: Boolean = false,
-
+        val chosenCard: CardChosenModel? = null,
+        val sendReceipt: Boolean = false,
+        val email: String? = null,
         val paymentOptions: PaymentOptions,
     ) {
 
@@ -76,23 +132,22 @@ internal class PaymentByCardViewModel(
 
         val amount = paymentOptions.order.amount.toHumanReadableString()
 
-        val cardData: CardData
+        val cardSource: CardSource
             get() {
-                return CardData(
-                    pan = cardNumber!!,
-                    expiryDate = dateExpired!!,
-                    securityCode = cvc!!
-                ).apply {
-                    validate()
-                }
+                return if (cardId != null)
+                    AttachedCard(cardId, cvc)
+                else
+                    CardData(cardNumber!!, dateExpired!!, cvc!!)
             }
-
     }
 
     companion object {
-        fun factory() = viewModelFactory {
+        fun factory(application: Application) = viewModelFactory {
             initializer {
-                PaymentByCardViewModel(createSavedStateHandle(), PaymentByCardProcess.get())
+                PaymentByCardViewModel(
+                    createSavedStateHandle(), PaymentByCardProcess.get(),
+                    BankCaptionResourceProvider(application)
+                )
             }
         }
     }
