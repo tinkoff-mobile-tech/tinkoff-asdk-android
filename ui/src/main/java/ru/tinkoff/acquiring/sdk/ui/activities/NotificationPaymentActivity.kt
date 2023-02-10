@@ -64,7 +64,6 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
     private var dialogMessage = ""
 
     companion object {
-        private const val GOOGLE_PAY_REQUEST_CODE = 789
         private const val TINKOFF_PAY_REQUEST_CODE = 987
 
         private const val DEFAULT_NOTIFICATION_ID = Int.MIN_VALUE
@@ -174,7 +173,6 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (resultCode) {
             Activity.RESULT_OK -> when (requestCode) {
-                GOOGLE_PAY_REQUEST_CODE -> handleGooglePayResult(data)
                 TINKOFF_PAY_REQUEST_CODE -> handleTinkoffPayResult(data)
                 else -> super.onActivityResult(requestCode, resultCode, data)
             }
@@ -221,13 +219,14 @@ internal class NotificationPaymentActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("not supportedYet")
     private fun showGooglePay(googleParams: GooglePayParams) {
         val googlePayHelper = GooglePayHelper(googleParams)
         val price = paymentOptions.order.amount
 
         googlePayHelper.initGooglePay(this) { ready ->
             if (ready) {
-                googlePayHelper.openGooglePay(this, price, GOOGLE_PAY_REQUEST_CODE)
+                googlePayHelper.openGooglePay(this, price, 0)
             } else {
                 handleErrorResult(AcquiringSdkException(IllegalStateException("Google Pay is not available")))
             }

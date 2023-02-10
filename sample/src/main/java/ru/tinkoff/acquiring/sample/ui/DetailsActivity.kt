@@ -22,14 +22,23 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.models.Cart
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
+import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
+import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.yandexpay.*
 
 /**
  * @author Mariya Chernyadieva
@@ -86,10 +95,6 @@ class DetailsActivity : PayableActivity() {
 
         setupTinkoffPay()
 
-        if (settings.isGooglePayEnabled) {
-            setupGooglePay()
-        }
-
         setupYandexPay(savedInstanceState = savedInstanceState)
 
         fillViews()
@@ -118,6 +123,47 @@ class DetailsActivity : PayableActivity() {
         }
     }
 
+    override fun createYandexButtonFragment(
+        savedInstanceState: Bundle?,
+        paymentOptions: PaymentOptions,
+        yandexPayData: YandexPayData,
+        theme: Int?
+    ): YandexButtonFragment {
+        return savedInstanceState?.let {
+            try {
+                (supportFragmentManager.getFragment(
+                    savedInstanceState,
+                    YANDEX_PAY_FRAGMENT_KEY
+                ) as? YandexButtonFragment)?.also {
+                    tinkoffAcquiring.addYandexResultListener(
+                        fragment = it,
+                        activity = this,
+                        yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+                        onYandexErrorCallback = { showErrorDialog() },
+                        onYandexCancelCallback = {
+                            Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT)
+                                .show()
+                        },
+                        onYandexSuccessCallback = ::handleYandexSuccess
+                    )
+                }
+            } catch (i: IllegalStateException) {
+                null
+            }
+        } ?: tinkoffAcquiring.createYandexPayButtonFragment(
+            activity = this,
+            yandexPayData = yandexPayData,
+            options = paymentOptions,
+            yandexPayRequestCode = YANDEX_PAY_REQUEST_CODE,
+            themeId = theme,
+            onYandexErrorCallback = { showErrorDialog() },
+            onYandexCancelCallback = {
+                Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
+            },
+            onYandexSuccessCallback = ::handleYandexSuccess
+        )
+    }
+
     private fun fillViews() {
         imageViewCover.setImageResource(book!!.coverDrawableId)
         textViewTitle.text = book!!.title
@@ -127,6 +173,28 @@ class DetailsActivity : PayableActivity() {
 
         val price = getString(R.string.book_price, book!!.price)
         textViewPrice.text = price
+    }
+
+    protected fun handleYandexSuccess(it: AcqYandexPayResult.Success) {
+        showProgressDialog()
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                AcquiringSdk.log("=== ASDK combi init call")
+                val result = tinkoffAcquiring.sdk.init { configure(it.paymentOptions) }.performSuspendRequest().getOrThrow()
+                hideProgressDialog()
+                tinkoffAcquiring.openYandexPaymentScreen(
+                    this@DetailsActivity,
+                    YANDEX_PAY_REQUEST_CODE,
+                    it,
+                    result.paymentId
+                )
+            } catch (e: java.lang.Exception) {
+                if (e !is CancellationException) {
+                    hideProgressDialog()
+                    showErrorDialog()
+                }
+            }
+        }
     }
 
     companion object {

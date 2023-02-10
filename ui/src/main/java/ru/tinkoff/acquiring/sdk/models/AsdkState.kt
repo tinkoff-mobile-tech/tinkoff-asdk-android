@@ -78,4 +78,4 @@ class OpenTinkoffPayBankState(val paymentId: Long, val deepLink: String) : AsdkS
  *
  * @param yandexToken плажетные данные полученные из яндекса
  */
-class YandexPayState(val yandexToken: String) : AsdkState()
+class YandexPayState(val yandexToken: String, val paymentId: Long?) : AsdkState()

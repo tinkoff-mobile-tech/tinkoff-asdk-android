@@ -38,6 +38,7 @@ import java.math.BigDecimal
  *
  * @author Mariya Chernyadieva
  */
+@Deprecated("Not supported yet")
 class GooglePayHelper(private val params: GooglePayParams) {
 
     private lateinit var paymentsClient: PaymentsClient
@@ -159,6 +160,7 @@ class GooglePayHelper(private val params: GooglePayParams) {
         private const val PRICE_STATUS = "FINAL"
 
         @JvmStatic
+        @Deprecated("Not supported yet")
         fun getGooglePayToken(data: Intent): String? {
             val json = PaymentData.getFromIntent(data)?.toJson()
 

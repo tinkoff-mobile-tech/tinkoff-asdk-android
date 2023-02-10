@@ -138,9 +138,6 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
         textViewTotalPrice.text = stringTotalPrice
         if (totalPrice.coins > 0L) {
             buttonPay.isEnabled = true
-            if (settings.isGooglePayEnabled) {
-                setupGooglePay()
-            }
         }
     }
 

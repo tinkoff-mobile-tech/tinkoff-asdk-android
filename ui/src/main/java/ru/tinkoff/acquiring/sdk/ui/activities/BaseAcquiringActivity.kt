@@ -48,6 +48,7 @@ import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsSubmitV2Delegate
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_PACKAGE_NAME
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
+import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
 
 /**
  * @author Mariya Chernyadieva
@@ -145,6 +146,9 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     protected fun provideViewModel(clazz: Class<out ViewModel>): ViewModel {
         return ViewModelProvider(this, ViewModelProviderFactory(application, options.features.handleErrorsInSdk, sdk))[clazz]
     }
+
+    protected fun provideYandexViewModelFactory()
+    = YandexPaymentViewModel.factory(application, options.features.handleErrorsInSdk, sdk)
 
     protected fun provideThreeDsSubmitV2Delegate() = ThreeDsSubmitV2Delegate(sdk)
 
