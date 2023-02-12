@@ -59,6 +59,7 @@
     <color name="acq_snackbar_bg">#333333</color>
     <color name="acq_colorButtonText">#333333</color>
     <color name="acq_colorButtonTextDisabled">#38001024</color>
-    <color name="acq_progress_bar_color">#FFDD2D</color>
+    <color name="acq_progress_bar_color">#1D1346</color>
+    <color name="acq_colorSbpButton">#F5F1E8</color>
 
 </resources>
