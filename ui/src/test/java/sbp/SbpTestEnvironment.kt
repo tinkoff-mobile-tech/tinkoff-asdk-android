@@ -19,7 +19,7 @@ import ru.tinkoff.acquiring.sdk.responses.InitResponse
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 
-val nspkApps = setOf("ru.nspk.sbpay")
+private val nspkApps = setOf("ru.nspk.sbpay")
 
 
 /**
