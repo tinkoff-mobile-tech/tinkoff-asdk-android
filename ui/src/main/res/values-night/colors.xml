@@ -36,4 +36,5 @@
     <color name="acq_sf_text_field_bg_pressed">#26ffffff</color>
 
     <color name="acq_colorShimmer">#333335</color>
+    <color name="acq_colorSbpButton">#F5F1E8</color>
 </resources>

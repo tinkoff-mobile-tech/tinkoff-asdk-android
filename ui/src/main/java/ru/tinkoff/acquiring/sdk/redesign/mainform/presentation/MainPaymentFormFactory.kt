@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
@@ -12,8 +13,9 @@ import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 /**
  * Created by i.golovachev
  */
-class MainPaymentFormFactory(
+internal class MainPaymentFormFactory(
     private val sdk: AcquiringSdk,
+    private val savedCardsRepository: SavedCardsRepository,
     private val provider: NspkBankAppsProvider,
     private val checker: NspkInstalledAppsChecker,
     private val bankCaptionProvider: BankCaptionProvider,
@@ -108,9 +110,8 @@ class MainPaymentFormFactory(
     //region utilits
     private fun List<PaymethodData>.has(paymethod: Paymethod) = any { it.paymethod == paymethod }
 
-    private suspend fun checkSavedCards() = sdk.getCardList { this.customerKey = _customerKey }
-        .performSuspendRequest()
-        .getOrThrow().cards.firstOrNull()
+    private suspend fun checkSavedCards() = savedCardsRepository.getCards(_customerKey, true)
+        .firstOrNull()
         ?.run { CardChosenModel(this, bankCaptionProvider(pan!!)) }
 
     private suspend fun checkApp(packageName: String? = null): Boolean {

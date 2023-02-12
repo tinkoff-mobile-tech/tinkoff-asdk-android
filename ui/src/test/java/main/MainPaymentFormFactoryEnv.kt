@@ -7,6 +7,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
@@ -31,11 +32,16 @@ internal class MainPaymentFormFactoryEnv(
     val defaultTinkoffDeeplink: String = "wwww.tinkoff.ru/tpay/",
     val defaultNspkDeeplink: String = "https://qr.nspk.ru/AS10003P3RH0LJ2A9ROO038L6NT5RU1M?type=01",
     val nspkBankAppsProvider: NspkBankAppsProvider = mock {},
-    val getCardListRequest: GetCardListRequest = mock(),
     val getTerminalPayMethodsRequest: GetTerminalPayMethodsRequest = mock(),
 
     private var installedAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { _, _ ->
         emptyList()
+    },
+
+    private var savedCardsRepository: SavedCardsRepository = object : SavedCardsRepository {
+        override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
+            return emptyList()
+        }
     },
 ) {
 
@@ -46,7 +52,6 @@ internal class MainPaymentFormFactoryEnv(
     }
 
     val sdk = mock<AcquiringSdk> {
-        on { getCardList(any()) } doReturn getCardListRequest
         on { getTerminalPayMethods() } doReturn getTerminalPayMethodsRequest
     }
     val bankCaptionProvider = BankCaptionProvider { defaultBank }
@@ -54,6 +59,7 @@ internal class MainPaymentFormFactoryEnv(
     val mainPaymentFormFactory get() =
         MainPaymentFormFactory(
             sdk,
+            savedCardsRepository,
             nspkBankAppsProvider,
             installedAppsProvider,
             bankCaptionProvider,
@@ -73,13 +79,19 @@ internal class MainPaymentFormFactoryEnv(
     }
 
     suspend fun setCard(list: List<Card> = emptyList()) {
-        whenever(getCardListRequest.performSuspendRequest().getOrThrow()).thenReturn(
-            GetCardListResponse(list.toTypedArray())
-        )
+        savedCardsRepository =  object : SavedCardsRepository {
+            override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
+                return list.toList()
+            }
+        }
     }
 
     suspend fun setCardError(throwable: Throwable) {
-        whenever(getCardListRequest.performSuspendRequest().getOrThrow()).thenThrow(throwable)
+        savedCardsRepository =  object : SavedCardsRepository {
+            override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
+                throw throwable
+            }
+        }
     }
 
     suspend fun setMethod(vararg paymethod: Paymethod, addScheme: Boolean = false) {
@@ -93,8 +105,6 @@ internal class MainPaymentFormFactoryEnv(
     }
 
     suspend fun setMethodError(throwable: Throwable) {
-        whenever(getCardListRequest.performSuspendRequest().getOrThrow()).thenThrow(
-            throwable
-        )
+        whenever(getTerminalPayMethodsRequest.performSuspendRequest().getOrThrow()).thenThrow(throwable)
     }
 }
