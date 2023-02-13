@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
@@ -111,17 +112,14 @@ internal class MainPaymentFormFactory(
     private fun List<PaymethodData>.has(paymethod: Paymethod) = any { it.paymethod == paymethod }
 
     private suspend fun checkSavedCards() = savedCardsRepository.getCards(_customerKey, true)
-        .firstOrNull()
+        .firstOrNull { it.status == CardStatus.ACTIVE }
         ?.run { CardChosenModel(this, bankCaptionProvider(pan!!)) }
 
     private suspend fun checkApp(packageName: String? = null): Boolean {
         val hasApp = if (packageName != null) {
             checker.checkInstalledApps(setOf(packageName), TPAY_DEEPLINK)
         } else {
-            checker.checkInstalledApps(
-                provider.getNspkApps(),
-                NSPK_DEEPLINK
-            )
+            checker.checkInstalledApps(provider.getNspkApps(), NSPK_DEEPLINK)
         }
         return hasApp.isNotEmpty()
     }
@@ -129,7 +127,7 @@ internal class MainPaymentFormFactory(
 
     companion object {
         const val TINKOFF_MB_PACKAGE_ID = "com.idamob.tinkoff.android"
-        const val NSPK_DEEPLINK = "https://qr.nspk.ru/AS10003P3RH0LJ2A9ROO038L6NT5RU1M?type=01"
-        const val TPAY_DEEPLINK = "wwww.tinkoff.ru/tpay/"
+        const val NSPK_DEEPLINK = "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE"
+        const val TPAY_DEEPLINK = "https://www.tinkoff.ru/tpay/1923863684"
     }
 }

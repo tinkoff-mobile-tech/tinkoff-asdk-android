@@ -135,8 +135,8 @@ internal class CardsListViewModel(
 
     fun onBackPressed() {
         if (eventFlow.value !is CardListEvent.RemoveCardProgress) {
-            val state = stateFlow.value as CardsListState.Content
-            val card = state.cards.firstOrNull { it.id == selectedCardIdFlow.value }
+            val state = stateFlow.value as? CardsListState.Content
+            val card = state?.cards?.firstOrNull { it.id == selectedCardIdFlow.value }
             eventFlow.value = CardListEvent.CloseScreen(card?.card)
         }
     }

@@ -18,17 +18,17 @@
 
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
-            <solid android:color="@color/acq_progress_bar_color" />
+            <solid android:color="@color/acq_colorFpsBackground" />
             <corners android:radius="16dp" />
         </shape>
     </item>
 
     <item>
         <ripple
-            android:color="@color/acq_colorButtonPressed">
+            android:color="@color/acq_colorBrandGray">
             <item>
                 <shape android:shape="rectangle">
-                    <solid android:color="@color/acq_progress_bar_color" />
+                    <solid android:color="@color/acq_colorFpsBackground" />
                     <corners android:radius="16dp" />
                 </shape>
             </item>

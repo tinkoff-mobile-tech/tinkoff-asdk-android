@@ -29,7 +29,7 @@ internal class MainPaymentFormFactoryEnv(
     val customerKey: String = "customerKey",
     val defaultBank: String = "Tinkoff",
     val defaultCard: Card = Card("pan"),
-    val defaultTinkoffDeeplink: String = "wwww.tinkoff.ru/tpay/",
+    val defaultTinkoffDeeplink: String = "https://www.tinkoff.ru/tpay/1923863684",
     val defaultNspkDeeplink: String = "https://qr.nspk.ru/AS10003P3RH0LJ2A9ROO038L6NT5RU1M?type=01",
     val nspkBankAppsProvider: NspkBankAppsProvider = mock {},
     val getTerminalPayMethodsRequest: GetTerminalPayMethodsRequest = mock(),
