@@ -56,6 +56,7 @@ class CardsListAdapter(
     ) {
         if (payloads.contains(PAYLOAD_CHANGE_MODE)) {
             holder.bindDeleteVisibility(cards.get(position).showDelete)
+            holder.bindChooseVisibility(cards.get(position).showChoose)
         } else {
             super.onBindViewHolder(holder, position, payloads)
         }
@@ -87,8 +88,8 @@ class CardsListAdapter(
                 card.bankName.orEmpty(),
                 card.tail
             )
-            bindDeleteVisibility(card.showDelete)
-            bindChooseVisibility(card.showChoose)
+            cardChooseIcon.isVisible = card.showChoose
+            cardDeleteIcon.isVisible = card.showDelete
             cardDeleteIcon.setOnClickListener { onDeleteClick(card) }
             itemView.setOnClickListener {
                 onChooseClick(card)
@@ -97,11 +98,9 @@ class CardsListAdapter(
 
         fun bindDeleteVisibility(showDelete: Boolean) {
             cardDeleteIcon.isVisible = showDelete
-            cardChooseIcon.isVisible = false
         }
 
         fun bindChooseVisibility(showChosen: Boolean) {
-            cardDeleteIcon.isVisible = false
             cardChooseIcon.isVisible = showChosen
         }
     }

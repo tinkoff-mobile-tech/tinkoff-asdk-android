@@ -649,6 +649,7 @@ class TinkoffAcquiring(
 
         const val RESULT_ERROR = 500
         internal const val NEW_CARD_CHOSEN = 509
+        internal const val CANCEL_CARD_CHOSEN = 510
         const val EXTRA_ERROR = "extra_error"
         const val EXTRA_CARD_ID = "extra_card_id"
         const val EXTRA_PAYMENT_ID = "extra_payment_id"

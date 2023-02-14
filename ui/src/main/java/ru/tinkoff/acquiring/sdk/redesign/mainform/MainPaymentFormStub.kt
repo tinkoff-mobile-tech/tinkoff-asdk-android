@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.utils.getOptions
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.putOptions
@@ -33,13 +34,15 @@ class MainPaymentFormStub : AppCompatActivity() {
                 applicationContext,
                 options.terminalKey,
                 options.publicKey
-            ).sdk.getCardList { this.customerKey = options.customer.customerKey }.execute()
+            )
+                .sdk.getCardList { this.customerKey = options.customer.customerKey }
+                .performSuspendRequest().getOrNull()?.cards ?: emptyArray()
 
 
             byCardPayment.launch(
                 PaymentByCard.StartData(
                     options,
-                    ArrayList(cardList.cards.toMutableList())
+                    ArrayList(cardList.toMutableList())
                 )
             )
         }
