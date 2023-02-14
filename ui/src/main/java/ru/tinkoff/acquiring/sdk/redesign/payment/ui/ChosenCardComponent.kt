@@ -1,13 +1,17 @@
 package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 
+import android.content.Context
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getSystemService
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
 import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
+
 
 /**
  * Created by i.golovachev
@@ -26,15 +30,20 @@ internal class ChosenCardComponent(
             onCvcCompleted(s, b)
         }
     )
-
     override fun render(state: CardChosenModel) = with(state) {
         cardLogo.setImageResource(CardLogoProvider.getCardLogo(pan))
         cardName.text = root.context.getString(
             R.string.acq_cardlist_bankname, bankName.orEmpty(), tail
         )
         root.setOnClickListener { onChangeCard(state) }
-        cardCvc.root.setOnClickListener {
-            cardCvc.requestViewFocus()
-        }
+
+    }
+
+    fun clearCvc() {
+        cardCvc.render(null)
+    }
+
+    fun enableCvc(isEnable: Boolean) {
+        cardCvc.enable(isEnable)
     }
 }

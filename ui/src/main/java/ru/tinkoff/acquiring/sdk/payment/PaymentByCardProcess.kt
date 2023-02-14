@@ -4,6 +4,7 @@ import android.app.Application
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
@@ -34,7 +35,7 @@ class PaymentByCardProcess internal constructor(
 
     private lateinit var paymentSource: CardSource
     private val _state = MutableStateFlow<PaymentByCardState>(PaymentByCardState.Created)
-    val state = _state.asStateFlow()
+    val state = _state
 
     fun start(
         cardData: CardSource,
@@ -51,8 +52,16 @@ class PaymentByCardProcess internal constructor(
         }
     }
 
+    fun goTo3ds() {
+        _state.value = PaymentByCardState.ThreeDsInProcess
+    }
+
     fun stop() {
         coroutineManager.cancelAll()
+    }
+
+    fun recreate() {
+        _state.value = PaymentByCardState.Created
     }
 
     private suspend fun callInitRequest(
@@ -61,14 +70,15 @@ class PaymentByCardProcess internal constructor(
         email: String?
     ) {
         this.paymentSource = cardData
+
+        delay(30000)
+
         val init = sdk.init {
             configure(paymentOptions)
             if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {
                 receipt?.email = email
             }
         }.execute()
-
-        delay(10000)
 
         callCheck3DsVersion(init.paymentId!!, cardData, paymentOptions, email)
     }
@@ -106,7 +116,6 @@ class PaymentByCardProcess internal constructor(
                 return
             }
         }
-        delay(12000)
         callFinishAuthorizeRequest(
             paymentId,
             paymentSource,
@@ -192,6 +201,8 @@ sealed interface PaymentByCardState {
 
     class ThreeDsUiNeeded(val threeDsState: ThreeDsState, val paymentOptions: PaymentOptions) :
         PaymentByCardState
+
+    object ThreeDsInProcess : PaymentByCardState
 
     class Success(val paymentId: Long, val cardId: String?, val rebillId: String?) :
         PaymentByCardState {

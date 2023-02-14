@@ -1,9 +1,13 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.carddatainput
 
+import android.content.Context
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.smartfield.AcqEditText
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearButton
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
@@ -19,7 +23,7 @@ import ru.tinkoff.decoro.watchers.MaskFormatWatcher
 class CvcComponent(
     val root: ViewGroup,
     val onInputComplete: (String) -> Unit = {},
-    val onDataChange: (Boolean, String) -> Unit = { _, _ ->}
+    val onDataChange: (Boolean, String) -> Unit = { _, _ -> }
 ) : UiComponent<String?> {
 
     private val cvcInput: AcqTextFieldView = root.findViewById(R.id.cvc_input)
@@ -64,13 +68,19 @@ class CvcComponent(
         cvcInput.text = state
     }
 
+    fun enable(isEnable: Boolean) {
+        cvcInput.isEnabled = isEnable
+        cvcInput.editable = isEnable
+        if (isEnable.not()) {
+            cvcInput.hideKeyboard()
+        }
+    }
+
     fun requestViewFocus() {
-        cvcInput.requestApplyInsets()
+        cvcInput.requestViewFocus()
     }
 
     companion object {
-
-        const val EXPIRY_DATE_MASK = "__/__"
         const val CVC_MASK = "___"
         fun createCvcMask(): MaskImpl = MaskImpl
             .createTerminated(UnderscoreDigitSlotsParser().parseSlots(CVC_MASK))

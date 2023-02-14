@@ -114,7 +114,7 @@ internal class CardsListViewModel(
                 it.copy(
                     showDelete = mode == CardListMode.DELETE,
                     isBlocked = it.isBlocked,
-                    showChoose = selectedCardIdFlow.value == it.id
+                    showChoose = selectedCardIdFlow.value == it.card.cardId && mode === CardListMode.CHOOSE
                 )
             }
             CardsListState.Content(mode, false, cards)
@@ -135,9 +135,16 @@ internal class CardsListViewModel(
 
     fun onBackPressed() {
         if (eventFlow.value !is CardListEvent.RemoveCardProgress) {
-            val state = stateFlow.value as CardsListState.Content
-            val card = state.cards.firstOrNull { it.id == selectedCardIdFlow.value }
-            eventFlow.value = CardListEvent.CloseScreen(card?.card)
+            val _state = stateFlow.value
+            eventFlow.value = when(_state) {
+                is CardsListState.Error -> CardListEvent.CloseBecauseCardNotLoaded
+                is CardsListState.NoNetwork -> CardListEvent.CloseBecauseCardNotLoaded
+                else ->  {
+                    val state = _state as? CardsListState.Content // пустой список вернет состояние, при котором необходимо выбирать новую карту
+                    val card = state?.cards?.firstOrNull { it.id == selectedCardIdFlow.value }
+                    CardListEvent.CloseScreen(card?.card)
+                }
+            }
         }
     }
 
@@ -159,7 +166,11 @@ internal class CardsListViewModel(
         }
     }
 
-    private fun filterCards(it: Array<Card>, recurrentOnly: Boolean, mode: CardListMode): List<CardItemUiModel> {
+    private fun filterCards(
+        it: Array<Card>,
+        recurrentOnly: Boolean,
+        mode: CardListMode
+    ): List<CardItemUiModel> {
         var activeCards = it.filter { card ->
             card.status == CardStatus.ACTIVE
         }
@@ -191,7 +202,7 @@ internal class CardsListViewModel(
             stateFlow.value = CardsListState.Empty
             eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, null)
         } else {
-            if (deletedCard.showChoose) {
+            if (deletedCard.showChoose || deletedCard.id == selectedCardIdFlow.value) {
                 selectedCardIdFlow.value = list.firstOrNull()?.id
             }
             stateFlow.update { CardsListState.Content(it.mode, true, list) }

@@ -49,6 +49,18 @@ internal class EmailInputFragment : Fragment() {
 
     fun isValid(): Boolean = EmailValidator.validate(emailValue)
 
+    fun clearFocus() {
+        emailInput.clearViewFocus()
+    }
+
+    fun enableEmail(isEnabled: Boolean) {
+        emailInput.editText.isEnabled = isEnabled
+        if (isEnabled) {
+            emailInput.editText.clearFocus()
+            emailInput.editText.hideKeyboard()
+        }
+    }
+
     private fun onDataChanged() {
         getParent<OnEmailDataChanged>()?.onEmailDataChanged(isValid())
     }
