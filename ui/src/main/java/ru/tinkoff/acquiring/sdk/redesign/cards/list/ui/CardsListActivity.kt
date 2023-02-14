@@ -302,6 +302,7 @@ internal class CardsListActivity : TransparentActivity() {
                     is CardListEvent.CloseWithoutCard -> {
                         finishWithoutCard()
                     }
+                    is CardListEvent.CloseBecauseCardNotLoaded -> {}
                     is CardListEvent.ShowCardDeleteError -> {
                         showErrorDialog(
                             R.string.acq_cardlist_alert_deletecard_label,
@@ -378,6 +379,12 @@ internal class CardsListActivity : TransparentActivity() {
 
     private fun finishWithoutCard() {
         setResult(TinkoffAcquiring.NEW_CARD_CHOSEN)
+        //CANCEL_CARD_CHOSEN
+        super.finish()
+    }
+
+    private fun finishWithOldCard() {
+        setResult(TinkoffAcquiring.CANCEL_CARD_CHOSEN)
         super.finish()
     }
 }

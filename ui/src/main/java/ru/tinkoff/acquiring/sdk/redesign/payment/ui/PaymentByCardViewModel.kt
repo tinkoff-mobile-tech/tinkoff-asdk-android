@@ -51,7 +51,7 @@ internal class PaymentByCardViewModel(
         dateExpired: String? = null,
         isValidCardData: Boolean = false,
     ) {
-        if (chosenCard != null) return
+        if (state.value.chosenCard != null) return
 
         state.update {
             it.copy(
@@ -81,16 +81,16 @@ internal class PaymentByCardViewModel(
         state.update { it.copy(cvc = cvc, isValidCardData = isValid) }
 
     fun setInputNewCard() = state.update {
-        it.copy(
-            cardId = null,
-            cardNumber = null,
-            cvc = null,
-            dateExpired = null,
-            isValidCardData = false,
-            isValidEmail = false,
-            chosenCard = null
-        )
-    }
+            it.copy(
+                cardId = null,
+                cardNumber = null,
+                cvc = null,
+                dateExpired = null,
+                isValidCardData = false,
+                isValidEmail = it.isValidEmail,
+                chosenCard = null
+            )
+        }
 
     fun sendReceiptChange(isSelect: Boolean) = state.update {
         it.copy(sendReceipt = isSelect)
@@ -107,6 +107,13 @@ internal class PaymentByCardViewModel(
         paymentByCardProcess.start(_state.cardSource, _state.paymentOptions, emailForPayment)
     }
 
+    fun rechoseCard() {
+        paymentByCardProcess.recreate()
+    }
+    fun goTo3ds() {
+        paymentByCardProcess.goTo3ds()
+    }
+
     fun cancelPayment() {
         paymentByCardProcess.stop()
     }
@@ -117,7 +124,7 @@ internal class PaymentByCardViewModel(
         private val cvc: String? = null,
         private val dateExpired: String? = null,
         private val isValidCardData: Boolean = false,
-        private val isValidEmail: Boolean = false,
+        val isValidEmail: Boolean = false,
         val chosenCard: CardChosenModel? = null,
         val sendReceipt: Boolean = false,
         val email: String? = null,
