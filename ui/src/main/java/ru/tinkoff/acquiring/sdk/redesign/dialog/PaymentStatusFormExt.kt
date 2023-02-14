@@ -3,7 +3,10 @@ package ru.tinkoff.acquiring.sdk.redesign.dialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import ru.rtln.tds.sdk.log.Logger
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 
 interface OnPaymentSheetCloseListener {
@@ -23,9 +26,13 @@ fun PaymentStatusSheet.showIfNeed(
     tag: String? = null
 ): PaymentStatusSheet {
     if (isAdded.not()) {
-        show(fragmentManager, tag)
+        fragmentManager.executePendingTransactions()
+        try {
+            show(fragmentManager, tag)
+        } catch (e: IllegalStateException) {
+            AcquiringSdk.log(e)
+        }
     }
-
     return this
 }
 
