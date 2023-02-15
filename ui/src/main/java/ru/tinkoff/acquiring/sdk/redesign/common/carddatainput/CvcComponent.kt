@@ -40,7 +40,7 @@ class CvcComponent(
                 val cvc = cvc
                 if (cvc.length > CVC_MASK.length) {
                     if (validate(cvc)) {
-                        cvcInput.clearViewFocus()
+                       cvcInput.clearViewFocus()
                         onInputComplete(cvc)
                     } else {
                         errorHighlighted = true
