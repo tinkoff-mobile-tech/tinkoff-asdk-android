@@ -71,8 +71,6 @@ class PaymentByCardProcess internal constructor(
     ) {
         this.paymentSource = cardData
 
-        delay(30000)
-
         val init = sdk.init {
             configure(paymentOptions)
             if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {

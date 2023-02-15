@@ -82,7 +82,10 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             chosenCardComponent.clearCvc()
             when (result) {
                 is TinkoffAcquiring.ChoseCard.Success -> viewModel.setSavedCard(result.card)
-                is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> viewModel.setInputNewCard()
+                is TinkoffAcquiring.ChoseCard.NeedInputNewCard ->  {
+                    cardDataInput.clearInput()
+                    viewModel.setInputNewCard()
+                }
                 else -> Unit
             }
         }
