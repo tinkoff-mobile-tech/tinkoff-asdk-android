@@ -68,6 +68,14 @@ class CvcComponent(
         cvcInput.text = state
     }
 
+    fun enable(isEnable: Boolean) {
+        cvcInput.isEnabled = isEnable
+        cvcInput.editable = isEnable
+        if (isEnable.not()) {
+            cvcInput.hideKeyboard()
+        }
+    }
+
     fun requestViewFocus() {
         cvcInput.requestViewFocus()
     }

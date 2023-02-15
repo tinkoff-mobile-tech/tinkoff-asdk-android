@@ -70,6 +70,7 @@ class PaymentByCardProcess internal constructor(
         email: String?
     ) {
         this.paymentSource = cardData
+
         val init = sdk.init {
             configure(paymentOptions)
             if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {
