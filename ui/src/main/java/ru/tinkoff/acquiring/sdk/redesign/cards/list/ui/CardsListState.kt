@@ -36,6 +36,8 @@ sealed class CardListEvent {
     class CloseScreen(val selectedCard: Card?) : CardListEvent()
 
     object CloseWithoutCard : CardListEvent()
+
+    object CloseBecauseCardNotLoaded : CardListEvent()
 }
 
 enum class CardListMode {

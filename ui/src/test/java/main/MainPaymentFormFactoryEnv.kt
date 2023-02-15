@@ -1,7 +1,6 @@
 package main
 
 import kotlinx.coroutines.runBlocking
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -12,7 +11,6 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFa
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
-import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
 import ru.tinkoff.acquiring.sdk.requests.GetTerminalPayMethodsRequest
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.*
@@ -27,9 +25,7 @@ val nspkAppSet = setOf("ru.nspk.sbpay")
  */
 internal class MainPaymentFormFactoryEnv(
     val customerKey: String = "customerKey",
-    val defaultBank: String = "Tinkoff",
-    val defaultCard: Card = Card("pan"),
-    val defaultTinkoffDeeplink: String = "https://www.tinkoff.ru/tpay/1923863684",
+    val defaultTinkoffDeeplink: String = "wwww.tinkoff.ru/tpay/",
     val defaultNspkDeeplink: String = "https://qr.nspk.ru/AS10003P3RH0LJ2A9ROO038L6NT5RU1M?type=01",
     val nspkBankAppsProvider: NspkBankAppsProvider = mock {},
     val getTerminalPayMethodsRequest: GetTerminalPayMethodsRequest = mock(),
@@ -65,8 +61,6 @@ internal class MainPaymentFormFactoryEnv(
             bankCaptionProvider,
             customerKey
         )
-
-    val cardChosenModel = defaultCard.let { CardChosenModel(it, defaultBank) }
 
     suspend fun setInstalledApps(apps: List<String> = emptyList()) {
         installedAppsProvider = NspkInstalledAppsChecker { _, deeplink ->
@@ -106,5 +100,15 @@ internal class MainPaymentFormFactoryEnv(
 
     suspend fun setMethodError(throwable: Throwable) {
         whenever(getTerminalPayMethodsRequest.performSuspendRequest().getOrThrow()).thenThrow(throwable)
+    }
+
+    suspend fun setNspkError(throwable: Throwable) {
+        whenever(nspkBankAppsProvider.getNspkApps()).thenThrow(throwable)
+    }
+
+    companion object {
+        val defaultBank: String = "Tinkoff"
+        val defaultCard: Card = Card("pan")
+        val cardChosenModel = defaultCard.let { CardChosenModel(it, defaultBank) }
     }
 }

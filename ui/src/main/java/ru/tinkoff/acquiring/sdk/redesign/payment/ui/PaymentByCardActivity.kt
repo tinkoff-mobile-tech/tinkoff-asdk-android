@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
@@ -77,6 +78,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     private val statusSheetStatus = createPaymentSheetWrapper()
     private val savedCards =
         registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) { result ->
+            chosenCardComponent.clearCvc()
             when (result) {
                 is TinkoffAcquiring.ChoseCard.Success -> viewModel.setSavedCard(result.card)
                 is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> viewModel.setInputNewCard()
@@ -104,10 +106,15 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         cardDataInput.setupCameraCardScanner(startData.paymentOptions.features.cameraCardScannerContract)
         cardDataInput.validateNotExpired = startData.paymentOptions.features.validateExpiryDate
 
-        lifecycleScope.launchWhenCreated { uiState() }
-        lifecycleScope.launch { processState() }
         payButton.setOnClickListener {
             viewModel.pay()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (statusSheetStatus.state != null) {
+            statusSheetStatus.showIfNeed(supportFragmentManager)
         }
     }
 
@@ -131,7 +138,6 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                 )
             } else {
                 setResult(Activity.RESULT_CANCELED)
-                finish()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -156,6 +162,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     //region Navigation
     private fun onChangeCard() {
+        viewModel.rechoseCard()
         savedCards.launch(savedCardOptions)
     }
 
@@ -220,10 +227,9 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     private suspend fun processState() {
         viewModel.paymentProcessState.collect {
-            payButton.isLoading = it is PaymentByCardState.Started
-
+            handleLoadingInProcess(it is PaymentByCardState.Started)
             when (it) {
-                is PaymentByCardState.Created -> Unit
+                is PaymentByCardState.Created -> statusSheetStatus.state = null
                 is PaymentByCardState.Error -> {
                     statusSheetStatus.showIfNeed(supportFragmentManager).state =
                         PaymentStatusSheetState.Error(
@@ -243,21 +249,26 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                             rebillId = it.rebillId
                         )
                 }
-                is PaymentByCardState.ThreeDsUiNeeded -> try {
-                    ThreeDsHelper.Launch.launchBrowserBased(
-                        this,
-                        TransparentActivity.THREE_DS_REQUEST_CODE,
-                        it.paymentOptions,
-                        it.threeDsState.data,
-                    )
-                } catch (e: Throwable) {
-                    statusSheetStatus.showIfNeed(supportFragmentManager).state =
-                        PaymentStatusSheetState.Error(
-                            title = R.string.acq_commonsheet_failed_title,
-                            mainButton = R.string.acq_commonsheet_failed_primary_button,
-                            throwable = e
+                is PaymentByCardState.ThreeDsUiNeeded -> {
+                    try {
+                        ThreeDsHelper.Launch.launchBrowserBased(
+                            this,
+                            TransparentActivity.THREE_DS_REQUEST_CODE,
+                            it.paymentOptions,
+                            it.threeDsState.data,
                         )
+                    } catch (e: Throwable) {
+                        statusSheetStatus.showIfNeed(supportFragmentManager).state =
+                            PaymentStatusSheetState.Error(
+                                title = R.string.acq_commonsheet_failed_title,
+                                mainButton = R.string.acq_commonsheet_failed_primary_button,
+                                throwable = e
+                            )
+                    } finally {
+                        viewModel.goTo3ds()
+                    }
                 }
+                is PaymentByCardState.ThreeDsInProcess -> statusSheetStatus.state = null
             }
         }
     }
@@ -268,6 +279,18 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         }
     }
     //endregion
+
+    private fun handleLoadingInProcess(inProcess: Boolean) {
+        payButton.isLoading = inProcess
+        if (inProcess) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+    }
 
     private fun finishWithSuccess(result: PaymentResult) {
         setResult(RESULT_OK, createSuccessIntent(result))
