@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -81,10 +82,16 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             chosenCardComponent.clearCvc()
             when (result) {
                 is TinkoffAcquiring.ChoseCard.Success -> viewModel.setSavedCard(result.card)
-                is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> viewModel.setInputNewCard()
+                is TinkoffAcquiring.ChoseCard.NeedInputNewCard ->  {
+                    cardDataInput.clearInput()
+                    viewModel.setInputNewCard()
+                }
                 else -> Unit
             }
         }
+
+    //todo сделать через вьюмодельй
+    private var onBackEnabled: Boolean = true
 
     //region Activity LC
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,6 +179,8 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
+        if(onBackEnabled.not()) return
+
         viewModel.cancelPayment()
         setResult(RESULT_CANCELED)
         finish()
@@ -205,6 +214,10 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
         sendReceiptSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.sendReceiptChange(isChecked)
+            if (isChecked.not() && emailInput.isAdded && emailInput.isVisible) {
+                emailInput.emailInput.clearViewFocus()
+                emailInput.emailInput.hideKeyboard()
+            }
         }
 
         payButton.setOnClickListener {
@@ -282,6 +295,10 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     private fun handleLoadingInProcess(inProcess: Boolean) {
         payButton.isLoading = inProcess
+        emailInput.enableEmail(inProcess.not())
+        chosenCardComponent.enableCvc(inProcess.not())
+        onBackEnabled = inProcess.not()
+
         if (inProcess) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,

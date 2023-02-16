@@ -379,7 +379,6 @@ internal class CardsListActivity : TransparentActivity() {
 
     private fun finishWithoutCard() {
         setResult(TinkoffAcquiring.NEW_CARD_CHOSEN)
-        //CANCEL_CARD_CHOSEN
         super.finish()
     }
 

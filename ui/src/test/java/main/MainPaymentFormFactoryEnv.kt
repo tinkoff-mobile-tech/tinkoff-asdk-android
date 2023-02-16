@@ -25,8 +25,8 @@ val nspkAppSet = setOf("ru.nspk.sbpay")
  */
 internal class MainPaymentFormFactoryEnv(
     val customerKey: String = "customerKey",
-    val defaultTinkoffDeeplink: String = "wwww.tinkoff.ru/tpay/",
-    val defaultNspkDeeplink: String = "https://qr.nspk.ru/AS10003P3RH0LJ2A9ROO038L6NT5RU1M?type=01",
+    val defaultTinkoffDeeplink: String ="https://www.tinkoff.ru/tpay/1923863684",
+    val defaultNspkDeeplink: String =  "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE",
     val nspkBankAppsProvider: NspkBankAppsProvider = mock {},
     val getTerminalPayMethodsRequest: GetTerminalPayMethodsRequest = mock(),
 

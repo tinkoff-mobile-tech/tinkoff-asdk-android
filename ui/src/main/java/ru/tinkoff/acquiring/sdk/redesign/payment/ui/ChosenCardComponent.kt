@@ -42,4 +42,8 @@ internal class ChosenCardComponent(
     fun clearCvc() {
         cardCvc.render(null)
     }
+
+    fun enableCvc(isEnable: Boolean) {
+        cardCvc.enable(isEnable)
+    }
 }

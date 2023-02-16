@@ -202,7 +202,7 @@ internal class CardsListViewModel(
             stateFlow.value = CardsListState.Empty
             eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, null)
         } else {
-            if (deletedCard.showChoose) {
+            if (deletedCard.showChoose || deletedCard.id == selectedCardIdFlow.value) {
                 selectedCardIdFlow.value = list.firstOrNull()?.id
             }
             stateFlow.update { CardsListState.Content(it.mode, true, list) }
