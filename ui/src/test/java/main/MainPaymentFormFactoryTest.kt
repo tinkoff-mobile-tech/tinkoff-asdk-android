@@ -10,6 +10,7 @@ import org.junit.Test
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 
 
 /**
@@ -62,7 +63,7 @@ internal class MainPaymentFormFactoryTest {
                     }
                 },
                 then = {
-                    val button = mainPaymentFormFactory.primary()
+                    val button = mainPaymentFormFactory.getUi().primary
 
                     if (expected.primary is MainPaymentFormUi.Primary.Card) {
                         assertViaClassName(MainPaymentFormUi.Primary.Card::class.java, button)

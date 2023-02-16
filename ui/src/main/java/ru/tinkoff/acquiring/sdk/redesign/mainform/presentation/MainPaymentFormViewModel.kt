@@ -17,6 +17,10 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailValidator
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
+import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
@@ -29,7 +33,7 @@ import ru.tinkoff.acquiring.sdk.utils.getExtra
 internal class MainPaymentFormViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val primaryButtonFactory: MainPaymentFormFactory,
-    private val mainFormNavController : MainFormNavController,
+    private val mainFormNavController: MainFormNavController,
     private val coroutineManager: CoroutineManager,
 ) : ViewModel() {
 
@@ -52,7 +56,7 @@ internal class MainPaymentFormViewModel(
 
     init {
         coroutineManager.launchOnBackground {
-            runCatching { primaryButtonFactory.primary() }
+            runCatching { primaryButtonFactory.getUi() }
                 .onFailure { stateFlow.value = State.Error }
                 .onSuccess { stateFlow.value = State.Content(it) }
         }
@@ -74,19 +78,25 @@ internal class MainPaymentFormViewModel(
 
     fun toNewCard() = viewModelScope.launch { mainFormNavController.toPayNewCard(paymentOptions) }
 
-    fun toChooseCard() = viewModelScope.launch { mainFormNavController.toChooseCard(paymentOptions) }
+    fun toChooseCard() =
+        viewModelScope.launch { mainFormNavController.toChooseCard(paymentOptions) }
 
     fun toTpay() {
         // todo
     }
 
     @VisibleForTesting
-    fun validateState(state: State, cvc: String, needEmailValidate: Boolean, email: String?): Boolean {
+    fun validateState(
+        state: State,
+        cvc: String,
+        needEmailValidate: Boolean,
+        email: String?
+    ): Boolean {
         val checkCard = state is State.Content
-                && state.button is MainPaymentFormUi.Primary.Card
-                && state.button.selectedCard != null
+                && state.ui.primary is MainPaymentFormUi.Primary.Card
+                && state.ui.primary.selectedCard != null
 
-       return if (checkCard) {
+        return if (checkCard) {
             val validateEmailIfNeed =
                 if (needEmailValidate) EmailValidator.validate(email) else true
             CardValidator.validateSecurityCode(cvc) && validateEmailIfNeed
@@ -101,7 +111,7 @@ internal class MainPaymentFormViewModel(
 
         object Error : State
 
-        data class Content(val button: MainPaymentFormUi.Primary, val error: Throwable? = null) :
+        data class Content(val ui: MainPaymentFormUi.Ui, val error: Throwable? = null) :
             State
     }
 
@@ -119,16 +129,22 @@ internal class MainPaymentFormViewModel(
                     application, opt.terminalKey, opt.publicKey
                 ).sdk
                 val savedCardRepo = SavedCardsRepository.Impl(sdk)
+                val nspkProvider = NspkBankAppsProvider { NspkRequest().execute().banks }
+                val nspkChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
+                    SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
+                }
+                val bankCaptionProvider = BankCaptionResourceProvider(application)
                 MainPaymentFormViewModel(
                     handle,
                     MainPaymentFormFactory(
                         sdk,
                         savedCardRepo,
-                        { NspkRequest().execute().banks },
-                        { nspkBanks, dl ->
-                            SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
-                        },
-                        BankCaptionResourceProvider(application),
+                        PrimaryButtonConfigurator.Impl(
+                            nspkProvider,
+                            nspkChecker,
+                            bankCaptionProvider
+                        ),
+                        SecondButtonConfigurator.Impl(nspkProvider, nspkChecker),
                         opt.customer.customerKey!!
                     ),
                     MainFormNavController(),

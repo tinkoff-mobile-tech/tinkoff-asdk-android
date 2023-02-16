@@ -6,8 +6,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
@@ -25,8 +28,8 @@ val nspkAppSet = setOf("ru.nspk.sbpay")
  */
 internal class MainPaymentFormFactoryEnv(
     val customerKey: String = "customerKey",
-    val defaultTinkoffDeeplink: String ="https://www.tinkoff.ru/tpay/1923863684",
-    val defaultNspkDeeplink: String =  "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE",
+    val defaultTinkoffDeeplink: String = "https://www.tinkoff.ru/tpay/1923863684",
+    val defaultNspkDeeplink: String = "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE",
     val nspkBankAppsProvider: NspkBankAppsProvider = mock {},
     val getTerminalPayMethodsRequest: GetTerminalPayMethodsRequest = mock(),
 
@@ -52,15 +55,24 @@ internal class MainPaymentFormFactoryEnv(
     }
     val bankCaptionProvider = BankCaptionProvider { defaultBank }
 
-    val mainPaymentFormFactory get() =
-        MainPaymentFormFactory(
-            sdk,
-            savedCardsRepository,
-            nspkBankAppsProvider,
-            installedAppsProvider,
-            bankCaptionProvider,
-            customerKey
-        )
+    val primaryButtonConfigurator get() =  PrimaryButtonConfigurator.Impl(
+        nspkBankAppsProvider,
+        installedAppsProvider,
+        bankCaptionProvider
+    )
+
+    val secondaryButtonConfigurator get() =  SecondButtonConfigurator.Impl(
+        nspkBankAppsProvider,
+        installedAppsProvider
+    )
+
+    val mainPaymentFormFactory
+        get() = MainPaymentFormFactory(
+                sdk,
+                savedCardsRepository,
+                primaryButtonConfigurator, secondaryButtonConfigurator,
+                customerKey
+            )
 
     suspend fun setInstalledApps(apps: List<String> = emptyList()) {
         installedAppsProvider = NspkInstalledAppsChecker { _, deeplink ->
@@ -73,7 +85,7 @@ internal class MainPaymentFormFactoryEnv(
     }
 
     suspend fun setCard(list: List<Card> = emptyList()) {
-        savedCardsRepository =  object : SavedCardsRepository {
+        savedCardsRepository = object : SavedCardsRepository {
             override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
                 return list.toList()
             }
@@ -81,7 +93,7 @@ internal class MainPaymentFormFactoryEnv(
     }
 
     suspend fun setCardError(throwable: Throwable) {
-        savedCardsRepository =  object : SavedCardsRepository {
+        savedCardsRepository = object : SavedCardsRepository {
             override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
                 throw throwable
             }
@@ -99,7 +111,9 @@ internal class MainPaymentFormFactoryEnv(
     }
 
     suspend fun setMethodError(throwable: Throwable) {
-        whenever(getTerminalPayMethodsRequest.performSuspendRequest().getOrThrow()).thenThrow(throwable)
+        whenever(getTerminalPayMethodsRequest.performSuspendRequest().getOrThrow()).thenThrow(
+            throwable
+        )
     }
 
     suspend fun setNspkError(throwable: Throwable) {
@@ -108,7 +122,7 @@ internal class MainPaymentFormFactoryEnv(
 
     companion object {
         val defaultBank: String = "Tinkoff"
-        val defaultCard: Card = Card("pan")
+        val defaultCard: Card = Card("pan", status = CardStatus.ACTIVE)
         val cardChosenModel = defaultCard.let { CardChosenModel(it, defaultBank) }
     }
 }

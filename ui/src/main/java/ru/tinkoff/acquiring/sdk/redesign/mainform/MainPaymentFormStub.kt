@@ -79,7 +79,7 @@ class MainPaymentFormStub : AppCompatActivity() {
                 is MainPaymentFormViewModel.State.Error -> flipper.showById(R.id.acq_main_form_loader)
                 is MainPaymentFormViewModel.State.Content -> {
                     flipper.showById(R.id.acq_main_form_primary_button)
-                    primaryButtonComponent.render(state = state.button)
+                    primaryButtonComponent.render(state = state.ui.primary)
                 }
             }
         }
