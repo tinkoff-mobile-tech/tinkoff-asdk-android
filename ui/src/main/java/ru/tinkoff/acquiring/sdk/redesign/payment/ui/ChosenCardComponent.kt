@@ -17,7 +17,7 @@ import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
  * Created by i.golovachev
  */
 internal class ChosenCardComponent(
-    private val root: ViewGroup,
+    val root: ViewGroup,
     private val onChangeCard: (CardChosenModel) -> Unit = {},
     private val onCvcCompleted: (String, Boolean) -> Unit = { _, _ -> }
 ) : UiComponent<CardChosenModel> {
