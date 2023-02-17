@@ -111,7 +111,6 @@
 
         <activity
             android:name=".redesign.mainform.MainPaymentFormStub"
-            android:noHistory="true"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme.Base" />
 

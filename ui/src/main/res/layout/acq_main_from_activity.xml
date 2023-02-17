@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/acq_main_form_flipper"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include android:id="@+id/acq_main_form_loader" layout="@layout/acq_main_from_stub" />
+
+    <include android:id="@+id/acq_main_form_primary_button" layout="@layout/acq_main_form_primary_button_component" />
+
+</ViewFlipper>

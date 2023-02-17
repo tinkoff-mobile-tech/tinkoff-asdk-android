@@ -27,6 +27,10 @@ android {
     lintOptions {
         disable 'VectorRaster', 'UseRequireDrawableLoadingForDrawables', 'ObsoleteSdkInt', 'UnusedResources', 'IconDipSize', 'IconLocation'
     }
+
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 tasks.dokkaHtmlPartial.configure {

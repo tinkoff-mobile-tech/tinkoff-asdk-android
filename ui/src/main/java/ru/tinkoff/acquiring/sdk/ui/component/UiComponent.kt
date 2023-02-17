@@ -17,4 +17,9 @@ fun <T> UiComponent<T>.bindKtx(coroutineScope: CoroutineScope, flow: Flow<T>){
     coroutineScope.launch { flow.collect(::render) }
 }
 
+fun <T> bindKtx(coroutineScope: CoroutineScope, flow: Flow<T>, render: (T) -> Unit ){
+    coroutineScope.launch { flow.collect(render) }
+}
+
+
 val CallbackStub = {}
