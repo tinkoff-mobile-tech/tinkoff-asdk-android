@@ -16,6 +16,7 @@ internal class MainPaymentFormFactory(
     private val savedCardsRepository: SavedCardsRepository,
     private val primaryButtonConfigurator: PrimaryButtonConfigurator,
     private val secondButtonConfigurator: SecondButtonConfigurator,
+    private val mergeMethodsStrategy: MergeMethodsStrategy,
     private val _customerKey: String
 ) {
 
@@ -25,18 +26,9 @@ internal class MainPaymentFormFactory(
         val primary = primaryButtonConfigurator.get(methods, cards)
         val secondaries = secondButtonConfigurator.get(methods, cards)
 
-        return MainPaymentFormUi.Ui(primary, intersectButtons(primary, secondaries))
+        return mergeMethodsStrategy.merge(primary, secondaries)
     }
 
-    private fun intersectButtons(
-        primary: MainPaymentFormUi.Primary,
-        seconds: Set<MainPaymentFormUi.Secondary>
-    ): Set<MainPaymentFormUi.Secondary> {
-        return seconds.toMutableSet().apply {
-            removeIf { it.paymethod == primary.paymethod }
-            sortedBy { it.order }
-        }
-    }
 
     //region getData
     private suspend fun getMethods() = getOrNull {

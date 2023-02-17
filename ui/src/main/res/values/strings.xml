@@ -105,4 +105,23 @@
     <string name="acq_stub_sbp_no_banks_details">Details</string>
     <string name="acq_chosen_card_change">Change card</string>
 
+    <string name="acq_primary_with_tinkoff_pay">Pay with tinkoff</string>
+    <string name="acq_primary_with_sbp">Pay with</string>
+    <string name="acq_primary_with_card">Pay by a card</string>
+    <string name="acq_primary_with_сhosen_card">Pay %1$s</string>
+
+    <string name="acq_secondary_block_title">Pay by another method</string>
+    <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
+    <string name="acq_secondary_tinkoff_pay_subtitle">in Tinkoff app</string>
+
+    <string name="acq_secondary_sbp_title">Fast payment system</string>
+    <string name="acq_secondary_sbp_subtitle">in app of any bank</string>
+
+    <string name="acq_secondary_card_title">Картой</string>
+    <plurals name="acq_secondary_cards_subtitle">
+        <item quantity="one">one saved card</item>
+        <item quantity="other">%d saved cards</item>
+    </plurals>
+
+
 </resources>

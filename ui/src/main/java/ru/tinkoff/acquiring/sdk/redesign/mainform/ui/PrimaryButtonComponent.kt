@@ -31,6 +31,7 @@ internal class PrimaryButtonComponent(
     private val onChooseCardClick: () -> Unit = {}
 ) : UiComponent<MainPaymentFormUi.Primary> {
 
+    private val ctx = viewBinding.root.context
     private val primaryButtonContainer = viewBinding.primary
     private val textView: TextView = primaryButtonContainer.acqPrimaryButtonText
     private val imageView: ImageView = primaryButtonContainer.acqPrimaryButtonImage
@@ -58,7 +59,7 @@ internal class PrimaryButtonComponent(
                     setState(
                         bgColor = R.drawable.acq_button_yellow_bg,
                         textColor = R.color.acq_colorTinkoffPayText,
-                        buttonText = R.string.common_signin_button_text,
+                        buttonText = ctx.getString(R.string.acq_primary_with_сhosen_card, 0),
                         icon = null,
                         onClick = {}
                     )
@@ -66,7 +67,7 @@ internal class PrimaryButtonComponent(
                     setState(
                         bgColor = R.drawable.acq_button_yellow_bg,
                         textColor = R.color.acq_colorTinkoffPayText,
-                        buttonText = R.string.common_signin_button_text,
+                        buttonText = ctx.getString(R.string.acq_primary_with_card),
                         icon = null,
                         onClick = onNewCardClick
                     )
@@ -74,14 +75,14 @@ internal class PrimaryButtonComponent(
             is MainPaymentFormUi.Primary.Spb -> setState(
                 bgColor = R.drawable.acq_button_spb_bg,
                 textColor = R.color.acq_colorMain,
-                buttonText = R.string.common_signin_button_text,
+                buttonText = ctx.getString(R.string.acq_primary_with_card),
                 icon = R.drawable.acq_ic_sbp_primary_button_logo,
                 onClick = onSpbClick
             )
             is MainPaymentFormUi.Primary.Tpay -> setState(
                 bgColor = R.drawable.acq_button_yellow_bg,
                 textColor = R.color.acq_colorTinkoffPayText,
-                buttonText = R.string.common_signin_button_text,
+                buttonText = ctx.getString(R.string.acq_primary_with_tinkoff_pay),
                 icon = R.drawable.acq_icon_tinkoff_pay,
                 onClick = onTpayClick
             )
@@ -95,7 +96,7 @@ internal class PrimaryButtonComponent(
     private fun setState(
         bgColor: Int,
         textColor: Int,
-        buttonText: Int,
+        buttonText: String,
         icon: Int?,
         onClick: () -> Unit
     ) {

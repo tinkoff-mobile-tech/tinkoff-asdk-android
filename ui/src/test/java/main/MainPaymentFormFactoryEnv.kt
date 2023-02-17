@@ -9,6 +9,7 @@ import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MergeMethodsStrategy
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
@@ -55,24 +56,28 @@ internal class MainPaymentFormFactoryEnv(
     }
     val bankCaptionProvider = BankCaptionProvider { defaultBank }
 
-    val primaryButtonConfigurator get() =  PrimaryButtonConfigurator.Impl(
-        nspkBankAppsProvider,
-        installedAppsProvider,
-        bankCaptionProvider
-    )
+    val primaryButtonConfigurator
+        get() = PrimaryButtonConfigurator.Impl(
+            nspkBankAppsProvider,
+            installedAppsProvider,
+            bankCaptionProvider
+        )
 
-    val secondaryButtonConfigurator get() =  SecondButtonConfigurator.Impl(
-        nspkBankAppsProvider,
-        installedAppsProvider
-    )
+    val secondaryButtonConfigurator
+        get() = SecondButtonConfigurator.Impl(
+            nspkBankAppsProvider,
+            installedAppsProvider
+        )
 
     val mainPaymentFormFactory
         get() = MainPaymentFormFactory(
-                sdk,
-                savedCardsRepository,
-                primaryButtonConfigurator, secondaryButtonConfigurator,
-                customerKey
-            )
+            sdk,
+            savedCardsRepository,
+            primaryButtonConfigurator,
+            secondaryButtonConfigurator,
+            MergeMethodsStrategy.ImplV1,
+            customerKey
+        )
 
     suspend fun setInstalledApps(apps: List<String> = emptyList()) {
         installedAppsProvider = NspkInstalledAppsChecker { _, deeplink ->

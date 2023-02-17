@@ -145,6 +145,7 @@ internal class MainPaymentFormViewModel(
                             bankCaptionProvider
                         ),
                         SecondButtonConfigurator.Impl(nspkProvider, nspkChecker),
+                        MergeMethodsStrategy.ImplV1,
                         opt.customer.customerKey!!
                     ),
                     MainFormNavController(),

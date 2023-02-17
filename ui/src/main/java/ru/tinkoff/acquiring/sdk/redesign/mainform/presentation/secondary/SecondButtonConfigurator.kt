@@ -41,7 +41,6 @@ internal interface SecondButtonConfigurator {
             }?.toSet() ?: emptySet()
 
             return (set + MainPaymentFormUi.Secondary.Cards(cardsCount))
-                .toSortedSet { o1, o2 -> o1.order.compareTo(o2.order) }
         }
     }
 }

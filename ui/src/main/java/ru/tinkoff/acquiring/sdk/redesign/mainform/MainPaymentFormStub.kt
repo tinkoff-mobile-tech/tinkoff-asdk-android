@@ -12,10 +12,14 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormPrimaryButtonComponentBinding
+import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryBlockBinding
+import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryButtonBinding
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormViewModel
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.PrimaryButtonComponent
+import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryBlockComponent
+import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryButtonComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.ui.component.bindKtx
 import ru.tinkoff.acquiring.sdk.utils.*
@@ -37,7 +41,7 @@ class MainPaymentFormStub : AppCompatActivity() {
         registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) {
         }
     private val savedCards =
-        registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract)  {
+        registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {
         }
 
     private val viewModel: MainPaymentFormViewModel by viewModels {
@@ -48,7 +52,7 @@ class MainPaymentFormStub : AppCompatActivity() {
 
     private val primaryButtonComponent by lazyUnsafe {
         PrimaryButtonComponent(
-            AcqMainFormPrimaryButtonComponentBinding.bind(
+            viewBinding = AcqMainFormPrimaryButtonComponentBinding.bind(
                 findViewById(R.id.acq_main_form_primary_button)
             ),
             email = options.customer.email,
@@ -59,6 +63,17 @@ class MainPaymentFormStub : AppCompatActivity() {
             onSpbClick = viewModel::toSbp,
             onTpayClick = viewModel::toTpay,
             onChooseCardClick = viewModel::toChooseCard
+        )
+    }
+
+    private val secondaryButtonComponent by lazyUnsafe {
+        SecondaryBlockComponent(
+            binding = AcqMainFormSecondaryBlockBinding.bind(
+                findViewById(R.id.acq_main_form_secondary_button)
+            ),
+            onNewCardClick = viewModel::toNewCard,
+            onSpbClick = viewModel::toSbp,
+            onTpayClick = viewModel::toTpay,
         )
     }
 
@@ -80,6 +95,7 @@ class MainPaymentFormStub : AppCompatActivity() {
                 is MainPaymentFormViewModel.State.Content -> {
                     flipper.showById(R.id.acq_main_form_primary_button)
                     primaryButtonComponent.render(state = state.ui.primary)
+                    secondaryButtonComponent.render(state = state.ui.secondaries)
                 }
             }
         }

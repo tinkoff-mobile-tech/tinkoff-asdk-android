@@ -4,8 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include android:id="@+id/acq_main_form_loader" layout="@layout/acq_main_from_stub" />
+    <include
+        android:id="@+id/acq_main_form_loader"
+        layout="@layout/acq_main_from_stub" />
 
-    <include android:id="@+id/acq_main_form_primary_button" layout="@layout/acq_main_form_primary_button_component" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/acq_main_form_primary_button"
+            layout="@layout/acq_main_form_primary_button_component" />
+
+        <include
+            android:id="@+id/acq_main_form_secondary_button"
+            layout="@layout/acq_main_form_secondary_block" />
+    </LinearLayout>
+
 
 </ViewFlipper>

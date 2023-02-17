@@ -11,18 +11,10 @@ import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 /**
  * Created by i.golovachev
  */
-internal class MainFormNavController {
+internal class MainFormNavController{
 
     private val channelNav = Channel<Navigation>(capacity = Channel.UNLIMITED)
-
-    // эффект -значение, которое должно удаляться после прочтение потребителем
-
-    // когда несколько подписчиков, хотят получать значение эффекта
-    //  val common = channelNav.consumeAsFlow().shareIn(scope, SharingStarted.Lazily)
-
-    // когда только один подписчик, должен получать значение эффекта
     val navFlow = channelNav.receiveAsFlow()
-
     var card: List<Card> = emptyList()
 
     suspend fun toSbp(paymentOptions: PaymentOptions) = channelNav.send(
