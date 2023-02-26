@@ -1,5 +1,8 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.savedcard
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
@@ -17,6 +20,7 @@ internal interface SavedCardsRepository {
 
         private val mutex = Mutex()
         private var cache: List<Card>? = null
+        private val mutableFlow = MutableStateFlow(cache)
 
         override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
             return mutex.withLock {
@@ -32,7 +36,10 @@ internal interface SavedCardsRepository {
                 .getOrThrow()
                 .cards
                 .toList()
-                .apply { cache = this }
+                .apply {
+                    mutableFlow.value = this
+                    cache = this
+                }
         }
     }
 }

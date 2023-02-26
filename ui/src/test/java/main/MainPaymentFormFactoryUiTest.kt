@@ -8,7 +8,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MergeMethodsStrategy
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
@@ -27,36 +27,36 @@ internal class MainPaymentFormFactoryUiTest {
     @Test
     fun `GIVEN paymethods Tpay & Spb & Cards`() = runBlocking {
         FormEnvironment(
-            primary = MainPaymentFormUi.Primary.Tpay,
+            primary = MainPaymentForm.Primary.Tpay,
             secondary = setOf(
-                MainPaymentFormUi.Secondary.Tpay,
-                MainPaymentFormUi.Secondary.Spb,
-                MainPaymentFormUi.Secondary.Cards(2)
+                MainPaymentForm.Secondary.Tpay,
+                MainPaymentForm.Secondary.Spb,
+                MainPaymentForm.Secondary.Cards(2)
             )
         ).assetUi(
-            primary = MainPaymentFormUi.Primary.Tpay,
-            secondary = setOf(MainPaymentFormUi.Secondary.Spb, MainPaymentFormUi.Secondary.Cards(2))
+            primary = MainPaymentForm.Primary.Tpay,
+            secondary = setOf(MainPaymentForm.Secondary.Spb, MainPaymentForm.Secondary.Cards(2))
         )
     }
 
     @Test
     fun `GIVEN paymethods Spb & Cards`() = runBlocking {
         FormEnvironment(
-            primary = MainPaymentFormUi.Primary.Spb,
-            secondary = setOf(MainPaymentFormUi.Secondary.Spb, MainPaymentFormUi.Secondary.Cards(2))
+            primary = MainPaymentForm.Primary.Spb,
+            secondary = setOf(MainPaymentForm.Secondary.Spb, MainPaymentForm.Secondary.Cards(2))
         ).assetUi(
-            primary = MainPaymentFormUi.Primary.Spb,
-            secondary = setOf(MainPaymentFormUi.Secondary.Cards(2))
+            primary = MainPaymentForm.Primary.Spb,
+            secondary = setOf(MainPaymentForm.Secondary.Cards(2))
         )
     }
 
     @Test
     fun `GIVEN Cards`() = runBlocking {
         FormEnvironment(
-            primary = MainPaymentFormUi.Primary.Card(null),
-            secondary = setOf(MainPaymentFormUi.Secondary.Cards(2))
+            primary = MainPaymentForm.Primary.Card(null),
+            secondary = setOf(MainPaymentForm.Secondary.Cards(2))
         ).assetUi(
-            primary = MainPaymentFormUi.Primary.Card(null),
+            primary = MainPaymentForm.Primary.Card(null),
             secondary = setOf()
         )
     }
@@ -64,12 +64,12 @@ internal class MainPaymentFormFactoryUiTest {
     @Test
     fun `WHEN error on getMethods`() = runBlocking {
         val env = FormEnvironment(
-            primary = MainPaymentFormUi.Primary.Card(null),
-            secondary = setOf(MainPaymentFormUi.Secondary.Cards(2))
+            primary = MainPaymentForm.Primary.Card(null),
+            secondary = setOf(MainPaymentForm.Secondary.Cards(2))
         )
         env.setInfoMethodError()
         env.assetUi(
-            primary = MainPaymentFormUi.Primary.Card(null),
+            primary = MainPaymentForm.Primary.Card(null),
             secondary = setOf()
         )
     }
@@ -77,19 +77,19 @@ internal class MainPaymentFormFactoryUiTest {
     @Test
     fun `WHEN error on getCard`() = runBlocking {
         val env = FormEnvironment(
-            primary = MainPaymentFormUi.Primary.Card(null),
-            secondary = setOf(MainPaymentFormUi.Secondary.Cards(0))
+            primary = MainPaymentForm.Primary.Card(null),
+            secondary = setOf(MainPaymentForm.Secondary.Cards(0))
         )
         env.setGetCardsError()
         env.assetUi(
-            primary = MainPaymentFormUi.Primary.Card(null),
+            primary = MainPaymentForm.Primary.Card(null),
             secondary = setOf()
         )
     }
 
     class FormEnvironment(
-        private val primary: MainPaymentFormUi.Primary,
-        private val secondary: Set<MainPaymentFormUi.Secondary>
+        private val primary: MainPaymentForm.Primary,
+        private val secondary: Set<MainPaymentForm.Secondary>
     ) {
 
         private val getTerminalPayMethodsRequest = mock<GetTerminalPayMethodsRequest>()
@@ -135,12 +135,12 @@ internal class MainPaymentFormFactoryUiTest {
         }
 
         suspend fun assetUi(
-            primary: MainPaymentFormUi.Primary,
-            secondary: Set<MainPaymentFormUi.Secondary>
+            primary: MainPaymentForm.Primary,
+            secondary: Set<MainPaymentForm.Secondary>
         ) {
-            val ui = mainPaymentFormFactory.getUi()
-            Assert.assertEquals(ui.primary, primary)
-            Assert.assertEquals(ui.secondaries, secondary)
+            val ui = mainPaymentFormFactory.getState()
+            Assert.assertEquals(ui.ui.primary, primary)
+            Assert.assertEquals(ui.ui.secondaries, secondary)
         }
     }
 }

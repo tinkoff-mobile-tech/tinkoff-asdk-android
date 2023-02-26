@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryButtonBinding
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
 
@@ -44,8 +44,8 @@ class SecondaryButtonComponent(val binding: AcqMainFormSecondaryButtonBinding) :
     )
 }
 
-fun MainPaymentFormUi.Secondary.mapButtonState(context: Context) = when (this) {
-    is MainPaymentFormUi.Secondary.Cards -> SecondaryButtonComponent.State(
+internal fun MainPaymentForm.Secondary.mapButtonState(context: Context) = when (this) {
+    is MainPaymentForm.Secondary.Cards -> SecondaryButtonComponent.State(
         paymethod = Paymethod.Cards,
         icon = ContextCompat.getDrawable(context, R.drawable.acq_add_new_card)!!,
         iconBg = null,
@@ -56,20 +56,20 @@ fun MainPaymentFormUi.Secondary.mapButtonState(context: Context) = when (this) {
             count
         )
     )
-    MainPaymentFormUi.Secondary.Spb -> SecondaryButtonComponent.State(
+    MainPaymentForm.Secondary.Spb -> SecondaryButtonComponent.State(
         paymethod = Paymethod.Cards,
         icon = ContextCompat.getDrawable(context, R.drawable.acq_ic_secondary_sbp)!!,
         iconBg = ContextCompat.getDrawable(context, R.drawable.acq_shimmer_circle_bg)!!,
         title = context.resources.getString(R.string.acq_secondary_sbp_title),
         subtitle = context.resources.getString(R.string.acq_secondary_sbp_subtitle)
     )
-    MainPaymentFormUi.Secondary.Tpay -> SecondaryButtonComponent.State(
+    MainPaymentForm.Secondary.Tpay -> SecondaryButtonComponent.State(
         paymethod = Paymethod.Cards,
         icon = ContextCompat.getDrawable(context, R.drawable.acq_icon_tinkoff_pay)!!,
         iconBg = null,
         title = context.resources.getString(R.string.acq_secondary_tinkoff_pay_title),
         subtitle = context.resources.getString(R.string.acq_secondary_tinkoff_pay_subtitle)
     )
-    MainPaymentFormUi.Secondary.Yandex -> throw IllegalStateException("not supported")
+    MainPaymentForm.Secondary.Yandex -> throw IllegalStateException("not supported")
 }
 

@@ -36,7 +36,6 @@ internal class ChosenCardComponent(
             R.string.acq_cardlist_bankname, bankName.orEmpty(), tail
         )
         root.setOnClickListener { onChangeCard(state) }
-
     }
 
     fun clearCvc() {

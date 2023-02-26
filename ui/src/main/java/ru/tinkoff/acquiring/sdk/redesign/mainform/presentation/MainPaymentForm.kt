@@ -1,13 +1,29 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 
+import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailValidator
+import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
+import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
 
-object MainPaymentFormUi {
+internal object MainPaymentForm {
 
-    class Ui(
+    data class State(
+        val ui: Ui,
+        val data: Data
+    )
+
+    data class Ui(
         val primary: Primary,
         val secondaries: Set<Secondary>
+    )
+
+    data class Data(
+        val info: TerminalInfo,
+        val cards: List<Card>,
+        val chosen: Card?
     )
 
     sealed class Primary(val paymethod: Paymethod) {

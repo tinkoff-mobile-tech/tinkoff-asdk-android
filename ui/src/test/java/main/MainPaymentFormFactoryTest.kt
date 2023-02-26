@@ -8,9 +8,8 @@ import main.MainPaymentFormFactoryEnv.Companion.defaultCard
 import org.junit.Assert
 import org.junit.Test
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
-import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 
 
 /**
@@ -35,7 +34,7 @@ internal class MainPaymentFormFactoryTest {
         )
 
         class Expected(
-            val primary: MainPaymentFormUi.Primary
+            val primary: MainPaymentForm.Primary
         )
 
         fun execute() {
@@ -63,10 +62,10 @@ internal class MainPaymentFormFactoryTest {
                     }
                 },
                 then = {
-                    val button = mainPaymentFormFactory.getUi().primary
+                    val button = mainPaymentFormFactory.getState().ui.primary
 
-                    if (expected.primary is MainPaymentFormUi.Primary.Card) {
-                        assertViaClassName(MainPaymentFormUi.Primary.Card::class.java, button)
+                    if (expected.primary is MainPaymentForm.Primary.Card) {
+                        assertViaClassName(MainPaymentForm.Primary.Card::class.java, button)
                         Assert.assertEquals(button, expected.primary)
                     } else {
                         assertByClassName(button, expected.primary)
@@ -90,7 +89,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Tpay
+            primary = MainPaymentForm.Primary.Tpay
         )
     ).execute()
 
@@ -106,7 +105,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(cardChosenModel)
+            primary = MainPaymentForm.Primary.Card(cardChosenModel)
         )
     ).execute()
 
@@ -123,7 +122,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = null
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Spb
+                primary = MainPaymentForm.Primary.Spb
             )
         ).execute()
 
@@ -140,7 +139,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = null
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(null)
+                primary = MainPaymentForm.Primary.Card(null)
             )
         ).execute()
 
@@ -157,7 +156,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = null
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(null)
+                primary = MainPaymentForm.Primary.Card(null)
             )
         ).execute()
     // endregion
@@ -177,7 +176,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = null
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Tpay
+                primary = MainPaymentForm.Primary.Tpay
             )
         ).execute()
 
@@ -193,7 +192,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Spb
+            primary = MainPaymentForm.Primary.Spb
         )
     ).execute()
 
@@ -210,7 +209,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = null
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(null)
+                primary = MainPaymentForm.Primary.Card(null)
             )
         ).execute()
 
@@ -227,7 +226,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = null
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(null)
+                primary = MainPaymentForm.Primary.Card(null)
             )
         ).execute()
 
@@ -244,7 +243,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = IllegalArgumentException()
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(null)
+                primary = MainPaymentForm.Primary.Card(null)
             )
         ).execute()
     // endregion
@@ -263,7 +262,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Spb
+            primary = MainPaymentForm.Primary.Spb
         )
     ).execute()
 
@@ -279,7 +278,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Spb
+            primary = MainPaymentForm.Primary.Spb
         )
     ).execute()
 
@@ -296,7 +295,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(cardChosenModel)
+            primary = MainPaymentForm.Primary.Card(cardChosenModel)
         )
     ).execute()
 
@@ -312,7 +311,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -329,7 +328,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = IllegalArgumentException(),
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(cardChosenModel)
+                primary = MainPaymentForm.Primary.Card(cardChosenModel)
             )
         ).execute()
 
@@ -346,7 +345,7 @@ internal class MainPaymentFormFactoryTest {
                 errorOnNspkList = IllegalArgumentException(),
             ),
             TestCondition.Expected(
-                primary = MainPaymentFormUi.Primary.Card(null)
+                primary = MainPaymentForm.Primary.Card(null)
             )
         ).execute()
     // endregion
@@ -365,7 +364,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = IllegalArgumentException(),
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -381,7 +380,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Spb
+            primary = MainPaymentForm.Primary.Spb
         )
     ).execute()
 
@@ -397,7 +396,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -413,7 +412,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
     // endregion
@@ -432,7 +431,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Tpay
+            primary = MainPaymentForm.Primary.Tpay
         )
     ).execute()
 
@@ -448,7 +447,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(cardChosenModel)
+            primary = MainPaymentForm.Primary.Card(cardChosenModel)
         )
     ).execute()
 
@@ -464,7 +463,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -480,7 +479,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(cardChosenModel)
+            primary = MainPaymentForm.Primary.Card(cardChosenModel)
         )
     ).execute()
     // endregion
@@ -499,7 +498,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Tpay
+            primary = MainPaymentForm.Primary.Tpay
         )
     ).execute()
 
@@ -515,7 +514,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -531,7 +530,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
     // endregion
@@ -549,7 +548,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(cardChosenModel)
+            primary = MainPaymentForm.Primary.Card(cardChosenModel)
         )
     ).execute()
 
@@ -565,7 +564,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -581,7 +580,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -597,7 +596,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
     // endregion
@@ -615,7 +614,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -631,7 +630,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
 
@@ -647,7 +646,7 @@ internal class MainPaymentFormFactoryTest {
             errorOnNspkList = null,
         ),
         TestCondition.Expected(
-            primary = MainPaymentFormUi.Primary.Card(null)
+            primary = MainPaymentForm.Primary.Card(null)
         )
     ).execute()
     // endregion

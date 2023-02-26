@@ -7,25 +7,25 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryBlockBinding
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryButtonBinding
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
 
 /**
  * Created by i.golovachev
  */
-class SecondaryBlockComponent(
+internal class SecondaryBlockComponent(
     val binding: AcqMainFormSecondaryBlockBinding,
     private val onTpayClick: () -> Unit,
     private val onSpbClick: () -> Unit,
     private val onNewCardClick: () -> Unit
-) : UiComponent<Set<MainPaymentFormUi.Secondary>> {
+) : UiComponent<Set<MainPaymentForm.Secondary>> {
 
     private val adapter = Adapter().apply {
         binding.secondaryList.adapter = this
     }
 
-    override fun render(state: Set<MainPaymentFormUi.Secondary>) {
+    override fun render(state: Set<MainPaymentForm.Secondary>) {
         val items = state.map { it.mapButtonState(binding.root.context) }
         binding.root.isVisible = items.isNotEmpty()
         adapter.update(items)

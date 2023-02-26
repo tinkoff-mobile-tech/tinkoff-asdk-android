@@ -3,19 +3,19 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 /**
  * Created by i.golovachev
  */
-interface MergeMethodsStrategy {
+internal interface MergeMethodsStrategy {
 
     fun merge(
-        primary: MainPaymentFormUi.Primary,
-        secondaries: Set<MainPaymentFormUi.Secondary>
-    ): MainPaymentFormUi.Ui
+        primary: MainPaymentForm.Primary,
+        secondaries: Set<MainPaymentForm.Secondary>
+    ): MainPaymentForm.Ui
 
     object ImplV1 : MergeMethodsStrategy {
         override fun merge(
-            primary: MainPaymentFormUi.Primary,
-            secondaries: Set<MainPaymentFormUi.Secondary>
-        ): MainPaymentFormUi.Ui {
-            return MainPaymentFormUi.Ui(
+            primary: MainPaymentForm.Primary,
+            secondaries: Set<MainPaymentForm.Secondary>
+        ): MainPaymentForm.Ui {
+            return MainPaymentForm.Ui(
                 primary = primary,
                 secondaries = secondaries.toMutableSet().apply {
                     removeIf { it.paymethod == primary.paymethod }

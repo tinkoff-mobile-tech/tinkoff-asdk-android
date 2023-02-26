@@ -1,12 +1,14 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.getOrNull
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 
 /**
  * Created by i.golovachev
@@ -20,13 +22,24 @@ internal class MainPaymentFormFactory(
     private val _customerKey: String
 ) {
 
-    suspend fun getUi(): MainPaymentFormUi.Ui {
+    suspend fun getState(): MainPaymentForm.State {
         val methods = getMethods()
         val cards = getSavedCards()
-        val primary = primaryButtonConfigurator.get(methods, cards)
-        val secondaries = secondButtonConfigurator.get(methods, cards)
+        return getUi(methods ?: TerminalInfo(), cards ?: emptyList())
+    }
 
-        return mergeMethodsStrategy.merge(primary, secondaries)
+    suspend fun getUi(terminalInfo: TerminalInfo, cards: List<Card>): MainPaymentForm.State {
+        val primary = primaryButtonConfigurator.get(terminalInfo, cards)
+        val secondaries = secondButtonConfigurator.get(terminalInfo, cards)
+
+        return MainPaymentForm.State(
+            ui = mergeMethodsStrategy.merge(primary, secondaries),
+            data = MainPaymentForm.Data(
+                terminalInfo,
+                cards,
+                cards.firstOrNull()
+            )
+        )
     }
 
 

@@ -7,21 +7,27 @@ import android.widget.ViewFlipper
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.databinding.AcqCardPayComponentBinding
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormPrimaryButtonComponentBinding
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryBlockBinding
-import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryButtonBinding
+import ru.tinkoff.acquiring.sdk.databinding.AcqPaymentStatusFormBinding
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
+import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
+import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormViewModel
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainFormInputCardViewModel
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormFactory
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormViewModel
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.PrimaryButtonComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryBlockComponent
-import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryButtonComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
-import ru.tinkoff.acquiring.sdk.ui.component.bindKtx
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.utils.*
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
@@ -34,19 +40,13 @@ class MainPaymentFormStub : AppCompatActivity() {
 
     val options by lazyUnsafe { intent.getOptions<PaymentOptions>() }
 
-    private val byNewCardPayment =
-        registerForActivityResult(PaymentByCard.Contract) {
-        }
-    private val spbPayment =
-        registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) {
-        }
-    private val savedCards =
-        registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {
-        }
+    private val byNewCardPayment = registerForActivityResult(PaymentByCard.Contract) {}
+    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) {}
+    private val savedCards = registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {}
 
-    private val viewModel: MainPaymentFormViewModel by viewModels {
-        MainPaymentFormViewModel.factory(application)
-    }
+    private val factory by lazyUnsafe { MainPaymentFormFactory(application, options) }
+    private val viewModel: MainPaymentFormViewModel by viewModels { factory }
+    private val cardInputViewModel: MainFormInputCardViewModel by viewModels { factory }
 
     private val flipper: ViewFlipper by lazyView(R.id.acq_main_form_flipper)
 
@@ -55,14 +55,23 @@ class MainPaymentFormStub : AppCompatActivity() {
             viewBinding = AcqMainFormPrimaryButtonComponentBinding.bind(
                 findViewById(R.id.acq_main_form_primary_button)
             ),
-            email = options.customer.email,
-            onCvcCompleted = viewModel::setCvc,
-            onEmailInput = viewModel::email,
-            onEmailVisibleChange = viewModel::needEmail,
             onNewCardClick = viewModel::toNewCard,
             onSpbClick = viewModel::toSbp,
             onTpayClick = viewModel::toTpay,
-            onChooseCardClick = viewModel::toChooseCard
+            onPayClick = cardInputViewModel::pay
+        )
+    }
+
+    private val cardPayComponent by lazyUnsafe {
+        CardPayComponent(
+            viewBinding = AcqCardPayComponentBinding.bind(
+                findViewById(R.id.acq_main_form_primary_button)
+            ),
+            email = options.customer.email,
+            onCvcCompleted = cardInputViewModel::setCvc,
+            onEmailInput = cardInputViewModel::email,
+            onEmailVisibleChange = cardInputViewModel::needEmail,
+            onChooseCardClick = viewModel::toChooseCard,
         )
     }
 
@@ -77,32 +86,80 @@ class MainPaymentFormStub : AppCompatActivity() {
         )
     }
 
+    private val paymentStatusComponent by lazyUnsafe {
+        PaymentStatusComponent(
+            viewBinding = AcqPaymentStatusFormBinding.bind(findViewById(R.id.acq_payment_status))
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_main_from_activity)
 
         lifecycleScope.launch { updateContent() }
         lifecycleScope.launch { updatePayEnable() }
+        lifecycleScope.launch { updateButtonLoader() }
+        lifecycleScope.launch { updatePrimary() }
+        lifecycleScope.launch { updateSecondary() }
+        lifecycleScope.launch { updateSavedCard() }
+        lifecycleScope.launch { updateCardPayState() }
+
         lifecycleScope.launch { subscribeOnNav() }
     }
 
-
     private suspend fun updateContent() {
-        viewModel.stateFlow.collect { state ->
-            when (state) {
-                is MainPaymentFormViewModel.State.Loading -> flipper.showById(R.id.acq_main_form_loader)
-                is MainPaymentFormViewModel.State.Error -> flipper.showById(R.id.acq_main_form_loader)
-                is MainPaymentFormViewModel.State.Content -> {
-                    flipper.showById(R.id.acq_main_form_primary_button)
-                    primaryButtonComponent.render(state = state.ui.primary)
-                    secondaryButtonComponent.render(state = state.ui.secondaries)
+        combine(cardInputViewModel.paymentStatus, viewModel.formContent) { cardStatus, formContent ->
+            if (cardStatus is PaymentStatusSheetState.NotYet &&
+                cardStatus is PaymentStatusSheetState.Hide) {
+                when (cardStatus) {
+                    PaymentStatusSheetState.Hide -> Unit
+                    PaymentStatusSheetState.NotYet -> Unit
+                    is PaymentStatusSheetState.Error -> {
+                        flipper.showById(R.id.acq_payment_status)
+                        paymentStatusComponent.render(cardStatus)
+                    }
+                    is PaymentStatusSheetState.Progress -> Unit
+                    is PaymentStatusSheetState.Success -> {
+                        flipper.showById(R.id.acq_payment_status)
+                        paymentStatusComponent.render(cardStatus)
+                    }
+                }
+            } else {
+                when (formContent) {
+                    is MainPaymentFormViewModel.FormContent.Loading -> flipper.showById(R.id.acq_main_form_loader)
+                    is MainPaymentFormViewModel.FormContent.Error -> flipper.showById(R.id.acq_main_form_loader)
+                    is MainPaymentFormViewModel.FormContent.Content -> if (formContent.isSavedCard)
+                        flipper.showById(R.id.acq_main_card_pay)
+                    else
+                        flipper.showById(R.id.acq_main_form_primary_button)
                 }
             }
-        }
+        }.collect()
     }
 
-    private suspend fun updatePayEnable() {
-        viewModel.payEnable.collectLatest(primaryButtonComponent::renderEnable)
+    private suspend fun updatePrimary() = viewModel.primary.collect {
+        primaryButtonComponent.render(it)
+    }
+
+    private suspend fun updateSecondary() = viewModel.secondary.collect {
+        secondaryButtonComponent.render(it)
+    }
+
+    private suspend fun updateSavedCard() = viewModel.chosenCard.collect {
+        cardInputViewModel.choseCard(it)
+    }
+
+    private suspend fun updatePayEnable() = cardInputViewModel.payEnable.collectLatest {
+        cardPayComponent.renderEnable(it)
+    }
+
+    private suspend fun updateButtonLoader() = cardInputViewModel.isLoading.collectLatest {
+        cardPayComponent.renderLoader(it)
+    }
+
+    private suspend fun updateCardPayState() = with(cardInputViewModel) {
+        combine(savedCardFlow, emailFlow) { card, email -> card to email }.take(1)
+            .collectLatest { (card, email) -> cardPayComponent.render(card, email) }
     }
 
     private suspend fun subscribeOnNav() {
@@ -114,6 +171,12 @@ class MainPaymentFormStub : AppCompatActivity() {
                 is MainFormNavController.Navigation.ToTpay -> {
                     // todo tinkoff
                 }
+                is MainFormNavController.Navigation.To3ds -> ThreeDsHelper.Launch.launchBrowserBased(
+                    this,
+                    TransparentActivity.THREE_DS_REQUEST_CODE,
+                    it.paymentOptions,
+                    it.threeDsState.data,
+                )
             }
         }
     }

@@ -4,7 +4,7 @@ import common.runWithEnv
 import org.junit.Assert
 import org.junit.Test
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
 import ru.tinkoff.acquiring.sdk.responses.PaymethodData
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
@@ -17,10 +17,10 @@ import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 internal class MainPaymentFormSecondBlockTest {
 
     class TestCondition(
-        val given: MainPaymentFormUi.Primary,
+        val given: MainPaymentForm.Primary,
         val cards: List<Card>,
         val methods: List<Paymethod>,
-        val expected: Set<MainPaymentFormUi.Secondary>,
+        val expected: Set<MainPaymentForm.Secondary>,
         val apps: Set<String> = emptySet(),
         val environment: MainPaymentFormFactoryEnv = MainPaymentFormFactoryEnv()
     ) {
@@ -46,51 +46,51 @@ internal class MainPaymentFormSecondBlockTest {
 
     @Test
     fun `GIVEN tpay & sbp WHEN 2card and nspk apps THEN cards and sbp`() = TestCondition(
-        given = MainPaymentFormUi.Primary.Tpay,
+        given = MainPaymentForm.Primary.Tpay,
         cards = listOf(Card(), Card()),
         apps = nspkAppSet + tinkoffAppSet,
         methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
         expected = setOf(
-            MainPaymentFormUi.Secondary.Tpay,
-            MainPaymentFormUi.Secondary.Cards(2),
-            MainPaymentFormUi.Secondary.Spb
+            MainPaymentForm.Secondary.Tpay,
+            MainPaymentForm.Secondary.Cards(2),
+            MainPaymentForm.Secondary.Spb
         )
     ).execute()
 
     @Test
     fun `GIVEN tpay & sbp WHEN 2card THEN cards and sbp`() = TestCondition(
-        given = MainPaymentFormUi.Primary.Tpay,
+        given = MainPaymentForm.Primary.Tpay,
         cards = listOf(Card(), Card()),
         apps = emptySet(),
         methods = listOf(Paymethod.TinkoffPay),
-        expected = setOf(MainPaymentFormUi.Secondary.Cards(2))
+        expected = setOf(MainPaymentForm.Secondary.Cards(2))
     ).execute()
 
     @Test
     fun `GIVEN tpay  WHEN 2card and nspk THEN cards and sbp`() = TestCondition(
-        given = MainPaymentFormUi.Primary.Tpay,
+        given = MainPaymentForm.Primary.Tpay,
         cards = listOf(Card(), Card()),
         apps = nspkAppSet,
         methods = listOf(Paymethod.TinkoffPay),
-        expected = setOf(MainPaymentFormUi.Secondary.Cards(2))
+        expected = setOf(MainPaymentForm.Secondary.Cards(2))
     ).execute()
 
     @Test
     fun `GIVEN tpay & sbp WHEN 1card and nspk THEN cards and sbp`() = TestCondition(
-        given = MainPaymentFormUi.Primary.Tpay,
+        given = MainPaymentForm.Primary.Tpay,
         cards = listOf(Card()),
         apps = nspkAppSet,
         methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-        expected = setOf(MainPaymentFormUi.Secondary.Cards(1), MainPaymentFormUi.Secondary.Spb)
+        expected = setOf(MainPaymentForm.Secondary.Cards(1), MainPaymentForm.Secondary.Spb)
     ).execute()
 
 
     @Test
     fun `GIVEN sbp WHEN no card and mb THEN cards and sbp`() = TestCondition(
-        given = MainPaymentFormUi.Primary.Tpay,
+        given = MainPaymentForm.Primary.Tpay,
         cards = emptyList(),
         apps = tinkoffAppSet,
         methods = listOf(Paymethod.SBP),
-        expected = setOf(MainPaymentFormUi.Secondary.Cards(0), MainPaymentFormUi.Secondary.Spb)
+        expected = setOf(MainPaymentForm.Secondary.Cards(0), MainPaymentForm.Secondary.Spb)
     ).execute()
 }

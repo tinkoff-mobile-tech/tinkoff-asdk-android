@@ -36,7 +36,7 @@ class EmailInputComponent(
         sendReceiptSwitch.setOnCheckedChangeListener { _, isChecked ->
             emailInput.isVisible = isChecked
             if (isChecked.not()) {
-                if(emailInput.isViewFocused()) {
+                if (emailInput.isViewFocused()) {
                     emailInput.hideKeyboard()
                 }
                 emailInput.clearViewFocus()
@@ -49,6 +49,10 @@ class EmailInputComponent(
         emailInput.text = state.email
         emailInput.isVisible = state.email?.isNotBlank() == true
         sendReceiptSwitch.isChecked = emailInput.isVisible
+    }
+
+    fun render(email: String?, isShow: Boolean) {
+        render(State(email, isShow))
     }
 
     fun clear() {

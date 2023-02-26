@@ -9,6 +9,7 @@
         layout="@layout/acq_main_from_stub" />
 
     <LinearLayout
+        android:id="@+id/acq_main_form_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -22,5 +23,12 @@
             layout="@layout/acq_main_form_secondary_block" />
     </LinearLayout>
 
+    <include
+        android:id="@+id/acq_main_card_pay"
+        layout="@layout/acq_card_pay_component" />
+
+    <include
+        android:id="@+id/acq_payment_status"
+        layout="@layout/acq_payment_status_form" />
 
 </ViewFlipper>
