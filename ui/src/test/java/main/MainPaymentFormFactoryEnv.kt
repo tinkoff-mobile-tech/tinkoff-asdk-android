@@ -76,6 +76,7 @@ internal class MainPaymentFormFactoryEnv(
             primaryButtonConfigurator,
             secondaryButtonConfigurator,
             MergeMethodsStrategy.ImplV1,
+            mock { on { isOnline() } doReturn true },
             customerKey
         )
 

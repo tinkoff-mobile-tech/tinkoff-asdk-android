@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.navigation
 
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
@@ -17,7 +18,7 @@ import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
  */
 internal class MainFormNavController {
 
-    private val channelNav = Channel<Navigation>(capacity = Channel.UNLIMITED)
+    private val channelNav = Channel<Navigation?>(capacity = Channel.BUFFERED, BufferOverflow.DROP_OLDEST)
     val navFlow = channelNav.receiveAsFlow()
     var card: List<Card> = emptyList()
 
@@ -39,7 +40,7 @@ internal class MainFormNavController {
             )
         )
 
-    suspend fun toChooseCard(paymentOptions: PaymentOptions) {
+    suspend fun toChooseCard(paymentOptions: PaymentOptions, card: Card? = null) {
         val savedCardsOptions: SavedCardsOptions = SavedCardsOptions().apply {
             setTerminalParams(
                 paymentOptions.terminalKey,
@@ -47,6 +48,7 @@ internal class MainFormNavController {
             )
             customer = paymentOptions.customer
             features = paymentOptions.features
+            features.selectedCardId = card?.cardId
         }
         channelNav.send(Navigation.ToChooseCard(savedCardsOptions))
     }
@@ -55,6 +57,9 @@ internal class MainFormNavController {
 
     suspend fun to3ds(paymentOptions: PaymentOptions, threeDsState: ThreeDsState) =
         channelNav.send(Navigation.To3ds(paymentOptions, threeDsState))
+
+    // TODO - убрать после перехода на общую навигацию
+    suspend fun clear() = channelNav.send(null)
 
     sealed interface Navigation {
         class ToSbp(val startData: TinkoffAcquiring.SbpScreen.StartData) : Navigation

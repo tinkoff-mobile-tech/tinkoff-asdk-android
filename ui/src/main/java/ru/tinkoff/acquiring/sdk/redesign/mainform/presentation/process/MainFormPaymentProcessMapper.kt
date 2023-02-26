@@ -25,7 +25,10 @@ internal class MainFormPaymentProcessMapper(private val mainFormNavController: M
                 cardId = it.cardId,
                 rebillId = it.rebillId
             )
-            PaymentByCardState.ThreeDsInProcess -> null
+            PaymentByCardState.ThreeDsInProcess -> {
+                mainFormNavController.clear()
+                null
+            }
             is PaymentByCardState.ThreeDsUiNeeded -> {
                 mainFormNavController.to3ds(it.paymentOptions, it.threeDsState)
                 null

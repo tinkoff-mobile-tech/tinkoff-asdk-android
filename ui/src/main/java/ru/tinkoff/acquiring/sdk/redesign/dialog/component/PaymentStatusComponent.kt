@@ -10,7 +10,7 @@ import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
  * Created by i.golovachev
  */
 internal class PaymentStatusComponent(
-    private val viewBinding: AcqPaymentStatusFormBinding,
+    val viewBinding: AcqPaymentStatusFormBinding,
     private val initialVisible: Boolean = false,
     private var onMainButtonClick: (PaymentStatusSheetState) -> Unit = {},
     private var onSecondButtonClick: (PaymentStatusSheetState) -> Unit = {},

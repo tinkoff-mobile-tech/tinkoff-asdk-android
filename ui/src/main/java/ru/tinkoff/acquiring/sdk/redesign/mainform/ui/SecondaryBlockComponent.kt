@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform.ui
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryBlockBinding
@@ -27,7 +28,7 @@ internal class SecondaryBlockComponent(
 
     override fun render(state: Set<MainPaymentForm.Secondary>) {
         val items = state.map { it.mapButtonState(binding.root.context) }
-        binding.root.isVisible = items.isNotEmpty()
+        binding.root.isGone = items.isEmpty()
         adapter.update(items)
     }
 

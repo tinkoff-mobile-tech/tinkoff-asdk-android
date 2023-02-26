@@ -19,6 +19,7 @@ import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 
 /**
@@ -63,6 +64,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
                 ),
                 SecondButtonConfigurator.Impl(nspkProvider, nspkChecker),
                 MergeMethodsStrategy.ImplV1,
+                ConnectionChecker(application),
                 paymentOptions.customer.customerKey!!
             ),
             navController,

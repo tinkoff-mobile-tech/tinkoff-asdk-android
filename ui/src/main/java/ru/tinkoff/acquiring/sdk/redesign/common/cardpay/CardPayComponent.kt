@@ -1,10 +1,14 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.cardpay
 
+import androidx.core.view.isVisible
+import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqCardPayComponentBinding
+import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.ChosenCardComponent
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+import ru.tinkoff.acquiring.sdk.utils.KeyboardVisionUtils
 
 /**
  * Created by i.golovachev
@@ -32,9 +36,10 @@ class CardPayComponent(
         onChangeCard = { onChooseCardClick() }
     )
 
-    fun render(state: CardChosenModel, email: String?) {
+    fun render(state: CardChosenModel, email: String?, paymentOptions: PaymentOptions) {
         emailInputComponent.render(email, email.isNullOrBlank().not())
         savedCardComponent.render(state)
+        loaderButton.text = viewBinding.root.resources.getString(R.string.acq_cardpay_pay, paymentOptions.order.amount.toHumanReadableString())
     }
 
     fun renderEnable(isEnable: Boolean) {
@@ -43,5 +48,16 @@ class CardPayComponent(
 
     fun renderLoader(isLoading: Boolean) {
         loaderButton.isLoading = isLoading
+    }
+
+    fun isVisible(isVisible: Boolean) {
+        viewBinding.root.isVisible = isVisible
+    }
+
+    fun isKeyboardVisible(isVisible: Boolean) {
+        if (isVisible)
+            KeyboardVisionUtils.showKeyboard(viewBinding.root)
+        else
+            KeyboardVisionUtils.hideKeyboard(viewBinding.root)
     }
 }

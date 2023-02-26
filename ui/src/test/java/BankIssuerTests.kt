@@ -17,7 +17,6 @@ class BankIssuerTests {
             assert(BankIssuer.resolve(number) == bankIssuer)
         }
     }
-
     companion object {
 
         val cardNumbers = listOf(

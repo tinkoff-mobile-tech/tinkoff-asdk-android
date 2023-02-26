@@ -40,7 +40,7 @@ internal class PrimaryButtonComponent(
                     setState(
                         bgColor = R.drawable.acq_button_yellow_bg,
                         textColor = R.color.acq_colorTinkoffPayText,
-                        buttonText = ctx.getString(R.string.acq_primary_with_сhosen_card, 0),
+                        buttonText = "",
                         icon = null,
                         onClick = onPayClick
                     )
@@ -89,9 +89,14 @@ internal class PrimaryButtonComponent(
     }
 
     private fun setCardState(card: CardChosenModel) {
+        // todo navigations перевыбор
         primaryButtonContainer.root.isVisible = false
     }
 
     private fun checkChooseCard(primary: MainPaymentForm.Primary) =
         (primary as? MainPaymentForm.Primary.Card)?.selectedCard != null
+
+    fun isVisible(isVisible: Boolean) {
+        viewBinding.root.isVisible = isVisible
+    }
 }

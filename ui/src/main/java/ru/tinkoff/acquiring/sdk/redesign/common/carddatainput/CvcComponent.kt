@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.smartfield.AcqEditText
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
@@ -30,6 +31,9 @@ class CvcComponent(
     val cvc get() = cvcInput.text.orEmpty()
 
     init {
+        root.setOnClickListener {
+            requestViewFocus()
+        }
         with(cvcInput) {
             transformationMethod = PasswordTransformationMethod()
             MaskFormatWatcher(createCvcMask()).installOn(editText)
@@ -78,6 +82,10 @@ class CvcComponent(
 
     fun requestViewFocus() {
         cvcInput.requestViewFocus()
+    }
+
+    fun isVisible(isVisible: Boolean) {
+        root.isVisible = isVisible
     }
 
     companion object {

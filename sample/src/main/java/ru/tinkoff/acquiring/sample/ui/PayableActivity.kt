@@ -46,7 +46,7 @@ import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.redesign.mainform.MainPaymentFormStub
+import ru.tinkoff.acquiring.sdk.redesign.mainform.MainPaymentFormActivity
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
@@ -165,7 +165,7 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        startActivity(MainPaymentFormStub.intent(options, this))
+        startActivity(MainPaymentFormActivity.intent(options, this))
     }
 
     protected fun openDynamicQrScreen() {

@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.emailinput
 
+import android.animation.LayoutTransition
 import android.view.ViewGroup
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.isVisible
@@ -28,6 +29,10 @@ class EmailInputComponent(
     }
 
     init {
+        val transition = LayoutTransition()
+        transition.setAnimateParentHierarchy(false)
+        root.layoutTransition = transition
+
         with(emailInput) {
             BaubleClearButton().attach(this)
             editText.addTextChangedListener(textWatcher)

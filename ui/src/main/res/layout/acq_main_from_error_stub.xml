@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="275dp">
+
+    <TextView
+        android:id="@+id/acq_stub_title"
+        style="@style/AcquiringStubTitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_regular"
+        android:gravity="center"
+        android:text="@string/acq_generic_stubnet_title"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/acq_stub_retry_description" />
+
+    <TextView
+        android:id="@+id/acq_stub_retry_description"
+        style="@style/AcquiringCommonDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:text="@string/acq_generic_stubnet_description"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/acq_stub_retry_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/acq_stub_retry_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="62dp"
+        android:background="@drawable/acq_button_retry_bg"
+        android:gravity="center"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="14dp"
+        android:text="@string/acq_generic_button_stubnet"
+        android:textAllCaps="false"
+        android:textColor="@color/acq_colorAccent"
+        android:textSize="@dimen/acq_small_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

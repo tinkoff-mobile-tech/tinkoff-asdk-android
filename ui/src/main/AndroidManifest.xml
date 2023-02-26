@@ -62,7 +62,7 @@
             android:name=".ui.activities.AttachCardActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".cardscanners.ui.AsdkNfcScanActivity"
@@ -110,9 +110,10 @@
             android:theme="@style/AcquiringTheme.Base" />
 
         <activity
-            android:name=".redesign.mainform.MainPaymentFormStub"
+            android:name=".redesign.mainform.MainPaymentFormActivity"
             android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base" />
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

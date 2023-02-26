@@ -9,6 +9,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryBu
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 
 /**
  * Created by i.golovachev
@@ -19,6 +20,7 @@ internal class MainPaymentFormFactory(
     private val primaryButtonConfigurator: PrimaryButtonConfigurator,
     private val secondButtonConfigurator: SecondButtonConfigurator,
     private val mergeMethodsStrategy: MergeMethodsStrategy,
+    private val connectionChecker: ConnectionChecker,
     private val _customerKey: String
 ) {
 
@@ -38,7 +40,8 @@ internal class MainPaymentFormFactory(
                 terminalInfo,
                 cards,
                 cards.firstOrNull()
-            )
+            ),
+            noInternet = connectionChecker.isOnline().not()
         )
     }
 

@@ -11,6 +11,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavControll
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getExtra
 
@@ -29,30 +30,46 @@ internal class MainPaymentFormViewModel(
     val primary = _formState.filterNotNull().map { it.ui.primary }
     val secondary = _formState.filterNotNull().map { it.ui.secondaries }
     val chosenCard =
-        _formState.mapNotNull { (it?.ui?.primary as MainPaymentForm.Primary.Card).selectedCard }
+        _formState.mapNotNull { (it?.ui?.primary as? MainPaymentForm.Primary.Card)?.selectedCard }
     val formContent = MutableStateFlow<FormContent>(FormContent.Loading)
     val mainFormNav = mainFormNavController.navFlow
 
     init {
-        coroutineManager.launchOnBackground {
-            runCatching { primaryButtonFactory.getState() }
-                .onFailure { formContent.value = FormContent.Error }
-                .onSuccess {
-                    _formState.value = it
-                    formContent.value = FormContent.Content(it.ui)
-                }
-        }
+        loadState()
+    }
+
+    fun onRetry() {
+        loadState()
     }
 
     fun toSbp() = viewModelScope.launch { mainFormNavController.toSbp(paymentOptions) }
 
     fun toNewCard() = viewModelScope.launch { mainFormNavController.toPayNewCard(paymentOptions) }
 
-    fun toChooseCard() =
-        viewModelScope.launch { mainFormNavController.toChooseCard(paymentOptions) }
+    fun toChooseCard() = viewModelScope.launch {
+        mainFormNavController.toChooseCard(paymentOptions, _formState.value?.data?.chosen)
+    }
 
     fun toTpay() {
         // todo
+    }
+
+    private fun loadState() {
+        coroutineManager.launchOnBackground {
+            formContent.value = FormContent.Loading
+            runCatching { primaryButtonFactory.getState() }
+                .onFailure {
+                    formContent.value = FormContent.Error
+                }
+                .onSuccess {
+                    _formState.value = it
+                    formContent.value = if (it.noInternet) {
+                        FormContent.NoNetwork
+                    } else {
+                        FormContent.Content(it.ui)
+                    }
+                }
+        }
     }
 
     sealed interface FormContent {
@@ -60,6 +77,8 @@ internal class MainPaymentFormViewModel(
         object Loading : FormContent
 
         object Error : FormContent
+
+        object NoNetwork : FormContent
 
         class Content(val state: MainPaymentForm.Ui) : FormContent {
             val isSavedCard = (state.primary as? MainPaymentForm.Primary.Card)?.selectedCard != null

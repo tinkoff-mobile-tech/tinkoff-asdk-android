@@ -45,4 +45,9 @@ internal class ChosenCardComponent(
     fun enableCvc(isEnable: Boolean) {
         cardCvc.enable(isEnable)
     }
+
+
+    fun showKeyboard() {
+
+    }
 }
