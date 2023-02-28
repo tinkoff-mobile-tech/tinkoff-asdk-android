@@ -1,296 +1,41 @@
+import common.TestHelper.tryToCreateCardNumber
+import common.TestHelper.getParametersFromResources
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import ru.tinkoff.acquiring.sdk.utils.BankIssuer
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.ALFABANK
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.GAZPROMBANK
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.OTHER
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.RAIFFEISEN
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.SBERBANK
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.TINKOFF
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.UNKNOWN
-import ru.tinkoff.acquiring.sdk.utils.BankIssuer.VTB
 
 @RunWith(Parameterized::class)
 class BankIssuerTests(
     private val expectedBank: BankIssuer,
     private val bin: String?
 ) {
-
     @Test
     fun verifyBankIssuers() {
-        val testCardNumber = if (bin == null || bin.length < 6) bin else randomCardNumber(bin)
+        val testCardNumber = tryToCreateCardNumber(bin)
 
         assertEquals(expectedBank, BankIssuer.resolve(testCardNumber))
-    }
-
-    private fun randomCardNumber(bin: String): String {
-        val charset = ('0'..'9')
-        val cardLength = if (bin[0] in listOf('5', '4')) (6..16).random() else (6..19).random()
-
-        return if (cardLength == 6){
-            bin
-        } else{
-            bin + (6..cardLength)
-                .map { charset.random() }
-                .joinToString("")
-        }
     }
 
     companion object {
         @JvmStatic
         @Parameterized.Parameters
-        fun getParameters() = listOf(
-            arrayOf(SBERBANK, "427402"),
-            arrayOf(SBERBANK, "427406"),
-            arrayOf(SBERBANK, "427411"),
-            arrayOf(SBERBANK, "427416"),
-            arrayOf(SBERBANK, "427417"),
-            arrayOf(SBERBANK, "427418"),
-            arrayOf(SBERBANK, "427420"),
-            arrayOf(SBERBANK, "427422"),
-            arrayOf(SBERBANK, "427425"),
-            arrayOf(SBERBANK, "427427"),
-            arrayOf(SBERBANK, "427428"),
-            arrayOf(SBERBANK, "427430"),
-            arrayOf(SBERBANK, "427432"),
-            arrayOf(SBERBANK, "427433"),
-            arrayOf(SBERBANK, "427436"),
-            arrayOf(SBERBANK, "427438"),
-            arrayOf(SBERBANK, "427444"),
-            arrayOf(SBERBANK, "427448"),
-            arrayOf(SBERBANK, "427449"),
-            arrayOf(SBERBANK, "427459"),
-            arrayOf(SBERBANK, "427466"),
-            arrayOf(SBERBANK, "427472"),
-            arrayOf(SBERBANK, "427475"),
-            arrayOf(SBERBANK, "427477"),
-            arrayOf(SBERBANK, "427499"),
-            arrayOf(SBERBANK, "427600"),
-            arrayOf(SBERBANK, "427601"),
-            arrayOf(SBERBANK, "427602"),
-            arrayOf(SBERBANK, "427616"),
-            arrayOf(SBERBANK, "427620"),
-            arrayOf(SBERBANK, "427622"),
-            arrayOf(SBERBANK, "427625"),
-            arrayOf(SBERBANK, "427635"),
-            arrayOf(SBERBANK, "427648"),
-            arrayOf(SBERBANK, "427659"),
-            arrayOf(SBERBANK, "427666"),
-            arrayOf(SBERBANK, "427672"),
-            arrayOf(SBERBANK, "427674"),
-            arrayOf(SBERBANK, "427677"),
-            arrayOf(SBERBANK, "427680"),
-            arrayOf(SBERBANK, "427699"),
-            arrayOf(SBERBANK, "427901"),
-            arrayOf(SBERBANK, "427902"),
-            arrayOf(SBERBANK, "427916"),
-            arrayOf(SBERBANK, "427920"),
-            arrayOf(SBERBANK, "427922"),
-            arrayOf(SBERBANK, "427925"),
-            arrayOf(SBERBANK, "427930"),
-            arrayOf(SBERBANK, "427948"),
-            arrayOf(SBERBANK, "427959"),
-            arrayOf(SBERBANK, "427966"),
-            arrayOf(SBERBANK, "427972"),
-            arrayOf(SBERBANK, "427975"),
-            arrayOf(SBERBANK, "427977"),
-            arrayOf(SBERBANK, "427999"),
-            arrayOf(SBERBANK, "527576"),
-            arrayOf(SBERBANK, "531310"),
-            arrayOf(SBERBANK, "546901"),
-            arrayOf(SBERBANK, "546916"),
-            arrayOf(SBERBANK, "546920"),
-            arrayOf(SBERBANK, "546922"),
-            arrayOf(SBERBANK, "546925"),
-            arrayOf(SBERBANK, "546935"),
-            arrayOf(SBERBANK, "546959"),
-            arrayOf(SBERBANK, "546966"),
-            arrayOf(SBERBANK, "546972"),
-            arrayOf(SBERBANK, "546974"),
-            arrayOf(SBERBANK, "546998"),
-            arrayOf(SBERBANK, "547901"),
-            arrayOf(SBERBANK, "547905"),
-            arrayOf(SBERBANK, "547910"),
-            arrayOf(SBERBANK, "547920"),
-            arrayOf(SBERBANK, "547922"),
-            arrayOf(SBERBANK, "547925"),
-            arrayOf(SBERBANK, "547927"),
-            arrayOf(SBERBANK, "547928"),
-            arrayOf(SBERBANK, "547930"),
-            arrayOf(SBERBANK, "547932"),
-            arrayOf(SBERBANK, "547935"),
-            arrayOf(SBERBANK, "547938"),
-            arrayOf(SBERBANK, "547940"),
-            arrayOf(SBERBANK, "547942"),
-            arrayOf(SBERBANK, "547947"),
-            arrayOf(SBERBANK, "547948"),
-            arrayOf(SBERBANK, "547949"),
-            arrayOf(SBERBANK, "547959"),
-            arrayOf(SBERBANK, "547966"),
-            arrayOf(SBERBANK, "547969"),
-            arrayOf(SBERBANK, "547972"),
-            arrayOf(SBERBANK, "547976"),
-            arrayOf(SBERBANK, "547998"),
-            arrayOf(SBERBANK, "548401"),
-            arrayOf(SBERBANK, "548410"),
-            arrayOf(SBERBANK, "548416"),
-            arrayOf(SBERBANK, "548420"),
-            arrayOf(SBERBANK, "548422"),
-            arrayOf(SBERBANK, "548425"),
-            arrayOf(SBERBANK, "548430"),
-            arrayOf(SBERBANK, "548435"),
-            arrayOf(SBERBANK, "548438"),
-            arrayOf(SBERBANK, "548440"),
-            arrayOf(SBERBANK, "548442"),
-            arrayOf(SBERBANK, "548447"),
-            arrayOf(SBERBANK, "548454"),
-            arrayOf(SBERBANK, "548459"),
-            arrayOf(SBERBANK, "548466"),
-            arrayOf(SBERBANK, "548468"),
-            arrayOf(SBERBANK, "548472"),
-            arrayOf(SBERBANK, "548476"),
-            arrayOf(SBERBANK, "548498"),
-            arrayOf(SBERBANK, "639002"),
-            arrayOf(SBERBANK, "676195"),
-            arrayOf(SBERBANK, "676196"),
-            arrayOf(SBERBANK, "676280"),
-            arrayOf(VTB, "418868"),
-            arrayOf(VTB, "418869"),
-            arrayOf(VTB, "418870"),
-            arrayOf(VTB, "421191"),
-            arrayOf(VTB, "426375"),
-            arrayOf(VTB, "490809"),
-            arrayOf(VTB, "515775"),
-            arrayOf(VTB, "524895"),
-            arrayOf(VTB, "525773"),
-            arrayOf(VTB, "525787"),
-            arrayOf(VTB, "542104"),
-            arrayOf(VTB, "552216"),
-            arrayOf(VTB, "554363"),
-            arrayOf(VTB, "558481"),
-            arrayOf(ALFABANK, "415400"),
-            arrayOf(ALFABANK, "415428"),
-            arrayOf(ALFABANK, "415429"),
-            arrayOf(ALFABANK, "415481"),
-            arrayOf(ALFABANK, "415482"),
-            arrayOf(ALFABANK, "419539"),
-            arrayOf(ALFABANK, "419540"),
-            arrayOf(ALFABANK, "427714"),
-            arrayOf(ALFABANK, "428804"),
-            arrayOf(ALFABANK, "428905"),
-            arrayOf(ALFABANK, "428906"),
-            arrayOf(ALFABANK, "431417"),
-            arrayOf(ALFABANK, "431727"),
-            arrayOf(ALFABANK, "434135"),
-            arrayOf(ALFABANK, "439000"),
-            arrayOf(ALFABANK, "458279"),
-            arrayOf(ALFABANK, "458410"),
-            arrayOf(ALFABANK, "458411"),
-            arrayOf(ALFABANK, "477960"),
-            arrayOf(ALFABANK, "477964"),
-            arrayOf(ALFABANK, "479004"),
-            arrayOf(ALFABANK, "479087"),
-            arrayOf(TINKOFF, "220070"),
-            arrayOf(TINKOFF, "437772"),
-            arrayOf(TINKOFF, "437773"),
-            arrayOf(TINKOFF, "437783"),
-            arrayOf(TINKOFF, "470127"),
-            arrayOf(TINKOFF, "518901"),
-            arrayOf(TINKOFF, "521324"),
-            arrayOf(TINKOFF, "524468"),
-            arrayOf(TINKOFF, "528041"),
-            arrayOf(TINKOFF, "538994"),
-            arrayOf(TINKOFF, "551960"),
-            arrayOf(TINKOFF, "553420"),
-            arrayOf(TINKOFF, "626429"),
-            arrayOf(TINKOFF, "626301"),
-            arrayOf(GAZPROMBANK, "404136"),
-            arrayOf(GAZPROMBANK, "404270"),
-            arrayOf(GAZPROMBANK, "424974"),
-            arrayOf(GAZPROMBANK, "424975"),
-            arrayOf(GAZPROMBANK, "424976"),
-            arrayOf(GAZPROMBANK, "426890"),
-            arrayOf(GAZPROMBANK, "427326"),
-            arrayOf(GAZPROMBANK, "487415"),
-            arrayOf(GAZPROMBANK, "487416"),
-            arrayOf(GAZPROMBANK, "487417"),
-            arrayOf(GAZPROMBANK, "489354"),
-            arrayOf(GAZPROMBANK, "518816"),
-            arrayOf(GAZPROMBANK, "518902"),
-            arrayOf(GAZPROMBANK, "521155"),
-            arrayOf(GAZPROMBANK, "522193"),
-            arrayOf(GAZPROMBANK, "522477"),
-            arrayOf(GAZPROMBANK, "522988"),
-            arrayOf(GAZPROMBANK, "525740"),
-            arrayOf(GAZPROMBANK, "526483"),
-            arrayOf(GAZPROMBANK, "529278"),
-            arrayOf(GAZPROMBANK, "530993"),
-            arrayOf(GAZPROMBANK, "532684"),
-            arrayOf(GAZPROMBANK, "534130"),
-            arrayOf(GAZPROMBANK, "539839"),
-            arrayOf(GAZPROMBANK, "540664"),
-            arrayOf(GAZPROMBANK, "542255"),
-            arrayOf(GAZPROMBANK, "543672"),
-            arrayOf(GAZPROMBANK, "543762"),
-            arrayOf(GAZPROMBANK, "544026"),
-            arrayOf(GAZPROMBANK, "544561"),
-            arrayOf(GAZPROMBANK, "545101"),
-            arrayOf(GAZPROMBANK, "547348"),
-            arrayOf(GAZPROMBANK, "548027"),
-            arrayOf(GAZPROMBANK, "548999"),
-            arrayOf(GAZPROMBANK, "549000"),
-            arrayOf(GAZPROMBANK, "549098"),
-            arrayOf(GAZPROMBANK, "549600"),
-            arrayOf(GAZPROMBANK, "552702"),
-            arrayOf(GAZPROMBANK, "556052"),
-            arrayOf(GAZPROMBANK, "558355"),
-            arrayOf(GAZPROMBANK, "676454"),
-            arrayOf(RAIFFEISEN, "402178"),
-            arrayOf(RAIFFEISEN, "402179"),
-            arrayOf(RAIFFEISEN, "404807"),
-            arrayOf(RAIFFEISEN, "404885"),
-            arrayOf(RAIFFEISEN, "420705"),
-            arrayOf(RAIFFEISEN, "422287"),
-            arrayOf(RAIFFEISEN, "425884"),
-            arrayOf(RAIFFEISEN, "447603"),
-            arrayOf(RAIFFEISEN, "447624"),
-            arrayOf(RAIFFEISEN, "462729"),
-            arrayOf(RAIFFEISEN, "462730"),
-            arrayOf(RAIFFEISEN, "462758"),
-            arrayOf(RAIFFEISEN, "510069"),
-            arrayOf(RAIFFEISEN, "510070"),
-            arrayOf(RAIFFEISEN, "515876"),
-            arrayOf(RAIFFEISEN, "528053"),
-            arrayOf(RAIFFEISEN, "528808"),
-            arrayOf(RAIFFEISEN, "528809"),
-            arrayOf(RAIFFEISEN, "530867"),
-            arrayOf(RAIFFEISEN, "533594"),
-            arrayOf(RAIFFEISEN, "533616"),
-            arrayOf(RAIFFEISEN, "536392"),
-            arrayOf(RAIFFEISEN, "542772"),
-            arrayOf(RAIFFEISEN, "544237"),
-            arrayOf(RAIFFEISEN, "545115"),
-            arrayOf(RAIFFEISEN, "558273"),
-            arrayOf(RAIFFEISEN, "676625"),
-            arrayOf(OTHER, "147626"),
-            arrayOf(OTHER, "234542"),
-            arrayOf(OTHER, "356299"),
-            arrayOf(OTHER, "505827"),
-            arrayOf(OTHER, "623446"),
-            arrayOf(OTHER, "676884"),
-            arrayOf(OTHER, "789384"),
-            arrayOf(OTHER, "860002"),
-            arrayOf(OTHER, "905114"),
-            arrayOf(OTHER, "911288"),
-            arrayOf(OTHER, "941755"),
-            arrayOf(OTHER, "999007"),
-            arrayOf(OTHER, "810000"),
-            arrayOf(UNKNOWN, null),
-            arrayOf(UNKNOWN, ""),
-            arrayOf(UNKNOWN, "1"),
-            arrayOf(UNKNOWN, "22023")
-        )
+        fun getParameters(): MutableList<Array<Any?>> {
+            val allStringParams = getParametersFromResources("bankIssuerPayload")
+            val convertedParams = mutableListOf<Array<Any?>>()
+
+            if (allStringParams != null) {
+                for (testParams in allStringParams) {
+                    val firstParam = testParams[0]?.let { BankIssuer.valueOf(it) }
+                    val secondParam = testParams[1]?.replace("\"", "")
+
+                    convertedParams.add(arrayOf(firstParam, secondParam))
+                }
+
+            }
+
+            return convertedParams
+        }
     }
 }
