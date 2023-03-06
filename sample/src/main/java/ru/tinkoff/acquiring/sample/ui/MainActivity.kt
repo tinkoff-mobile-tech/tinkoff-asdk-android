@@ -26,8 +26,6 @@ import android.view.MenuItem
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.adapters.BooksListAdapter
@@ -35,8 +33,8 @@ import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.service.PaymentNotificationIntentService
 import ru.tinkoff.acquiring.sample.service.PriceNotificationReceiver
+import ru.tinkoff.acquiring.sample.ui.environment.AcqEnvironmentDialog
 import ru.tinkoff.acquiring.sample.utils.PaymentNotificationManager
-import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_CARD_ID
@@ -124,6 +122,10 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             }
             R.id.menu_action_about -> {
                 AboutActivity.start(this)
+                true
+            }
+            R.id.menu_action_environment -> {
+                AcqEnvironmentDialog().show(supportFragmentManager, AttachCardManuallyDialogFragment.TAG)
                 true
             }
             R.id.menu_action_static_qr -> {

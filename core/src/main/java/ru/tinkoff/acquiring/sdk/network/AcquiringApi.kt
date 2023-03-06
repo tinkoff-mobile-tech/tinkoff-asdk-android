@@ -57,9 +57,40 @@ object AcquiringApi {
     /**
      * Коды ошибок, сообщение которых можно показать конечным пользователям
      */
-    val errorCodesForUserShowing = listOf("53", "206", "224", "225", "252", "99", "101",
-            "1006", "1012", "1013", "1014", "1015", "1030", "1033", "1034", "1035", "1036", "1037", "1038",
-            "1039", "1040", "1041", "1042", "1043", "1051", "1054", "1057", "1065", "1082", "1089", "1091", "1096")
+    val errorCodesForUserShowing = listOf(
+        "53",
+        "206",
+        "224",
+        "225",
+        "252",
+        "99",
+        "101",
+        "1006",
+        "1012",
+        "1013",
+        "1014",
+        "1015",
+        "1030",
+        "1033",
+        "1034",
+        "1035",
+        "1036",
+        "1037",
+        "1038",
+        "1039",
+        "1040",
+        "1041",
+        "1042",
+        "1043",
+        "1051",
+        "1054",
+        "1057",
+        "1065",
+        "1082",
+        "1089",
+        "1091",
+        "1096"
+    )
 
     /**
      * Коды ошибок, вызванные временными неполадками системы
@@ -94,13 +125,22 @@ object AcquiringApi {
      */
     fun getUrl(apiMethod: String): String {
         return if (useV1Api(apiMethod)) {
-            if (AcquiringSdk.isDeveloperMode) API_URL_DEBUG_OLD else API_URL_RELEASE_OLD
+            if (AcquiringSdk.isDeveloperMode)
+                useCustomOrDefault(API_URL_DEBUG_OLD, AcquiringSdk.customUrl, "rest")
+            else
+                API_URL_RELEASE_OLD
         } else {
-            if (AcquiringSdk.isDeveloperMode) API_URL_DEBUG else API_URL_RELEASE
+            if (AcquiringSdk.isDeveloperMode)
+                useCustomOrDefault(API_URL_DEBUG, AcquiringSdk.customUrl)
+            else
+                API_URL_RELEASE
         }
     }
 
     internal fun useV1Api(apiMethod: String): Boolean {
         return oldMethodsList.contains(apiMethod)
     }
+
+    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = "v2") =
+        custom?.let { "$it/$oldOrV2" } ?: default
 }

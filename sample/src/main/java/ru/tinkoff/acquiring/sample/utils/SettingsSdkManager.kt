@@ -72,6 +72,15 @@ class SettingsSdkManager(private val context: Context) {
     val handleCardListErrorInSdk: Boolean
         get() = preferences.getBoolean(context.getString(R.string.acq_sp_handle_cards_error), true)
 
+    var customUrl: String?
+        set(value)  {
+            preferences.edit().apply {
+                putString(context.getString(R.string.acq_sp_custom_url), value)
+            }
+                .commit()
+        }
+        get() = preferences.getString(context.getString(R.string.acq_sp_custom_url), null)
+
     private val styleName: String?
         get() {
             val defaultStyleName = context.getString(R.string.acq_sp_default_style_id)

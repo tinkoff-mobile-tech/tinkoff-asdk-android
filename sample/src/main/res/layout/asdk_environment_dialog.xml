@@ -24,6 +24,7 @@
 
     <RadioGroup
         android:id="@+id/acq_env_urls"
+        android:layout_marginHorizontal="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -53,11 +54,12 @@
     </RadioGroup>
 
     <TextView
+        android:layout_marginBottom="8dp"
         android:id="@+id/acq_env_ok"
         android:layout_gravity="end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:paddingVertical="12dp"
         android:paddingHorizontal="12dp"
         android:text="OK"
