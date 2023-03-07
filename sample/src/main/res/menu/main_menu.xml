@@ -61,6 +61,11 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/menu_action_environment"
+        android:title="@string/activity_title_env"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/menu_action_about"
         android:title="@string/activity_title_about"
         app:showAsAction="never"/>

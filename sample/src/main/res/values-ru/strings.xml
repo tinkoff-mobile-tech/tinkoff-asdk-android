@@ -24,6 +24,7 @@
     <string name="activity_title_attach_card_manually">Привязать карту вручную</string>
     <string name="activity_title_terminals">Терминалы</string>
     <string name="activity_title_about">О программе</string>
+    <string name="activity_title_env">Окружение</string>
     <string name="activity_title_static_qr">Открыть статический QR код</string>
     <string name="activity_title_dynamic_qr">Принять оплату QR</string>
     <string name="activity_title_settings">Настройки</string>
