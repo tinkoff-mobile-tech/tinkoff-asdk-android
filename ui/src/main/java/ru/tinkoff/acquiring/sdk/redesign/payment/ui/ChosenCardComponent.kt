@@ -36,7 +36,6 @@ internal class ChosenCardComponent(
             R.string.acq_cardlist_bankname, bankName.orEmpty(), tail
         )
         root.setOnClickListener { onChangeCard(state) }
-
     }
 
     fun clearCvc() {
@@ -45,5 +44,10 @@ internal class ChosenCardComponent(
 
     fun enableCvc(isEnable: Boolean) {
         cardCvc.enable(isEnable)
+    }
+
+
+    fun showKeyboard() {
+
     }
 }

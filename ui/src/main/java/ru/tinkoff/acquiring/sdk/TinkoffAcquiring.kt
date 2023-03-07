@@ -198,7 +198,7 @@ class TinkoffAcquiring(
      * Создает платежную сессию в рамках оплаты по Системе быстрых платежей
      */
     @MainThread
-    fun initSbpPaymentSession(){
+    fun initSbpPaymentSession() {
         SbpPaymentProcess.init(sdk, applicationContext.packageManager)
     }
 

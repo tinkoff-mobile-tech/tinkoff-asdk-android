@@ -11,6 +11,12 @@ internal object MainPaymentFromUtils {
     private const val NSPK_DEEPLINK = "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE"
     private const val TPAY_DEEPLINK = "https://www.tinkoff.ru/tpay/1923863684"
 
+    //keys
+    const val EMAIL_KEY = "EMAIL_KEY"
+    const val NEED_EMAIL_KEY = "NEED_EMAIL_KEY"
+    const val CVC_KEY = "CVC_KEY"
+    const val CHOSEN_CARD = "CHOSEN_CARD_KEY"
+
 
     // region error handler politic
     suspend fun <T : Any> getOrNull(block: suspend () -> T?): T? = try {

@@ -302,7 +302,9 @@ internal class CardsListActivity : TransparentActivity() {
                     is CardListEvent.CloseWithoutCard -> {
                         finishWithoutCard()
                     }
-                    is CardListEvent.CloseBecauseCardNotLoaded -> {}
+                    is CardListEvent.CloseBecauseCardNotLoaded -> {
+                        finishWithOldCard()
+                    }
                     is CardListEvent.ShowCardDeleteError -> {
                         showErrorDialog(
                             R.string.acq_cardlist_alert_deletecard_label,

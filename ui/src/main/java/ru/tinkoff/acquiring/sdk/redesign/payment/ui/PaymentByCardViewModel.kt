@@ -18,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
 
+// todo - раздельная vm  для сохраненной карты и новой
 internal class PaymentByCardViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val paymentByCardProcess: PaymentByCardProcess,

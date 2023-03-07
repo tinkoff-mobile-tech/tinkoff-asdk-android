@@ -1,7 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary
 
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormUi
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkNspk
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkTinkoff
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.has
@@ -17,7 +17,7 @@ import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
  */
 internal interface PrimaryButtonConfigurator {
 
-    suspend fun get(info: TerminalInfo?, cardList: List<Card>?): MainPaymentFormUi.Primary
+    suspend fun get(info: TerminalInfo?, cardList: List<Card>?): MainPaymentForm.Primary
 
     class Impl(
         private val provider: NspkBankAppsProvider,
@@ -27,7 +27,7 @@ internal interface PrimaryButtonConfigurator {
 
         override suspend fun get(
             info: TerminalInfo?, cardList: List<Card>?
-        ): MainPaymentFormUi.Primary {
+        ): MainPaymentForm.Primary {
             val methods = info
 
             fun checkSavedCards() = cardList?.firstOrNull()?.let {
@@ -37,20 +37,20 @@ internal interface PrimaryButtonConfigurator {
             // не выносить что то в отдельные ф-ции!!!приведет к проблемам в бранчах при изменении алго
             return when {
                 // 2.0
-                methods == null -> MainPaymentFormUi.Primary.Card(null)
+                methods == null -> MainPaymentForm.Primary.Card(null)
 
                 // 2.1
                 methods.addCardScheme && methods.paymethods.has(Paymethod.TinkoffPay) && methods.paymethods.has(
                     Paymethod.SBP
                 ) -> {
                     if (checkTinkoff(checker)) {
-                        MainPaymentFormUi.Primary.Tpay
+                        MainPaymentForm.Primary.Tpay
                     } else {
                         val saved = checkSavedCards()
                         when {
-                            saved != null -> MainPaymentFormUi.Primary.Card(saved)
-                            checkNspk(checker, provider) -> MainPaymentFormUi.Primary.Spb
-                            else -> MainPaymentFormUi.Primary.Card(null)
+                            saved != null -> MainPaymentForm.Primary.Card(saved)
+                            checkNspk(checker, provider) -> MainPaymentForm.Primary.Spb
+                            else -> MainPaymentForm.Primary.Card(null)
                         }
                     }
                 }
@@ -60,11 +60,11 @@ internal interface PrimaryButtonConfigurator {
                     Paymethod.SBP
                 ) -> {
                     if (checkTinkoff(checker)) {
-                        MainPaymentFormUi.Primary.Tpay
+                        MainPaymentForm.Primary.Tpay
                     } else {
                         when {
-                            checkNspk(checker, provider) -> MainPaymentFormUi.Primary.Spb
-                            else -> MainPaymentFormUi.Primary.Card(null)
+                            checkNspk(checker, provider) -> MainPaymentForm.Primary.Spb
+                            else -> MainPaymentForm.Primary.Card(null)
                         }
                     }
                 }
@@ -73,45 +73,45 @@ internal interface PrimaryButtonConfigurator {
                 methods.addCardScheme && methods.paymethods.has(Paymethod.SBP) -> {
                     val saved = checkSavedCards()
                     when {
-                        saved != null -> MainPaymentFormUi.Primary.Card(saved)
-                        checkNspk(checker, provider) -> MainPaymentFormUi.Primary.Spb
-                        else -> MainPaymentFormUi.Primary.Card(null)
+                        saved != null -> MainPaymentForm.Primary.Card(saved)
+                        checkNspk(checker, provider) -> MainPaymentForm.Primary.Spb
+                        else -> MainPaymentForm.Primary.Card(null)
                     }
                 }
 
                 // 2.4
                 methods.addCardScheme.not() && methods.paymethods.has(Paymethod.SBP) -> {
                     when {
-                        checkNspk(checker, provider) -> MainPaymentFormUi.Primary.Spb
-                        else -> MainPaymentFormUi.Primary.Card(null)
+                        checkNspk(checker, provider) -> MainPaymentForm.Primary.Spb
+                        else -> MainPaymentForm.Primary.Card(null)
                     }
                 }
 
                 // 2.5
                 methods.addCardScheme && methods.paymethods.has(Paymethod.TinkoffPay) -> {
                     if (checkTinkoff(checker)) {
-                        MainPaymentFormUi.Primary.Tpay
+                        MainPaymentForm.Primary.Tpay
                     } else {
-                        MainPaymentFormUi.Primary.Card(checkSavedCards())
+                        MainPaymentForm.Primary.Card(checkSavedCards())
                     }
                 }
 
                 // 2.6
                 methods.addCardScheme.not() && methods.paymethods.has(Paymethod.TinkoffPay) -> {
                     if (checkTinkoff(checker)) {
-                        MainPaymentFormUi.Primary.Tpay
+                        MainPaymentForm.Primary.Tpay
                     } else {
-                        MainPaymentFormUi.Primary.Card(null)
+                        MainPaymentForm.Primary.Card(null)
                     }
                 }
 
                 // 2.7
                 methods.addCardScheme -> {
-                    MainPaymentFormUi.Primary.Card(checkSavedCards())
+                    MainPaymentForm.Primary.Card(checkSavedCards())
                 }
 
                 // 2.8
-                else -> MainPaymentFormUi.Primary.Card(null)
+                else -> MainPaymentForm.Primary.Card(null)
             }
         }
     }

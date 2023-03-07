@@ -68,6 +68,23 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+
+    <style name="AcquiringNewTheme" parent="AcquiringTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/AcqWindowAnimationStyle</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="AcqWindowAnimationStyle">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
     <style name="AcquiringNfcTheme" parent="AcquiringTheme">
         <item name="windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
