@@ -106,7 +106,7 @@
     <string name="acq_commonsheet_timeout_failed_flat_button">Другой способ оплаты</string>
     <string name="acq_chosen_card_change">Сменить карту</string>
 
-    <string name="acq_primary_with_tinkoff_pay">Оплатить с тинькофф</string>
+    <string name="acq_primary_with_tinkoff_pay">Оплатить с Тинькофф</string>
     <string name="acq_primary_with_sbp">Оплатить с</string>
     <string name="acq_primary_with_card">Оплатить картой</string>
 
@@ -114,7 +114,7 @@
     <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
     <string name="acq_secondary_tinkoff_pay_subtitle">in Tinkoff app</string>
 
-    <string name="acq_secondary_sbp_title">Fast payment system</string>
+    <string name="acq_secondary_sbp_title">CБП</string>
     <string name="acq_secondary_sbp_subtitle">in app of any bank</string>
 
     <string name="acq_secondary_card_title">Картой</string>

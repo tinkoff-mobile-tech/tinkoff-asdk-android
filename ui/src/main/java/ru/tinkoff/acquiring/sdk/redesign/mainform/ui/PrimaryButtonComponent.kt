@@ -56,7 +56,7 @@ internal class PrimaryButtonComponent(
             is MainPaymentForm.Primary.Spb -> setState(
                 bgColor = R.drawable.acq_button_spb_bg,
                 textColor = R.color.acq_colorMain,
-                buttonText = ctx.getString(R.string.acq_primary_with_card),
+                buttonText = ctx.getString(R.string.acq_primary_with_sbp),
                 icon = R.drawable.acq_ic_sbp_primary_button_logo,
                 onClick = onSpbClick
             )

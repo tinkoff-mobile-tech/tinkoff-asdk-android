@@ -61,6 +61,8 @@ internal class MainFormNavController {
     // TODO - убрать после перехода на общую навигацию
     suspend fun clear() = channelNav.send(null)
 
+    suspend fun close() =  channelNav.send(Navigation.Return())
+
     sealed interface Navigation {
         class ToSbp(val startData: TinkoffAcquiring.SbpScreen.StartData) : Navigation
 
@@ -71,6 +73,10 @@ internal class MainFormNavController {
         class ToTpay : Navigation
 
         class To3ds(val paymentOptions: PaymentOptions, val threeDsState: ThreeDsState) : Navigation
+
+        class Return(
+            //todo Data
+        ) : Navigation
     }
 }
 

@@ -4,9 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.GestureDetector
-import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -45,7 +44,6 @@ import ru.tinkoff.acquiring.sdk.utils.*
 /**
  * Created by i.golovachev
  */
-// rework after desing main form
 class MainPaymentFormActivity : AppCompatActivity() {
 
     val options by lazyUnsafe { intent.getOptions<PaymentOptions>() }
@@ -188,6 +186,15 @@ class MainPaymentFormActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onBackPressed() {
+        viewModel.onBackPressed()
+    }
+
     private suspend fun updateContent() {
         combine(
             cardInputViewModel.paymentStatus, viewModel.formContent
@@ -255,12 +262,6 @@ class MainPaymentFormActivity : AppCompatActivity() {
         }.collect()
     }
 
-    private var gestureDetector: GestureDetector? = null
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return gestureDetector?.onTouchEvent(event) ?: true
-    }
-
     private suspend fun updatePrimary() = viewModel.primary.collect {
         primaryButtonComponent.render(it)
     }
@@ -279,9 +280,10 @@ class MainPaymentFormActivity : AppCompatActivity() {
 
     private suspend fun updateButtonLoader() = cardInputViewModel.isLoading.collectLatest {
         cardPayComponent.renderLoader(it)
-        if (it.not()) {
+        if (it) {
             cardPayComponent.isKeyboardVisible(false)
         }
+        handleLoadingInProcess(it)
     }
 
     private suspend fun updateCardPayState() = with(cardInputViewModel) {
@@ -311,13 +313,29 @@ class MainPaymentFormActivity : AppCompatActivity() {
                     it.paymentOptions,
                     it.threeDsState.data,
                 )
-                else -> Unit
+                is MainFormNavController.Navigation.Return -> {
+                    finish()
+                }
+                null -> Unit
             }
         }
     }
 
     private fun createTitleView() {
         amount.text = options.order.amount.toHumanReadableString()
+    }
+
+    private fun handleLoadingInProcess(inProcess: Boolean) {
+        cardPayComponent.isEnable(inProcess.not())
+
+        if (inProcess) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
     }
 
     companion object {

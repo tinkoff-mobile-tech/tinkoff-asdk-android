@@ -39,7 +39,10 @@ class CardPayComponent(
     fun render(state: CardChosenModel, email: String?, paymentOptions: PaymentOptions) {
         emailInputComponent.render(email, email.isNullOrBlank().not())
         savedCardComponent.render(state)
-        loaderButton.text = viewBinding.root.resources.getString(R.string.acq_cardpay_pay, paymentOptions.order.amount.toHumanReadableString())
+        loaderButton.text = viewBinding.root.resources.getString(
+            R.string.acq_cardpay_pay,
+            paymentOptions.order.amount.toHumanReadableString()
+        )
     }
 
     fun renderEnable(isEnable: Boolean) {
@@ -52,6 +55,12 @@ class CardPayComponent(
 
     fun isVisible(isVisible: Boolean) {
         viewBinding.root.isVisible = isVisible
+    }
+
+    fun isEnable(isEnable: Boolean) {
+        savedCardComponent.enableCvc(isEnable)
+        viewBinding.root.isEnabled = isEnable
+        emailInputComponent.isEnable(isEnable)
     }
 
     fun isKeyboardVisible(isVisible: Boolean) {
