@@ -50,22 +50,18 @@ internal fun MainPaymentForm.Secondary.mapButtonState(context: Context) = when (
         icon = ContextCompat.getDrawable(context, R.drawable.acq_add_new_card)!!,
         iconBg = null,
         title = context.resources.getString(R.string.acq_secondary_card_title),
-        subtitle = context.resources.getQuantityString(
-            R.plurals.acq_secondary_cards_subtitle,
-            count,
-            count
-        )
+        subtitle = null
     )
     MainPaymentForm.Secondary.Spb -> SecondaryButtonComponent.State(
-        paymethod = Paymethod.Cards,
+        paymethod = Paymethod.SBP,
         icon = ContextCompat.getDrawable(context, R.drawable.acq_ic_secondary_sbp)!!,
         iconBg = ContextCompat.getDrawable(context, R.drawable.acq_shimmer_circle_bg)!!,
         title = context.resources.getString(R.string.acq_secondary_sbp_title),
         subtitle = context.resources.getString(R.string.acq_secondary_sbp_subtitle)
     )
     MainPaymentForm.Secondary.Tpay -> SecondaryButtonComponent.State(
-        paymethod = Paymethod.Cards,
-        icon = ContextCompat.getDrawable(context, R.drawable.acq_icon_tinkoff_pay)!!,
+        paymethod = Paymethod.TinkoffPay,
+        icon = ContextCompat.getDrawable(context, R.drawable.acq_icon_tinkoff_pay_alt)!!,
         iconBg = null,
         title = context.resources.getString(R.string.acq_secondary_tinkoff_pay_title),
         subtitle = context.resources.getString(R.string.acq_secondary_tinkoff_pay_subtitle)

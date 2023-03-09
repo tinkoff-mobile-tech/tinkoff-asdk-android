@@ -64,6 +64,11 @@ class EmailInputComponent(
         render(State(null, false))
     }
 
+    fun isEnable(isEnable: Boolean) {
+        emailInput.isEnabled = isEnable
+        sendReceiptSwitch.isEnabled = isEnable
+    }
+
     fun isValid(): Boolean = EmailValidator.validate(emailValue)
 
     data class State(val email: String?, val isShow: Boolean)

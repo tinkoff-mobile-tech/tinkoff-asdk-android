@@ -105,7 +105,7 @@
     <string name="acq_stub_sbp_no_banks_details">Details</string>
     <string name="acq_chosen_card_change">Change card</string>
 
-    <string name="acq_primary_with_tinkoff_pay">Pay with tinkoff</string>
+    <string name="acq_primary_with_tinkoff_pay">Pay with Tinkoff</string>
     <string name="acq_primary_with_sbp">Pay with</string>
     <string name="acq_primary_with_card">Pay by a card</string>
 
