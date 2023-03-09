@@ -117,6 +117,7 @@
     <string name="acq_secondary_sbp_title">CБП</string>
     <string name="acq_secondary_sbp_subtitle">В приложении любого банка</string>
 
+
     <string name="acq_secondary_card_title">Картой</string>
     <string name="main_form_to_pay">К оплате</string>
     <plurals name="acq_secondary_cards_subtitle">
