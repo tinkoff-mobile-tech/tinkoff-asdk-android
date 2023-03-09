@@ -28,7 +28,7 @@ internal interface SecondButtonConfigurator {
 
             val set = info?.paymethods?.mapNotNull {
                 when (it.paymethod) {
-                    Paymethod.TinkoffPay -> if (checkTinkoff(checker)) MainPaymentForm.Secondary.Tpay else null
+                    Paymethod.TinkoffPay -> MainPaymentForm.Secondary.Tpay
                     Paymethod.YandexPay -> null// TODO !!!
                     Paymethod.SBP -> if (checkNspk(checker, provider))
                         MainPaymentForm.Secondary.Spb

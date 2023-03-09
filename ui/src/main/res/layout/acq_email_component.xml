@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="16dp"
         app:acq_title="@string/acq_label_email" />
 
 </LinearLayout>

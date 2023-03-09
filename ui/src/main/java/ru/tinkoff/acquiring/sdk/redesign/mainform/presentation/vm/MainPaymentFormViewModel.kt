@@ -54,6 +54,8 @@ internal class MainPaymentFormViewModel(
         // todo
     }
 
+    fun onBackPressed() = viewModelScope.launch { mainFormNavController.close() }
+
     private fun loadState() {
         coroutineManager.launchOnBackground {
             formContent.value = FormContent.Loading

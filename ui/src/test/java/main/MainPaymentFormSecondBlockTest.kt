@@ -63,7 +63,7 @@ internal class MainPaymentFormSecondBlockTest {
         cards = listOf(Card(), Card()),
         apps = emptySet(),
         methods = listOf(Paymethod.TinkoffPay),
-        expected = setOf(MainPaymentForm.Secondary.Cards(2))
+        expected = setOf(MainPaymentForm.Secondary.Tpay,MainPaymentForm.Secondary.Cards(2))
     ).execute()
 
     @Test
@@ -72,7 +72,7 @@ internal class MainPaymentFormSecondBlockTest {
         cards = listOf(Card(), Card()),
         apps = nspkAppSet,
         methods = listOf(Paymethod.TinkoffPay),
-        expected = setOf(MainPaymentForm.Secondary.Cards(2))
+        expected = setOf(MainPaymentForm.Secondary.Tpay,MainPaymentForm.Secondary.Cards(2))
     ).execute()
 
     @Test
@@ -81,7 +81,11 @@ internal class MainPaymentFormSecondBlockTest {
         cards = listOf(Card()),
         apps = nspkAppSet,
         methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-        expected = setOf(MainPaymentForm.Secondary.Cards(1), MainPaymentForm.Secondary.Spb)
+        expected = setOf(
+            MainPaymentForm.Secondary.Tpay,
+            MainPaymentForm.Secondary.Cards(1),
+            MainPaymentForm.Secondary.Spb
+        )
     ).execute()
 
 
