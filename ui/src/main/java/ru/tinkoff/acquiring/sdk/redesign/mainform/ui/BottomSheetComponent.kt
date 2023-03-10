@@ -23,7 +23,6 @@ internal class BottomSheetComponent(
     private var contentHeight: Int = 0
 
     init {
-        bottomSheetBehavior.isDraggable = true
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -79,7 +78,7 @@ internal class BottomSheetComponent(
         val bottom = insets!!.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
         val measuredHeight = measuredView.measuredHeight + bottom
         contentHeight = measuredHeight
-        sheet.postDelayed({ bottomSheetBehavior.setPeekHeight(measuredHeight, true) }, 100)
+        bottomSheetBehavior.setPeekHeight(measuredHeight, true)
     }
 
     fun onDetachWindow() {

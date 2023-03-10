@@ -3,6 +3,8 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform.ui
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormSecondaryButtonBinding
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
@@ -20,11 +22,13 @@ class SecondaryButtonComponent(val binding: AcqMainFormSecondaryButtonBinding) :
             if (state == null) {
                 paymentName.text = null
                 paymentSubtitle.text = null
+                paymentSubtitle.isVisible = false
                 paymentTypeIcon.setImageDrawable(null)
                 paymentTypeIcon.background = null
             } else {
                 paymentName.text = state.title
                 paymentSubtitle.text = state.subtitle
+                paymentSubtitle.isGone = state.subtitle.isNullOrBlank()
                 paymentTypeIcon.setImageDrawable(state.icon)
                 paymentTypeIcon.background = state.iconBg
             }

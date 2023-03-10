@@ -112,10 +112,11 @@
 
     <string name="acq_secondary_block_title">Оплатить другим способом</string>
     <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
-    <string name="acq_secondary_tinkoff_pay_subtitle">in Tinkoff app</string>
+    <string name="acq_secondary_tinkoff_pay_subtitle">В приложении банка</string>
 
     <string name="acq_secondary_sbp_title">CБП</string>
-    <string name="acq_secondary_sbp_subtitle">in app of any bank</string>
+    <string name="acq_secondary_sbp_subtitle">В приложении любого банка</string>
+
 
     <string name="acq_secondary_card_title">Картой</string>
     <string name="main_form_to_pay">К оплате</string>
