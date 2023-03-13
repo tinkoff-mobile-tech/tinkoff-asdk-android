@@ -10,24 +10,28 @@ import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 
 object PaymentByCard {
 
     sealed class Result
     class Success(
-        val paymentId: Long? = null,
-        val cardId: String? = null,
-        val rebillId: String? = null
-    ) : Result()
+        override val paymentId: Long? = null,
+        override val cardId: String? = null,
+        override val rebillId: String? = null
+    ) : Result(), AcqPaymentResult.Success
 
-    object Canceled : Result()
-    class Error(val error: Throwable) : Result()
+    object Canceled : Result(), AcqPaymentResult.Canceled
+    class Error(
+        override val error: Throwable,
+        override val errorCode: Int?
+    ) : Result(), AcqPaymentResult.Error
 
     @Parcelize
     class StartData(
         val paymentOptions: PaymentOptions,
         val list: ArrayList<Card>
-    ): Parcelable
+    ) : Parcelable
 
     object Contract : ActivityResultContract<StartData, Result>() {
 
@@ -61,7 +65,10 @@ object PaymentByCard {
                     _intent.getStringExtra(TinkoffAcquiring.EXTRA_REBILL_ID),
                 )
             }
-            TinkoffAcquiring.RESULT_ERROR -> Error(intent!!.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)!! as Throwable)
+            TinkoffAcquiring.RESULT_ERROR -> Error(
+                intent!!.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)!! as Throwable,
+                null // TODO
+            )
             else -> Canceled
         }
     }

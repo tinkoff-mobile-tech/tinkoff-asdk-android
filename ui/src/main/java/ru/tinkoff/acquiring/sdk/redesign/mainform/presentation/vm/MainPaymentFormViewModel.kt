@@ -6,11 +6,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
+import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils
+import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getExtra
@@ -22,6 +25,7 @@ internal class MainPaymentFormViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val primaryButtonFactory: MainPaymentFormFactory,
     private val mainFormNavController: MainFormNavController,
+    private val paymentByCardProcess: PaymentByCardProcess,
     private val coroutineManager: CoroutineManager,
 ) : ViewModel() {
 
@@ -54,7 +58,21 @@ internal class MainPaymentFormViewModel(
         // todo
     }
 
-    fun onBackPressed() = viewModelScope.launch { mainFormNavController.close() }
+    fun onBackPressed() = viewModelScope.launch {
+        val result = when (val it = paymentByCardProcess.state.value) {
+            is PaymentByCardState.Created -> PaymentByCard.Canceled
+            is PaymentByCardState.Error -> PaymentByCard.Error(it.throwable, null)
+            is PaymentByCardState.Started -> PaymentByCard.Canceled
+            is PaymentByCardState.Success -> PaymentByCard.Success(
+                it.paymentId,
+                it.cardId,
+                it.rebillId
+            )
+            is PaymentByCardState.ThreeDsInProcess -> PaymentByCard.Canceled
+            is PaymentByCardState.ThreeDsUiNeeded -> PaymentByCard.Canceled
+        }
+        mainFormNavController.close(result)
+    }
 
     private fun loadState() {
         coroutineManager.launchOnBackground {

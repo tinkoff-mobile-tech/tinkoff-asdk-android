@@ -16,18 +16,20 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.databinding.*
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
+import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
+import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainFormInputCardViewModel
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormFactory
@@ -45,13 +47,54 @@ import ru.tinkoff.acquiring.sdk.utils.*
 /**
  * Created by i.golovachev
  */
-class MainPaymentFormActivity : AppCompatActivity() {
+internal class MainPaymentFormActivity : AppCompatActivity() {
 
     val options by lazyUnsafe { intent.getOptions<PaymentOptions>() }
 
-    private val byNewCardPayment = registerForActivityResult(PaymentByCard.Contract) {}
-    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) {}
-    private val savedCards = registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {}
+    private val byNewCardPayment = registerForActivityResult(PaymentByCard.Contract) {
+        when (it) {
+            is PaymentByCard.Canceled -> Unit
+            is PaymentByCard.Error -> {
+                setResult(RESULT_ERROR, MainFormContract.Contract.createFailedIntent(it))
+                finish()
+            }
+            is PaymentByCard.Success -> {
+                setResult(
+                    RESULT_OK,
+                    MainFormContract.Contract.createSuccessIntent(it)
+                )
+                finish()
+            }
+        }
+    }
+
+    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) {
+        when (it) {
+            is TinkoffAcquiring.SbpScreen.Canceled -> Unit
+            is TinkoffAcquiring.SbpScreen.NoBanks -> Unit
+            is TinkoffAcquiring.SbpScreen.Error -> {
+                setResult(RESULT_ERROR, MainFormContract.Contract.createFailedIntent(it.error))
+                finish()
+            }
+            is TinkoffAcquiring.SbpScreen.Success -> {
+                setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it.payment))
+                finish()
+            }
+        }
+    }
+
+    private val savedCards = registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {
+        when (it) {
+            is TinkoffAcquiring.ChoseCard.Canceled -> Unit
+            is TinkoffAcquiring.ChoseCard.Error -> Unit
+            is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> {
+                viewModel.toNewCard()
+            }
+            is TinkoffAcquiring.ChoseCard.Success -> {
+                cardInputViewModel.choseCard(it.card)
+            }
+        }
+    }
 
     private val factory by lazyUnsafe { MainPaymentFormFactory(application, options) }
     private val viewModel: MainPaymentFormViewModel by viewModels { factory }
@@ -64,7 +107,9 @@ class MainPaymentFormActivity : AppCompatActivity() {
     private val sheet: NestedScrollView by lazyView(R.id.acq_main_form_sheet)
 
     private val bottomSheetComponent by lazyUnsafe {
-        BottomSheetComponent(root, sheet) { finish() }
+        BottomSheetComponent(root, sheet) {
+            viewModel.onBackPressed()
+        }
     }
 
     private val primaryButtonComponent by lazyUnsafe {
@@ -106,7 +151,9 @@ class MainPaymentFormActivity : AppCompatActivity() {
 
     private val paymentStatusComponent by lazyUnsafe {
         PaymentStatusComponent(
-            viewBinding = AcqPaymentStatusFormBinding.bind(findViewById(R.id.acq_payment_status))
+            viewBinding = AcqPaymentStatusFormBinding.bind(findViewById(R.id.acq_payment_status)),
+            onMainButtonClick = { viewModel.onBackPressed() },
+            onSecondButtonClick = { viewModel.onBackPressed() },
         )
     }
 
@@ -130,6 +177,11 @@ class MainPaymentFormActivity : AppCompatActivity() {
         lifecycleScope.launch { updateSecondary() }
         lifecycleScope.launch { updateSavedCard() }
         lifecycleScope.launch { updateCardPayState() }
+        lifecycleScope.launch {
+            cardInputViewModel.savedCardFlow.collectLatest {
+                cardPayComponent.renderNewCard(it)
+            }
+        }
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -151,34 +203,11 @@ class MainPaymentFormActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 val result =
                     data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
-                val status = PaymentStatusSheetState.Success(
-                    title = R.string.acq_commonsheet_paid_title,
-                    mainButton = R.string.acq_commonsheet_clear_primarybutton,
-                    paymentId = result.paymentId!!,
-                    cardId = result.cardId,
-                    rebillId = result.rebillId
-                )
-                paymentStatusComponent.isVisible = true
-                content.isVisible = false
-                paymentStatusComponent.render(status)
-                lifecycleScope.launch {
-                    bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
-                    bottomSheetComponent.collapse()
-                }
+                cardInputViewModel.set3dsResult(result)
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
-                val status = PaymentStatusSheetState.Error(
-                    title = R.string.acq_commonsheet_failed_title,
-                    mainButton = R.string.acq_commonsheet_failed_primary_button,
-                    throwable = data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable
+                cardInputViewModel.set3dsResult(
+                    data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable
                 )
-                paymentStatusComponent.isVisible = true
-                content.isVisible = false
-                paymentStatusComponent.render(status)
-
-                lifecycleScope.launch {
-                    bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
-                    bottomSheetComponent.collapse()
-                }
             } else {
                 setResult(Activity.RESULT_CANCELED)
             }
@@ -200,27 +229,28 @@ class MainPaymentFormActivity : AppCompatActivity() {
         combine(
             cardInputViewModel.paymentStatus, viewModel.formContent
         ) { cardStatus, formContent ->
-            if (cardStatus is PaymentStatusSheetState.NotYet &&
-                cardStatus is PaymentStatusSheetState.Hide
+            if (cardStatus is PaymentStatusSheetState.Error ||
+                cardStatus is PaymentStatusSheetState.Success
             ) {
                 shimmer.isVisible = false
                 content.isVisible = false
                 errorStubComponent.isVisible(false)
+
+                suspend fun renderStatus() {
+                    paymentStatusComponent.isVisible = true
+                    paymentStatusComponent.render(cardStatus)
+                    bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
+                    bottomSheetComponent.collapse()
+                }
+
                 when (cardStatus) {
                     PaymentStatusSheetState.Hide -> Unit
                     PaymentStatusSheetState.NotYet -> Unit
-                    is PaymentStatusSheetState.Progress -> Unit
                     is PaymentStatusSheetState.Error -> {
-                        paymentStatusComponent.isVisible = true
-                        paymentStatusComponent.render(cardStatus)
-                        bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
-                        bottomSheetComponent.collapse()
+                        renderStatus()
                     }
                     is PaymentStatusSheetState.Success -> {
-                        paymentStatusComponent.isVisible = true
-                        paymentStatusComponent.render(cardStatus)
-                        bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
-                        bottomSheetComponent.collapse()
+                        renderStatus()
                     }
                     else -> Unit
                 }
@@ -249,6 +279,7 @@ class MainPaymentFormActivity : AppCompatActivity() {
                         cardPayComponent.isVisible(formContent.isSavedCard)
                         primaryButtonComponent.isVisible(formContent.isSavedCard.not())
                         bottomSheetComponent.trimSheetToContent(content)
+                        bottomSheetComponent.collapse()
                     }
                     is MainPaymentFormViewModel.FormContent.NoNetwork -> {
                         shimmer.isVisible = false
@@ -288,8 +319,11 @@ class MainPaymentFormActivity : AppCompatActivity() {
     }
 
     private suspend fun updateCardPayState() = with(cardInputViewModel) {
-        combine(savedCardFlow, emailFlow) { card, email -> card to email }.take(1)
-            .collectLatest { (card, email) -> cardPayComponent.render(card, email, options) }
+        combine(savedCardFlow, emailFlow) { card, email -> card to email }
+            .take(1)
+            .collectLatest { (card, email) ->
+                cardPayComponent.render(card, email, options)
+            }
     }
 
     private suspend fun subscribeOnNav() {
@@ -315,6 +349,17 @@ class MainPaymentFormActivity : AppCompatActivity() {
                     it.threeDsState.data,
                 )
                 is MainFormNavController.Navigation.Return -> {
+                    when (it.result) {
+                        is AcqPaymentResult.Canceled -> setResult(RESULT_CANCELED)
+                        is AcqPaymentResult.Error -> setResult(
+                            RESULT_ERROR,
+                            MainFormContract.Contract.createFailedIntent(it.result.error)
+                        )
+                        is AcqPaymentResult.Success -> setResult(
+                            RESULT_OK,
+                            MainFormContract.Contract.createSuccessIntent(it.result)
+                        )
+                    }
                     finish()
                 }
                 null -> Unit
@@ -339,7 +384,7 @@ class MainPaymentFormActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
+    internal companion object {
         fun intent(options: PaymentOptions, context: Context): Intent {
             val intent = Intent(context, MainPaymentFormActivity::class.java)
             intent.putOptions(options)

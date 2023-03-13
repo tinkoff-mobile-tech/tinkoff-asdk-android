@@ -9,6 +9,7 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
@@ -61,7 +62,7 @@ internal class MainFormNavController {
     // TODO - убрать после перехода на общую навигацию
     suspend fun clear() = channelNav.send(null)
 
-    suspend fun close() =  channelNav.send(Navigation.Return())
+    suspend fun close(acqPaymentResult: AcqPaymentResult) = channelNav.send(Navigation.Return(acqPaymentResult))
 
     sealed interface Navigation {
         class ToSbp(val startData: TinkoffAcquiring.SbpScreen.StartData) : Navigation
@@ -74,9 +75,7 @@ internal class MainFormNavController {
 
         class To3ds(val paymentOptions: PaymentOptions, val threeDsState: ThreeDsState) : Navigation
 
-        class Return(
-            //todo Data
-        ) : Navigation
+        class Return(val result: AcqPaymentResult) : Navigation
     }
 }
 

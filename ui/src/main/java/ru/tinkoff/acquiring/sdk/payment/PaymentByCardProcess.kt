@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
@@ -58,6 +59,20 @@ class PaymentByCardProcess internal constructor(
 
     fun stop() {
         coroutineManager.cancelAll()
+    }
+
+    internal fun set3dsResult(paymentResult: PaymentResult) {
+        _state.value =
+            PaymentByCardState.Success(
+                paymentResult.paymentId ?: 0,
+                paymentResult.cardId,
+                paymentResult.rebillId
+            )
+    }
+
+    fun set3dsResult(error: Throwable?) {
+        _state.value =
+            PaymentByCardState.Error(error ?: AcquiringSdkException(IllegalStateException()), null)
     }
 
     fun recreate() {

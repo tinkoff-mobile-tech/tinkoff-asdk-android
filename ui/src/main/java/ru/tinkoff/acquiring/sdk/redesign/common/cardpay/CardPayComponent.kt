@@ -45,6 +45,10 @@ class CardPayComponent(
         )
     }
 
+    fun renderNewCard(state:CardChosenModel) {
+        savedCardComponent.render(state)
+    }
+
     fun renderEnable(isEnable: Boolean) {
         loaderButton.isEnabled = isEnable
     }
