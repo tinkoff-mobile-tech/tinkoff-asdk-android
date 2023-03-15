@@ -24,12 +24,12 @@ class CardsListAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setCards(cards: List<CardItemUiModel>) {
-        if (this.cards.isEmpty()) {
-            this.cards.addAll(cards)
+        val old = ArrayList(this.cards)
+        this.cards.clear()
+        this.cards.addAll(cards)
+        if (old.isEmpty() || (cards.containsAll(old) && old.size != cards.size)) {
             notifyDataSetChanged()
         } else {
-            this.cards.clear()
-            this.cards.addAll(cards)
             notifyItemRangeChanged(0, cards.size, PAYLOAD_CHANGE_MODE)
         }
     }

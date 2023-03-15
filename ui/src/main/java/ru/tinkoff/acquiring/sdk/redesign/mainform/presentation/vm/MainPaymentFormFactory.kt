@@ -18,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
@@ -32,6 +33,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
     val savedCardRepo = SavedCardsRepository.Impl(acq.sdk)
     val navController = MainFormNavController()
     val cardPayProcessMapper = MainFormPaymentProcessMapper(navController)
+    val bankCaptionProvider = BankCaptionResourceProvider(application)
 
     acq.initSbpPaymentSession()
     PaymentByCardProcess.init(acq.sdk, application, ThreeDsHelper.CollectData)
@@ -42,6 +44,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
             handle,
             PaymentByCardProcess.get(),
             cardPayProcessMapper,
+            bankCaptionProvider,
             CoroutineManager(),
         )
     }
@@ -51,7 +54,6 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
         val nspkChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
             SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
         }
-        val bankCaptionProvider = BankCaptionResourceProvider(application)
         MainPaymentFormViewModel(
             handle,
             ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory(
@@ -68,6 +70,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
                 paymentOptions.customer.customerKey!!
             ),
             navController,
+            PaymentByCardProcess.get(),
             CoroutineManager(),
         )
     }

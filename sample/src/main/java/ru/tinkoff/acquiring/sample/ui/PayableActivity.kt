@@ -29,7 +29,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.lifecycleScope
-
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
@@ -46,11 +45,11 @@ import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.redesign.mainform.MainPaymentFormActivity
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
+import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -92,7 +91,13 @@ open class PayableActivity : AppCompatActivity() {
             is TinkoffAcquiring.SbpScreen.Canceled -> toast("SBP canceled")
         }
     }
-
+    private val byMainFormPayment = registerForActivityResult(MainFormContract.Contract) { result ->
+        when (result) {
+            is MainFormContract.Canceled -> toast("payment canceled")
+            is MainFormContract.Error ->  toast(result.error.message ?: getString(R.string.error_title))
+            is MainFormContract.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -165,7 +170,7 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        startActivity(MainPaymentFormActivity.intent(options, this))
+        byMainFormPayment.launch(MainFormContract.StartData(options))
     }
 
     protected fun openDynamicQrScreen() {

@@ -4,8 +4,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.*
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
+import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailValidator
@@ -16,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUt
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.process.MainFormPaymentProcessMapper
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getExtra
 
@@ -26,12 +29,14 @@ internal class MainFormInputCardViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val byCardProcess: PaymentByCardProcess,
     private val mapper: MainFormPaymentProcessMapper,
+    private val bankCaptionProvider: BankCaptionProvider,
     private val coroutineManager: CoroutineManager,
 ) : ViewModel() {
 
     private val paymentOptions: PaymentOptions = savedStateHandle.getExtra()
 
-    val savedCardFlow = savedStateHandle.getStateFlow<CardChosenModel?>(CHOSEN_CARD, null).filterNotNull()
+    val savedCardFlow =
+        savedStateHandle.getStateFlow<CardChosenModel?>(CHOSEN_CARD, null).filterNotNull()
     val cvcFlow = savedStateHandle.getStateFlow(CVC_KEY, "")
     val emailFlow = savedStateHandle.getStateFlow(EMAIL_KEY, paymentOptions.customer.email)
     val needEmail = savedStateHandle.getStateFlow(
@@ -48,6 +53,10 @@ internal class MainFormInputCardViewModel(
         savedStateHandle[CHOSEN_CARD] = cardChosenModel
     }
 
+    fun choseCard(card: Card) {
+        savedStateHandle[CHOSEN_CARD] = CardChosenModel(card, bankCaptionProvider(card.pan!!))
+    }
+
     fun setCvc(cvc: String) {
         savedStateHandle[CVC_KEY] = cvc
     }
@@ -58,6 +67,14 @@ internal class MainFormInputCardViewModel(
 
     fun email(email: String) {
         savedStateHandle[EMAIL_KEY] = email
+    }
+
+    fun set3dsResult(error: Throwable?) {
+        byCardProcess.set3dsResult(error)
+    }
+
+    fun set3dsResult(paymentResult: PaymentResult) {
+        byCardProcess.set3dsResult(paymentResult)
     }
 
     fun pay() = coroutineManager.launchOnBackground {
