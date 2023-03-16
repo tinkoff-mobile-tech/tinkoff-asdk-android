@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: rootProject.file('gradle/versions.gradle')
+apply from: rootProject.file('gradle/bumpVersion.gradle.kts')
 
 android {
     compileSdkVersion rootProject.compileSdk
