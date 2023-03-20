@@ -54,6 +54,7 @@
     <string name="acq_cardlist_snackbar_add">Карта ·%1$s добавлена</string>
     <string name="acq_cardlist_snackbar_remove">Карта ·%1$s удалена</string>
     <string name="acq_cardlist_snackbar_remove_progress">Удаляем карту ·%1$s</string>
+    <string name="acq_cardlist_other_card_button">Другой картой</string>
 
     <string name="acq_cardlist_button_change">Изменить</string>
     <string name="acq_cardlist_button_done">Готово</string>
