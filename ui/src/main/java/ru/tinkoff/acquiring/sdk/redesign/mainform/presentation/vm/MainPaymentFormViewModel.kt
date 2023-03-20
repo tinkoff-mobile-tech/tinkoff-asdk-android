@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
@@ -56,6 +57,12 @@ internal class MainPaymentFormViewModel(
 
     fun toTpay() {
         // todo
+    }
+
+    fun choseCard(card: Card) {
+        _formState.update {
+            it?.let { primaryButtonFactory.changeCard(it, card) }
+        }
     }
 
     fun onBackPressed() = viewModelScope.launch {

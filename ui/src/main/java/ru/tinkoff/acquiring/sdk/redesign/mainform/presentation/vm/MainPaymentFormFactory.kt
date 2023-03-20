@@ -26,52 +26,54 @@ import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 /**
  * Created by i.golovachev
  */
-fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOptions) =  viewModelFactory {
-    val acq = TinkoffAcquiring(
-        application, paymentOptions.terminalKey, paymentOptions.publicKey
-    )
-    val savedCardRepo = SavedCardsRepository.Impl(acq.sdk)
-    val navController = MainFormNavController()
-    val cardPayProcessMapper = MainFormPaymentProcessMapper(navController)
-    val bankCaptionProvider = BankCaptionResourceProvider(application)
-
-    acq.initSbpPaymentSession()
-    PaymentByCardProcess.init(acq.sdk, application, ThreeDsHelper.CollectData)
-
-    initializer {
-        val handle = createSavedStateHandle()
-        MainFormInputCardViewModel(
-            handle,
-            PaymentByCardProcess.get(),
-            cardPayProcessMapper,
-            bankCaptionProvider,
-            CoroutineManager(),
+fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOptions) =
+    viewModelFactory {
+        val acq = TinkoffAcquiring(
+            application, paymentOptions.terminalKey, paymentOptions.publicKey
         )
-    }
-    initializer {
-        val handle  = createSavedStateHandle()
-        val nspkProvider = NspkBankAppsProvider { NspkRequest().execute().banks }
-        val nspkChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
-            SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
+        val savedCardRepo = SavedCardsRepository.Impl(acq.sdk)
+        val navController = MainFormNavController()
+        val cardPayProcessMapper = MainFormPaymentProcessMapper(navController)
+        val bankCaptionProvider = BankCaptionResourceProvider(application)
+
+        acq.initSbpPaymentSession()
+        PaymentByCardProcess.init(acq.sdk, application, ThreeDsHelper.CollectData)
+
+        initializer {
+            val handle = createSavedStateHandle()
+            MainFormInputCardViewModel(
+                handle,
+                PaymentByCardProcess.get(),
+                cardPayProcessMapper,
+                bankCaptionProvider,
+                CoroutineManager(),
+            )
         }
-        MainPaymentFormViewModel(
-            handle,
-            ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory(
-                acq.sdk,
-                savedCardRepo,
-                PrimaryButtonConfigurator.Impl(
-                    nspkProvider,
-                    nspkChecker,
-                    bankCaptionProvider
+        initializer {
+            val handle = createSavedStateHandle()
+            val nspkProvider = NspkBankAppsProvider { NspkRequest().execute().banks }
+            val nspkChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
+                SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
+            }
+            MainPaymentFormViewModel(
+                handle,
+                ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory(
+                    acq.sdk,
+                    savedCardRepo,
+                    PrimaryButtonConfigurator.Impl(
+                        nspkProvider,
+                        nspkChecker,
+                        bankCaptionProvider
+                    ),
+                    SecondButtonConfigurator.Impl(nspkProvider, nspkChecker),
+                    MergeMethodsStrategy.ImplV1,
+                    ConnectionChecker(application),
+                    bankCaptionProvider,
+                    paymentOptions.customer.customerKey!!
                 ),
-                SecondButtonConfigurator.Impl(nspkProvider, nspkChecker),
-                MergeMethodsStrategy.ImplV1,
-                ConnectionChecker(application),
-                paymentOptions.customer.customerKey!!
-            ),
-            navController,
-            PaymentByCardProcess.get(),
-            CoroutineManager(),
-        )
+                navController,
+                PaymentByCardProcess.get(),
+                CoroutineManager(),
+            )
+        }
     }
-}
