@@ -91,6 +91,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                 viewModel.toNewCard()
             }
             is TinkoffAcquiring.ChoseCard.Success -> {
+                viewModel.choseCard(it.card)
                 cardInputViewModel.choseCard(it.card)
             }
         }

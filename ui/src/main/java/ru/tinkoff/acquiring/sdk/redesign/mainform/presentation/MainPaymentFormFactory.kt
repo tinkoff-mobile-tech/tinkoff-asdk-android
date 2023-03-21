@@ -7,8 +7,10 @@ import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.getOrNull
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
+import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 
 /**
@@ -21,6 +23,7 @@ internal class MainPaymentFormFactory(
     private val secondButtonConfigurator: SecondButtonConfigurator,
     private val mergeMethodsStrategy: MergeMethodsStrategy,
     private val connectionChecker: ConnectionChecker,
+    private val bankCaptionProvider: BankCaptionProvider,
     private val _customerKey: String
 ) {
 
@@ -41,6 +44,15 @@ internal class MainPaymentFormFactory(
                 cards,
                 cards.firstOrNull()
             ),
+            noInternet = connectionChecker.isOnline().not()
+        )
+    }
+
+    fun changeCard(state: MainPaymentForm.State, card: Card): MainPaymentForm.State {
+        val choosenCard = CardChosenModel(card, bankCaptionProvider.invoke(card.pan!!))
+        return MainPaymentForm.State(
+            ui = state.ui.copy(primary = MainPaymentForm.Primary.Card(choosenCard)),
+            data = state.data.copy(chosen = card),
             noInternet = connectionChecker.isOnline().not()
         )
     }

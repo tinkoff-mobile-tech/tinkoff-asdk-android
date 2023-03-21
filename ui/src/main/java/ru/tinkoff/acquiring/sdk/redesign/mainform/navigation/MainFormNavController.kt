@@ -5,14 +5,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 
 /**
  * Created by i.golovachev
@@ -50,6 +47,8 @@ internal class MainFormNavController {
             customer = paymentOptions.customer
             features = paymentOptions.features
             features.selectedCardId = card?.cardId
+            addNewCard = false
+            anotherCard = true
         }
         channelNav.send(Navigation.ToChooseCard(savedCardsOptions))
     }

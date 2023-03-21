@@ -16,7 +16,7 @@ import ru.tinkoff.acquiring.sdk.requests.GetTerminalPayMethodsRequest
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
-import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 
 
 /**
@@ -122,6 +122,7 @@ internal class MainPaymentFormFactoryUiTest {
                 secondButtonConfigurator,
                 MergeMethodsStrategy.ImplV1,
                 mock { on { isOnline() } doReturn true },
+                bankCaptionProvider = BankCaptionProvider { "Tinkoff" },
                 "_key"
             )
 

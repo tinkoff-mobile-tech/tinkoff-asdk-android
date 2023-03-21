@@ -77,6 +77,7 @@ internal class MainPaymentFormFactoryEnv(
             secondaryButtonConfigurator,
             MergeMethodsStrategy.ImplV1,
             mock { on { isOnline() } doReturn true },
+            bankCaptionProvider,
             customerKey
         )
 

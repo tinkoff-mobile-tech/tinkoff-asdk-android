@@ -76,6 +76,7 @@
     <string name="acq_cardlist_addcard">Add new</string>
     <string name="acq_cardlist_button_change">Сhange</string>
     <string name="acq_cardlist_button_done">Done</string>
+    <string name="acq_cardlist_other_card_button">Another card</string>
 
     <string name="acq_cardlist_alert_deletecard_label">Couldn\'t delete the card</string>
 

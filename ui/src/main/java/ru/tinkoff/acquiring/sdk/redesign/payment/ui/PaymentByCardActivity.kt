@@ -104,15 +104,14 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         lifecycleScope.launchWhenCreated { uiState() }
         lifecycleScope.launch { selectedCardState() }
 
+        cardDataInput.setupCameraCardScanner(startData.paymentOptions.features.cameraCardScannerContract)
+        cardDataInput.validateNotExpired = startData.paymentOptions.features.validateExpiryDate
         chosenCardComponent.bindKtx(lifecycleScope, viewModel.state.mapNotNull { it.chosenCard })
     }
 
     override fun onStop() {
         super.onStop()
         statusSheetStatus.takeIf { it.isAdded }?.dismissAllowingStateLoss()
-        cardDataInput.setupCameraCardScanner(startData.paymentOptions.features.cameraCardScannerContract)
-        cardDataInput.validateNotExpired = startData.paymentOptions.features.validateExpiryDate
-
         payButton.setOnClickListener {
             viewModel.pay()
         }

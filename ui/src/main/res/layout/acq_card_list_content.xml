@@ -47,7 +47,21 @@
             android:text="@string/acq_cardlist_addcard"
             android:textSize="@dimen/acq_large_text_size"
             app:drawableStartCompat="@drawable/acq_ic_add_new_card">
+        </TextView>
 
+        <TextView
+            android:id="@+id/acq_another_card"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:drawablePadding="16dp"
+            android:fontFamily="@font/roboto_regular"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="@string/acq_cardlist_other_card_button"
+            android:textSize="@dimen/acq_large_text_size"
+            app:drawableStartCompat="@drawable/acq_ic_add_new_card">
         </TextView>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
