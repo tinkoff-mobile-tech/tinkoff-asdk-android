@@ -89,7 +89,7 @@ internal class NetworkClient {
                             onFailure(
                                 AcquiringApiException(
                                     result,
-                                    "${result.message ?: ""} ${result.details ?: ""}"
+                                    parseNetworkErrorMessage(result.message, result.details)
                                 )
                             )
                         }
@@ -183,6 +183,10 @@ internal class NetworkClient {
         builder.append(apiMethod)
 
         return URL(builder.toString())
+    }
+
+    private fun parseNetworkErrorMessage(message : String?, details: String?): String {
+        return setOf(message.orEmpty(), details.orEmpty()).joinToString()
     }
 
     companion object {

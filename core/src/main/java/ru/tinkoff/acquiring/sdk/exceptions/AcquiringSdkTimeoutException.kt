@@ -16,9 +16,15 @@
 
 package ru.tinkoff.acquiring.sdk.exceptions
 
+import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
+
 /**
- * Исключение, выбрасываемое в случае, когда ожидание платежа истекло
+ * Исключение, выбрасываемое в случае, когда ожидание статуса платежа истекло
  *
  * @author i.golovachev
  */
-class AcquiringSdkTimeoutException(throwable: Throwable) : RuntimeException(throwable.message, throwable)
+class AcquiringSdkTimeoutException(
+    val throwable: Throwable,
+    val paymentId: Long?,
+    val status: ResponseStatus?,
+) : RuntimeException(throwable.message, throwable)

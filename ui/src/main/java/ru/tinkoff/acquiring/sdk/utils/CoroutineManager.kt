@@ -91,7 +91,7 @@ internal class CoroutineManager(
     }
 
     fun runWithDelay(timeMills: Long, block: () -> Unit) {
-        coroutineScope.launch(main) {
+        coroutineScope.launch(Dispatchers.Main) {
             delay(timeMills)
             block.invoke()
         }
@@ -110,7 +110,7 @@ internal class CoroutineManager(
     }
 
     fun launchOnBackground(block: suspend CoroutineScope.() -> Unit): Job {
-        return coroutineScope.launch(io) {
+        return coroutineScope.launch(IO) {
             block.invoke(this)
         }
     }
@@ -123,7 +123,7 @@ internal class CoroutineManager(
             try {
                 block.invoke(this)
             } catch (e: Throwable) {
-                if(e is CancellationException) {
+                if (e is CancellationException) {
                     onError(e)
                 }
             }

@@ -21,4 +21,4 @@ package ru.tinkoff.acquiring.sdk.exceptions
  *
  * @author Mariya Chernyadieva
  */
-class AcquiringSdkException(throwable: Throwable) : RuntimeException(throwable.message, throwable)
+class AcquiringSdkException(throwable: Throwable, paymentId: Long? = null) : RuntimeException(throwable.message, throwable)
