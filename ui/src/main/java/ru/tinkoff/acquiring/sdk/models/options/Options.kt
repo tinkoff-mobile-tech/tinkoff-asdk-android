@@ -23,6 +23,8 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
  */
 abstract class Options {
 
+    protected val byteTrue: Byte = 1
+
     internal abstract fun validateRequiredFields()
 
     @Throws(AcquiringSdkException::class)
@@ -32,4 +34,8 @@ abstract class Options {
             throw AcquiringSdkException(IllegalStateException(message.toString()))
         }
     }
+
+    protected fun Boolean.toByte(): Byte = if (this) 1 else 0
+
+    protected fun Byte.isTrue(): Boolean = this == byteTrue
 }

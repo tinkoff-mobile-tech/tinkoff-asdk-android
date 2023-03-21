@@ -53,6 +53,7 @@ internal class CardsListActivity : TransparentActivity() {
     private val stubSubtitleView: TextView by lazyView(R.id.acq_stub_subtitle)
     private val stubButtonView: TextView by lazyView(R.id.acq_stub_retry_button)
     private val addNewCard: TextView by lazyView(R.id.acq_add_new_card)
+    private val anotherCard: TextView by lazyView(R.id.acq_another_card)
     private lateinit var cardsListAdapter: CardsListAdapter
 
     private val snackBarHelper: AcqSnackBarHelper by lazyUnsafe {
@@ -154,12 +155,17 @@ internal class CardsListActivity : TransparentActivity() {
             onChooseClick = { viewModel.chooseCard(it) }
         )
         recyclerView.adapter = cardsListAdapter
+        addNewCard.isVisible = savedCardsOptions.addNewCard
         addNewCard.setOnClickListener {
-            if(mode === CardListMode.CHOOSE) {
+            if (mode === CardListMode.CHOOSE) {
                 payNewCard()
-            }else {
+            } else {
                 startAttachCard()
             }
+        }
+        anotherCard.isVisible = savedCardsOptions.anotherCard
+        anotherCard.setOnClickListener {
+            payNewCard()
         }
     }
 
@@ -176,7 +182,9 @@ internal class CardsListActivity : TransparentActivity() {
             viewModel.modeFlow.collectLatest {
                 mode = it
                 invalidateOptionsMenu()
-                addNewCard.isVisible = mode === CardListMode.ADD || mode === CardListMode.CHOOSE
+                val buttonsVisibility = (mode === CardListMode.ADD || mode === CardListMode.CHOOSE)
+                addNewCard.isVisible = buttonsVisibility && savedCardsOptions.addNewCard
+                anotherCard.isVisible = buttonsVisibility && savedCardsOptions.anotherCard
             }
         }
     }
