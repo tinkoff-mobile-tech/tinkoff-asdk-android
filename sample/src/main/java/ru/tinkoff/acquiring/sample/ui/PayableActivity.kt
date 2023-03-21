@@ -28,20 +28,19 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
-import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
+import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.AsdkState
-import ru.tinkoff.acquiring.sdk.models.GooglePayParams
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
-import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
 import ru.tinkoff.acquiring.yandexpay.addYandexResultListener
@@ -270,7 +269,10 @@ open class PayableActivity : AppCompatActivity() {
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
             RESULT_ERROR -> {
                 Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-                (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)?.printStackTrace()
+                getErrorFromIntent(data)?.run {
+                    printStackTrace()
+                    logIfTimeout()
+                }
             }
         }
     }
@@ -283,7 +285,10 @@ open class PayableActivity : AppCompatActivity() {
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
             RESULT_ERROR -> {
                 Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-                (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)?.printStackTrace()
+                getErrorFromIntent(data)?.run {
+                    printStackTrace()
+                    logIfTimeout()
+                }
             }
         }
     }
@@ -355,6 +360,21 @@ open class PayableActivity : AppCompatActivity() {
     protected fun hideProgressDialog() {
         progressDialog.dismiss()
         isProgressShowing = false
+    }
+
+    private fun getErrorFromIntent(data: Intent?): Throwable? {
+        return (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)
+    }
+
+    private fun Throwable.logIfTimeout() {
+        (this as? AcquiringSdkTimeoutException)?.run {
+            if (paymentId != null) {
+                log("paymentId : $paymentId")
+            }
+            if (status != null) {
+                log("status : $status")
+            }
+        }
     }
 
     companion object {

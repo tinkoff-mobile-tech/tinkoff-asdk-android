@@ -19,16 +19,19 @@ package ru.tinkoff.acquiring.sdk.viewmodel
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
-import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
-import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
@@ -48,6 +51,7 @@ import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPoling
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 
 /**
@@ -59,6 +63,7 @@ internal class PaymentViewModel(
     sdk: AcquiringSdk
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
+    private val getStatusPooling = GetStatusPoling(sdk)
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     private var cardsResult: MutableLiveData<List<Card>> = MutableLiveData()
     private var tinkoffPayStatusResult: MutableLiveData<TinkoffPayStatusResponse> = MutableLiveData()
@@ -66,7 +71,7 @@ internal class PaymentViewModel(
     private val paymentListener: PaymentListener = createPaymentListener()
     private val paymentProcess: PaymentProcess = PaymentProcess(sdk, context)
 
-    private var requestPaymentStateCount = 0
+    private var requestStateJob: Job? = null
 
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
     val cardsResultLiveData: LiveData<List<Card>> = cardsResult
@@ -178,42 +183,19 @@ internal class PaymentViewModel(
     }
 
     fun requestPaymentState(paymentId: Long) {
-        val request = sdk.getState {
-            this.paymentId = paymentId
+        requestStateJob?.cancel()
+        requestStateJob = coroutine.launchOnMain {
+            getStatusPooling.start(paymentId = paymentId)
+                .flowOn(Dispatchers.IO)
+                .catch { handleException(it) }
+                .filter { ResponseStatus.checkSuccessStatuses(it) }
+                .collect { handleConfirmOnAuthStatus(paymentId)}
         }
+    }
 
-        coroutine.call(request,
-            onSuccess = { response ->
-                requestPaymentStateCount++
-                when (response.status) {
-                    ResponseStatus.CONFIRMED, ResponseStatus.AUTHORIZED -> {
-                        paymentResult.value = PaymentResult(response.paymentId)
-                        requestPaymentStateCount = 0
-                        changeScreenState(LoadedState)
-                    }
-                    ResponseStatus.FORM_SHOWED -> {
-                        requestPaymentStateCount = 0
-                        changeScreenState(LoadedState)
-                        changeScreenState(FpsBankFormShowedScreenState(paymentId))
-                    }
-                    else -> {
-                        if (requestPaymentStateCount == 1) {
-                            changeScreenState(LoadingState)
-                            coroutine.runWithDelay(1000) {
-                                requestPaymentState(paymentId)
-                            }
-                        } else {
-                            changeScreenState(LoadedState)
-                            val throwable = AcquiringSdkException(IllegalStateException("PaymentState = ${response.status}"))
-                            handleException(throwable)
-                        }
-                    }
-                }
-            },
-            onFailure = {
-                requestPaymentStateCount = 0
-                handleException(it)
-            })
+    private fun handleConfirmOnAuthStatus(paymentId: Long) {
+        paymentResult.postValue(PaymentResult(paymentId))
+        changeScreenState(LoadedState)
     }
 
     private fun createPaymentListener(): PaymentListener {
