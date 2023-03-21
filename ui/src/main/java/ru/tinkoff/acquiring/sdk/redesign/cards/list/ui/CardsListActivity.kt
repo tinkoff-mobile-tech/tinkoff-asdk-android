@@ -109,7 +109,8 @@ internal class CardsListActivity : TransparentActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.acq_card_list_menu, menu)
-        menu.findItem(R.id.acq_card_list_action_change)?.isVisible = (mode === CardListMode.ADD || mode === CardListMode.CHOOSE)
+        menu.findItem(R.id.acq_card_list_action_change)?.isVisible =
+            (mode === CardListMode.ADD || mode === CardListMode.CHOOSE)
         menu.findItem(R.id.acq_card_list_action_complete)?.isVisible = mode === CardListMode.DELETE
         return true
     }
@@ -155,9 +156,9 @@ internal class CardsListActivity : TransparentActivity() {
         )
         recyclerView.adapter = cardsListAdapter
         addNewCard.setOnClickListener {
-            if(mode === CardListMode.CHOOSE) {
+            if (mode === CardListMode.CHOOSE) {
                 payNewCard()
-            }else {
+            } else {
                 startAttachCard()
             }
         }
