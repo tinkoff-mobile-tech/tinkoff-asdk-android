@@ -9,9 +9,12 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.utils.emitNotNull
 
-class GetStatusPoling(private val getStatusMethod: GetStatusMethod) {
+class GetStatusPooling(private val getStatusMethod: GetStatusMethod) {
 
     constructor(asdk: AcquiringSdk) : this(GetStatusMethod.Impl(asdk))
+
+    fun start(retriesCount: Int?, paymentId: Long) =
+        start(retriesCount ?: POLLING_RETRIES_COUNT, paymentId)
 
     fun start(retriesCount: Int = POLLING_RETRIES_COUNT, paymentId: Long): Flow<ResponseStatus> {
         return flow {

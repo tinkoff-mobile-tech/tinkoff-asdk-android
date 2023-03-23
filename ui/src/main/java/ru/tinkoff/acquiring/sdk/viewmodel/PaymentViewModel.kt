@@ -51,7 +51,7 @@ import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
-import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPoling
+import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
 
 /**
@@ -63,7 +63,7 @@ internal class PaymentViewModel(
     sdk: AcquiringSdk
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
-    private val getStatusPooling = GetStatusPoling(sdk)
+    private val getStatusPooling = GetStatusPooling(sdk)
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     private var cardsResult: MutableLiveData<List<Card>> = MutableLiveData()
     private var tinkoffPayStatusResult: MutableLiveData<TinkoffPayStatusResponse> = MutableLiveData()

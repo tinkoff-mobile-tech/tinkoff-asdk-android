@@ -39,7 +39,6 @@ enum class ResponseStatus {
     REFUNDED,
     PARTIAL_REFUNDED,
     REJECTED,
-    DEADLINE_EXPIRED,
     UNKNOWN,
     LOOP_CHECKING,
     COMPLETED,

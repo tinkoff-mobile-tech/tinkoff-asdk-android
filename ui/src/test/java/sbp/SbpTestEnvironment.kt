@@ -7,6 +7,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpPaymentViewModel
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
@@ -50,7 +51,9 @@ internal class SbpTestEnvironment(
         on { getState(any()) } doReturn getState
     }
 
-    val sbpPaymentProgress = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankAppsProvider, CoroutineScope( dispatcher + processJob))
+    val getStatusPooling =  GetStatusPooling(sdk)
+
+    val sbpPaymentProgress = SbpPaymentProcess(sdk, bankAppsProvider, nspkBankAppsProvider, getStatusPooling, CoroutineScope( dispatcher + processJob))
     val viewModel: SbpPaymentViewModel = SbpPaymentViewModel(
         connectionChecker,
         sbpPaymentProgress,

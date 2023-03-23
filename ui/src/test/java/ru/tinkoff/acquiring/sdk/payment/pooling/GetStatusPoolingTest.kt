@@ -6,11 +6,11 @@ import org.junit.Assert
 import org.junit.Test
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 
-class GetStatusPolingTest {
+class GetStatusPoolingTest {
 
     @Test
     fun start() = runBlocking {
-        GetStatusPoling { ResponseStatus.AUTHORIZED }
+        GetStatusPooling { ResponseStatus.AUTHORIZED }
             .start(paymentId = 1L)
             .collect { println(it) }
     }
@@ -18,7 +18,7 @@ class GetStatusPolingTest {
     @Test
     fun start2() = runBlocking {
         val status = ResponseStatus.REJECTED
-        GetStatusPoling { status }
+        GetStatusPooling { status }
             .start(paymentId = 1L)
             .catch {
                 Assert.assertEquals(it.message, "PaymentState = $status")
@@ -28,7 +28,7 @@ class GetStatusPolingTest {
 
     @Test
     fun star3() = runBlocking {
-        GetStatusPoling { null }
+        GetStatusPooling { null }
             .start(paymentId = 1L)
             .catch {
                 Assert.assertEquals(it.message, "timeout, retries count is over")

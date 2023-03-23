@@ -234,7 +234,7 @@ open class PayableActivity : AppCompatActivity() {
             val paymentOptions = createPaymentOptions().apply {
                 val session = TerminalsManager.init(this@PayableActivity).selectedTerminal
                 this.setTerminalParams(
-                     terminalKey = session.terminalKey, publicKey = session.publicKey
+                    terminalKey = session.terminalKey, publicKey = session.publicKey
                 )
             }
 

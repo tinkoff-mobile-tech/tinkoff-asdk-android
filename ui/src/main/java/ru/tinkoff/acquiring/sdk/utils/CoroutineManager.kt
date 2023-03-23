@@ -97,8 +97,8 @@ internal class CoroutineManager(
         }
     }
 
-    fun launchOnMain(block: suspend CoroutineScope.() -> Unit) {
-        coroutineScope.launch(main) {
+    fun launchOnMain(block: suspend CoroutineScope.() -> Unit): Job {
+        return coroutineScope.launch(main) {
             block.invoke(this)
         }
     }
