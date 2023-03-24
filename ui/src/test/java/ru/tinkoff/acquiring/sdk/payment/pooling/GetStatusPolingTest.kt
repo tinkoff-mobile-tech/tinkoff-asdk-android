@@ -9,14 +9,14 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 class GetStatusPolingTest {
 
     @Test
-    fun start() = runBlocking {
+    fun `test when AUTHORIZED`() = runBlocking {
         GetStatusPoling { ResponseStatus.AUTHORIZED }
             .start(paymentId = 1L)
             .collect { println(it) }
     }
 
     @Test
-    fun start2() = runBlocking {
+    fun `test when REJECTED`() = runBlocking {
         val status = ResponseStatus.REJECTED
         GetStatusPoling { status }
             .start(paymentId = 1L)
@@ -27,9 +27,9 @@ class GetStatusPolingTest {
     }
 
     @Test
-    fun star3() = runBlocking {
+    fun `test when non terimate status`() = runBlocking {
         GetStatusPoling { null }
-            .start(paymentId = 1L)
+            .start(paymentId = 1L, delayMs = 10)
             .catch {
                 Assert.assertEquals(it.message, "timeout, retries count is over")
             }

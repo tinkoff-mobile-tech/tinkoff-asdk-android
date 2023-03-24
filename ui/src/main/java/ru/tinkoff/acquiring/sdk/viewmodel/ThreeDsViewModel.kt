@@ -98,7 +98,7 @@ internal class ThreeDsViewModel(
     }
 
     private fun handleConfirmOnAuthStatus(paymentId: Long) {
-        asdkResult.value = PaymentResult(paymentId)
+        asdkResult.postValue(PaymentResult(paymentId))
         changeScreenState(LoadedState)
     }
 }
