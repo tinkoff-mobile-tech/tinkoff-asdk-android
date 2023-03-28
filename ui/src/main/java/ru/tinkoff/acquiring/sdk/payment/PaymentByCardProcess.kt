@@ -204,18 +204,24 @@ class PaymentByCardProcess internal constructor(
     }
 }
 
+// кажется, проще будет привести все состояния к одному типу.
 sealed interface PaymentByCardState {
     object Created : PaymentByCardState
 
     class Started(
         val paymentOptions: PaymentOptions,
-        val email: String? = null
+        val email: String? = null,
+        val paymentId: Long? = null
     ) : PaymentByCardState
 
     class ThreeDsUiNeeded(val threeDsState: ThreeDsState, val paymentOptions: PaymentOptions) :
         PaymentByCardState
 
     object ThreeDsInProcess : PaymentByCardState
+
+    class CvcUiNeeded(val paymentOptions: PaymentOptions) : PaymentByCardState
+
+    object CvcUiInProcess : PaymentByCardState
 
     class Success(val paymentId: Long, val cardId: String?, val rebillId: String?) :
         PaymentByCardState {
