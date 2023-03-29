@@ -145,9 +145,9 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         notificationDialog?.dismiss()
     }
 
-    override fun finishWithError(throwable: Throwable) {
+    override fun finishWithError(throwable: Throwable, paymentId: Long?) {
         isErrorOccurred = true
-        super.finishWithError(throwable)
+        super.finishWithError(throwable, null)
     }
 
     override fun finish() {

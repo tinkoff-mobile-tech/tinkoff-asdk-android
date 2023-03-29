@@ -179,7 +179,7 @@ internal class PaymentActivity : TransparentActivity() {
                         ThreeDsHelper.Launch(this@PaymentActivity,
                             THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
                     } catch (e: Throwable) {
-                        finishWithError(e)
+                        finishWithError(e, screen.data.paymentId)
                     }
                 }
                 is BrowseFpsBankScreenState -> openBankChooser(screen.deepLink, screen.banks)
@@ -192,7 +192,7 @@ internal class PaymentActivity : TransparentActivity() {
 
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
-            is FinishWithErrorScreenState -> finishWithError(screenState.error)
+            is FinishWithErrorScreenState -> finishWithError(screenState.error, screenState.paymentId)
             is ErrorScreenState -> {
                 if (asdkState is FpsState || asdkState is BrowseFpsBankState || asdkState is OpenTinkoffPayBankState) {
                     finishWithError(AcquiringSdkException(NetworkException(screenState.message)))

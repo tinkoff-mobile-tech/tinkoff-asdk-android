@@ -56,7 +56,7 @@ internal open class BaseAcquiringViewModel(
         coroutine.cancelAll()
     }
 
-    fun handleException(throwable: Throwable) {
+    fun handleException(throwable: Throwable, paymentId: Long? = null) {
         loadState.value = LoadedState
         when (throwable) {
             is NetworkException -> changeScreenState(ErrorScreenState(AsdkLocalization.resources.payDialogErrorNetwork!!))
@@ -66,10 +66,10 @@ internal open class BaseAcquiringViewModel(
                     if (errorCode != null && (AcquiringApi.errorCodesFallback.contains(errorCode) ||
                                     AcquiringApi.errorCodesForUserShowing.contains(errorCode))) {
                         changeScreenState(ErrorScreenState(resolveErrorMessage(throwable)))
-                    } else changeScreenState(FinishWithErrorScreenState(throwable))
-                } else changeScreenState(FinishWithErrorScreenState(throwable))
+                    } else changeScreenState(FinishWithErrorScreenState(throwable, paymentId))
+                } else changeScreenState(FinishWithErrorScreenState(throwable, paymentId))
             }
-            else -> changeScreenState(FinishWithErrorScreenState(throwable))
+            else -> changeScreenState(FinishWithErrorScreenState(throwable,paymentId))
         }
     }
 

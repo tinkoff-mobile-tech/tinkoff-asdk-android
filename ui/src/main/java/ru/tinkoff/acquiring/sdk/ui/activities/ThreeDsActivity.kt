@@ -121,7 +121,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is ErrorScreenState -> finishWithError(AcquiringSdkException(IllegalStateException(screenState.message)))
-            is FinishWithErrorScreenState -> finishWithError(screenState.error)
+            is FinishWithErrorScreenState -> finishWithError(screenState.error, screenState.paymentId)
         }
     }
 

@@ -179,7 +179,8 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         finish()
     }
 
-    open fun finishWithError(throwable: Throwable) {
+    open fun finishWithError(throwable: Throwable, paymentId: Long? = null) {
+        setPaymentIdToExtra(paymentId)
         setErrorResult(throwable)
         finish()
     }
@@ -206,5 +207,9 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                         }
                     }
                 })
+    }
+
+    protected fun setPaymentIdToExtra(paymentId: Long? = null) {
+        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
     }
 }

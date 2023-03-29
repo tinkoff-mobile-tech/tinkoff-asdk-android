@@ -137,7 +137,8 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         closeActivity()
     }
 
-    override fun finishWithError(throwable: Throwable) {
+    override fun finishWithError(throwable: Throwable, paymentId: Long?) {
+        setPaymentIdToExtra(paymentId)
         setErrorResult(throwable)
         closeActivity()
     }
