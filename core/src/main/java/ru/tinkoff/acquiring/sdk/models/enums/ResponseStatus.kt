@@ -58,6 +58,8 @@ enum class ResponseStatus {
 
         private const val TDS_CHECKING_STRING = "3DS_CHECKING"
         private const val TDS_CHECKED_STRING = "3DS_CHECKED"
+        val successStatuses = setOf(CONFIRMED,AUTHORIZED)
+        fun checkSuccessStatuses(status: ResponseStatus) : Boolean = status in successStatuses
 
         @JvmStatic
         fun fromString(stringValue: String): ResponseStatus {

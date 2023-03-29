@@ -19,10 +19,9 @@ package ru.tinkoff.acquiring.sdk.viewmodel
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.emvco3ds.sdk.spec.CompletionEvent
-import com.emvco3ds.sdk.spec.ProtocolErrorEvent
-import com.emvco3ds.sdk.spec.RuntimeErrorEvent
-import com.emvco3ds.sdk.spec.Transaction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.LoadedState
@@ -32,15 +31,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.cleanupSafe
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusSuccess
-import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
-import ru.tinkoff.core.components.threedswrapper.ChallengeStatusReceiverAdapter
-import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper
-import ru.tinkoff.core.components.threedswrapper.ThreeDSWrapper.Companion.closeSafe
+import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 
 internal class ThreeDsViewModel(
     application: Application,
@@ -48,7 +39,9 @@ internal class ThreeDsViewModel(
     sdk: AcquiringSdk
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
+    private val getStatusPooling = GetStatusPooling(sdk)
     private val asdkResult: MutableLiveData<AsdkResult> = MutableLiveData()
+    private var requestPaymentStateJob: Job? = null
     val resultLiveData: LiveData<AsdkResult> = asdkResult
 
     fun submitAuthorization(threeDsData: ThreeDsData, transStatus: String) {
@@ -73,22 +66,15 @@ internal class ThreeDsViewModel(
     }
 
     fun requestPaymentState(paymentId: Long?) {
+        requestPaymentStateJob?.cancel()
         changeScreenState(LoadingState)
-
-        val request = sdk.getState {
-            this.paymentId = paymentId
+        requestPaymentStateJob = coroutine.launchOnMain {
+            getStatusPooling.start(paymentId = paymentId!!)
+                .flowOn(Dispatchers.IO)
+                .catch { handleException(it) }
+                .filter { ResponseStatus.checkSuccessStatuses(it) }
+                .collect { handleConfirmOnAuthStatus(paymentId)}
         }
-
-        coroutine.call(request,
-            onSuccess = { response ->
-                if (response.status == ResponseStatus.CONFIRMED || response.status == ResponseStatus.AUTHORIZED) {
-                    asdkResult.value = PaymentResult(response.paymentId)
-                } else {
-                    val throwable = AcquiringSdkException(IllegalStateException("PaymentState = ${response.status}"))
-                    handleException(throwable)
-                }
-                changeScreenState(LoadedState)
-            })
     }
 
     fun requestAddCardState(requestKey: String?) {
@@ -103,10 +89,16 @@ internal class ThreeDsViewModel(
                 if (response.status == ResponseStatus.COMPLETED) {
                     asdkResult.value = CardResult(response.cardId)
                 } else {
-                    val throwable = AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))
+                    val throwable =
+                        AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))
                     handleException(throwable)
                 }
                 changeScreenState(LoadedState)
             })
+    }
+
+    private fun handleConfirmOnAuthStatus(paymentId: Long) {
+        asdkResult.value = PaymentResult(paymentId)
+        changeScreenState(LoadedState)
     }
 }
