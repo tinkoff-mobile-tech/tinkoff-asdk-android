@@ -42,6 +42,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.utils.Money
+import ru.tinkoff.acquiring.sdk.utils.getLongOrNull
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
 import ru.tinkoff.acquiring.yandexpay.addYandexResultListener
 import ru.tinkoff.acquiring.yandexpay.createYandexPayButtonFragment
@@ -268,11 +269,7 @@ open class PayableActivity : AppCompatActivity() {
             RESULT_OK -> onSuccessPayment()
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
             RESULT_ERROR -> {
-                Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-                getErrorFromIntent(data)?.run {
-                    printStackTrace()
-                    logIfTimeout()
-                }
+                commonErrorHandler(data)
             }
         }
     }
@@ -284,11 +281,7 @@ open class PayableActivity : AppCompatActivity() {
             }
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
             RESULT_ERROR -> {
-                Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-                getErrorFromIntent(data)?.run {
-                    printStackTrace()
-                    logIfTimeout()
-                }
+                commonErrorHandler(data)
             }
         }
     }
@@ -362,6 +355,16 @@ open class PayableActivity : AppCompatActivity() {
         isProgressShowing = false
     }
 
+
+    private fun commonErrorHandler(data: Intent?) {
+        Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
+        data?.logPaymentId()
+        getErrorFromIntent(data)?.run {
+            printStackTrace()
+            logIfTimeout()
+        }
+    }
+
     private fun getErrorFromIntent(data: Intent?): Throwable? {
         return (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)
     }
@@ -375,6 +378,11 @@ open class PayableActivity : AppCompatActivity() {
                 log("status : $status")
             }
         }
+    }
+
+    private fun Intent.logPaymentId() {
+        val id = getLongOrNull(TinkoffAcquiring.EXTRA_PAYMENT_ID)
+        log("paymentId : $id")
     }
 
     companion object {

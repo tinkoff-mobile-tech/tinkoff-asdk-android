@@ -175,7 +175,7 @@ internal class SavedCardsActivity : BaseAcquiringActivity(), CardListAdapter.OnM
         setResult(Activity.RESULT_OK, intent)
     }
 
-    override fun setErrorResult(throwable: Throwable) {
+    override fun setErrorResult(throwable: Throwable,paymentId: Long?) {
         val intent = Intent()
         intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
         intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, selectedCardId)

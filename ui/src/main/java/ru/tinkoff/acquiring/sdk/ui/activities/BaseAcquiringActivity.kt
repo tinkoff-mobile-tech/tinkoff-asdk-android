@@ -168,9 +168,10 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         setResult(Activity.RESULT_OK, intent)
     }
 
-    protected open fun setErrorResult(throwable: Throwable) {
+    protected open fun setErrorResult(throwable: Throwable, paymentId: Long? = null) {
         val intent = Intent()
         intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
+        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
         setResult(TinkoffAcquiring.RESULT_ERROR, intent)
     }
 
@@ -180,8 +181,7 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
     }
 
     open fun finishWithError(throwable: Throwable, paymentId: Long? = null) {
-        setPaymentIdToExtra(paymentId)
-        setErrorResult(throwable)
+        setErrorResult(throwable, paymentId)
         finish()
     }
 
@@ -207,9 +207,5 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                         }
                     }
                 })
-    }
-
-    protected fun setPaymentIdToExtra(paymentId: Long? = null) {
-        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
     }
 }
