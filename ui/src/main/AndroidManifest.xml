@@ -114,6 +114,7 @@
             android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AcquiringNewTheme" />
+        <activity android:name=".redesign.recurrent.RecurrentPaymentActivity" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
