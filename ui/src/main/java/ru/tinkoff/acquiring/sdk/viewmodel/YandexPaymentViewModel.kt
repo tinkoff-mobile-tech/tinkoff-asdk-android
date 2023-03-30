@@ -86,7 +86,7 @@ internal class YandexPaymentViewModel(
                         }
                         is YandexPaymentState.Error -> {
                             changeScreenState(LoadedState)
-                            handleException(it.throwable)
+                            handleException(it.throwable, it.paymentId)
                         }
                         else -> Unit
                     }

@@ -187,7 +187,7 @@ internal class PaymentViewModel(
         requestStateJob = coroutine.launchOnMain {
             getStatusPooling.start(paymentId = paymentId)
                 .flowOn(Dispatchers.IO)
-                .catch { handleException(it) }
+                .catch { handleException(it, paymentId) }
                 .filter { ResponseStatus.checkSuccessStatuses(it) }
                 .collect { handleConfirmOnAuthStatus(paymentId)}
         }
@@ -231,7 +231,7 @@ internal class PaymentViewModel(
 
             override fun onError(throwable: Throwable, paymentId: Long?) {
                 changeScreenState(LoadedState)
-                handleException(throwable)
+                handleException(throwable, paymentId)
             }
         }
     }

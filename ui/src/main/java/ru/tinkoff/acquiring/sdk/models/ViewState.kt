@@ -25,7 +25,7 @@ internal sealed class ScreenState
 
 internal object DefaultScreenState : ScreenState()
 internal class ErrorScreenState(val message: String) : ScreenState()
-internal class FinishWithErrorScreenState(val error: Throwable) : ScreenState()
+internal class FinishWithErrorScreenState(val error: Throwable, val paymentId: Long? = null) : ScreenState()
 internal class FpsBankFormShowedScreenState(val paymentId: Long) : ScreenState()
 
 internal sealed class Screen : ScreenState()

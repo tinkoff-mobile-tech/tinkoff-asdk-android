@@ -29,6 +29,7 @@ import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
 import org.json.JSONObject
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
@@ -104,8 +105,9 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
         setResult(Activity.RESULT_OK, intent)
     }
 
-    override fun setErrorResult(throwable: Throwable) {
+    override fun setErrorResult(throwable: Throwable, paymentId: Long?) {
         val intent = Intent()
+        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
         intent.putExtra(ThreeDsHelper.Launch.ERROR_DATA, throwable)
         setResult(ThreeDsHelper.Launch.RESULT_ERROR, intent)
     }
@@ -121,7 +123,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
     private fun handleScreenState(screenState: ScreenState) {
         when (screenState) {
             is ErrorScreenState -> finishWithError(AcquiringSdkException(IllegalStateException(screenState.message)))
-            is FinishWithErrorScreenState -> finishWithError(screenState.error)
+            is FinishWithErrorScreenState -> finishWithError(screenState.error, screenState.paymentId)
         }
     }
 
