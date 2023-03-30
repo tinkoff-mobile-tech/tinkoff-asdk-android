@@ -24,6 +24,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import ru.tinkoff.acquiring.sample.R
@@ -32,6 +33,7 @@ import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
@@ -357,32 +359,29 @@ open class PayableActivity : AppCompatActivity() {
 
 
     private fun commonErrorHandler(data: Intent?) {
-        Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-        data?.logPaymentId()
-        getErrorFromIntent(data)?.run {
-            printStackTrace()
-            logIfTimeout()
-        }
+        val error = getErrorFromIntent(data)
+        val paymentIdFromIntent = data?.getLongOrNull(EXTRA_PAYMENT_ID)
+        val message = configureToastMessage(error, paymentIdFromIntent)
+        log("toast message: $message")
+        error?.printStackTrace()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun getErrorFromIntent(data: Intent?): Throwable? {
         return (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)
     }
 
-    private fun Throwable.logIfTimeout() {
-        (this as? AcquiringSdkTimeoutException)?.run {
-            if (paymentId != null) {
-                log("paymentId : $paymentId")
-            }
-            if (status != null) {
-                log("status : $status")
-            }
+    private fun configureToastMessage(error: Throwable?, paymentId: Long?): String {
+        val acqSdkTimeout  = error as? AcquiringSdkTimeoutException
+        val payment = paymentId ?: acqSdkTimeout?.paymentId
+        val status = acqSdkTimeout?.status
+        return buildString {
+            append(getString(R.string.payment_failed))
+            append(" ")
+            payment?.let { append("paymentId: $it") }
+            append(" ")
+            status?.let { append("status: $it") }
         }
-    }
-
-    private fun Intent.logPaymentId() {
-        val id = getLongOrNull(TinkoffAcquiring.EXTRA_PAYMENT_ID)
-        log("paymentId : $id")
     }
 
     companion object {
