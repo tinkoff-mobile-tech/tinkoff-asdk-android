@@ -14,7 +14,7 @@ import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 class SavedCardsOptions : BaseCardsOptions<SavedCardsOptions>, Parcelable {
 
     internal var anotherCard: Boolean = false
-    internal var addNewCard: Boolean = false
+    internal var addNewCard: Boolean = true
 
     /**
      * [TinkoffAcquiring.savedCardsOptions]

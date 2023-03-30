@@ -21,6 +21,7 @@ class GetStatusPooling(private val getStatusMethod: GetStatusMethod) {
             var tries = 0
             while (retriesCount > tries) {
                 val status = getStatusMethod(paymentId)
+                emitNotNull(status)
                 when (status) {
                     in ResponseStatus.successStatuses -> {
                         return@flow
@@ -35,7 +36,6 @@ class GetStatusPooling(private val getStatusMethod: GetStatusMethod) {
                         tries += 1
                     }
                 }
-                emitNotNull(status)
                 delay(POLLING_DELAY_MS)
             }
 
