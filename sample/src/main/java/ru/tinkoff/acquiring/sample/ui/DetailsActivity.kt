@@ -25,6 +25,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +37,7 @@ import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.models.Cart
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
@@ -54,6 +58,23 @@ class DetailsActivity : PayableActivity() {
     private lateinit var buttonAddToCart: TextView
 
     private var book: Book? = null
+
+    private val paymentContract =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
+            when (result.resultCode) {
+                RESULT_OK -> {
+                    Toast.makeText(this,
+                        R.string.notification_payment_success,
+                        Toast.LENGTH_SHORT).show()
+                }
+                RESULT_CANCELED -> Toast.makeText(this,
+                    R.string.payment_cancelled,
+                    Toast.LENGTH_SHORT).show()
+                TinkoffAcquiring.RESULT_ERROR -> Toast.makeText(this,
+                    R.string.payment_failed,
+                    Toast.LENGTH_SHORT).show()
+            }
+        }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +105,11 @@ class DetailsActivity : PayableActivity() {
 
         val buttonBuy = findViewById<TextView>(R.id.btn_buy_now)
         buttonBuy.setOnClickListener {
-            initPayment()
+            //Стандартный метод проведения оплаты с получением результата в OnActivityResult
+            //initPayment()
+
+            //Метод проведения оплаты с получением результата в ActivityResultAPI
+            initActivityResultAPIPayment()
         }
 
         val sbpButton = findViewById<View>(R.id.btn_fps_pay)
@@ -98,6 +123,12 @@ class DetailsActivity : PayableActivity() {
         setupYandexPay(savedInstanceState = savedInstanceState)
 
         fillViews()
+    }
+
+    private fun initActivityResultAPIPayment() {
+        val pendingIntent = getPaymentPendingIntent()
+        val intentSenderRequest = IntentSenderRequest.Builder(pendingIntent).build()
+        paymentContract.launch(intentSenderRequest)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

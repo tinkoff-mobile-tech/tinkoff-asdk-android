@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sample.ui
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -138,6 +139,10 @@ open class PayableActivity : AppCompatActivity() {
 
     protected fun initPayment() {
         tinkoffAcquiring.openPaymentScreen(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
+    }
+
+    protected fun getPaymentPendingIntent(): PendingIntent {
+        return tinkoffAcquiring.getPaymentPendingIntent(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
     }
 
     protected fun openDynamicQrScreen() {
