@@ -271,7 +271,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun handlePaymentResult(resultCode: Int, data: Intent?) {
+    protected fun handlePaymentResult(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> onSuccessPayment()
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
@@ -281,7 +281,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleYandexPayResult(resultCode: Int, data: Intent?) {
+    protected fun handleYandexPayResult(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> {
                 acqFragment?.options = createPaymentOptions()

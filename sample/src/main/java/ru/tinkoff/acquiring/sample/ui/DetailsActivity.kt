@@ -61,19 +61,7 @@ class DetailsActivity : PayableActivity() {
 
     private val paymentContract =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-            when (result.resultCode) {
-                RESULT_OK -> {
-                    Toast.makeText(this,
-                        R.string.notification_payment_success,
-                        Toast.LENGTH_SHORT).show()
-                }
-                RESULT_CANCELED -> Toast.makeText(this,
-                    R.string.payment_cancelled,
-                    Toast.LENGTH_SHORT).show()
-                TinkoffAcquiring.RESULT_ERROR -> Toast.makeText(this,
-                    R.string.payment_failed,
-                    Toast.LENGTH_SHORT).show()
-            }
+            handlePaymentResult(result.resultCode, result.data)
         }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
