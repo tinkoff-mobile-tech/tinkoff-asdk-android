@@ -133,6 +133,10 @@ internal class CardsListViewModel(
         }
     }
 
+    fun onAttachCard(cardId: String) {
+        eventFlow.value = CardListEvent.ShowCardAttachDialog(cardId)
+    }
+
     fun onBackPressed() {
         if (eventFlow.value !is CardListEvent.RemoveCardProgress) {
             val _state = stateFlow.value

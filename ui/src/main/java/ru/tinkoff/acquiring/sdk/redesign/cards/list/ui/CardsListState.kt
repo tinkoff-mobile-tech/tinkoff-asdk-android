@@ -16,7 +16,7 @@ sealed class CardsListState(val mode: CardListMode, val isInternal: Boolean = fa
         mode: CardListMode,
         isInternal: Boolean,
         val cards: List<CardItemUiModel>,
-        val selectedCardId: Long? = null
+        val selectedCardId: Long? = null,
     ) : CardsListState(mode, isInternal)
 }
 
@@ -32,6 +32,8 @@ sealed class CardListEvent {
     object ShowError : CardListEvent()
 
     class ShowCardDeleteError(val it: Throwable) : CardListEvent()
+
+    class ShowCardAttachDialog(val it: String) : CardListEvent()
 
     class CloseScreen(val selectedCard: Card?) : CardListEvent()
 

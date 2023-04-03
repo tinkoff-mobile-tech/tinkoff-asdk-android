@@ -68,8 +68,8 @@ internal class CardsListActivity : TransparentActivity() {
     private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
         when (result) {
             is AttachCard.Success -> {
-                attachedCardId = result.cardId
-
+                //attachedCardId = result.cardId
+                viewModel.onAttachCard(result.cardId)
                 viewModel.loadData(
                     savedCardsOptions.customer.customerKey,
                     options.features.showOnlyRecurrentCards
@@ -89,7 +89,6 @@ internal class CardsListActivity : TransparentActivity() {
 
     private var selectedCardId: String? = null
     private var isErrorOccurred = false
-    private var attachedCardId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -263,8 +262,7 @@ internal class CardsListActivity : TransparentActivity() {
         viewModel.chooseNewCard()
     }
 
-    private fun CardItemUiModel.handleCardAttached() {
-        attachedCardId = null
+    private fun handleCardAttached(tail: String) {
         snackBarHelper.showWithIcon(
             R.drawable.acq_ic_card_sparkle,
             getString(R.string.acq_cardlist_snackbar_add, tail)
@@ -320,6 +318,9 @@ internal class CardsListActivity : TransparentActivity() {
                             null,
                             R.string.acq_generic_alert_access
                         )
+                    }
+                    is CardListEvent.ShowCardAttachDialog -> {
+                        handleCardAttached()
                     }
                 }
             }
