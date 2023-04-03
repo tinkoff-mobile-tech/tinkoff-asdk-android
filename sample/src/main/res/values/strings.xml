@@ -23,6 +23,7 @@
     <string name="activity_title_attach_card_manually">Attach card manually</string>
     <string name="activity_title_terminals">Terminals</string>
     <string name="activity_title_about">About</string>
+    <string name="activity_title_env">Environment</string>
     <string name="activity_title_static_qr">Open static QR code</string>
     <string name="activity_title_dynamic_qr">Get QR payment</string>
     <string name="activity_title_settings">Settings</string>

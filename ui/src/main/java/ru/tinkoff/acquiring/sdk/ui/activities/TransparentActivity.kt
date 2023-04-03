@@ -26,6 +26,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.Toolbar
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
@@ -41,6 +42,8 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusSuccess
 import ru.tinkoff.acquiring.sdk.ui.customview.BottomContainer
+import ru.tinkoff.acquiring.sdk.utils.getAsError
+import ru.tinkoff.acquiring.sdk.utils.getLongOrNull
 import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
 
 /**
@@ -104,7 +107,11 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 finishWithSuccess(data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as AsdkResult)
             } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
-                finishWithError(data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable)
+                checkNotNull(data)
+                finishWithError(
+                    data.getAsError(ThreeDsHelper.Launch.ERROR_DATA),
+                    data.getLongOrNull(TinkoffAcquiring.EXTRA_PAYMENT_ID)
+                )
             } else {
                 setResult(Activity.RESULT_CANCELED)
                 closeActivity()
@@ -137,8 +144,8 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
         closeActivity()
     }
 
-    override fun finishWithError(throwable: Throwable) {
-        setErrorResult(throwable)
+    override fun finishWithError(throwable: Throwable, paymentId: Long?) {
+        setErrorResult(throwable, paymentId)
         closeActivity()
     }
 

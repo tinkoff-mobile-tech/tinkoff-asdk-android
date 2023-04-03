@@ -168,9 +168,10 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         setResult(Activity.RESULT_OK, intent)
     }
 
-    protected open fun setErrorResult(throwable: Throwable) {
+    protected open fun setErrorResult(throwable: Throwable, paymentId: Long? = null) {
         val intent = Intent()
         intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
+        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
         setResult(TinkoffAcquiring.RESULT_ERROR, intent)
     }
 
@@ -179,8 +180,8 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         finish()
     }
 
-    open fun finishWithError(throwable: Throwable) {
-        setErrorResult(throwable)
+    open fun finishWithError(throwable: Throwable, paymentId: Long? = null) {
+        setErrorResult(throwable, paymentId)
         finish()
     }
 

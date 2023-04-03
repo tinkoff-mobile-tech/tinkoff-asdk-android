@@ -20,6 +20,7 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.*
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
@@ -118,6 +119,39 @@ class TinkoffAcquiring(
      */
     fun finishPayment(paymentId: Long, paymentSource: PaymentSource): PaymentProcess {
         return PaymentProcess(sdk, applicationContext).createFinishProcess(paymentId, paymentSource)
+    }
+
+    /**
+     * Получение Acquiring SDK PendingIntent для проведения оплаты и получения результата с помощью Activity Result API
+     *
+     * @param activity    контекст для запуска экрана из Activity
+     * @param options     настройки платежной сессии и визуального отображения экрана
+     * @param requestCode код для получения результата, по завершению оплаты
+     * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
+     *                    с заданного состояния
+     * @return настроенный PendingIntent
+     */
+    @JvmOverloads
+    fun getPaymentPendingIntent(
+        activity: Activity,
+        options: PaymentOptions,
+        requestCode: Int,
+        state: AsdkState = DefaultState
+    ): PendingIntent {
+        options.asdkState = state
+        val intent = prepareIntent(activity, options, PaymentActivity::class.java)
+
+        val flags = when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> PendingIntent.FLAG_UPDATE_CURRENT
+            else -> PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        }
+
+        return PendingIntent.getActivity(
+            activity,
+            requestCode,
+            intent,
+            flags
+        )
     }
 
     /**

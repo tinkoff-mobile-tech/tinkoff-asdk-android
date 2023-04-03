@@ -90,6 +90,7 @@ internal class AttachCardActivity : TransparentActivity() {
                     }
                 }
                 is LoopConfirmationScreenState -> showFragment(LoopConfirmationFragment.newInstance(screen.requestKey))
+                else -> Unit
             }
         }
     }
