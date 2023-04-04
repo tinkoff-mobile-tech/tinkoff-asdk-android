@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.redesign.recurrent
+package ru.tinkoff.acquiring.sdk.redesign.recurrent.ui
 
 import android.content.Context
 import android.content.Intent
@@ -7,11 +7,8 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.parcel.Parcelize
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.*
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
-import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 

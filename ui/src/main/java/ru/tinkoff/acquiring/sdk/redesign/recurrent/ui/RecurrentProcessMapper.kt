@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.redesign.recurrent
+package ru.tinkoff.acquiring.sdk.redesign.recurrent.ui
 
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState

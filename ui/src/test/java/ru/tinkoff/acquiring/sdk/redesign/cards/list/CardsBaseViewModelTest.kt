@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list
 
 import app.cash.turbine.test
+import common.AcquiringResponseStub
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.junit.Assert.*
@@ -9,6 +10,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
@@ -105,6 +108,15 @@ internal class CardsListViewModelTest {
                 )
             ),
             connectionChecker = mock { on { isOnline() } doReturn false }
+        )
+    }
+
+    @Test
+    fun `when errorCode=7 then empty state`() {
+        runViewModelCardsLoadTest<CardsListState.Empty>(
+            "key",
+            RequestResult.Failure(AcquiringApiException(AcquiringResponseStub("7"))),
+            connectionChecker = mock { on { isOnline() } doReturn true }
         )
     }
 

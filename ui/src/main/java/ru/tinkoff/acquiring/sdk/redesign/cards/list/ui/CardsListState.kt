@@ -15,8 +15,7 @@ sealed class CardsListState(val mode: CardListMode, val isInternal: Boolean = fa
     class Content(
         mode: CardListMode,
         isInternal: Boolean,
-        val cards: List<CardItemUiModel>,
-        val selectedCardId: Long? = null,
+        val cards: List<CardItemUiModel>
     ) : CardsListState(mode, isInternal)
 }
 
@@ -35,11 +34,17 @@ sealed class CardListEvent {
 
     class ShowCardAttachDialog(val it: String) : CardListEvent()
 
-    class CloseScreen(val selectedCard: Card?) : CardListEvent()
+    class SelectCard(val selectedCard: Card) : CardListEvent()
 
-    object CloseWithoutCard : CardListEvent()
+    object SelectCancel : CardListEvent()
 
-    object CloseBecauseCardNotLoaded : CardListEvent()
+    object SelectNewCard : CardListEvent()
+}
+
+
+sealed class CardListNav {
+
+    object ToAttachCard : CardListNav()
 }
 
 enum class CardListMode {
