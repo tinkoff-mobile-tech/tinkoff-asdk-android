@@ -41,7 +41,7 @@ class PaymentByCardProcess internal constructor(
     fun start(
         cardData: CardSource,
         paymentOptions: PaymentOptions,
-        email: String? = null
+        email: String? = null,
     ) {
         _state.value = PaymentByCardState.Started(paymentOptions, email)
         coroutineManager.launchOnBackground {

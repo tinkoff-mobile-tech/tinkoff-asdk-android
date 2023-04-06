@@ -65,7 +65,7 @@ internal class FinishAuthorizeMethodsSdkImpl(
             )
         } else {
             FinishAuthorizeMethods.Result.Success(
-                response.paymentId!!,
+                checkNotNull(response.paymentId) { "paymentId must be not null" },
                 null,
                 response.rebillId
             )

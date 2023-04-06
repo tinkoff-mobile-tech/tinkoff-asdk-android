@@ -43,9 +43,7 @@ class RecurrentPaymentProcess internal constructor(
             try {
                 startPaymentFlow(cardData, paymentOptions, email)
             } catch (e: Throwable) {
-                withContext(NonCancellable) {
-                    handleException(paymentOptions, e, _paymentIdOrNull, true)
-                }
+                handleException(paymentOptions, e, _paymentIdOrNull, true)
             }
         }
     }
@@ -62,9 +60,7 @@ class RecurrentPaymentProcess internal constructor(
             try {
                 startRejectedFlow(cvc, rebillId, rejectedId, paymentOptions, email)
             } catch (e: Throwable) {
-                withContext(NonCancellable) {
-                    handleException(paymentOptions, e, _paymentIdOrNull, false)
-                }
+                handleException(paymentOptions, e, _paymentIdOrNull, false)
             }
         }
     }
@@ -136,13 +132,16 @@ class RecurrentPaymentProcess internal constructor(
         paymentId: Long?,
         needCheckRejected: Boolean
     ) {
-        _state.emit(
-            if (needCheckRejected && checkRejectError(throwable)) {
-                PaymentByCardState.CvcUiNeeded(paymentOptions)
-            } else {
-                PaymentByCardState.Error(throwable, paymentId)
-            }
-        )
+        if (throwable is CancellationException) return
+        withContext(NonCancellable) {
+            _state.emit(
+                if (needCheckRejected && checkRejectError(throwable)) {
+                    PaymentByCardState.CvcUiNeeded(paymentOptions)
+                } else {
+                    PaymentByCardState.Error(throwable, paymentId)
+                }
+            )
+        }
     }
 
     private fun checkRejectError(it: Throwable): Boolean {
@@ -162,8 +161,10 @@ class RecurrentPaymentProcess internal constructor(
 
         private var value: RecurrentPaymentProcess? = null
 
+        @JvmStatic
         fun get() = value!!
 
+        @JvmStatic
         @Synchronized
         fun init(
             sdk: AcquiringSdk,

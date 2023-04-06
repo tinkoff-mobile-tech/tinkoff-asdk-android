@@ -98,8 +98,8 @@ internal class CardsListActivity : TransparentActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.acq_card_list_menu, menu)
-        menu.findItem(R.id.acq_card_list_action_change)?.isVisible = (mode === CardListMode.ADD || mode === CardListMode.CHOOSE)
-        menu.findItem(R.id.acq_card_list_action_complete)?.isVisible = mode === CardListMode.DELETE
+        menu.menuItemVisible(R.id.acq_card_list_action_change, mode === CardListMode.ADD || mode === CardListMode.CHOOSE)
+        menu.menuItemVisible(R.id.acq_card_list_action_complete, mode === CardListMode.DELETE)
         return true
     }
 
