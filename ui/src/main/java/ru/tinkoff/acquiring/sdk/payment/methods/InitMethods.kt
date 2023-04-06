@@ -25,7 +25,7 @@ internal class InitMethodsSdkImpl(private val acquiringSdk: AcquiringSdk) : Init
         email: String? = null
     ) = init {
         configure(paymentOptions)
-        if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {
+        if (paymentOptions.features.duplicateEmailToReceipt && email.isNullOrEmpty().not()) {
             receipt?.email = email
         }
         this.recurrent = true

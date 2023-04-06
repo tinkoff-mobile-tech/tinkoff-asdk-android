@@ -25,7 +25,7 @@ interface ChargeMethods {
     suspend fun getCardByRebillId(rebillId: String?, paymentOptions: PaymentOptions): Card
 }
 
-class ChargeMethodsSdkImpl(private val acquiringSdk: AcquiringSdk) : ChargeMethods {
+internal class ChargeMethodsSdkImpl(private val acquiringSdk: AcquiringSdk) : ChargeMethods {
 
     override suspend fun init(
         paymentOptions: PaymentOptions,
@@ -57,7 +57,7 @@ class ChargeMethodsSdkImpl(private val acquiringSdk: AcquiringSdk) : ChargeMetho
             put(AcquiringApi.FAIL_MAPI_SESSION_ID, rejectedPaymentId)
         }
         data.putAll(rejectedDataMap)
-        this.data = data.toMap()
+        this.data = data
         return this
     }
 
