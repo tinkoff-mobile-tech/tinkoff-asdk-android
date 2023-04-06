@@ -14,6 +14,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
+import ru.tinkoff.acquiring.sdk.payment.RecurrentPaymentProcess
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
@@ -153,7 +154,8 @@ internal class PaymentByCardViewModel(
         fun factory(application: Application) = viewModelFactory {
             initializer {
                 PaymentByCardViewModel(
-                    createSavedStateHandle(), PaymentByCardProcess.get(),
+                    createSavedStateHandle(),
+                    PaymentByCardProcess.get(),
                     BankCaptionResourceProvider(application)
                 )
             }

@@ -26,10 +26,11 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * @author Mariya Chernyadieva
  */
+// TODO нужны только диспы отсюда
 internal class CoroutineManager(
     private val exceptionHandler: (Throwable) -> Unit,
-    private val io: CoroutineDispatcher = IO,
-    private val main: CoroutineDispatcher = Main
+    val io: CoroutineDispatcher = IO,
+    val main: CoroutineDispatcher = Main
 ) {
 
     constructor(
