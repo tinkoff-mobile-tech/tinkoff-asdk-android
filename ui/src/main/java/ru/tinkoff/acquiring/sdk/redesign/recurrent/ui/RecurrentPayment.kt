@@ -9,7 +9,6 @@ import kotlinx.android.parcel.Parcelize
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 
 object RecurrentPayment {
@@ -18,7 +17,7 @@ object RecurrentPayment {
 
     class Success(
         override val paymentId: Long? = null,
-        override val cardId: String,
+        override val cardId: String? = null,
         override val rebillId: String
     ) : Result(), AcqPaymentResult.Success
 
@@ -32,28 +31,30 @@ object RecurrentPayment {
 
     @Parcelize
     class StartData(
+        val rebillId: String,
         val paymentOptions: PaymentOptions,
     ) : Parcelable
 
     object Contract : ActivityResultContract<StartData, Result>() {
 
-        internal fun createSuccessIntent(paymentResult: PaymentResult): Intent {
+        internal fun createSuccessIntent(
+            paymentId: Long,
+            rebillId: String,
+        ): Intent {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentResult.paymentId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, paymentResult.cardId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, paymentResult.rebillId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
+            intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, rebillId)
             return intent
         }
 
-        internal fun createFailedIntent(throwable: Throwable, paymentId: Long?): Intent {
+        internal fun createFailedIntent(throwable: Throwable): Intent {
             val intent = Intent()
             intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
-            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
             return intent
         }
 
         override fun createIntent(context: Context, input: StartData): Intent {
-            return RecurrentPaymentActivity.intent(context, input.paymentOptions)
+            return RecurrentPaymentActivity.intent(context, input.paymentOptions, input.rebillId)
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
@@ -61,7 +62,7 @@ object RecurrentPayment {
                 with(checkNotNull(intent)) {
                     Success(
                         getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
-                        checkNotNull(getStringExtra(TinkoffAcquiring.EXTRA_CARD_ID)),
+                        null,
                         checkNotNull(getStringExtra(TinkoffAcquiring.EXTRA_REBILL_ID)),
                     )
                 }
@@ -73,7 +74,7 @@ object RecurrentPayment {
                     Error(
                         getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
                         throwable,
-                        (throwable as AcquiringApiException).response?.errorCode?.toInt()
+                        (throwable as? AcquiringApiException)?.response?.errorCode?.toInt()
                     )
                 }
 
