@@ -70,7 +70,7 @@ class RecurrentPaymentProcessTest {
             then = {
                 assertByClassName(
                     process.state.value,
-                    PaymentByCardState.CvcUiNeeded(PaymentOptions())
+                    PaymentByCardState.CvcUiNeeded(PaymentOptions(), rejectedPaymentId = "rejectedPaymentId")
                 )
             }
         )
