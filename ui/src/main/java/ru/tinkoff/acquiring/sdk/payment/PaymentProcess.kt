@@ -435,6 +435,9 @@ internal constructor(
 
     companion object {
 
+        private const val MAIN_FORM = "main_form"
+        private const val CHOSEN_METHOD = "сhosen_method"
+
         fun InitRequest.configure(paymentOptions: PaymentOptions) = apply {
             orderId = paymentOptions.order.orderId
             amount = paymentOptions.order.amount.coins
@@ -446,12 +449,21 @@ internal constructor(
             shops = paymentOptions.order.shops
             successURL = paymentOptions.order.successURL
             failURL = paymentOptions.order.failURL
-            data = paymentOptions.order.additionalData
+            data = paymentOptions.configureData()
             customerKey = paymentOptions.customer.customerKey
             language = AsdkLocalization.language.name
             sdkVersion = BuildConfig.ASDK_VERSION_NAME
             softwareVersion = Build.VERSION.SDK_INT.toString()
             deviceModel = Build.MODEL
+        }
+
+        internal fun PaymentOptions.configureData(): Map<String, String> {
+            val mainFormData = buildMap {
+                analyticsOptions.mainFormAnalytics?.name?.let { put(MAIN_FORM, it) }
+                analyticsOptions.chosenMethod?.name?.let { put(CHOSEN_METHOD, it) }
+            }
+
+            return order.additionalData?.plus(mainFormData) ?: mainFormData
         }
     }
 }

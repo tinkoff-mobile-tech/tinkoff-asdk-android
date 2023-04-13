@@ -53,7 +53,7 @@ internal class MainFormNavController {
         channelNav.send(Navigation.ToChooseCard(savedCardsOptions))
     }
 
-    suspend fun toTpay() = channelNav.send(Navigation.ToTpay())
+    suspend fun toTpay(paymentOptions: PaymentOptions) = channelNav.send(Navigation.ToTpay(paymentOptions))
 
     suspend fun to3ds(paymentOptions: PaymentOptions, threeDsState: ThreeDsState) =
         channelNav.send(Navigation.To3ds(paymentOptions, threeDsState))
@@ -70,7 +70,7 @@ internal class MainFormNavController {
 
         class ToChooseCard(val savedCardsOptions: SavedCardsOptions) : Navigation
 
-        class ToTpay : Navigation
+        class ToTpay(val paymentOptions: PaymentOptions) : Navigation
 
         class To3ds(val paymentOptions: PaymentOptions, val threeDsState: ThreeDsState) : Navigation
 
