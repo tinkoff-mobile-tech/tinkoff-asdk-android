@@ -14,6 +14,7 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
@@ -112,10 +113,10 @@ internal class CardsListViewModelTest {
     }
 
     @Test
-    fun `when errorCode=7 then empty state`() {
+    fun `when API_ERROR_CODE_CUSTOMER_NOT_FOUND then empty state`() {
         runViewModelCardsLoadTest<CardsListState.Empty>(
             "key",
-            RequestResult.Failure(AcquiringApiException(AcquiringResponseStub("7"))),
+            RequestResult.Failure(AcquiringApiException(AcquiringResponseStub(API_ERROR_CODE_CUSTOMER_NOT_FOUND))),
             connectionChecker = mock { on { isOnline() } doReturn true }
         )
     }
