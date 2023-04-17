@@ -31,6 +31,7 @@ import ru.tinkoff.acquiring.sdk.utils.*
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 
+// TODO Разобраться с навигацией, код размазан, надо переделать
 internal class CardsListActivity : TransparentActivity() {
 
     private val viewModel: CardsListViewModel by viewModels {

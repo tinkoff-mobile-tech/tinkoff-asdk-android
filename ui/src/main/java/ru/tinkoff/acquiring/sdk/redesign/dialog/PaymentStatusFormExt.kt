@@ -46,7 +46,7 @@ sealed class PaymentStatusSheetState(
     object NotYet : PaymentStatusSheetState(null)
 
     data class Progress(
-        override val title: Int,
+        override val title: Int?,
         override val subtitle: Int? = null,
         override val secondButton: Int? = null
     ) : PaymentStatusSheetState(title, subtitle, null, secondButton)

@@ -51,6 +51,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -99,6 +100,14 @@ open class PayableActivity : AppCompatActivity() {
             is MainFormContract.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
+    private val recurrentPayment = registerForActivityResult(RecurrentPayment.Contract) { result ->
+        when(result) {
+            is RecurrentPayment.Canceled -> toast("payment canceled")
+            is RecurrentPayment.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is RecurrentPayment.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -170,7 +179,11 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        byMainFormPayment.launch(MainFormContract.StartData(options))
+        if (settings.isRecurrentPayment) {
+            recurrentPayment.launch(RecurrentPayment.StartData(options))
+        }else{
+            byMainFormPayment.launch(MainFormContract.StartData(options))
+        }
     }
 
     protected fun openDynamicQrScreen() {
