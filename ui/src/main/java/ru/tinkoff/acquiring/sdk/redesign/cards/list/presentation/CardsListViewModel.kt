@@ -4,18 +4,22 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.exceptions.checkCustomerNotFoundError
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.models.CardItemUiModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListEvent
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListMode
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardListNav
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.responses.GetCardListResponse
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
@@ -27,7 +31,7 @@ import ru.tinkoff.acquiring.sdk.utils.getExtra
  * Created by Ivan Golovachev
  */
 internal class CardsListViewModel(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val sdk: AcquiringSdk,
     private val connectionChecker: ConnectionChecker,
     private val bankCaptionProvider: BankCaptionProvider,
@@ -47,6 +51,11 @@ internal class CardsListViewModel(
     val modeFlow = stateFlow.map { it.mode }
 
     val eventFlow = MutableStateFlow<CardListEvent?>(null)
+
+    @VisibleForTesting
+    val navigationChannel = Channel<CardListNav>()
+
+    val navigationFlow = navigationChannel.receiveAsFlow()
 
     fun loadData(customerKey: String?, recurrentOnly: Boolean) {
         if (connectionChecker.isOnline().not()) {
@@ -95,11 +104,11 @@ internal class CardsListViewModel(
                             handleDeleteCard(model)
                             deleteJob?.cancel()
                         },
-                        onFailure = {
+                        onFailure = { e ->
                             val list =
                                 checkNotNull((stateFlow.value as? CardsListState.Content)?.cards)
                             stateFlow.update { CardsListState.Content(it.mode, true, list) }
-                            eventFlow.value = CardListEvent.ShowCardDeleteError(it)
+                            eventFlow.value = CardListEvent.ShowCardDeleteError(e)
                             deleteJob?.cancel()
                         }
                     )
@@ -121,30 +130,55 @@ internal class CardsListViewModel(
         }
     }
 
+    fun returnBaseMode() {
+        changeMode(
+            if (selectedCardIdFlow.value == null)
+                CardListMode.ADD
+            else
+                CardListMode.CHOOSE
+        )
+    }
+
     fun chooseCard(model: CardItemUiModel) {
         if (stateFlow.value.mode === CardListMode.CHOOSE) {
-            eventFlow.value = CardListEvent.CloseScreen(model.card)
+            eventFlow.value = CardListEvent.SelectCard(model.card)
         }
     }
 
     fun chooseNewCard() {
         if (stateFlow.value.mode === CardListMode.CHOOSE) {
-            eventFlow.value = CardListEvent.CloseWithoutCard
+            eventFlow.value = CardListEvent.SelectNewCard
+        }
+    }
+
+    fun onAttachCard(cardId: String) {
+        eventFlow.value = CardListEvent.ShowCardAttachDialog(cardId)
+    }
+
+    fun onStubClicked() = viewModelScope.launch {
+        if (stateFlow.value.mode === CardListMode.CHOOSE) {
+            eventFlow.value = CardListEvent.SelectNewCard
+        } else {
+            navigationChannel.send(CardListNav.ToAttachCard)
+        }
+    }
+
+    fun onAddNewCardClicked() = viewModelScope.launch {
+        if (stateFlow.value.mode === CardListMode.CHOOSE) {
+            eventFlow.value = CardListEvent.SelectNewCard
+        } else {
+            navigationChannel.send(CardListNav.ToAttachCard)
         }
     }
 
     fun onBackPressed() {
-        if (eventFlow.value !is CardListEvent.RemoveCardProgress) {
-            val _state = stateFlow.value
-            eventFlow.value = when(_state) {
-                is CardsListState.Error -> CardListEvent.CloseBecauseCardNotLoaded
-                is CardsListState.NoNetwork -> CardListEvent.CloseBecauseCardNotLoaded
-                else ->  {
-                    val state = _state as? CardsListState.Content // пустой список вернет состояние, при котором необходимо выбирать новую карту
-                    val card = state?.cards?.firstOrNull { it.id == selectedCardIdFlow.value }
-                    CardListEvent.CloseScreen(card?.card)
-                }
-            }
+        if (eventFlow.value is CardListEvent.RemoveCardProgress) return
+
+        eventFlow.value = when (val state = stateFlow.value) {
+            is CardsListState.Error -> CardListEvent.SelectCancel
+            is CardsListState.NoNetwork -> CardListEvent.SelectCancel
+            is CardsListState.Content -> handleCancelWithContent(state)
+            else -> CardListEvent.SelectCancel
         }
     }
 
@@ -171,26 +205,27 @@ internal class CardsListViewModel(
         recurrentOnly: Boolean,
         mode: CardListMode
     ): List<CardItemUiModel> {
-        var activeCards = it.filter { card ->
-            card.status == CardStatus.ACTIVE
+        val recurrentFilter = { card: Card ->
+            if (recurrentOnly) card.rebillId.isNullOrBlank().not() else true
         }
 
-        if (recurrentOnly) {
-            activeCards = activeCards.filter { card -> !card.rebillId.isNullOrBlank() }
-        }
-
-        return activeCards.map {
-            val cardNumber = checkNotNull(it.pan)
-            CardItemUiModel(
-                card = it,
-                bankName = bankCaptionProvider(cardNumber),
-                showChoose = (selectedCardIdFlow.value == it.cardId) && mode === CardListMode.CHOOSE
-            )
-        }
+        return it.filter { card -> card.status == CardStatus.ACTIVE && recurrentFilter(card) }
+            .map {
+                val cardNumber = checkNotNull(it.pan)
+                CardItemUiModel(
+                    card = it,
+                    bankName = bankCaptionProvider(cardNumber),
+                    showChoose = (selectedCardIdFlow.value == it.cardId) && mode === CardListMode.CHOOSE
+                )
+            }
     }
 
     private fun handleGetCardListError(it: Exception) {
-        stateFlow.value = CardsListState.Error(it)
+        if (it.checkCustomerNotFoundError()) {
+            stateFlow.value = CardsListState.Empty
+        } else {
+            stateFlow.value = CardsListState.Error(it)
+        }
     }
 
     private fun handleDeleteCard(deletedCard: CardItemUiModel) {
@@ -209,6 +244,28 @@ internal class CardsListViewModel(
             eventFlow.value = CardListEvent.RemoveCardSuccess(deletedCard, indexAt)
         }
     }
+
+    /**
+      если небыло предвыбранной карты -  выход с экрана не требует выбора новой карты
+      если была предвыбранная карта   -
+                                        при выбранной карте - возвращаем выбранную карту
+                                        без выбранной карты - посылаем инфу, что нужно выбрать карту
+     */
+    private fun handleCancelWithContent(state: CardsListState.Content): CardListEvent {
+        return when(val selectedId = selectedCardIdFlow.value) {
+            null -> cancelWithoutPredefinedCard()
+            else -> selectCardOrNew(state, selectedId)
+        }
+    }
+
+    private fun cancelWithoutPredefinedCard() =  CardListEvent.SelectCancel
+
+    private fun selectCardOrNew(
+        state: CardsListState.Content,
+        selectedId: String
+    ) = state.cards.firstOrNull { it.id == selectedId }
+        ?.let { CardListEvent.SelectCard(it.card) }
+        ?: CardListEvent.SelectNewCard
 
     override fun onCleared() {
         manager.cancelAll()

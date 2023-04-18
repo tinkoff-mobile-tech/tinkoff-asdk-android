@@ -11,6 +11,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MergeMethodsStrategy
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.analytics.MainFormAnalyticsDelegate
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.process.MainFormPaymentProcessMapper
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary.SecondButtonConfigurator
@@ -18,7 +19,6 @@ import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
 import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
@@ -35,6 +35,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
         val navController = MainFormNavController()
         val cardPayProcessMapper = MainFormPaymentProcessMapper(navController)
         val bankCaptionProvider = BankCaptionResourceProvider(application)
+        val mainFormAnalyticsDelegate = MainFormAnalyticsDelegate()
 
         acq.initSbpPaymentSession()
         PaymentByCardProcess.init(acq.sdk, application, ThreeDsHelper.CollectData)
@@ -46,6 +47,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
                 PaymentByCardProcess.get(),
                 cardPayProcessMapper,
                 bankCaptionProvider,
+                mainFormAnalyticsDelegate,
                 CoroutineManager(),
             )
         }
@@ -73,6 +75,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
                 ),
                 navController,
                 PaymentByCardProcess.get(),
+                mainFormAnalyticsDelegate,
                 CoroutineManager(),
             )
         }

@@ -114,6 +114,7 @@
             android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AcquiringNewTheme" />
+        <activity android:name=".redesign.recurrent.ui.RecurrentPaymentActivity" />
 
         <activity android:name=".redesign.tpay.ui.TpayFlowActivity"
             android:screenOrientation="unspecified"

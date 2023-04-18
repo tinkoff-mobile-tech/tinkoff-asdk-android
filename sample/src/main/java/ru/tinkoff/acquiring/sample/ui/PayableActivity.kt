@@ -49,6 +49,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
@@ -100,6 +101,14 @@ open class PayableActivity : AppCompatActivity() {
             is MainFormContract.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
+    private val recurrentPayment = registerForActivityResult(RecurrentPayment.Contract) { result ->
+        when(result) {
+            is RecurrentPayment.Canceled -> toast("payment canceled")
+            is RecurrentPayment.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is RecurrentPayment.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+        }
+    }
+
     private val tpayPayment = registerForActivityResult(Tpay.Contract) { result ->
         when (result) {
             is Tpay.Canceled -> toast("tpay canceled")
@@ -179,7 +188,11 @@ open class PayableActivity : AppCompatActivity() {
                 publicKey = TerminalsManager.selectedTerminal.publicKey
             )
         }
-        byMainFormPayment.launch(MainFormContract.StartData(options))
+        if (settings.isRecurrentPayment) {
+            recurrentPayment.launch(RecurrentPayment.StartData(options))
+        }else{
+            byMainFormPayment.launch(MainFormContract.StartData(options))
+        }
     }
 
     protected fun openDynamicQrScreen() {
