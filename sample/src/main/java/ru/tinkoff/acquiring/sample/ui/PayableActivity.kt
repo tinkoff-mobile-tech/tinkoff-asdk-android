@@ -17,7 +17,6 @@
 package ru.tinkoff.acquiring.sample.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -34,7 +33,6 @@ import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.ui.MainActivity.Companion.toast
 import ru.tinkoff.acquiring.sample.utils.CombInitDelegate
-import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
@@ -51,8 +49,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
-import ru.tinkoff.acquiring.sdk.redesign.recurrent.RecurrentPayment
-import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
 import ru.tinkoff.acquiring.yandexpay.addYandexResultListener

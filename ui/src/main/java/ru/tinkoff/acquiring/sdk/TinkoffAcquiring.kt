@@ -631,15 +631,11 @@ class TinkoffAcquiring(
 
             override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
                 AppCompatActivity.RESULT_OK -> {
-                    val card = intent?.getSerializableExtra(EXTRA_CHOSEN_CARD) as Card?
-                    if (card != null) {
-                        Success(card)
-                    }else {
-                        NeedInputNewCard
-                    }
+                    val card = intent?.getSerializableExtra(EXTRA_CHOSEN_CARD) as Card
+                    Success(card)
                 }
-                NEW_CARD_CHOSEN -> NeedInputNewCard
-                RESULT_ERROR -> Error(intent!!.getSerializableExtra(EXTRA_ERROR)!! as Throwable)
+                SELECT_NEW_CARD -> NeedInputNewCard
+                RESULT_ERROR -> Error(intent?.getSerializableExtra(EXTRA_ERROR) as Throwable)
                 else -> Canceled()
             }
         }
@@ -648,8 +644,7 @@ class TinkoffAcquiring(
     companion object {
 
         const val RESULT_ERROR = 500
-        internal const val NEW_CARD_CHOSEN = 509
-        internal const val CANCEL_CARD_CHOSEN = 510
+        internal const val SELECT_NEW_CARD = 509
         const val EXTRA_ERROR = "extra_error"
         const val EXTRA_CARD_ID = "extra_card_id"
         const val EXTRA_PAYMENT_ID = "extra_payment_id"
