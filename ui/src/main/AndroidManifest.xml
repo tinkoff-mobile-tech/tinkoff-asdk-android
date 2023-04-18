@@ -115,6 +115,11 @@
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AcquiringNewTheme" />
 
+        <activity android:name=".redesign.tpay.ui.TpayFlowActivity"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
+
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />

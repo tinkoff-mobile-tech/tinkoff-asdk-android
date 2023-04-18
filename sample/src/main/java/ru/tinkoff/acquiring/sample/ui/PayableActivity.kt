@@ -17,7 +17,6 @@
 package ru.tinkoff.acquiring.sample.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -34,7 +33,6 @@ import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.ui.MainActivity.Companion.toast
 import ru.tinkoff.acquiring.sample.utils.CombInitDelegate
-import ru.tinkoff.acquiring.sample.utils.SessionParams
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
@@ -51,6 +49,9 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -99,6 +100,14 @@ open class PayableActivity : AppCompatActivity() {
             is MainFormContract.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
+    private val tpayPayment = registerForActivityResult(Tpay.Contract) { result ->
+        when (result) {
+            is Tpay.Canceled -> toast("tpay canceled")
+            is Tpay.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is Tpay.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -194,7 +203,7 @@ open class PayableActivity : AppCompatActivity() {
                     .onSuccess {
                         hideProgressDialog()
                         tinkoffAcquiring.initSbpPaymentSession()
-                        spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(it,opt))
+                        spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(it, opt))
                     }
             } else {
                 tinkoffAcquiring.initSbpPaymentSession()
@@ -208,16 +217,20 @@ open class PayableActivity : AppCompatActivity() {
 
         val tinkoffPayButton = findViewById<View>(R.id.tinkoff_pay_button)
 
-        tinkoffAcquiring.checkTinkoffPayStatus({ status ->
-            if (!status.isTinkoffPayAvailable()) return@checkTinkoffPayStatus
+        tinkoffAcquiring.checkTerminalInfo({ status ->
+            if (status.enableTinkoffPay().not()) return@checkTerminalInfo
 
             tinkoffPayButton.visibility = View.VISIBLE
 
-            val version = status.getTinkoffPayVersion()!!
+            val opt = createPaymentOptions()
+            opt.setTerminalParams(
+                TerminalsManager.selectedTerminal.terminalKey,
+                TerminalsManager.selectedTerminal.publicKey
+            )
+            val version = checkNotNull(status?.getTinkoffPayVersion())
+            tinkoffAcquiring.initTinkoffPayPaymentSession()
             tinkoffPayButton.setOnClickListener {
-                tinkoffAcquiring.payWithTinkoffPay(createPaymentOptions(), version)
-                    .subscribe(paymentListener)
-                    .start()
+                tpayPayment.launch(Tpay.StartData(opt, version))
             }
         })
     }
