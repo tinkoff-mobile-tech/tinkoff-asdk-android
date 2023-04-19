@@ -43,7 +43,13 @@ class AcquiringApiException : Exception {
     }
 }
 
+fun Throwable.asAcquiringApiException() = (this as? AcquiringApiException)
+
 fun Exception.checkCustomerNotFoundError(): Boolean {
-    val api = (this as? AcquiringApiException)
-    return api?.response?.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND
+    return getErrorCodeIfApiError() == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND
+}
+
+fun Exception.getErrorCodeIfApiError() : String? {
+    val api = (this as? AcquiringApiException) ?: return null
+    return api.response?.errorCode
 }

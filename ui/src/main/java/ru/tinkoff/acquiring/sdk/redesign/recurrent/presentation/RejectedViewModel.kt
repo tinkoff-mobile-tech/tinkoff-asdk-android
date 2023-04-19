@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.redesign.recurrent.ui
+package ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,6 +10,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.payment.RecurrentPaymentProcess
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
@@ -33,7 +34,8 @@ internal class RejectedViewModel(
 
     private val cvc: StateFlow<String?> = savedStateHandle.getStateFlow(DATA_CVC,null)
     val cvcValid = cvc.map { CardValidator.validateSecurityCodeOrFalse(it) }
-    private val rejectedPaymentId: StateFlow<String?> = savedStateHandle.getStateFlow(DATA_REJECTED_PAYMENT_ID, null)
+    private val rejectedPaymentId: StateFlow<String?> = savedStateHandle.getStateFlow(
+        DATA_REJECTED_PAYMENT_ID, null)
     val needHideKeyboard = savedStateHandle.getStateFlow(DATA_NEED_HIDE_KEYBOARD, false)
 
     fun inputCvc(cvc: String) {

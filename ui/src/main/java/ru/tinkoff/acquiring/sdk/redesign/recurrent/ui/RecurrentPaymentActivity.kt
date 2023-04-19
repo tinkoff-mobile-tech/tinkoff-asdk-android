@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_REBILL_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.databinding.AcqPaymentStatusFormBinding
 import ru.tinkoff.acquiring.sdk.databinding.AcqRecurrentFromActivityBinding
@@ -25,14 +24,12 @@ import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
-import ru.tinkoff.acquiring.sdk.redesign.dialog.showIfNeed
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation.RecurrentPaymentViewModel
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation.RecurrentViewModelsFactory
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation.RejectedViewModel
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
-import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
-import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
 import ru.tinkoff.acquiring.sdk.utils.getOptions
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.putOptions
@@ -167,25 +164,9 @@ internal class RecurrentPaymentActivity : AppCompatActivity() {
                         )
                         finish()
                     }
-                    is RecurrentPaymentEvent.To3ds ->
-                        try {
-                            ThreeDsHelper.Launch.launchBrowserBased(
-                                this@RecurrentPaymentActivity,
-                                TransparentActivity.THREE_DS_REQUEST_CODE,
-                                it.paymentOptions,
-                                it.threeDsState.data,
-                            )
-                        } catch (e: Throwable) {
-                            paymentStatusComponent.render(
-                                PaymentStatusSheetState.Error(
-                                    title = R.string.acq_commonsheet_failed_title,
-                                    mainButton = R.string.acq_commonsheet_failed_primary_button,
-                                    throwable = e
-                                )
-                            )
-                        } finally {
-                            recurrentPaymentViewModel.goTo3ds()
-                        }
+                    is RecurrentPaymentEvent.To3ds ->  {
+                        tryLaunch3ds(it)
+                    }
                 }
             }
         }
@@ -206,6 +187,27 @@ internal class RecurrentPaymentActivity : AppCompatActivity() {
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun tryLaunch3ds(it: RecurrentPaymentEvent.To3ds) {
+        try {
+            ThreeDsHelper.Launch.launchBrowserBased(
+                this@RecurrentPaymentActivity,
+                TransparentActivity.THREE_DS_REQUEST_CODE,
+                it.paymentOptions,
+                it.threeDsState.data,
+            )
+        } catch (e: Throwable) {
+            paymentStatusComponent.render(
+                PaymentStatusSheetState.Error(
+                    title = R.string.acq_commonsheet_failed_title,
+                    mainButton = R.string.acq_commonsheet_failed_primary_button,
+                    throwable = e
+                )
+            )
+        } finally {
+            recurrentPaymentViewModel.goTo3ds()
         }
     }
 

@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.parcel.Parcelize
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.asAcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.getErrorCodeIfApiError
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
@@ -33,7 +35,6 @@ object RecurrentPayment {
     @Parcelize
     class StartData(
         val card: Card,
-        val rebillId: String,
         val paymentOptions: PaymentOptions,
     ) : Parcelable
 
@@ -56,7 +57,6 @@ object RecurrentPayment {
         }
 
         override fun createIntent(context: Context, input: StartData): Intent {
-            return RecurrentPaymentActivity.intent(context, input.paymentOptions, input.rebillId)
             return RecurrentPaymentActivity.intent(context, input.paymentOptions, input.card)
         }
 
@@ -77,7 +77,7 @@ object RecurrentPayment {
                     Error(
                         getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
                         throwable,
-                        (throwable as? AcquiringApiException)?.response?.errorCode?.toInt()
+                        throwable.asAcquiringApiException()?.getErrorCodeIfApiError()?.toIntOrNull()
                     )
                 }
 
