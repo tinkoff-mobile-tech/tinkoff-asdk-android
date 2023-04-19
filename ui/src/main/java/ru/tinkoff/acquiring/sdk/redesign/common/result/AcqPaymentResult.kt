@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.common.result
 /**
  * Created by i.golovachev
  */
+// TODO возможно стоит слить в один
 sealed interface AcqPaymentResult {
 
     interface Success: AcqPaymentResult {

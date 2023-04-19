@@ -1,20 +1,16 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 
 import ru.tinkoff.acquiring.sdk.models.Card
-import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailValidator
-import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
-import ru.tinkoff.acquiring.sdk.ui.customview.editcard.validators.CardValidator
-import ru.tinkoff.acquiring.sdk.utils.Money
 
 internal object MainPaymentForm {
 
     data class State(
         val ui: Ui,
         val data: Data,
-        val noInternet : Boolean = false
+        val noInternet: Boolean = false
     )
 
     data class Ui(

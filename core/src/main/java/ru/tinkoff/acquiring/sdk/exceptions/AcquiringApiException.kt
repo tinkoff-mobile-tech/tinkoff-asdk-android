@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.exceptions
 
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.responses.AcquiringResponse
 
 /**
@@ -40,4 +41,9 @@ class AcquiringApiException : Exception {
     constructor(response: AcquiringResponse) : super("") {
         this.response = response
     }
+}
+
+fun Exception.checkCustomerNotFoundError(): Boolean {
+    val api = (this as? AcquiringApiException)
+    return api?.response?.errorCode == AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND
 }

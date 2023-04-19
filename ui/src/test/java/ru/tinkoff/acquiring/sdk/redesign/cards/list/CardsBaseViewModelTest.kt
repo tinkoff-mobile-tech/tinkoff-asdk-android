@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list
 
 import app.cash.turbine.test
+import common.AcquiringResponseStub
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.junit.Assert.*
@@ -9,8 +10,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.network.AcquiringApi.API_ERROR_CODE_CUSTOMER_NOT_FOUND
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListState
 import ru.tinkoff.acquiring.sdk.requests.GetCardListRequest
@@ -105,6 +109,15 @@ internal class CardsListViewModelTest {
                 )
             ),
             connectionChecker = mock { on { isOnline() } doReturn false }
+        )
+    }
+
+    @Test
+    fun `when API_ERROR_CODE_CUSTOMER_NOT_FOUND then empty state`() {
+        runViewModelCardsLoadTest<CardsListState.Empty>(
+            "key",
+            RequestResult.Failure(AcquiringApiException(AcquiringResponseStub(API_ERROR_CODE_CUSTOMER_NOT_FOUND))),
+            connectionChecker = mock { on { isOnline() } doReturn true }
         )
     }
 

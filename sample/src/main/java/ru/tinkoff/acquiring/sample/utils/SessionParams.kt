@@ -51,7 +51,7 @@ data class SessionParams(
                 "L+evz0+s60Qz5gbBRGfqCA57lUiB3hfXQZq5/q1YkABOHf9cR6Ov5nTRSOnjORgP\n" +
                 "jwIDAQAB"
 
-        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1"
+        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1123413431"
         private const val DEFAULT_CUSTOMER_EMAIL = "user@example.com"
 
         val TEST_SDK = SessionParams("TestSDK", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL)

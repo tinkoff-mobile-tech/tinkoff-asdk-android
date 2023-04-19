@@ -7,15 +7,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.analytics.ChosenMethod
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
-import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.analytics.MainFormAnalyticsDelegate
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
-import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getExtra
 
@@ -27,6 +26,7 @@ internal class MainPaymentFormViewModel(
     private val primaryButtonFactory: MainPaymentFormFactory,
     private val mainFormNavController: MainFormNavController,
     private val paymentByCardProcess: PaymentByCardProcess,
+    private val mainFormAnalyticsDelegate: MainFormAnalyticsDelegate,
     private val coroutineManager: CoroutineManager,
 ) : ViewModel() {
 
@@ -47,16 +47,35 @@ internal class MainPaymentFormViewModel(
         loadState()
     }
 
-    fun toSbp() = viewModelScope.launch { mainFormNavController.toSbp(paymentOptions) }
+    fun toSbp() = viewModelScope.launch(coroutineManager.main) {
+        mainFormNavController.toSbp(
+            mainFormAnalyticsDelegate.prepareOptions(
+                paymentOptions,
+                ChosenMethod.Sbp
+            )
+        )
+    }
 
-    fun toNewCard() = viewModelScope.launch { mainFormNavController.toPayNewCard(paymentOptions) }
+    fun toNewCard() = viewModelScope.launch(coroutineManager.main) {
+        mainFormNavController.toPayNewCard(
+            mainFormAnalyticsDelegate.prepareOptions(
+                paymentOptions,
+                ChosenMethod.NewCard
+            )
+        )
+    }
 
-    fun toChooseCard() = viewModelScope.launch {
+    fun toChooseCard() = viewModelScope.launch(coroutineManager.main) {
         mainFormNavController.toChooseCard(paymentOptions, _formState.value?.data?.chosen)
     }
 
-    fun toTpay() {
-        // todo
+    fun toTpay() = viewModelScope.launch(coroutineManager.main) {
+        mainFormNavController.toTpay(
+            mainFormAnalyticsDelegate.prepareOptions(
+                paymentOptions,
+                ChosenMethod.TinkoffPay
+            )
+        )
     }
 
     fun choseCard(card: Card) {
@@ -91,6 +110,7 @@ internal class MainPaymentFormViewModel(
                     formContent.value = FormContent.Error
                 }
                 .onSuccess {
+                    mainFormAnalyticsDelegate.mapAnalytics(it.ui.primary)
                     _formState.value = it
                     formContent.value = if (it.noInternet) {
                         FormContent.NoNetwork

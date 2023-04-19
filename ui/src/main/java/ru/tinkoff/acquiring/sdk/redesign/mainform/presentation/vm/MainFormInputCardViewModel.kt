@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.*
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.analytics.ChosenMethod
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailValidator
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.analytics.MainFormAnalyticsDelegate
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.CHOSEN_CARD
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.CVC_KEY
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.EMAIL_KEY
@@ -30,6 +32,7 @@ internal class MainFormInputCardViewModel(
     private val byCardProcess: PaymentByCardProcess,
     private val mapper: MainFormPaymentProcessMapper,
     private val bankCaptionProvider: BankCaptionProvider,
+    private val mainFormAnalyticsDelegate: MainFormAnalyticsDelegate,
     private val coroutineManager: CoroutineManager,
 ) : ViewModel() {
 
@@ -81,7 +84,7 @@ internal class MainFormInputCardViewModel(
         val card = savedStateHandle.get<CardChosenModel>(CHOSEN_CARD)!!
         val cvc = savedStateHandle.get<String>(CVC_KEY)
         byCardProcess.start(
-            paymentOptions = paymentOptions,
+            paymentOptions = mainFormAnalyticsDelegate.prepareOptions(paymentOptions, ChosenMethod.Card),
             cardData = AttachedCard(cardId = card.id, cvv = cvc)
         )
     }
