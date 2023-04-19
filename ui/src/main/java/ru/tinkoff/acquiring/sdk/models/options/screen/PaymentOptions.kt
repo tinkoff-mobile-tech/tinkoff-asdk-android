@@ -24,6 +24,8 @@ import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.options.CustomerOptions
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.OrderOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.analytics.AnalyticsOptions
+import ru.tinkoff.acquiring.sdk.models.options.screen.analytics.MainFormAnalytics
 
 /**
  * Настройки для проведения платежа, конфигурирования экрана оплаты
@@ -47,6 +49,11 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
      */
     var asdkState: AsdkState = DefaultState
 
+    /**
+     * Аналитика главной формы
+     */
+    internal var analyticsOptions: AnalyticsOptions = AnalyticsOptions()
+
     private constructor(parcel: Parcel) : this() {
         parcel.run {
             setTerminalParams(
@@ -57,6 +64,7 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
             customer = readParcelable(CustomerOptions::class.java.classLoader)!!
             features = readParcelable(FeaturesOptions::class.java.classLoader)!!
             asdkState = readSerializable() as AsdkState
+            analyticsOptions = readParcelable(AnalyticsOptions::class.java.classLoader)!!
         }
     }
 
@@ -68,6 +76,7 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
             writeParcelable(customer, flags)
             writeParcelable(features, flags)
             writeSerializable(asdkState)
+            writeParcelable(analyticsOptions, flags)
         }
     }
 
@@ -81,6 +90,7 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
         check(::order.isInitialized) { "Order Options is not set" }
         order.validateRequiredFields()
         customer.validateRequiredFields()
+        analyticsOptions.validateRequiredFields()
     }
 
     fun setOptions(options: PaymentOptions.() -> Unit): PaymentOptions {
@@ -97,6 +107,10 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
 
     fun featuresOptions(featuresOptions: FeaturesOptions.() -> Unit) {
         this.features = FeaturesOptions().apply(featuresOptions)
+    }
+
+    internal fun analyticsOptions(analyticsOptions: AnalyticsOptions.() -> Unit) {
+        this.analyticsOptions = AnalyticsOptions().apply(analyticsOptions)
     }
 
     companion object CREATOR : Parcelable.Creator<PaymentOptions> {

@@ -245,16 +245,27 @@ internal class CardsListViewModel(
         }
     }
 
+    /**
+      если небыло предвыбранной карты -  выход с экрана не требует выбора новой карты
+      если была предвыбранная карта   -
+                                        при выбранной карте - возвращаем выбранную карту
+                                        без выбранной карты - посылаем инфу, что нужно выбрать карту
+     */
     private fun handleCancelWithContent(state: CardsListState.Content): CardListEvent {
-        return when(val selectedId  = selectedCardIdFlow.value) {
-            // если небыло предвыбранной карты, значит выход с экрана не требует выбора новой карты
-            null -> CardListEvent.SelectCancel
-            // пустой список вернет состояние, при котором необходимо выбирать новую карту
-            else ->  state.cards.firstOrNull { it.id == selectedId }
-                ?.let { CardListEvent.SelectCard(it.card) }
-                ?: CardListEvent.SelectNewCard
+        return when(val selectedId = selectedCardIdFlow.value) {
+            null -> cancelWithoutPredefinedCard()
+            else -> selectCardOrNew(state, selectedId)
         }
     }
+
+    private fun cancelWithoutPredefinedCard() =  CardListEvent.SelectCancel
+
+    private fun selectCardOrNew(
+        state: CardsListState.Content,
+        selectedId: String
+    ) = state.cards.firstOrNull { it.id == selectedId }
+        ?.let { CardListEvent.SelectCard(it.card) }
+        ?: CardListEvent.SelectNewCard
 
     override fun onCleared() {
         manager.cancelAll()

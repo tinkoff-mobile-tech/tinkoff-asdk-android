@@ -6,12 +6,16 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_REBILL_ID
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.payment.RecurrentPaymentProcess
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.nav.RecurrentPaymentNavigation
@@ -25,25 +29,59 @@ import ru.tinkoff.acquiring.sdk.utils.getExtra
 internal class RecurrentPaymentViewModel(
     private val recurrentPaymentProcess: RecurrentPaymentProcess,
     private val recurrentProcessMapper: RecurrentProcessMapper,
+    private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
     private val recurrentPaymentNavigation: RecurrentPaymentNavigation.Impl,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() , RecurrentPaymentNavigation by recurrentPaymentNavigation  {
 
     // started
     private val paymentOptions: PaymentOptions = savedStateHandle.getExtra()
+    private val rebillId: String = checkNotNull(savedStateHandle.get<String>(EXTRA_REBILL_ID))
+    private val eventChannel = Channel<RecurrentPaymentEvent>()
     private val card: Card = checkNotNull(savedStateHandle.get<Card>(EXTRA_CARD))
     // state
     val state = recurrentPaymentProcess.state.map {
         recurrentProcessMapper(it)
     }
+    val events = eventChannel.receiveAsFlow()
 
     fun pay() {
         viewModelScope.launch {
             recurrentPaymentProcess.start(
+                AttachedCard(rebillId),
+                paymentOptions,
+                paymentOptions.customer.email
                 AttachedCard(card.rebillId),
                 paymentOptions,
                 paymentOptions.customer.email
             )
+        }
+    }
+
+    fun onClose() {
+        viewModelScope.launch {
+            when (val paymentState = recurrentPaymentProcess.state.value) {
+                PaymentByCardState.Created -> Unit
+                PaymentByCardState.CvcUiInProcess -> RecurrentPaymentEvent.CloseWithCancel()
+                is PaymentByCardState.CvcUiNeeded -> RecurrentPaymentEvent.CloseWithCancel()
+                is PaymentByCardState.Error -> eventChannel.send(
+                    RecurrentPaymentEvent.CloseWithError(
+                        paymentState
+                    )
+                )
+                is PaymentByCardState.Started -> Unit
+                is PaymentByCardState.Success -> eventChannel.send(
+                    RecurrentPaymentEvent.CloseWithSuccess(paymentState)
+                )
+                PaymentByCardState.ThreeDsInProcess -> eventChannel.send(
+                    RecurrentPaymentEvent.CloseWithCancel()
+                )
+                is PaymentByCardState.ThreeDsUiNeeded -> eventChannel.send(
+                    RecurrentPaymentEvent.CloseWithCancel()
+                )
+            }
         }
     }
 

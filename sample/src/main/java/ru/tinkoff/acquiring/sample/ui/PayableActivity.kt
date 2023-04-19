@@ -492,7 +492,7 @@ open class PayableActivity : AppCompatActivity() {
             )
         }
         recurrentPayment.launch(
-            RecurrentPayment.StartData(card, options)
+            RecurrentPayment.StartData(checkNotNull(card.rebillId), options)
         )
     }
 

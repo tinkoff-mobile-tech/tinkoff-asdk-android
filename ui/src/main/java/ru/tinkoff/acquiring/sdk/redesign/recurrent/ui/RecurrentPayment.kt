@@ -33,6 +33,7 @@ object RecurrentPayment {
     @Parcelize
     class StartData(
         val card: Card,
+        val rebillId: String,
         val paymentOptions: PaymentOptions,
     ) : Parcelable
 
@@ -55,6 +56,7 @@ object RecurrentPayment {
         }
 
         override fun createIntent(context: Context, input: StartData): Intent {
+            return RecurrentPaymentActivity.intent(context, input.paymentOptions, input.rebillId)
             return RecurrentPaymentActivity.intent(context, input.paymentOptions, input.card)
         }
 
