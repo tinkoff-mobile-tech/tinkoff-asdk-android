@@ -65,6 +65,15 @@ internal class TpayFlowActivity : AppCompatActivity() {
         viewModel.startCheckingStatus()
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onBackPressed() {
+        viewModel.onClose()
+    }
+
     private fun bindView() {
         binding = AcqTpayActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)

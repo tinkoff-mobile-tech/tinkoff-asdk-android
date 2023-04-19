@@ -15,6 +15,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavControll
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getExtra
 
@@ -69,12 +70,15 @@ internal class MainPaymentFormViewModel(
         mainFormNavController.toChooseCard(paymentOptions, _formState.value?.data?.chosen)
     }
 
-    fun toTpay() = viewModelScope.launch(coroutineManager.main) {
+    fun toTpay(isPrimary: Boolean = true) = viewModelScope.launch(coroutineManager.main) {
+        formContent.value = FormContent.Hide
         mainFormNavController.toTpay(
             mainFormAnalyticsDelegate.prepareOptions(
                 paymentOptions,
                 ChosenMethod.TinkoffPay
-            )
+            ),
+            isPrimary,
+            checkNotNull(_formState.value?.data?.info?.getTinkoffPayVersion())
         )
     }
 
@@ -122,6 +126,8 @@ internal class MainPaymentFormViewModel(
     }
 
     sealed interface FormContent {
+
+        object Hide : FormContent
 
         object Loading : FormContent
 

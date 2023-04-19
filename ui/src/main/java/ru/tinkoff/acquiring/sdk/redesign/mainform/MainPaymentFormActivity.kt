@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -39,6 +40,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.ErrorStubComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.PrimaryButtonComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryBlockComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.utils.*
@@ -78,6 +80,23 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             }
             is TinkoffAcquiring.SbpScreen.Success -> {
                 setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it.payment))
+                finish()
+            }
+        }
+    }
+
+    private val tpayPayment = registerForActivityResult(Tpay.Contract) {
+        when (it) {
+            is Tpay.Canceled -> {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
+            is Tpay.Error -> {
+                setResult(RESULT_ERROR, MainFormContract.Contract.createFailedIntent(it.error))
+                finish()
+            }
+            is Tpay.Success -> {
+                setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it))
                 finish()
             }
         }
@@ -290,6 +309,13 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                         bottomSheetComponent.trimSheetToContent(errorStubComponent.root)
                         bottomSheetComponent.collapse()
                     }
+                    is MainPaymentFormViewModel.FormContent.Hide -> {
+                        shimmer.isVisible = false
+                        content.isVisible = false
+                        errorStubComponent.isVisible(false)
+                        bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
+                        bottomSheetComponent.collapse()
+                    }
                 }
             }
         }.collect()
@@ -341,7 +367,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                     spbPayment.launch(it.startData)
                 }
                 is MainFormNavController.Navigation.ToTpay -> {
-                    // todo tinkoff
+                    tpayPayment.launch(it.startData)
                 }
                 is MainFormNavController.Navigation.To3ds -> ThreeDsHelper.Launch.launchBrowserBased(
                     this,
@@ -362,6 +388,9 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                         )
                     }
                     finish()
+                }
+                is MainFormNavController.Navigation.ToWebView -> {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
                 }
                 null -> Unit
             }
