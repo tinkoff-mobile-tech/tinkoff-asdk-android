@@ -152,7 +152,7 @@ class RecurrentPaymentProcess internal constructor(
         _state.value =
             PaymentByCardState.Success(
                 paymentId = checkNotNull(paymentId) { "paymentId must be not null" },
-                cardId = checkNotNull(cardId) { "cardId must be not null" },
+                cardId = cardId,
                 rebillId = checkNotNull(rebillId) { "rebillId must be not null" },
             )
     }
