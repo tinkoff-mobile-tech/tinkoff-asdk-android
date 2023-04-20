@@ -51,10 +51,9 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
-import ru.tinkoff.acquiring.sdk.utils.GooglePayHelper
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -121,11 +120,11 @@ open class PayableActivity : AppCompatActivity() {
             }
         }
 
-    private val tpayPayment = registerForActivityResult(Tpay.Contract) { result ->
+    private val tpayPayment = registerForActivityResult(TpayLauncher.Contract) { result ->
         when (result) {
-            is Tpay.Canceled -> toast("tpay canceled")
-            is Tpay.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is Tpay.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+            is TpayLauncher.Canceled -> toast("tpay canceled")
+            is TpayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is TpayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
 
@@ -254,7 +253,7 @@ open class PayableActivity : AppCompatActivity() {
             val version = checkNotNull(status?.getTinkoffPayVersion())
             tinkoffAcquiring.initTinkoffPayPaymentSession()
             tinkoffPayButton.setOnClickListener {
-                tpayPayment.launch(Tpay.StartData(opt, version))
+                tpayPayment.launch(TpayLauncher.StartData(opt, version))
             }
         })
     }

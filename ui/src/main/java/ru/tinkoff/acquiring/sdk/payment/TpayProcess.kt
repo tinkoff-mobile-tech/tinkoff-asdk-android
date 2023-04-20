@@ -9,6 +9,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
+import ru.tinkoff.acquiring.sdk.exceptions.getErrorCodeIfApiError
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.methods.GetTpayLinkMethodsSdkImpl
@@ -47,10 +48,8 @@ class TpayProcess internal constructor(
                 startFlow(paymentOptions, tpayVersion, paymentId)
             } catch (ignored: CancellationException) {
                 throw ignored
-            } catch (e: AcquiringApiException) {
-                state.value = TpayPaymentState.PaymentFailed(state.value.paymentId, e, null)
-            } catch (e: Throwable) {
-                state.value = TpayPaymentState.PaymentFailed(state.value.paymentId, e, null)
+            } catch (e: Exception) {
+                state.value = TpayPaymentState.PaymentFailed(state.value.paymentId, e, e.getErrorCodeIfApiError())
             }
         }
     }
@@ -179,6 +178,7 @@ sealed interface TpayPaymentState {
                     paymentId, null, null
                 )
             }
+            // по идее, в эти статусы проверка не зайдет - они обрабатываются в getStatusPooling
             ResponseStatus.REJECTED -> {
                 PaymentFailed(
                     paymentId,

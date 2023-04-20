@@ -2,7 +2,7 @@ package ru.tinkoff.acquiring.sdk.redesign.tpay.nav
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 
 internal class TpayNavigation() {
     private val events = Channel<Event>()
@@ -15,6 +15,6 @@ internal class TpayNavigation() {
     sealed interface Event {
 
         class GoToTinkoff(val deeplink: String) : Event
-        class Close(val result: Tpay.Result) : Event
+        class Close(val result: TpayLauncher.Result) : Event
     }
 }
