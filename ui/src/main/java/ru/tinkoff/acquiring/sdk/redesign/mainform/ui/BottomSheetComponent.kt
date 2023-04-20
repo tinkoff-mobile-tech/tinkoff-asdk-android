@@ -23,6 +23,7 @@ internal class BottomSheetComponent(
     private var contentHeight: Int = 0
 
     init {
+        bottomSheetBehavior.expandedOffset = 400
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {

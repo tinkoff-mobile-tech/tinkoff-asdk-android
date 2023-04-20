@@ -64,8 +64,10 @@ class SbpStateMapper {
                     )
                 }
             is SbpPaymentState.Stopped -> PaymentStatusSheetState.Hide
-            is SbpPaymentState.NeedChooseOnUi -> null
-            else -> null
+            is SbpPaymentState.NeedChooseOnUi,
+            is SbpPaymentState.Created,
+            is SbpPaymentState.GetBankListFailed,
+            is SbpPaymentState.Started -> null
         }
     }
 }

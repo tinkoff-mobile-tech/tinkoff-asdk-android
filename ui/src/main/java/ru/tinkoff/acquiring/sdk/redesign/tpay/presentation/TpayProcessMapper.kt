@@ -5,7 +5,7 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.payment.TpayPaymentState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.nav.TpayNavigation
 
 internal class TpayProcessMapper() {
@@ -80,16 +80,16 @@ internal class TpayProcessMapper() {
         }
     }
 
-    fun mapResult(it: TpayPaymentState): Tpay.Result? {
+    fun mapResult(it: TpayPaymentState): TpayLauncher.Result? {
         return when (it) {
             is TpayPaymentState.Started,
             is TpayPaymentState.LeaveOnBankApp,
             is TpayPaymentState.NeedChooseOnUi,
             is TpayPaymentState.CheckingStatus -> null
             is TpayPaymentState.Created,
-            is TpayPaymentState.Stopped -> Tpay.Canceled
-            is TpayPaymentState.PaymentFailed -> Tpay.Error(it.throwable, null)
-            is TpayPaymentState.Success -> Tpay.Success(it.paymentId, null, null)
+            is TpayPaymentState.Stopped -> TpayLauncher.Canceled
+            is TpayPaymentState.PaymentFailed -> TpayLauncher.Error(it.throwable, null)
+            is TpayPaymentState.Success -> TpayLauncher.Success(it.paymentId, null, null)
         }
     }
 }

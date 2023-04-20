@@ -33,8 +33,8 @@ internal class MainFormPaymentProcessMapper(private val mainFormNavController: M
                 mainFormNavController.to3ds(it.paymentOptions, it.threeDsState)
                 null
             }
-            is PaymentByCardState.CvcUiInProcess -> null
             is PaymentByCardState.CvcUiNeeded -> null
+            is PaymentByCardState.CvcUiInProcess -> null
         }
     }
 }

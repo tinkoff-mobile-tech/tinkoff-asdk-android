@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.databinding.AcqTpayActivityBinding
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay.Contract.EXTRA_START_DATA
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay.setResult
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher.Contract.EXTRA_START_DATA
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher.setResult
 import ru.tinkoff.acquiring.sdk.redesign.tpay.nav.TpayNavigation
 import ru.tinkoff.acquiring.sdk.redesign.tpay.presentation.TpayViewModel
 import ru.tinkoff.acquiring.sdk.redesign.tpay.util.TpayHelper
@@ -27,7 +27,7 @@ internal class TpayFlowActivity : AppCompatActivity() {
     private lateinit var binding: AcqTpayActivityBinding
 
     private val startData by lazyUnsafe {
-        checkNotNull(intent.getParcelableExtra<Tpay.StartData>(EXTRA_START_DATA))
+        checkNotNull(intent.getParcelableExtra<TpayLauncher.StartData>(EXTRA_START_DATA))
     }
 
     private val viewModel: TpayViewModel by viewModels {
