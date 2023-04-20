@@ -36,6 +36,7 @@ import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.TpayProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
@@ -201,6 +202,15 @@ class TinkoffAcquiring(
     fun initSbpPaymentSession() {
         SbpPaymentProcess.init(sdk, applicationContext.packageManager)
     }
+
+    /**
+     * Создает платежную сессию в рамках оплаты по tinkoffPay
+     */
+    @MainThread
+    fun initTinkoffPayPaymentSession() {
+        TpayProcess.init(sdk)
+    }
+
 
     /**
      * Запуск SDK для оплаты через Систему быстрых платежей

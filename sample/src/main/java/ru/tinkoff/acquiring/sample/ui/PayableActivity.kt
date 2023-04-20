@@ -51,6 +51,9 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
+import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -116,6 +119,14 @@ open class PayableActivity : AppCompatActivity() {
                 is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> Unit
             }
         }
+
+    private val tpayPayment = registerForActivityResult(TpayLauncher.Contract) { result ->
+        when (result) {
+            is TpayLauncher.Canceled -> toast("tpay canceled")
+            is TpayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is TpayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,16 +240,20 @@ open class PayableActivity : AppCompatActivity() {
 
         val tinkoffPayButton = findViewById<View>(R.id.tinkoff_pay_button)
 
-        tinkoffAcquiring.checkTinkoffPayStatus({ status ->
-            if (!status.isTinkoffPayAvailable()) return@checkTinkoffPayStatus
+        tinkoffAcquiring.checkTerminalInfo({ status ->
+            if (status.enableTinkoffPay().not()) return@checkTerminalInfo
 
             tinkoffPayButton.visibility = View.VISIBLE
 
-            val version = status.getTinkoffPayVersion()!!
+            val opt = createPaymentOptions()
+            opt.setTerminalParams(
+                TerminalsManager.selectedTerminal.terminalKey,
+                TerminalsManager.selectedTerminal.publicKey
+            )
+            val version = checkNotNull(status?.getTinkoffPayVersion())
+            tinkoffAcquiring.initTinkoffPayPaymentSession()
             tinkoffPayButton.setOnClickListener {
-                tinkoffAcquiring.payWithTinkoffPay(createPaymentOptions(), version)
-                    .subscribe(paymentListener)
-                    .start()
+                tpayPayment.launch(TpayLauncher.StartData(opt, version))
             }
         })
     }

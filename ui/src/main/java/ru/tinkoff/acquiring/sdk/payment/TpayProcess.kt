@@ -6,13 +6,16 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
+import ru.tinkoff.acquiring.sdk.exceptions.getErrorCodeIfApiError
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.methods.GetTpayLinkMethodsSdkImpl
 import ru.tinkoff.acquiring.sdk.payment.methods.TpayMethods
 import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by i.golovachev
@@ -45,8 +48,8 @@ class TpayProcess internal constructor(
                 startFlow(paymentOptions, tpayVersion, paymentId)
             } catch (ignored: CancellationException) {
                 throw ignored
-            } catch (e: Throwable) {
-                state.value = TpayPaymentState.PaymentFailed(state.value.paymentId, e)
+            } catch (e: Exception) {
+                state.value = TpayPaymentState.PaymentFailed(state.value.paymentId, e, e.getErrorCodeIfApiError())
             }
         }
     }
@@ -75,10 +78,9 @@ class TpayProcess internal constructor(
 
     fun stop() {
         state.value = TpayPaymentState.Stopped(state.value.paymentId)
-        if (looperJob.isActive) {
-            looperJob.cancel()
+        if (scope.isActive) {
+            scope.coroutineContext.cancelChildren()
         }
-        scope.coroutineContext.cancelChildren()
     }
 
     private suspend fun startFlow(
@@ -109,10 +111,15 @@ class TpayProcess internal constructor(
                         paymentId = paymentId
                     )
                 }
-                .catch { TpayPaymentState.PaymentFailed(throwable = it, paymentId = paymentId) }
-                .collectLatest { state.value = it }
+                .catch {
+                    emit(TpayPaymentState.PaymentFailed(throwable = it, paymentId = paymentId))
+                }
+                .collectLatest {
+                    state.value = it
+                }
         }
     }
+
     companion object {
         private var instance: TpayProcess? = null
 
@@ -152,7 +159,11 @@ sealed interface TpayPaymentState {
         val status: ResponseStatus?
     ) : TpayPaymentState
 
-    class PaymentFailed(override val paymentId: Long?, val throwable: Throwable) : TpayPaymentState
+    class PaymentFailed(
+        override val paymentId: Long?,
+        val throwable: Throwable,
+        val errorCode: String? = null
+    ) : TpayPaymentState
 
     class Success(override val paymentId: Long, val cardId: String?, val rebillId: String?) :
         TpayPaymentState
@@ -167,6 +178,7 @@ sealed interface TpayPaymentState {
                     paymentId, null, null
                 )
             }
+            // по идее, в эти статусы проверка не зайдет - они обрабатываются в getStatusPooling
             ResponseStatus.REJECTED -> {
                 PaymentFailed(
                     paymentId,
