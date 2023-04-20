@@ -78,7 +78,7 @@ internal class MainPaymentFormViewModel(
                 ChosenMethod.TinkoffPay
             ),
             isPrimary,
-            checkNotNull(_formState.value?.data?.info?.getTinkoffPayVersion())
+            _formState.value?.data?.info?.getTinkoffPayVersion()
         )
     }
 
@@ -86,6 +86,10 @@ internal class MainPaymentFormViewModel(
         _formState.update {
             it?.let { primaryButtonFactory.changeCard(it, card) }
         }
+    }
+
+    fun returnOnForm() {
+        formContent.value = FormContent.Content(checkNotNull(_formState.value?.ui))
     }
 
     fun onBackPressed() = viewModelScope.launch {

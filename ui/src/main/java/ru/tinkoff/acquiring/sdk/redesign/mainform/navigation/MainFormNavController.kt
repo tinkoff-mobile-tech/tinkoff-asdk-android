@@ -10,7 +10,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 
 /**
  * Created by i.golovachev
@@ -62,7 +62,7 @@ internal class MainFormNavController {
         if (isPrimary.not() || version == null) {
             channelNav.send(Navigation.ToWebView(TPAY_URL))
         } else {
-            channelNav.send(Navigation.ToTpay(Tpay.StartData(paymentOptions, version)))
+            channelNav.send(Navigation.ToTpay(TpayLauncher.StartData(paymentOptions, version)))
         }
     }
 
@@ -81,7 +81,7 @@ internal class MainFormNavController {
 
         class ToChooseCard(val savedCardsOptions: SavedCardsOptions) : Navigation
 
-        class ToTpay(val startData: Tpay.StartData) : Navigation
+        class ToTpay(val startData: TpayLauncher.StartData) : Navigation
 
         class ToWebView(val url: String) : Navigation
 

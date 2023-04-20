@@ -40,7 +40,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.ErrorStubComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.PrimaryButtonComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryBlockComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
-import ru.tinkoff.acquiring.sdk.redesign.tpay.Tpay
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.utils.*
@@ -85,17 +85,16 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         }
     }
 
-    private val tpayPayment = registerForActivityResult(Tpay.Contract) {
+    private val tpayPayment = registerForActivityResult(TpayLauncher.Contract) {
         when (it) {
-            is Tpay.Canceled -> {
+            is TpayLauncher.Canceled -> {
                 setResult(RESULT_CANCELED)
                 finish()
             }
-            is Tpay.Error -> {
-                setResult(RESULT_ERROR, MainFormContract.Contract.createFailedIntent(it.error))
-                finish()
+            is TpayLauncher.Error -> {
+                viewModel.returnOnForm()
             }
-            is Tpay.Success -> {
+            is TpayLauncher.Success -> {
                 setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it))
                 finish()
             }
@@ -165,7 +164,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             ),
             onNewCardClick = viewModel::toNewCard,
             onSpbClick = viewModel::toSbp,
-            onTpayClick = viewModel::toTpay,
+            onTpayClick = { viewModel.toTpay(false) },
         )
     }
 

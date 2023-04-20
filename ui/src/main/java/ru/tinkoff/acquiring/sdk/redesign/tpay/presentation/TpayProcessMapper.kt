@@ -12,10 +12,6 @@ internal class TpayProcessMapper() {
 
     fun mapState(it: TpayPaymentState): PaymentStatusSheetState? {
         return when (it) {
-            TpayPaymentState.Created -> PaymentStatusSheetState.Progress(
-                title = R.string.acq_commonsheet_processing_title,
-                subtitle = R.string.acq_commonsheet_processing_description
-            )
             is TpayPaymentState.PaymentFailed -> if (it.throwable is AcquiringSdkTimeoutException) {
                 PaymentStatusSheetState.Error(
                     title = R.string.acq_commonsheet_timeout_failed_title,
@@ -31,9 +27,10 @@ internal class TpayProcessMapper() {
                     mainButton = R.string.acq_commonsheet_failed_primary_button
                 )
             }
-            is TpayPaymentState.Started -> PaymentStatusSheetState.Progress(
-                title = R.string.acq_commonsheet_processing_title,
-                subtitle = R.string.acq_commonsheet_processing_description
+            is TpayPaymentState.Started,
+            is TpayPaymentState.Created -> PaymentStatusSheetState.Progress(
+                title = R.string.acq_commonsheet_payment_waiting_title,
+                secondButton = R.string.acq_commonsheet_payment_waiting_flat_button
             )
             is TpayPaymentState.Success -> PaymentStatusSheetState.Success(
                 title = R.string.acq_commonsheet_paid_title,
@@ -42,28 +39,16 @@ internal class TpayProcessMapper() {
                 cardId = it.cardId,
                 rebillId = it.rebillId
             )
-            is TpayPaymentState.NeedChooseOnUi -> {
-                null
-            }
-            is TpayPaymentState.CheckingStatus -> {
-                val status = it.status
-                if (status == ResponseStatus.FORM_SHOWED) {
-                    PaymentStatusSheetState.Progress(
-                        title = R.string.acq_commonsheet_payment_waiting_title,
-                        secondButton = R.string.acq_commonsheet_payment_waiting_flat_button
-                    )
-                } else {
-                    PaymentStatusSheetState.Progress(
-                        title = R.string.acq_commonsheet_processing_title,
-                        subtitle = R.string.acq_commonsheet_processing_description
-                    )
-                }
-            }
+            is TpayPaymentState.CheckingStatus -> PaymentStatusSheetState.Progress(
+                title = R.string.acq_commonsheet_payment_waiting_title,
+                secondButton = R.string.acq_commonsheet_payment_waiting_flat_button
+            )
             is TpayPaymentState.LeaveOnBankApp -> PaymentStatusSheetState.Progress(
                 title = R.string.acq_commonsheet_payment_waiting_title,
                 secondButton = R.string.acq_commonsheet_payment_waiting_flat_button
             )
-            is TpayPaymentState.Stopped -> null
+            is TpayPaymentState.Stopped,
+            is TpayPaymentState.NeedChooseOnUi -> null
         }
     }
 
@@ -82,10 +67,10 @@ internal class TpayProcessMapper() {
 
     fun mapResult(it: TpayPaymentState): TpayLauncher.Result? {
         return when (it) {
-            is TpayPaymentState.Started,
             is TpayPaymentState.LeaveOnBankApp,
-            is TpayPaymentState.NeedChooseOnUi,
-            is TpayPaymentState.CheckingStatus -> null
+            is TpayPaymentState.NeedChooseOnUi -> null
+            is TpayPaymentState.Started,
+            is TpayPaymentState.CheckingStatus,
             is TpayPaymentState.Created,
             is TpayPaymentState.Stopped -> TpayLauncher.Canceled
             is TpayPaymentState.PaymentFailed -> TpayLauncher.Error(it.throwable, null)
