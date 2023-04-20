@@ -1,11 +1,9 @@
 package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 
-import android.content.Context
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
@@ -38,6 +36,15 @@ internal class ChosenCardComponent(
         root.setOnClickListener { onChangeCard(state) }
     }
 
+    fun renderCvcOnly(state: CardChosenModel)  = with(state) {
+        cardLogo.setImageResource(CardLogoProvider.getCardLogo(pan))
+        cardName.text = root.context.getString(
+            R.string.acq_cardlist_bankname, bankName.orEmpty(), tail
+        )
+        cardChange.isVisible = false
+        root.setOnClickListener {  }
+    }
+
     fun clearCvc() {
         cardCvc.render(null)
     }
@@ -45,7 +52,6 @@ internal class ChosenCardComponent(
     fun enableCvc(isEnable: Boolean) {
         cardCvc.enable(isEnable)
     }
-
 
     fun showKeyboard() {
 

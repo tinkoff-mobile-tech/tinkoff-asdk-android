@@ -1,13 +1,17 @@
-package ru.tinkoff.acquiring.sdk.redesign.recurrent.ui
+package ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation
 
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.nav.RecurrentPaymentNavigation
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPaymentEvent
 
-internal class RecurrentProcessMapper() { // PaymentStatusSheetState
+internal class RecurrentProcessMapper(
+    private val navigation: RecurrentPaymentNavigation.Impl
+) { // PaymentStatusSheetState
     operator fun invoke(it: PaymentByCardState): PaymentStatusSheetState? {
         return when (it) {
-            PaymentByCardState.Created -> null
+            PaymentByCardState.Created -> PaymentStatusSheetState.Progress(null)
             is PaymentByCardState.Error -> PaymentStatusSheetState.Error(
                 title = R.string.acq_commonsheet_failed_title,
                 mainButton = R.string.acq_commonsheet_failed_primary_button,
@@ -25,6 +29,12 @@ internal class RecurrentProcessMapper() { // PaymentStatusSheetState
                 null
             }
             is PaymentByCardState.ThreeDsUiNeeded -> {
+                navigation.eventChannel.trySend(
+                    RecurrentPaymentEvent.To3ds(
+                        it.paymentOptions,
+                        it.threeDsState
+                    )
+                )
                 null
             }
             is PaymentByCardState.CvcUiInProcess -> null

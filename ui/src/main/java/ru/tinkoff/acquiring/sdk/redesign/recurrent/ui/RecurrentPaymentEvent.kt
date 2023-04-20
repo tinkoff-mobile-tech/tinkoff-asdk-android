@@ -1,5 +1,7 @@
 package ru.tinkoff.acquiring.sdk.redesign.recurrent.ui
 
+import ru.tinkoff.acquiring.sdk.models.ThreeDsState
+import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 
 sealed interface RecurrentPaymentEvent {
@@ -14,4 +16,6 @@ sealed interface RecurrentPaymentEvent {
 
         constructor(success: PaymentByCardState.Success) : this(paymentId = success.paymentId, rebillId = checkNotNull(success.rebillId))
     }
+
+    class To3ds(val paymentOptions: PaymentOptions, val threeDsState: ThreeDsState) : RecurrentPaymentEvent
 }

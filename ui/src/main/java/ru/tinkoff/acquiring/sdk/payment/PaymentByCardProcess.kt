@@ -219,7 +219,7 @@ sealed interface PaymentByCardState {
 
     object ThreeDsInProcess : PaymentByCardState
 
-    class CvcUiNeeded(val paymentOptions: PaymentOptions) : PaymentByCardState
+    class CvcUiNeeded(val paymentOptions: PaymentOptions, val rejectedPaymentId: String) : PaymentByCardState
 
     object CvcUiInProcess : PaymentByCardState
 

@@ -1,14 +1,17 @@
 package ru.tinkoff.acquiring.sdk.payment
 
 import android.app.Application
+import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
+import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
+import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.payment.methods.*
 import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
@@ -32,6 +35,7 @@ class RecurrentPaymentProcess internal constructor(
 
     private val _state = MutableStateFlow<PaymentByCardState>(PaymentByCardState.Created)
     private val _paymentIdOrNull get() = (_state.value as? PaymentByCardState.Started)?.paymentId // TODO после слияния состояний
+    private val rejectedPaymentId  = MutableStateFlow<String?>(null)
     val state = _state.asStateFlow()
 
     fun start(
@@ -48,14 +52,14 @@ class RecurrentPaymentProcess internal constructor(
         }
     }
 
-    fun onCvcSend(
+    fun startWithCvc(
         cvc: String,
         rebillId: String,
         rejectedId: String,
         paymentOptions: PaymentOptions,
         email: String?
     ) {
-        check(_state.value is PaymentByCardState.CvcUiInProcess)
+        check(_state.value is PaymentByCardState.CvcUiNeeded)
         scope.launch(coroutineManager.io) {
             try {
                 startRejectedFlow(cvc, rebillId, rejectedId, paymentOptions, email)
@@ -69,12 +73,31 @@ class RecurrentPaymentProcess internal constructor(
         _state.value = PaymentByCardState.Created
     }
 
-    fun onUiChangeInProcess() {
-        _state.value = PaymentByCardState.CvcUiInProcess
-    }
-
     fun onThreeDsUiInProcess() {
         _state.value = PaymentByCardState.ThreeDsInProcess
+    }
+
+    internal fun set3dsResult(paymentResult: PaymentResult) {
+        _state.value =
+            PaymentByCardState.Success(
+                paymentResult.paymentId ?: 0,
+                paymentResult.cardId,
+                paymentResult.rebillId
+            )
+    }
+
+    fun set3dsResult(paymentId: Long? , cardId: String?, rebillId: String) {
+        _state.value =
+            PaymentByCardState.Success(
+                paymentId ?: 0,
+                cardId,
+                rebillId
+            )
+    }
+
+    fun set3dsResult(error: Throwable?) {
+        _state.value =
+            PaymentByCardState.Error(error ?: AcquiringSdkException(IllegalStateException()), null)
     }
 
     private suspend fun startPaymentFlow(
@@ -96,6 +119,7 @@ class RecurrentPaymentProcess internal constructor(
         paymentOptions: PaymentOptions,
         email: String?
     ) {
+        _state.value  = PaymentByCardState.CvcUiInProcess
         val card =
             AttachedCard(chargeMethods.getCardByRebillId(rebillId, paymentOptions).cardId, cvc)
         val init = chargeMethods.init(paymentOptions, email, rejectedId)
@@ -136,7 +160,7 @@ class RecurrentPaymentProcess internal constructor(
         withContext(NonCancellable) {
             _state.emit(
                 if (needCheckRejected && checkRejectError(throwable)) {
-                    PaymentByCardState.CvcUiNeeded(paymentOptions)
+                    PaymentByCardState.CvcUiNeeded(paymentOptions, saveRejectedId())
                 } else {
                     PaymentByCardState.Error(throwable, paymentId)
                 }
@@ -155,6 +179,12 @@ class RecurrentPaymentProcess internal constructor(
                 cardId = cardId,
                 rebillId = checkNotNull(rebillId) { "rebillId must be not null" },
             )
+    }
+
+    private fun saveRejectedId(): String {
+        val value = checkNotNull(_paymentIdOrNull?.toString())
+        rejectedPaymentId.value = value
+        return value
     }
 
     companion object {
