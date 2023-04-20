@@ -89,6 +89,11 @@ internal object CardValidator {
         )
     }
 
+    fun validateSecurityCodeOrFalse(cvc: String?): Boolean {
+        cvc ?: return false
+        return validateSecurityCode(cvc)
+    }
+
     //http://en.wikipedia.org/wiki/Luhn_algorithm
     private fun validateWithLuhnAlgorithm(cardNumber: String): Boolean {
         var sum = 0

@@ -14,29 +14,25 @@
         android:orientation="vertical"
         android:paddingBottom="48dp"
         app:behavior_fitToContents="true"
-        app:behavior_hideable="true"
+        app:behavior_hideable="false"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
-
-        <include
-            android:id="@+id/acq_recurrent_form_loader"
-            layout="@layout/acq_main_from_shimmer"
-            android:visibility="gone" />
-
-        <include
-            android:id="@+id/acq_recurrent_form_pay"
-            layout="@layout/acq_card_pay_component"
-            android:visibility="gone" />
 
         <include
             android:id="@+id/acq_payment_status"
             layout="@layout/acq_payment_status_form"
             android:visibility="gone" />
 
-        <include
-            android:id="@+id/acq_recurrent_form_error_stub"
-            layout="@layout/acq_main_from_error_stub"
-            android:visibility="gone" />
+        <FrameLayout
+            android:id="@+id/acq_recurrent_form_pay_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp">
+            <include
+                android:id="@+id/acq_recurrent_form_pay"
+                layout="@layout/acq_card_pay_component"
+                android:visibility="gone" />
+        </FrameLayout>
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

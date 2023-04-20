@@ -32,7 +32,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="14dp"
             android:layout_weight="1"
             android:fontFamily="@font/roboto_regular"
             android:textSize="@dimen/acq_large_text_size"
@@ -41,6 +40,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/acq_card_choosen_item_logo"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:text="Тинькофф банк • 7913" />
 
         <TextView
@@ -50,7 +50,6 @@
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="14dp"
             android:layout_weight="1"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/acq_chosen_card_change"

@@ -96,8 +96,8 @@ internal class MainPaymentFormViewModel(
             )
             is PaymentByCardState.ThreeDsInProcess -> PaymentByCard.Canceled
             is PaymentByCardState.ThreeDsUiNeeded -> PaymentByCard.Canceled
-            is PaymentByCardState.CvcUiInProcess -> PaymentByCard.Canceled
             is PaymentByCardState.CvcUiNeeded -> PaymentByCard.Canceled
+            is PaymentByCardState.CvcUiInProcess -> PaymentByCard.Canceled
         }
         mainFormNavController.close(result)
     }

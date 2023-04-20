@@ -57,6 +57,16 @@ class CardPayComponent(
         loaderButton.isLoading = isLoading
     }
 
+    fun renderInputCvc(card: CardChosenModel, paymentOptions: PaymentOptions) {
+        viewBinding.emailInput.root.isVisible = false
+        savedCardComponent.renderCvcOnly(card)
+        savedCardComponent.enableCvc(true)
+        loaderButton.text = viewBinding.root.resources.getString(
+            R.string.acq_cardpay_pay,
+            paymentOptions.order.amount.toHumanReadableString()
+        )
+    }
+
     fun isVisible(isVisible: Boolean) {
         viewBinding.root.isVisible = isVisible
     }
