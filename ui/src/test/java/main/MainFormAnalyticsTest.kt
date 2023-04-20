@@ -16,6 +16,9 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configureData
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormViewModel
+import ru.tinkoff.acquiring.sdk.responses.Paymethod
+import ru.tinkoff.acquiring.sdk.responses.PaymethodData
+import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
 
 /**
  * Created by i.golovachev
@@ -55,7 +58,16 @@ internal class MainFormAnalyticsTest(
     private fun MainPaymentFormState(primary: MainPaymentForm.Primary) =
         MainPaymentForm.State(
             MainPaymentForm.Ui(primary, setOf()),
-            MainPaymentForm.Data(mock(), listOf(), null)
+            MainPaymentForm.Data(
+                TerminalInfo(
+                    listOf(
+                        PaymethodData(
+                            Paymethod.TinkoffPay,
+                            mapOf("Version" to "2.0")
+                        )
+                    )
+                ), listOf(), null
+            )
         )
 
     private fun prepareAdditionalData(paymentOptions: PaymentOptions): Map<String, String> {
@@ -111,7 +123,7 @@ internal class MainFormAnalyticsTest(
                     runBlocking {
                         val nav =
                             it.navFlow.first() as MainFormNavController.Navigation.ToTpay
-                        nav.paymentOptions
+                        nav.startData.paymentOptions
                     }
                 },
                 ChosenMethod.TinkoffPay,

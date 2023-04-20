@@ -51,10 +51,10 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
-import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
 import ru.tinkoff.acquiring.yandexpay.addYandexResultListener

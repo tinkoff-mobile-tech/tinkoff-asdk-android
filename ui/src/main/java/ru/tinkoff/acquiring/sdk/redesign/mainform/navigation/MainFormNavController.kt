@@ -10,6 +10,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 
 /**
  * Created by i.golovachev
@@ -53,15 +54,25 @@ internal class MainFormNavController {
         channelNav.send(Navigation.ToChooseCard(savedCardsOptions))
     }
 
-    suspend fun toTpay(paymentOptions: PaymentOptions) = channelNav.send(Navigation.ToTpay(paymentOptions))
+    suspend fun toTpay(
+        paymentOptions: PaymentOptions,
+        isPrimary: Boolean,
+        version: String?
+    ) {
+        if (isPrimary.not() || version == null) {
+            channelNav.send(Navigation.ToWebView(TPAY_URL))
+        } else {
+            channelNav.send(Navigation.ToTpay(TpayLauncher.StartData(paymentOptions, version)))
+        }
+    }
 
     suspend fun to3ds(paymentOptions: PaymentOptions, threeDsState: ThreeDsState) =
         channelNav.send(Navigation.To3ds(paymentOptions, threeDsState))
 
-    // TODO - убрать после перехода на общую навигацию
     suspend fun clear() = channelNav.send(null)
 
-    suspend fun close(acqPaymentResult: AcqPaymentResult) = channelNav.send(Navigation.Return(acqPaymentResult))
+    suspend fun close(acqPaymentResult: AcqPaymentResult) =
+        channelNav.send(Navigation.Return(acqPaymentResult))
 
     sealed interface Navigation {
         class ToSbp(val startData: TinkoffAcquiring.SbpScreen.StartData) : Navigation
@@ -70,11 +81,17 @@ internal class MainFormNavController {
 
         class ToChooseCard(val savedCardsOptions: SavedCardsOptions) : Navigation
 
-        class ToTpay(val paymentOptions: PaymentOptions) : Navigation
+        class ToTpay(val startData: TpayLauncher.StartData) : Navigation
+
+        class ToWebView(val url: String) : Navigation
 
         class To3ds(val paymentOptions: PaymentOptions, val threeDsState: ThreeDsState) : Navigation
 
         class Return(val result: AcqPaymentResult) : Navigation
+    }
+
+    companion object {
+        private const val TPAY_URL = " https://www.tinkoff.ru/cards/debit-cards/tinkoff-pay/form/"
     }
 }
 
