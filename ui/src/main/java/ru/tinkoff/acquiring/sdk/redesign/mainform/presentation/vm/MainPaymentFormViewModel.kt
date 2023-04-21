@@ -57,12 +57,30 @@ internal class MainPaymentFormViewModel(
         )
     }
 
+    fun toPayCardOrNewCard() = viewModelScope.launch(coroutineManager.main) {
+        if (_formState.value?.data?.cards?.isEmpty() == true) {
+            toNewCard()
+        } else {
+            toPayCard()
+        }
+    }
+
     fun toNewCard() = viewModelScope.launch(coroutineManager.main) {
         mainFormNavController.toPayNewCard(
             mainFormAnalyticsDelegate.prepareOptions(
                 paymentOptions,
                 ChosenMethod.NewCard
-            )
+            ),
+        )
+    }
+
+    fun toPayCard() = viewModelScope.launch(coroutineManager.main) {
+        mainFormNavController.toPayCard(
+            mainFormAnalyticsDelegate.prepareOptions(
+                paymentOptions,
+                ChosenMethod.Card
+            ),
+            _formState.value?.data?.cards ?: emptyList()
         )
     }
 

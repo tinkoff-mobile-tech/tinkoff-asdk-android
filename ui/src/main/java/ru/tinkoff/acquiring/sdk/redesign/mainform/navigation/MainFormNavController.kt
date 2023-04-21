@@ -19,7 +19,6 @@ internal class MainFormNavController {
 
     private val channelNav = Channel<Navigation?>(capacity = Channel.BUFFERED, BufferOverflow.DROP_OLDEST)
     val navFlow = channelNav.receiveAsFlow()
-    var card: List<Card> = emptyList()
 
     suspend fun toSbp(paymentOptions: PaymentOptions) = channelNav.send(
         Navigation.ToSbp(
@@ -34,7 +33,17 @@ internal class MainFormNavController {
             Navigation.ToPayByCard(
                 PaymentByCard.StartData(
                     paymentOptions,
-                    ArrayList(card)
+                    ArrayList()
+                )
+            )
+        )
+
+    suspend fun toPayCard(paymentOptions: PaymentOptions, cards: List<Card>) =
+        channelNav.send(
+            Navigation.ToPayByCard(
+                PaymentByCard.StartData(
+                    paymentOptions,
+                    ArrayList(cards)
                 )
             )
         )

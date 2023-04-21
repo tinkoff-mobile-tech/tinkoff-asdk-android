@@ -14,6 +14,7 @@ import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
 import ru.tinkoff.acquiring.sdk.payment.RecurrentPaymentProcess
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.nav.RecurrentPaymentNavigation
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPaymentActivity.Companion.EXTRA_CARD
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPaymentEvent
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
@@ -30,7 +31,7 @@ internal class RecurrentPaymentViewModel(
 
     // started
     private val paymentOptions: PaymentOptions = savedStateHandle.getExtra()
-    private val card: Card = checkNotNull(savedStateHandle.get<Card>(TinkoffAcquiring.EXTRA_REBILL_ID))
+    private val card: Card = checkNotNull(savedStateHandle.get<Card>(EXTRA_CARD))
     // state
     val state = recurrentPaymentProcess.state.map {
         recurrentProcessMapper(it)
