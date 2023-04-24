@@ -162,7 +162,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             binding = AcqMainFormSecondaryBlockBinding.bind(
                 findViewById(R.id.acq_main_form_secondary_button)
             ),
-            onNewCardClick = viewModel::toNewCard,
+            onNewCardClick = viewModel::toPayCardOrNewCard,
             onSpbClick = viewModel::toSbp,
             onTpayClick = { viewModel.toTpay(false) },
         )
