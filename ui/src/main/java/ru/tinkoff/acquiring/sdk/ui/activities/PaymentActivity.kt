@@ -22,6 +22,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
@@ -48,6 +49,7 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.fragments.PaymentFragment
@@ -210,7 +212,7 @@ internal class PaymentActivity : TransparentActivity() {
     }
 
     @SuppressLint("QueryPermissionsNeeded")
-    private fun openBankChooser(deepLink: String, banks: Set<Any?>?) {
+    private fun openBankChooser(deepLink: String, banks: List<NspkC2bResponse.NspkAppInfo>?) {
         if (!banks.isNullOrEmpty()) {
             val supportedBanks = getBankApps(deepLink, banks)
             val intent = BankChooseActivity.createIntent(this, options, supportedBanks, deepLink)
@@ -224,35 +226,24 @@ internal class PaymentActivity : TransparentActivity() {
     }
 
     @SuppressLint("QueryPermissionsNeeded")
-    private fun getBankApps(link: String, banks: Set<Any?>): List<String> {
-        // get sbp packages
+    private fun getBankApps(link: String, banks: List<NspkC2bResponse.NspkAppInfo>?): List<String> {
         val sbpIntent = Intent(Intent.ACTION_VIEW)
-        sbpIntent.setDataAndNormalize(Uri.parse(link))
-        val sbpPackages = packageManager.queryIntentActivities(sbpIntent, 0)
-                .map { it.activityInfo.packageName }
-
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
-        val browserPackages = packageManager.queryIntentActivities(browserIntent, 0)
-                .map { it.activityInfo.packageName }
-        // filter out browsers
-        val nonBrowserSbpPackages = sbpPackages.filter { it !in browserPackages }
-
-        // get bank packages
-        val bankPackages = packageManager.getInstalledApplications(0)
-                .map { it.packageName }.filter { it in banks }
-
-        // merge two lists
-        return mutableListOf<String>().apply {
-            addAll(nonBrowserSbpPackages)
-            addAll(bankPackages)
-        }.distinct()
+        return banks?.flatMap {
+            sbpIntent.setDataAndNormalize(prepareNspkDeeplinkWithScheme(it.schema, link))
+            packageManager.queryIntentActivities(sbpIntent, 0).map { it.activityInfo.packageName }
+        }
+            ?.distinct() ?: emptyList()
     }
 
     private fun openSbpDeepLinkInBank(packageName: String) {
-        val payload = (paymentViewModel.screenChangeEventLiveData.value?.value as BrowseFpsBankScreenState).deepLink
+        val browseFpsBankScreenState = getBrowseFpsBankScreenState()
+        val info = browseFpsBankScreenState.banks?.first {
+            packageName.contains(it.packageName!!)
+        }!!
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(payload)
-        intent.setPackage(packageName)
+        intent.data = prepareNspkDeeplinkWithScheme(info.schema, browseFpsBankScreenState.deepLink)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        AcquiringSdk.log("try open intent with : Intent.ACTION_VIEW -d \"${intent.data}\"")
         startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
     }
 
@@ -268,6 +259,19 @@ internal class PaymentActivity : TransparentActivity() {
             hideErrorScreen()
             paymentViewModel.createEvent(ErrorButtonClickedEvent)
         }
+    }
+
+    private fun prepareNspkDeeplinkWithScheme(schema: String, deepLink: String): Uri {
+        val raw = Uri.parse(deepLink)
+        return Uri.Builder().apply {
+            this.scheme(schema)
+            this.authority(raw.authority)
+            this.path(raw.path)
+        }.build()
+    }
+
+    private fun getBrowseFpsBankScreenState(): BrowseFpsBankScreenState {
+       return paymentViewModel.screenChangeEventLiveData.value?.value as BrowseFpsBankScreenState
     }
 
     companion object {
