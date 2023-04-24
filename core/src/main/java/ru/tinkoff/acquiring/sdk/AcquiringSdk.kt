@@ -226,6 +226,15 @@ class AcquiringSdk(
         }
     }
 
+    /**
+     * Метод получения Deeplink-a для оплаты с помощью MirPay
+     */
+    fun mirPayLink(paymentId: Long, request: (MirPayLinkRequest.() -> Unit)? = null): MirPayLinkRequest {
+        return MirPayLinkRequest(paymentId.toString()).apply {
+            request?.invoke(this)
+        }
+    }
+
     fun getTerminalPayMethods() : GetTerminalPayMethodsRequest {
         return GetTerminalPayMethodsRequest(terminalKey)
     }
