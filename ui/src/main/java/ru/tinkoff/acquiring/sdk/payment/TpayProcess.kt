@@ -56,9 +56,7 @@ class TpayProcess internal constructor(
 
     fun goingToBankApp() {
         when (val _state = state.value) {
-            is TpayPaymentState.NeedChooseOnUi -> {
-                state.value = TpayPaymentState.LeaveOnBankApp(_state.paymentId)
-            }
+            is TpayPaymentState.NeedChooseOnUi,
             is TpayPaymentState.Stopped -> {
                 state.value = TpayPaymentState.LeaveOnBankApp(_state.paymentId!!)
             }
