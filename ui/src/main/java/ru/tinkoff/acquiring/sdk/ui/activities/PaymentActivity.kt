@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.ui.activities
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -26,6 +27,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
+import ru.tinkoff.acquiring.sdk.exceptions.NspkOpenException
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
@@ -134,7 +136,7 @@ internal class PaymentActivity : TransparentActivity() {
                     finishWithCancel()
                 } else {
                     data?.getStringExtra(EXTRA_SBP_BANK_PACKAGE_NAME)?.let { packageName ->
-                        openSbpDeepLinkInBank(packageName)
+                        openSbpPackage(packageName)
                     }
                 }
             }
@@ -235,10 +237,12 @@ internal class PaymentActivity : TransparentActivity() {
             ?.distinct() ?: emptyList()
     }
 
-    private fun openSbpDeepLinkInBank(packageName: String) {
-        val browseFpsBankScreenState = getBrowseFpsBankScreenState()
+    private fun openSbpDeepLinkInBank(packageName: String,
+                                      browseFpsBankScreenState: BrowseFpsBankScreenState
+    ) {
         val info = browseFpsBankScreenState.banks?.first {
-            packageName.contains(it.packageName!!)
+            val pkgName = it.packageName ?: return@first false
+            packageName.contains(pkgName)
         }!!
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = prepareNspkDeeplinkWithScheme(info.schema, browseFpsBankScreenState.deepLink)
@@ -272,6 +276,21 @@ internal class PaymentActivity : TransparentActivity() {
 
     private fun getBrowseFpsBankScreenState(): BrowseFpsBankScreenState {
        return paymentViewModel.screenChangeEventLiveData.value?.value as BrowseFpsBankScreenState
+    }
+
+    private fun openSbpPackage(packageName: String) {
+        val fpsState = getBrowseFpsBankScreenState()
+        try {
+            openSbpDeepLinkInBank(packageName, fpsState)
+        } catch (e: Exception) {
+            val nspkOpenException = NspkOpenException(
+                throwable = e,
+                message = "$packageName cannot open via deeplink",
+                deeplink = fpsState.deepLink,
+                paymentId = fpsState.paymentId
+            )
+            finishWithError(nspkOpenException,  fpsState.paymentId)
+        }
     }
 
     companion object {
