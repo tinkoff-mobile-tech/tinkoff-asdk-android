@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.ui.activities
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -26,24 +27,20 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
-import ru.tinkoff.acquiring.sdk.models.AsdkState
+import ru.tinkoff.acquiring.sdk.exceptions.NspkOpenException
+import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
-import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
-import ru.tinkoff.acquiring.sdk.models.DefaultState
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsBankFormShowedScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsScreenState
-import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankScreenState
-import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
-import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.Screen
 import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
@@ -54,7 +51,7 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.customview.NotificationDialog
 import ru.tinkoff.acquiring.sdk.ui.fragments.PaymentFragment
 import ru.tinkoff.acquiring.sdk.viewmodel.PaymentViewModel
-import java.lang.IllegalStateException
+import kotlin.IllegalStateException
 
 /**
  * @author Mariya Chernyadieva
@@ -134,7 +131,7 @@ internal class PaymentActivity : TransparentActivity() {
                     finishWithCancel()
                 } else {
                     data?.getStringExtra(EXTRA_SBP_BANK_PACKAGE_NAME)?.let { packageName ->
-                        openSbpDeepLinkInBank(packageName)
+                        openSbpPackage(packageName, checkNotNull(data.getStringExtra(EXTRA_SBP_BANK_DEEPLINK)))
                     }
                 }
             }
@@ -218,30 +215,31 @@ internal class PaymentActivity : TransparentActivity() {
             val intent = BankChooseActivity.createIntent(this, options, supportedBanks, deepLink)
             startActivityForResult(intent, SBP_BANK_CHOOSE_REQUEST_CODE)
         } else {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(deepLink)
-            val chooserIntent = Intent.createChooser(intent, getString(R.string.acq_fps_chooser_title))
-            startActivityForResult(chooserIntent, SBP_BANK_REQUEST_CODE)
+            val nspkOpenException = NspkOpenException(
+                throwable = IllegalStateException("nspk date are null")
+            )
+            finishWithError(nspkOpenException)
         }
     }
 
     @SuppressLint("QueryPermissionsNeeded")
-    private fun getBankApps(link: String, banks: List<NspkC2bResponse.NspkAppInfo>?): List<String> {
+    private fun getBankApps(link: String, banks: List<NspkC2bResponse.NspkAppInfo>?): BankChooseInfo {
         val sbpIntent = Intent(Intent.ACTION_VIEW)
-        return banks?.flatMap {
-            sbpIntent.setDataAndNormalize(prepareNspkDeeplinkWithScheme(it.schema, link))
-            packageManager.queryIntentActivities(sbpIntent, 0).map { it.activityInfo.packageName }
+        val appAndLinks = buildMap {
+            banks?.forEach { appInfo ->
+                val deepLink = prepareNspkDeeplinkWithScheme(appInfo.schema, link)
+                sbpIntent.setDataAndNormalize(deepLink)
+                packageManager.queryIntentActivities(sbpIntent, 0).forEach {
+                    put(it.activityInfo.packageName, deepLink.toString())
+                }
+            }
         }
-            ?.distinct() ?: emptyList()
+        return BankChooseInfo(appAndLinks)
     }
 
-    private fun openSbpDeepLinkInBank(packageName: String) {
-        val browseFpsBankScreenState = getBrowseFpsBankScreenState()
-        val info = browseFpsBankScreenState.banks?.first {
-            packageName.contains(it.packageName!!)
-        }!!
+    private fun openSbpDeepLinkInBank(deepLink: String) {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = prepareNspkDeeplinkWithScheme(info.schema, browseFpsBankScreenState.deepLink)
+        intent.data = Uri.parse(deepLink)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         AcquiringSdk.log("try open intent with : Intent.ACTION_VIEW -d \"${intent.data}\"")
         startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
@@ -274,10 +272,26 @@ internal class PaymentActivity : TransparentActivity() {
        return paymentViewModel.screenChangeEventLiveData.value?.value as BrowseFpsBankScreenState
     }
 
+    private fun openSbpPackage(packageName: String, deepLink: String) {
+        val fpsState = getBrowseFpsBankScreenState()
+        try {
+            openSbpDeepLinkInBank(deepLink)
+        } catch (e: Exception) {
+            val nspkOpenException = NspkOpenException(
+                throwable = e,
+                message = "$packageName cannot open via deeplink $deepLink",
+                deeplink = deepLink,
+                paymentId = fpsState.paymentId
+            )
+            finishWithError(nspkOpenException,  fpsState.paymentId)
+        }
+    }
+
     companion object {
         private const val SBP_BANK_REQUEST_CODE = 112
         private const val SBP_BANK_CHOOSE_REQUEST_CODE = 113
 
         internal const val EXTRA_SBP_BANK_PACKAGE_NAME = "sbp_bank_package_name"
+        internal const val EXTRA_SBP_BANK_DEEPLINK = "sbp_bank_deeplink"
     }
 }
