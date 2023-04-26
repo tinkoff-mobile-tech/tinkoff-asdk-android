@@ -46,20 +46,24 @@ internal class NspkClient {
     private val gson: Gson = GsonBuilder().create()
 
     fun call(request: Request<NspkC2bResponse>, onSuccess: (NspkC2bResponse) -> Unit, onFailure: (Exception) -> Unit) {
-        var responseReader: InputStreamReader? = null
+
+        val okHttpRequest = okhttp3.Request.Builder().url(NSPK_ANDROID_APPS_URL).get()
+            .header("User-Agent", System.getProperty("http.agent")!!)
+            .header("Accept", AcquiringApi.JSON)
+            .build()
+        val call = okHttpClient.newCall(okHttpRequest)
+        AcquiringSdk.log("=== Sending GET request to $NSPK_ANDROID_APPS_URL")
+        val okHttpResponse = call.execute()
+        val responseCode = okHttpResponse.code
+        val response: String = checkNotNull(okHttpResponse.body?.string())
 
         try {
             AcquiringSdk.log("=== Got server response code: $responseCode")
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 AcquiringSdk.log("=== Got server response: $response")
-                val banks: Set<Any?> = (gson.fromJson(response, List::class.java) as List).map {
-                    ((it as Map<*, *>)["target"] as Map<*, *>)["package_name"]
-                }.toSet()
-                responseReader = InputStreamReader(connection.inputStream)
-                val response = read(responseReader)
-                val nspkInfo = serializeData(response)
+                val info = serializeData(response)
                 if (!request.isDisposed()) {
-                    onSuccess(nspkInfo)
+                    onSuccess(info)
                 }
             } else {
                 AcquiringSdk.log("=== Got server response: $response")

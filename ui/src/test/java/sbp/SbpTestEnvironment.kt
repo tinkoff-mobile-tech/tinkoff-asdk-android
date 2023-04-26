@@ -1,6 +1,8 @@
 package sbp
 
 import kotlinx.coroutines.*
+import main.nspkAppMap
+import main.nspkC2bData
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -30,8 +32,8 @@ internal class SbpTestEnvironment(
     val connectionChecker: ConnectionChecker = mock {
         on { isOnline() } doReturn true
     },
-    val bankAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { _, _ -> nspkApps.toList() },
-    val nspkBankAppsProvider: NspkBankAppsProvider = NspkBankAppsProvider { nspkApps },
+    val bankAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { _, _ -> nspkAppMap },
+    val nspkBankAppsProvider: NspkBankAppsProvider = NspkBankAppsProvider { nspkC2bData },
 
     // env
     val dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,

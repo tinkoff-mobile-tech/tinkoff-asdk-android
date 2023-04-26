@@ -14,12 +14,13 @@ class SbpStateMapper {
 
     fun mapUiState(it: SbpPaymentState) = when (it) {
         is SbpPaymentState.GetBankListFailed -> SpbBankListState.Error(it.throwable)
-        is SbpPaymentState.NeedChooseOnUi ->
-            if (it.bankList.isEmpty()) {
+        is SbpPaymentState.NeedChooseOnUi -> {
+            if (it.showApps.appsAndLinks.isEmpty()) {
                 SpbBankListState.Empty
             } else {
-                SpbBankListState.Content(it.bankList, it.deeplink)
+                SpbBankListState.Content(it.showApps.appsAndLinks)
             }
+        }
         else -> null
     }
 

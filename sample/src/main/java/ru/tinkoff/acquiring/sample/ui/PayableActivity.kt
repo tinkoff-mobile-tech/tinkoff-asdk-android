@@ -33,6 +33,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
+import ru.tinkoff.acquiring.sample.ui.MainActivity.Companion.toast
+import ru.tinkoff.acquiring.sample.utils.CombInitDelegate
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log

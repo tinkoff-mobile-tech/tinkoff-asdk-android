@@ -44,7 +44,6 @@ enum class ResponseStatus {
     LOOP_CHECKING,
     COMPLETED,
     AUTH_FAIL,
-    DEADLINE_EXPIRED,
     FORM_SHOWED;
 
     override fun toString(): String {

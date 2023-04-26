@@ -3,7 +3,6 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkNspk
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkTinkoff
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.responses.Paymethod

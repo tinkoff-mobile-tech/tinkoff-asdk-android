@@ -9,6 +9,7 @@ import ru.tinkoff.acquiring.sdk.models.NspkRequest
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardProcess
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
+import ru.tinkoff.acquiring.sdk.redesign.common.util.InstalledAppCheckerSdkImpl
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MergeMethodsStrategy
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.analytics.MainFormAnalyticsDelegate
@@ -53,7 +54,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
         }
         initializer {
             val handle = createSavedStateHandle()
-            val nspkProvider = NspkBankAppsProvider { NspkRequest().execute().banks }
+            val nspkProvider = NspkBankAppsProvider { NspkRequest().execute().dictionary }
             val nspkChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
                 SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
             }
@@ -63,6 +64,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
                     acq.sdk,
                     savedCardRepo,
                     PrimaryButtonConfigurator.Impl(
+                        InstalledAppCheckerSdkImpl(application.packageManager),
                         nspkProvider,
                         nspkChecker,
                         bankCaptionProvider

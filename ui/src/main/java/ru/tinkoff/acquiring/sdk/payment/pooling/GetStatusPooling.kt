@@ -16,7 +16,7 @@ class GetStatusPooling(private val getStatusMethod: GetStatusMethod) {
     fun start(retriesCount: Int?, paymentId: Long) =
         start(retriesCount ?: POLLING_RETRIES_COUNT, paymentId)
 
-    fun start(retriesCount: Int = POLLING_RETRIES_COUNT, paymentId: Long): Flow<ResponseStatus> {
+    fun start(retriesCount: Int = POLLING_RETRIES_COUNT, paymentId: Long, delayMs: Long = POLLING_DELAY_MS ): Flow<ResponseStatus> {
         return flow {
             var tries = 0
             while (retriesCount > tries) {

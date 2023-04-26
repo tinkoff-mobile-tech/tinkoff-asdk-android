@@ -8,6 +8,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.redesign.common.savedcard.SavedCardsRepository
+import ru.tinkoff.acquiring.sdk.redesign.common.util.InstalledAppChecker
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MergeMethodsStrategy
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary.PrimaryButtonConfigurator
@@ -20,9 +21,15 @@ import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.*
 import ru.tinkoff.acquiring.sdk.utils.BankCaptionProvider
 
-val tinkoffAppSet = setOf("com.idamob.tinkoff.android")
-val nspkAppSet = setOf("ru.nspk.sbpay")
+val tinkoffAppMap =
+    mapOf("com.idamob.tinkoff.android" to "bank100000000004://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE")
+val nspkAppMap =
+    mapOf("ru.sberbankmobile" to "bank100000000111://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE")
 
+val nspkC2bData  = listOf(
+    NspkC2bResponse.NspkAppInfo("Тинькофф","","bank100000000004","com.idamob.tinkoff.android"),
+    NspkC2bResponse.NspkAppInfo("Cбер","","bank100000000111","ru.sberbankmobile"),
+)
 
 /**
  * Created by i.golovachev
@@ -35,8 +42,9 @@ internal class MainPaymentFormFactoryEnv(
     val getTerminalPayMethodsRequest: GetTerminalPayMethodsRequest = mock(),
 
     private var installedAppsProvider: NspkInstalledAppsChecker = NspkInstalledAppsChecker { _, _ ->
-        emptyList()
+        emptyMap()
     },
+    private var installedAppChecker: InstalledAppChecker = mock {},
 
     private var savedCardsRepository: SavedCardsRepository = object : SavedCardsRepository {
         override suspend fun getCards(customerKey: String, force: Boolean): List<Card> {
@@ -47,7 +55,7 @@ internal class MainPaymentFormFactoryEnv(
 
     init {
         runBlocking {
-            whenever(nspkBankAppsProvider.getNspkApps()).thenReturn(nspkAppSet + tinkoffAppSet)
+            whenever(nspkBankAppsProvider.getNspkApps()).thenReturn(nspkC2bData)
         }
     }
 
@@ -58,6 +66,7 @@ internal class MainPaymentFormFactoryEnv(
 
     val primaryButtonConfigurator
         get() = PrimaryButtonConfigurator.Impl(
+            installedAppChecker,
             nspkBankAppsProvider,
             installedAppsProvider,
             bankCaptionProvider
@@ -81,12 +90,18 @@ internal class MainPaymentFormFactoryEnv(
             customerKey
         )
 
-    suspend fun setInstalledApps(apps: List<String> = emptyList()) {
+    suspend fun setInstalledApps(apps: Map<String, String> = emptyMap()) {
         installedAppsProvider = NspkInstalledAppsChecker { _, deeplink ->
             when (deeplink) {
                 defaultNspkDeeplink -> apps
-                defaultTinkoffDeeplink -> apps.filter { it == tinkoffAppSet.first() }
-                else -> emptyList()
+                defaultTinkoffDeeplink -> apps.filter { it.key == tinkoffAppMap.keys.first() }
+                else -> emptyMap()
+            }
+        }
+
+        installedAppChecker = object: InstalledAppChecker {
+            override fun isInstall(packageName: String): Boolean {
+                return apps[packageName] != null
             }
         }
     }
