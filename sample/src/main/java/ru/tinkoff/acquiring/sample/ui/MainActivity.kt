@@ -34,6 +34,7 @@ import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.service.PaymentNotificationIntentService
 import ru.tinkoff.acquiring.sample.service.PriceNotificationReceiver
+import ru.tinkoff.acquiring.sample.ui.environment.AcqEnvironmentDialog
 import ru.tinkoff.acquiring.sample.utils.PaymentNotificationManager
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
@@ -137,6 +138,10 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
             }
             R.id.menu_action_about -> {
                 AboutActivity.start(this)
+                true
+            }
+            R.id.menu_action_environment -> {
+                AcqEnvironmentDialog().show(supportFragmentManager, AttachCardManuallyDialogFragment.TAG)
                 true
             }
             R.id.menu_action_static_qr -> {

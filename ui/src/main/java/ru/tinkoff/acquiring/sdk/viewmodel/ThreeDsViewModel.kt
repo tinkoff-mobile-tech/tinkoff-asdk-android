@@ -71,7 +71,7 @@ internal class ThreeDsViewModel(
         requestPaymentStateJob = coroutine.launchOnMain {
             getStatusPooling.start(paymentId = paymentId!!)
                 .flowOn(Dispatchers.IO)
-                .catch { handleException(it) }
+                .catch { handleException(it, paymentId) }
                 .filter { ResponseStatus.checkSuccessStatuses(it) }
                 .collect { handleConfirmOnAuthStatus(paymentId)}
         }
@@ -98,7 +98,7 @@ internal class ThreeDsViewModel(
     }
 
     private fun handleConfirmOnAuthStatus(paymentId: Long) {
-        asdkResult.value = PaymentResult(paymentId)
+        asdkResult.postValue(PaymentResult(paymentId))
         changeScreenState(LoadedState)
     }
 }

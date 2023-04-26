@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import com.yandex.pay.core.*
 import com.yandex.pay.core.data.*
 import com.yandex.pay.core.ui.YandexPayButton
-import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexOrder

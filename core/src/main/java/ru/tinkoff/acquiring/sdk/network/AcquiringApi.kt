@@ -97,33 +97,23 @@ object AcquiringApi {
      * Зависит от режима работы SDK [AcquiringSdk.isDeveloperMode]
      */
     fun getUrl(apiMethod: String): String {
-
         return if (useV1Api(apiMethod)) {
-            if (AcquiringSdk.isDeveloperMode) {
-
-                if (AcquiringSdk.isPreprodMode)
-                    API_URL_PREPROD_OLD
-                else
-                    API_URL_DEBUG_OLD
-
-            } else {
+            if (AcquiringSdk.isDeveloperMode)
+                useCustomOrDefault(API_URL_DEBUG_OLD, AcquiringSdk.customUrl, "rest")
+            else
                 API_URL_RELEASE_OLD
-            }
         } else {
-            if (AcquiringSdk.isDeveloperMode) {
-
-                if (AcquiringSdk.isPreprodMode)
-                    API_URL_PREPROD
-                else
-                    API_URL_DEBUG
-
-            } else {
+            if (AcquiringSdk.isDeveloperMode)
+                useCustomOrDefault(API_URL_DEBUG, AcquiringSdk.customUrl)
+            else
                 API_URL_RELEASE
-            }
         }
     }
 
     internal fun useV1Api(apiMethod: String): Boolean {
         return oldMethodsList.contains(apiMethod)
     }
+
+    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = "v2") =
+        custom?.let { "$it/$oldOrV2" } ?: default
 }

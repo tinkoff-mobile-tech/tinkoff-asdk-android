@@ -1,3 +1,11 @@
+## 2.13.0
+
+#### Fixed
+#### Changes
+- google pay methods are deprecated now
+- yandex pay has combi-init method for use /init request on merch-side
+#### Additions
+
 ## 2.12.0
 
 #### Fixed

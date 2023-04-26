@@ -61,4 +61,5 @@
         <item>TEST-DEMO</item>
     </string-array>
 
+    <string name="acq_sp_custom_url" translatable="false">acq_sp_custom_url</string>
 </resources>

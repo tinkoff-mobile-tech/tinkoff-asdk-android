@@ -16,6 +16,7 @@
 
 package ru.tinkoff.acquiring.sdk.models
 
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
 
 /**
@@ -25,13 +26,13 @@ internal sealed class ScreenState
 
 internal object DefaultScreenState : ScreenState()
 internal class ErrorScreenState(val message: String) : ScreenState()
-internal class FinishWithErrorScreenState(val error: Throwable) : ScreenState()
+internal class FinishWithErrorScreenState(val error: Throwable, val paymentId: Long? = null) : ScreenState()
 internal class FpsBankFormShowedScreenState(val paymentId: Long) : ScreenState()
 
 internal sealed class Screen : ScreenState()
 internal object PaymentScreenState : Screen()
 internal object FpsScreenState: Screen()
-internal class BrowseFpsBankScreenState(val paymentId: Long, val deepLink: String, val banks: Set<Any?>?) : Screen()
+internal class BrowseFpsBankScreenState(val paymentId: Long, val deepLink: String, val banks: List<NspkC2bResponse.NspkAppInfo>?) : Screen()
 internal class OpenTinkoffPayBankScreenState(val paymentId: Long, val deepLink: String) : Screen()
 internal class RejectedCardScreenState(val cardId: String, val rejectedPaymentId: Long) : Screen()
 internal class ThreeDsScreenState(val data: ThreeDsData, val transaction: ThreeDsAppBasedTransaction?) : Screen()

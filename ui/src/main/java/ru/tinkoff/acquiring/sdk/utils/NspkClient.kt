@@ -24,6 +24,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.models.NspkResponse
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
@@ -34,7 +35,7 @@ import java.util.concurrent.TimeUnit
 internal class NspkClient {
 
     companion object {
-        private const val NSPK_ANDROID_APPS_URL = "https://qr.nspk.ru/.well-known/assetlinks.json"
+        private const val NSPK_ANDROID_APPS_URL = "https://qr.nspk.ru/proxyapp/c2bmembers.json"
     }
 
     private val okHttpClient = OkHttpClient.Builder()
@@ -44,21 +45,8 @@ internal class NspkClient {
 
     private val gson: Gson = GsonBuilder().create()
 
-    fun call(
-        request: Request<NspkResponse>,
-        onSuccess: (NspkResponse) -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-
-        val okHttpRequest = okhttp3.Request.Builder().url(NSPK_ANDROID_APPS_URL).get()
-            .header("User-Agent", System.getProperty("http.agent")!!)
-            .header("Accept", AcquiringApi.JSON)
-            .build()
-        val call = okHttpClient.newCall(okHttpRequest)
-        AcquiringSdk.log("=== Sending GET request to $NSPK_ANDROID_APPS_URL")
-        val okHttpResponse = call.execute()
-        val responseCode = okHttpResponse.code
-        val response = okHttpResponse.body?.string()
+    fun call(request: Request<NspkC2bResponse>, onSuccess: (NspkC2bResponse) -> Unit, onFailure: (Exception) -> Unit) {
+        var responseReader: InputStreamReader? = null
 
         try {
             AcquiringSdk.log("=== Got server response code: $responseCode")
@@ -67,8 +55,11 @@ internal class NspkClient {
                 val banks: Set<Any?> = (gson.fromJson(response, List::class.java) as List).map {
                     ((it as Map<*, *>)["target"] as Map<*, *>)["package_name"]
                 }.toSet()
+                responseReader = InputStreamReader(connection.inputStream)
+                val response = read(responseReader)
+                val nspkInfo = serializeData(response)
                 if (!request.isDisposed()) {
-                    onSuccess(NspkResponse(banks))
+                    onSuccess(nspkInfo)
                 }
             } else {
                 AcquiringSdk.log("=== Got server response: $response")
@@ -88,5 +79,9 @@ internal class NspkClient {
                 onFailure(e)
             }
         }
+    }
+
+    private fun serializeData(response: String): NspkC2bResponse {
+       return gson.fromJson(response, NspkC2bResponse::class.java)
     }
 }

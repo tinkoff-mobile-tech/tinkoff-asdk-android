@@ -21,9 +21,7 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data
-                android:host="qr.nspk.ru"
-                android:scheme="https" />
+            <data android:scheme="*" android:host="qr.nspk.ru" />
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />

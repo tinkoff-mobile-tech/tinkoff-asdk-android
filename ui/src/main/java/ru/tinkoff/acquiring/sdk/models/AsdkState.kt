@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
 import java.io.Serializable
 
@@ -61,7 +62,7 @@ class ThreeDsState(val data: ThreeDsData, val transaction: ThreeDsAppBasedTransa
  * Состояние открытия приложения (или выбора приложения), зарегистрированного для обработки ссылки
  * Системы быстрых платежей, в котором произойдет оплата
  */
-class BrowseFpsBankState(val paymentId: Long, val deepLink: String, val banks: Set<Any?>?) : AsdkState()
+class BrowseFpsBankState(val paymentId: Long, val deepLink: String, val banksInfo: List<NspkC2bResponse.NspkAppInfo>?) : AsdkState()
 
 /**
  * Состояние открытия приложения, зарегистрированного для обработки ссылки Tinkoff Pay.
@@ -78,4 +79,4 @@ class OpenTinkoffPayBankState(val paymentId: Long, val deepLink: String) : AsdkS
  *
  * @param yandexToken плажетные данные полученные из яндекса
  */
-class YandexPayState(val yandexToken: String) : AsdkState()
+class YandexPayState(val yandexToken: String, val paymentId: Long?) : AsdkState()

@@ -34,6 +34,7 @@ import java.io.Serializable
  *
  * @author Mariya Chernyadieva
  */
+@Deprecated("Not supported yet")
 class GooglePayParams @JvmOverloads constructor(
         val terminalKey: String,
         val isAddressRequired: Boolean = false,
@@ -43,6 +44,7 @@ class GooglePayParams @JvmOverloads constructor(
         val cardAuthMethods: List<CardAuthMethod> = listOf(CardAuthMethod.PAN_ONLY, CardAuthMethod.CRYPTOGRAM_3DS)
 ) : Serializable {
 
+    @Deprecated("Not supported yet")
     companion object {
         const val CURRENCY_CODE = "RUB"
     }

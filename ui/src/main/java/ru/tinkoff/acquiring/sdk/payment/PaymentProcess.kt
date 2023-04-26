@@ -286,7 +286,7 @@ internal constructor(
             onSuccess = { response ->
                 coroutine.call(NspkRequest(),
                     onSuccess = { nspk ->
-                        sdkState = BrowseFpsBankState(paymentId, response.data!!, nspk.banks)
+                        sdkState = BrowseFpsBankState(paymentId, response.data!!, nspk.dictionary)
                         sendToListener(PaymentState.BROWSE_SBP_BANK)
                     },
                     onFailure = {

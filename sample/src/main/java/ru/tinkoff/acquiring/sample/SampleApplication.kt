@@ -19,6 +19,7 @@ package ru.tinkoff.acquiring.sample
 import android.app.Application
 import android.content.Context
 import ru.tinkoff.acquiring.sample.utils.SessionParams
+import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
@@ -36,6 +37,7 @@ class SampleApplication : Application() {
         initSdk(this, TerminalsManager.init(this).selectedTerminal)
         AcquiringSdk.isDeveloperMode = true
         AcquiringSdk.isDebug = true
+        AcquiringSdk.customUrl = SettingsSdkManager(this).customUrl
     }
 
     override fun onTerminate() {

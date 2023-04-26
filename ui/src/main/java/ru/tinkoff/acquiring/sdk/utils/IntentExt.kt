@@ -22,6 +22,10 @@ fun Intent.putOptions(options: BaseAcquiringOptions) {
     putExtra(EXTRA_OPTIONS, options)
 }
 
+fun Intent.getAsError(key: String) = getSerializableExtra(key) as Throwable
+
+fun Intent.getLongOrNull(key: String) : Long? = getLongExtra(key,-1).takeIf { it > -1 }
+
 internal fun Intent.getSdk(application: Application): TinkoffAcquiring {
     val opt = getOptions<BaseAcquiringOptions>()
     return TinkoffAcquiring(

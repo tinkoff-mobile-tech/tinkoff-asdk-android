@@ -36,7 +36,7 @@ class GetStatusPooling(private val getStatusMethod: GetStatusMethod) {
                         tries += 1
                     }
                 }
-                delay(POLLING_DELAY_MS)
+                delay(delayMs)
             }
 
             throw AcquiringSdkTimeoutException(IllegalStateException("timeout, retries count is over"), paymentId, null)

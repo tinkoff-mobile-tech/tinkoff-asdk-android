@@ -25,4 +25,5 @@ import ru.tinkoff.acquiring.sdk.models.PaymentSource
  *
  * @author Mariya Chernyadieva
  */
+@Deprecated("Not supported yet")
 class GooglePay(var googlePayToken: String? = null) : PaymentSource

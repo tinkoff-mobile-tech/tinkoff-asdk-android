@@ -1,5 +1,6 @@
 package yandex
 
+import android.app.Application
 import android.content.Context
 import kotlinx.coroutines.*
 import org.mockito.kotlin.*
@@ -39,8 +40,11 @@ class YandexPaymentProcessEnv(
     val faRequestMock: FinishAuthorizeRequest = mock(),
     val sdk: AcquiringSdk = mock(),
     val context: Context = mock(),
+    val application: Application = mock{
+          on { applicationContext } doReturn  context
+    },
     val threeDsDataCollector: ThreeDsDataCollector = mock { on { invoke(any(), any()) } doReturn  yandexPay3dsDataMap },
-    val process: YandexPaymentProcess = YandexPaymentProcess(sdk, context, threeDsDataCollector, ioDispatcher)
+    val process: YandexPaymentProcess = YandexPaymentProcess(sdk, application, threeDsDataCollector, ioDispatcher)
 ) {
 
     init {

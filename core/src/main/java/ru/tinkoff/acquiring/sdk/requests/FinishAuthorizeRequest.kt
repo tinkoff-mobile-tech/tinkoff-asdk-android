@@ -125,6 +125,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
         return AttachedCard().apply(attachedCard)
     }
 
+    @Deprecated("Not supported yet")
     fun googlePay(googlePay: GooglePay.() -> Unit): PaymentSource {
         return GooglePay().apply(googlePay)
     }
