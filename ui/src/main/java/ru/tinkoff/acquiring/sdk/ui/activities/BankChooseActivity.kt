@@ -26,6 +26,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
+import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.BrowserButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ConfirmButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.OpenBankClickedEvent
@@ -34,6 +35,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.BankChooseResult
 import ru.tinkoff.acquiring.sdk.ui.fragments.BanksNotFoundFragment
 import ru.tinkoff.acquiring.sdk.ui.fragments.BankChooseFragment
+import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.viewmodel.BaseAcquiringViewModel
 
 /**
@@ -42,24 +44,26 @@ import ru.tinkoff.acquiring.sdk.viewmodel.BaseAcquiringViewModel
 internal class BankChooseActivity: TransparentActivity() {
 
     private lateinit var viewModel: BaseAcquiringViewModel
+    private val banksInfo: BankChooseInfo by lazyUnsafe {
+        intent.getSerializableExtra(EXTRA_BANKS) as BankChooseInfo
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val banksList = intent.getStringArrayExtra(EXTRA_BANKS)
-        initViews(banksList.isNullOrEmpty())
+        initViews(banksInfo.appsAndLinks.isEmpty())
 
         viewModel = provideViewModel(BaseAcquiringViewModel::class.java) as BaseAcquiringViewModel
 
         if (savedInstanceState == null) {
-            if (banksList.isNullOrEmpty()) {
+            if (banksInfo.appsAndLinks.isEmpty()) {
                 showFragment(BanksNotFoundFragment())
             } else {
-                showFragment(BankChooseFragment.newInstance(banksList.toCollection(arrayListOf())))
+                showFragment(BankChooseFragment.newInstance(banksInfo.apps.toCollection(arrayListOf())))
             }
         }
 
-        if (banksList.isNullOrEmpty()) {
+        if (banksInfo.appsAndLinks.isEmpty()) {
             prepareToolbar()
             val container = findViewById<View>(R.id.acq_activity_fl_container)
             container.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -89,7 +93,12 @@ internal class BankChooseActivity: TransparentActivity() {
                 startActivity(browseIntent)
             }
             is OpenBankClickedEvent -> {
-                finishWithSuccess(BankChooseResult(screenState.packageName))
+                finishWithSuccess(
+                    BankChooseResult(
+                        packageName = screenState.packageName,
+                        deeplink = banksInfo.getDeeplink(screenState.packageName)
+                    )
+                )
             }
         }
     }
@@ -99,9 +108,9 @@ internal class BankChooseActivity: TransparentActivity() {
         private const val EXTRA_BANKS = "extra_banks"
         private const val EXTRA_PAYLOAD_LINK = "extra_payload_link"
 
-        fun createIntent(context: Context, options: BaseAcquiringOptions, supportedBanks: List<String>, payloadLink: String): Intent {
+        fun createIntent(context: Context, options: BaseAcquiringOptions, supportedBanks: BankChooseInfo, payloadLink: String): Intent {
             val intent = createIntent(context, options, BankChooseActivity::class.java)
-            intent.putExtra(EXTRA_BANKS, supportedBanks.toTypedArray())
+            intent.putExtra(EXTRA_BANKS, supportedBanks)
             intent.putExtra(EXTRA_PAYLOAD_LINK, payloadLink)
             return intent
         }

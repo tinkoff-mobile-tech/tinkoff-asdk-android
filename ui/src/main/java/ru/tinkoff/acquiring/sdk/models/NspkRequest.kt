@@ -16,13 +16,17 @@
 
 package ru.tinkoff.acquiring.sdk.models
 
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import ru.tinkoff.acquiring.sdk.utils.NspkClient
 import ru.tinkoff.acquiring.sdk.utils.Request
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author Mariya Chernyadieva
  */
-internal class NspkRequest: Request<NspkResponse> {
+internal class NspkRequest : Request<NspkC2bResponse> {
 
     @Volatile
     private var disposed = false
@@ -35,8 +39,15 @@ internal class NspkRequest: Request<NspkResponse> {
         disposed = true
     }
 
-    override fun execute(onSuccess: (NspkResponse) -> Unit, onFailure: (Exception) -> Unit) {
+    override fun execute(onSuccess: (NspkC2bResponse) -> Unit, onFailure: (Exception) -> Unit) {
         val client = NspkClient()
         client.call(this, onSuccess, onFailure)
+    }
+
+    suspend fun execute() = suspendCoroutine<NspkC2bResponse> { ctn ->
+        execute(
+            onSuccess = { response -> ctn.resume(response) },
+            onFailure = { ctn.resumeWithException(it) }
+        )
     }
 }

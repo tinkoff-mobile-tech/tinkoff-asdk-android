@@ -19,4 +19,5 @@ package ru.tinkoff.acquiring.sdk.models
 /**
  * @author Mariya Chernyadieva
  */
+@Deprecated("use NspkC2bResponse")
 internal class NspkResponse(val banks: Set<Any?>)

@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.models.NspkResponse
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -32,13 +33,13 @@ import java.net.URL
 internal class NspkClient {
 
     companion object {
-        private const val NSPK_ANDROID_APPS_URL = "https://qr.nspk.ru/.well-known/assetlinks.json"
+        private const val NSPK_ANDROID_APPS_URL = "https://qr.nspk.ru/proxyapp/c2bmembers.json"
         private const val STREAM_BUFFER_SIZE = 4096
     }
 
     private val gson: Gson = GsonBuilder().create()
 
-    fun call(request: Request<NspkResponse>, onSuccess: (NspkResponse) -> Unit, onFailure: (Exception) -> Unit) {
+    fun call(request: Request<NspkC2bResponse>, onSuccess: (NspkC2bResponse) -> Unit, onFailure: (Exception) -> Unit) {
         var responseReader: InputStreamReader? = null
 
         try {
@@ -52,11 +53,9 @@ internal class NspkClient {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 responseReader = InputStreamReader(connection.inputStream)
                 val response = read(responseReader)
-                val banks: Set<Any?> = (gson.fromJson(response, List::class.java) as List).map {
-                    ((it as Map<*, *>)["target"] as Map<*, *>)["package_name"]
-                }.toSet()
+                val nspkInfo = serializeData(response)
                 if (!request.isDisposed()) {
-                    onSuccess(NspkResponse(banks))
+                    onSuccess(nspkInfo)
                 }
             } else {
                 if (!request.isDisposed()) {
@@ -75,6 +74,10 @@ internal class NspkClient {
         } finally {
             responseReader?.close()
         }
+    }
+
+    private fun serializeData(response: String): NspkC2bResponse {
+       return gson.fromJson(response, NspkC2bResponse::class.java)
     }
 
     @Throws(IOException::class)
