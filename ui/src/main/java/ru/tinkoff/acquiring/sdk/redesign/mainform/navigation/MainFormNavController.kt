@@ -65,14 +65,13 @@ internal class MainFormNavController {
 
     suspend fun toTpay(
         paymentOptions: PaymentOptions,
-        isPrimary: Boolean,
-        version: String?
+        version: String
     ) {
-        if (isPrimary.not() || version == null) {
-            channelNav.send(Navigation.ToWebView(TPAY_URL))
-        } else {
-            channelNav.send(Navigation.ToTpay(TpayLauncher.StartData(paymentOptions, version)))
-        }
+        channelNav.send(Navigation.ToTpay(TpayLauncher.StartData(paymentOptions, version)))
+    }
+
+    suspend fun toTpayWebView() {
+        channelNav.send(Navigation.ToWebView(TPAY_URL))
     }
 
     suspend fun to3ds(paymentOptions: PaymentOptions, threeDsState: ThreeDsState) =
@@ -100,7 +99,7 @@ internal class MainFormNavController {
     }
 
     companion object {
-        private const val TPAY_URL = " https://www.tinkoff.ru/cards/debit-cards/tinkoff-pay/form/"
+        private const val TPAY_URL = "https://www.tinkoff.ru/cards/debit-cards/tinkoff-pay/form/"
     }
 }
 

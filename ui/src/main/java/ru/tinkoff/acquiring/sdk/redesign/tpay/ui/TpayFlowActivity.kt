@@ -92,11 +92,11 @@ internal class TpayFlowActivity : AppCompatActivity() {
             viewModel.navEvent.collectLatest {
                 when (it) {
                     is TpayNavigation.Event.GoToTinkoff -> {
-                        viewModel.goingToBankApp()
                         TpayHelper.openTpayDeeplink(
                             it.deeplink,
                             this@TpayFlowActivity
                         )
+                        viewModel.goingToBankApp()
                     }
                     is TpayNavigation.Event.Close -> setResult(it.result)
                 }
