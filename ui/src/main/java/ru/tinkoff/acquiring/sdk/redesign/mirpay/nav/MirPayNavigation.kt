@@ -1,10 +1,10 @@
-package ru.tinkoff.acquiring.sdk.redesign.tpay.nav
+package ru.tinkoff.acquiring.sdk.redesign.mirpay.nav
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
+import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
 
-internal class TpayNavigation {
+internal class MirPayNavigation {
     private val events = Channel<Event>()
     val flow = events.receiveAsFlow()
 
@@ -14,7 +14,7 @@ internal class TpayNavigation {
 
     sealed interface Event {
 
-        class GoToTinkoff(val deeplink: String) : Event
-        class Close(val result: TpayLauncher.Result) : Event
+        class GoToMirPay(val deeplink: String) : Event
+        class Close(val result: MirPayLauncher.Result) : Event
     }
 }
