@@ -7,7 +7,7 @@ package ru.tinkoff.acquiring.sdk.exceptions
  *
  * @param throwable  - родительская ошибка
  * @param message    - дополнительное сообщение
- * @param deeplink   - сырой диплинк от backend
+ * @param deeplink   - диплинк для октрытия прилоежния
  * @param paymentId  - идентификатор платежной сессии
  *
  * Created by i.golovachev

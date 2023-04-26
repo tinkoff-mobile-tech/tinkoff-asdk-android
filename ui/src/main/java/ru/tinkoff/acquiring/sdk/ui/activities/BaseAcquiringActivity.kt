@@ -46,6 +46,7 @@ import ru.tinkoff.acquiring.sdk.models.result.BankChooseResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsSubmitV2Delegate
+import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_DEEPLINK
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_PACKAGE_NAME
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
 import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
@@ -162,7 +163,10 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                 intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
             }
             is CardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
-            is BankChooseResult -> intent.putExtra(EXTRA_SBP_BANK_PACKAGE_NAME, result.packageName)
+            is BankChooseResult -> with(intent) {
+                putExtra(EXTRA_SBP_BANK_PACKAGE_NAME, result.packageName)
+                putExtra(EXTRA_SBP_BANK_DEEPLINK, result.deeplink)
+            }
         }
 
         setResult(Activity.RESULT_OK, intent)
