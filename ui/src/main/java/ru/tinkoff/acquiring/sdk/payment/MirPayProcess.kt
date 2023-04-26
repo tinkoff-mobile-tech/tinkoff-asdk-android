@@ -125,7 +125,7 @@ sealed interface MirPayPaymentState {
 
     class Created(override val paymentId: Long? = null) : MirPayPaymentState
     class Started(override val paymentId: Long) : MirPayPaymentState
-    class NeedChooseOnUi(override val paymentId: Long, deeplink: String) : MirPayPaymentState
+    class NeedChooseOnUi(override val paymentId: Long, val deeplink: String) : MirPayPaymentState
     class Success(override val paymentId: Long) : MirPayPaymentState
     class LeaveOnBankApp(override val paymentId: Long) : MirPayPaymentState
     class CheckingStatus(override val paymentId: Long, val status: ResponseStatus?) : MirPayPaymentState
