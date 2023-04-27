@@ -25,7 +25,7 @@ internal class MainPaymentFormFactoryTest {
         class Given(
             val methods: List<Paymethod> = emptyList(),
             val addScheme: Boolean = false,
-            val installedApps: List<String> = emptyList(),
+            val installedApps: Map<String,String> = emptyMap<String,String>(),
             val cards: List<Card> = emptyList(),
 
             val errorOnMethods: Throwable? = null,
@@ -81,7 +81,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + Sbp + true WHEN has MB then PrimaryTpay`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-            installedApps = tinkoffAppSet.toList(),
+            installedApps = tinkoffAppMap,
             addScheme = true,
             cards = emptyList(),
             errorOnCardList = null,
@@ -97,7 +97,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + Sbp + true WHEN without MB then PrimaryCardChoosen`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = true,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -114,7 +114,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = nspkAppSet.toList(),
+                installedApps = nspkAppMap,
                 addScheme = true,
                 cards = emptyList(),
                 errorOnCardList = null,
@@ -131,7 +131,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = emptyList(),
+                installedApps = emptyMap(),
                 addScheme = true,
                 cards = emptyList(),
                 errorOnCardList = null,
@@ -148,7 +148,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = emptyList(),
+                installedApps = emptyMap(),
                 addScheme = false,
                 cards = emptyList(),
                 errorOnCardList = IllegalArgumentException(),
@@ -168,7 +168,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = tinkoffAppSet.toList(),
+                installedApps = tinkoffAppMap,
                 addScheme = false,
                 cards = emptyList(),
                 errorOnCardList = null,
@@ -184,7 +184,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + Sbp + add-false WHEN no MB has Spb then PrimarySbp`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-            installedApps = nspkAppSet.toList(),
+            installedApps = nspkAppMap,
             addScheme = false,
             cards = emptyList(),
             errorOnCardList = null,
@@ -201,7 +201,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = emptyList(),
+                installedApps = emptyMap(),
                 addScheme = false,
                 cards = listOf(defaultCard),
                 errorOnCardList = IllegalArgumentException(),
@@ -218,7 +218,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = emptyList(),
+                installedApps = emptyMap(),
                 addScheme = false,
                 cards = emptyList(),
                 errorOnCardList = IllegalArgumentException(),
@@ -235,7 +235,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.TinkoffPay, Paymethod.SBP),
-                installedApps = nspkAppSet.toList(),
+                installedApps = nspkAppMap,
                 addScheme = false,
                 cards = emptyList(),
                 errorOnCardList = IllegalArgumentException(),
@@ -254,7 +254,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-true WHEN has MB then Sbp`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = tinkoffAppSet.toList(),
+            installedApps = tinkoffAppMap,
             addScheme = true,
             cards = emptyList(),
             errorOnCardList = null,
@@ -270,7 +270,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-true WHEN no MB has Spb no cards then Sbp`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = nspkAppSet.toList(),
+            installedApps = nspkAppMap,
             addScheme = true,
             cards = emptyList(),
             errorOnCardList = null,
@@ -287,7 +287,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-true WHEN no MB no Spb has cards then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = true,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -303,7 +303,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-true WHEN no MB no Spb no cards then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = true,
             cards = emptyList(),
             errorOnCardList = null,
@@ -320,7 +320,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.SBP),
-                installedApps = emptyList(),
+                installedApps = emptyMap(),
                 addScheme = true,
                 cards = listOf(defaultCard),
                 errorOnCardList = null,
@@ -337,7 +337,7 @@ internal class MainPaymentFormFactoryTest {
         TestCondition(
             TestCondition.Given(
                 methods = listOf(Paymethod.SBP),
-                installedApps = emptyList(),
+                installedApps = emptyMap(),
                 addScheme = true,
                 cards = listOf(defaultCard),
                 errorOnCardList = IllegalArgumentException(),
@@ -356,7 +356,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-false WHEN has MB then Sbp`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = tinkoffAppSet.toList(),
+            installedApps = tinkoffAppMap,
             addScheme = false,
             cards = listOf(defaultCard),
             errorOnCardList = IllegalArgumentException(),
@@ -372,7 +372,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-false WHEN no MB has Spb then Sbp`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = nspkAppSet.toList(),
+            installedApps = nspkAppMap,
             addScheme = false,
             cards = emptyList(),
             errorOnCardList = null,
@@ -388,7 +388,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-false WHEN no MB no Spb no Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = false,
             cards = emptyList(),
             errorOnCardList = null,
@@ -404,7 +404,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Sbp + add-false WHEN no MB no Spb has Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.SBP),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = false,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -423,7 +423,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-true WHEN has MB then Tpay`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = tinkoffAppSet.toList(),
+            installedApps = tinkoffAppMap,
             addScheme = true,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -439,7 +439,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-true WHEN no MB has Spb then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = nspkAppSet.toList(),
+            installedApps = nspkAppMap,
             addScheme = true,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -455,7 +455,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-true WHEN no MB no Spb no Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = true,
             cards = emptyList(),
             errorOnCardList = null,
@@ -471,7 +471,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-true WHEN no MB no Spb has Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = true,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -490,7 +490,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-false WHEN has MB then Tpay`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = tinkoffAppSet.toList(),
+            installedApps = tinkoffAppMap,
             addScheme = false,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -506,7 +506,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-false WHEN no MB has Spb then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = nspkAppSet.toList(),
+            installedApps = nspkAppMap,
             addScheme = false,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -522,7 +522,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN Tpay + add-false WHEN no MB no Spb no Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(Paymethod.TinkoffPay),
-            installedApps = emptyList(),
+            installedApps = emptyMap(),
             addScheme = false,
             cards = emptyList(),
             errorOnCardList = null,
@@ -540,7 +540,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-true WHEN has MB has Spb has Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = (tinkoffAppSet + nspkAppSet).toList(),
+            installedApps =  (nspkAppMap + tinkoffAppMap),
             addScheme = true,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -556,7 +556,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-true WHEN has MB has Spb no Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = (tinkoffAppSet + nspkAppSet).toList(),
+            installedApps = (nspkAppMap + tinkoffAppMap),
             addScheme = true,
             cards = listOf(),
             errorOnCardList = null,
@@ -572,7 +572,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-true WHEN no MB no Spb no Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = listOf(),
+            installedApps = emptyMap(),
             addScheme = false,
             cards = listOf(),
             errorOnCardList = null,
@@ -588,7 +588,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-true WHEN no MB no Spb has Card onCardError then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = listOf(),
+            installedApps = emptyMap(),
             addScheme = false,
             cards = listOf(defaultCard),
             errorOnCardList = IllegalArgumentException(),
@@ -606,7 +606,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-false WHEN has MB has Spb has Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = (nspkAppSet + tinkoffAppSet).toList(),
+            installedApps =  (nspkAppMap + tinkoffAppMap),
             addScheme = false,
             cards = listOf(defaultCard),
             errorOnCardList = null,
@@ -622,7 +622,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-false WHEN has MB has Spb no Card then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = listOf(),
+            installedApps = emptyMap(),
             addScheme = false,
             cards = listOf(),
             errorOnCardList = null,
@@ -638,7 +638,7 @@ internal class MainPaymentFormFactoryTest {
     fun `GIVEN add-false WHEN has MB has Spb onCardError then Card`() = TestCondition(
         TestCondition.Given(
             methods = listOf(),
-            installedApps = (nspkAppSet + tinkoffAppSet).toList(),
+            installedApps = (nspkAppMap + tinkoffAppMap),
             addScheme = false,
             cards = listOf(),
             errorOnCardList = IllegalArgumentException(),

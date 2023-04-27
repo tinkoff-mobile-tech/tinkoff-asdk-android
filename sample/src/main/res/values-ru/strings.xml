@@ -24,6 +24,7 @@
     <string name="activity_title_attach_card_manually">Привязать карту вручную</string>
     <string name="activity_title_terminals">Терминалы</string>
     <string name="activity_title_about">О программе</string>
+    <string name="activity_title_env">Окружение</string>
     <string name="activity_title_static_qr">Открыть статический QR код</string>
     <string name="activity_title_dynamic_qr">Принять оплату QR</string>
     <string name="activity_title_settings">Настройки</string>
@@ -67,7 +68,6 @@
     <string name="settings_title_validate_expiry_date">Валидировать срок действия карты</string>
     <string name="settings_title_recurrent_payment">Рекуррентный платёж</string>
     <string name="settings_title_handle_cards_list_error">Обработать ошибки получения списка карт в SDK</string>
-    <string name="settings_title_google_pay">GooglePay</string>
     <string name="settings_title_fps">Система быстрых платежей</string>
     <string name="settings_title_tinkoff_pay">Tinkoff Pay</string>
     <string name="settings_title_yandex_pay">Yandex Pay</string>

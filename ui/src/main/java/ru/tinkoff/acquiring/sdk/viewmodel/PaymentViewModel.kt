@@ -26,24 +26,18 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankScreenState
-import ru.tinkoff.acquiring.sdk.models.BrowseFpsBankState
-import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FpsScreenState
-import ru.tinkoff.acquiring.sdk.models.FpsState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankScreenState
-import ru.tinkoff.acquiring.sdk.models.OpenTinkoffPayBankState
 import ru.tinkoff.acquiring.sdk.models.PaymentScreenState
-import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.RejectedCardScreenState
-import ru.tinkoff.acquiring.sdk.models.RejectedState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
-import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.enums.CardStatus
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
@@ -86,7 +80,7 @@ internal class PaymentViewModel(
         when (state) {
             is ThreeDsState -> changeScreenState(ThreeDsScreenState(state.data, state.transaction))
             is RejectedState -> changeScreenState(RejectedCardScreenState(state.cardId, state.rejectedPaymentId))
-            is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
+            is BrowseFpsBankState -> changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banksInfo))
             is FpsState -> changeScreenState(FpsScreenState)
             is OpenTinkoffPayBankState -> changeScreenState(OpenTinkoffPayBankScreenState(state.paymentId, state.deepLink))
             else -> changeScreenState(PaymentScreenState)
@@ -185,9 +179,10 @@ internal class PaymentViewModel(
     fun requestPaymentState(paymentId: Long) {
         requestStateJob?.cancel()
         requestStateJob = coroutine.launchOnMain {
+            changeScreenState(LoadingState)
             getStatusPooling.start(paymentId = paymentId)
                 .flowOn(Dispatchers.IO)
-                .catch { handleException(it) }
+                .catch { handleException(it, paymentId) }
                 .filter { ResponseStatus.checkSuccessStatuses(it) }
                 .collect { handleConfirmOnAuthStatus(paymentId)}
         }
@@ -220,7 +215,7 @@ internal class PaymentViewModel(
                     }
                     is BrowseFpsBankState -> {
                         changeScreenState(LoadedState)
-                        changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banks))
+                        changeScreenState(BrowseFpsBankScreenState(state.paymentId, state.deepLink, state.banksInfo))
                     }
                     is OpenTinkoffPayBankState -> {
                         changeScreenState(LoadedState)
@@ -231,7 +226,7 @@ internal class PaymentViewModel(
 
             override fun onError(throwable: Throwable, paymentId: Long?) {
                 changeScreenState(LoadedState)
-                handleException(throwable)
+                handleException(throwable, paymentId)
             }
         }
     }

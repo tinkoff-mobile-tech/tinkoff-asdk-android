@@ -1,6 +1,8 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.primary
 
+import android.content.pm.PackageManager
 import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.redesign.common.util.InstalledAppChecker
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkNspk
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkTinkoff
@@ -20,6 +22,7 @@ internal interface PrimaryButtonConfigurator {
     suspend fun get(info: TerminalInfo?, cardList: List<Card>?): MainPaymentForm.Primary
 
     class Impl(
+        private val installedAppChecker: InstalledAppChecker,
         private val provider: NspkBankAppsProvider,
         private val checker: NspkInstalledAppsChecker,
         private val bankCaptionProvider: BankCaptionProvider
@@ -43,7 +46,7 @@ internal interface PrimaryButtonConfigurator {
                 methods.addCardScheme && methods.paymethods.has(Paymethod.TinkoffPay) && methods.paymethods.has(
                     Paymethod.SBP
                 ) -> {
-                    if (checkTinkoff(checker)) {
+                    if (checkTinkoff(installedAppChecker)) {
                         MainPaymentForm.Primary.Tpay
                     } else {
                         val saved = checkSavedCards()
@@ -59,7 +62,7 @@ internal interface PrimaryButtonConfigurator {
                 methods.addCardScheme.not() && methods.paymethods.has(Paymethod.TinkoffPay) && methods.paymethods.has(
                     Paymethod.SBP
                 ) -> {
-                    if (checkTinkoff(checker)) {
+                    if (checkTinkoff(installedAppChecker)) {
                         MainPaymentForm.Primary.Tpay
                     } else {
                         when {
@@ -89,7 +92,7 @@ internal interface PrimaryButtonConfigurator {
 
                 // 2.5
                 methods.addCardScheme && methods.paymethods.has(Paymethod.TinkoffPay) -> {
-                    if (checkTinkoff(checker)) {
+                    if (checkTinkoff(installedAppChecker)) {
                         MainPaymentForm.Primary.Tpay
                     } else {
                         MainPaymentForm.Primary.Card(checkSavedCards())
@@ -98,7 +101,7 @@ internal interface PrimaryButtonConfigurator {
 
                 // 2.6
                 methods.addCardScheme.not() && methods.paymethods.has(Paymethod.TinkoffPay) -> {
-                    if (checkTinkoff(checker)) {
+                    if (checkTinkoff(installedAppChecker)) {
                         MainPaymentForm.Primary.Tpay
                     } else {
                         MainPaymentForm.Primary.Card(null)

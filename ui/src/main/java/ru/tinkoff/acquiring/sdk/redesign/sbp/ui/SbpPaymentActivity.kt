@@ -63,8 +63,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
     private val stubSubtitleView: TextView by lazyView(R.id.acq_stub_subtitle)
     private val stubButtonView: TextView by lazyView(R.id.acq_stub_retry_button)
 
-    private lateinit var deeplink: String
-    private var banks: List<String>? = null
+    private var banks: Map<String,String>? = null
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
@@ -134,7 +133,6 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                 is SpbBankListState.Content -> {
                     viewFlipper.showById(R.id.acq_bank_list_content)
                     banks = it.banks
-                    deeplink = it.deeplink
                 }
                 is SpbBankListState.Shimmer -> {
                     viewFlipper.showById(R.id.acq_bank_list_shimmer)
@@ -185,9 +183,9 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         }
     }
 
-    private fun onBankSelected(packageName: String, deeplink: String) {
+    private fun onBankSelected(deeplink: String) {
         viewModel.onGoingToBankApp()
-        openSbpDeeplink(deeplink, packageName, this)
+        openSbpDeeplink(deeplink, this)
     }
 
     private fun showStub(
@@ -236,8 +234,10 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                 )
             )
 
-        override fun onBindViewHolder(holder: VH, position: Int) =
-            holder.bind(banks!![position], deeplink)
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            val pair = banks!!.toList().get(position)
+            return holder.bind(pair.first, pair.second)
+        }
 
         override fun getItemCount(): Int = banks?.size ?: 0
     }
@@ -254,7 +254,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
             )
 
             itemView.setOnClickListener {
-                onBankSelected(packageName, deeplink)
+                onBankSelected(deeplink)
             }
         }
     }
@@ -272,5 +272,5 @@ sealed class SpbBankListState {
     object Empty : SpbBankListState()
     class Error(val throwable: Throwable) : SpbBankListState()
     object NoNetwork : SpbBankListState()
-    class Content(val banks: List<String>, val deeplink: String) : SpbBankListState()
+    class Content(val banks: Map<String,String>) : SpbBankListState()
 }

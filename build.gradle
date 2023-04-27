@@ -25,7 +25,6 @@ apply from: 'gradle/versions.gradle'
 
 allprojects {
     repositories {
-        jcenter()
         google()
         mavenCentral()
         maven { url "https://maven.google.com" }

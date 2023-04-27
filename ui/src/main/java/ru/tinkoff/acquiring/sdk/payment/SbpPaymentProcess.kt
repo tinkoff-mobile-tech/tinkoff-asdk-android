@@ -12,6 +12,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
+import ru.tinkoff.acquiring.sdk.payment.base.PaymentUiEvent
 import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
@@ -52,7 +53,7 @@ class SbpPaymentProcess internal constructor(
                 state.value = SbpPaymentState.Started(id)
                 val deeplink = sendGetQr(id)
                 val installedApps = bankAppsProvider.checkInstalledApps(nspkApps, deeplink)
-                state.value = SbpPaymentState.NeedChooseOnUi(id, installedApps, deeplink)
+                state.value = SbpPaymentState.NeedChooseOnUi(id, PaymentUiEvent.ShowApps(installedApps))
             }
         }
     }
@@ -135,7 +136,7 @@ class SbpPaymentProcess internal constructor(
                 SbpHelper.getBankApps(packageManager, dl, nspkBanks)
             },
             nspkBankAppsProvider: NspkBankAppsProvider = NspkBankAppsProvider {
-                NspkRequest().execute().banks
+                NspkRequest().execute().dictionary
             }
         ) {
             instance?.scope?.cancel()
@@ -159,8 +160,7 @@ sealed interface SbpPaymentState {
 
     class NeedChooseOnUi(
         override val paymentId: Long,
-        val bankList: List<String>,
-        val deeplink: String
+        val showApps: PaymentUiEvent.ShowApps
     ) : SbpPaymentState
 
     class GetBankListFailed(override val paymentId: Long?, val throwable: Throwable) :

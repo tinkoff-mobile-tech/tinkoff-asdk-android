@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
+import ru.tinkoff.acquiring.sdk.redesign.common.util.openDeepLink
+import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 
 object SbpHelper {
 
@@ -12,40 +14,32 @@ object SbpHelper {
 
     fun openSbpDeeplink(
         deeplink: String,
-        packageName: String,
         activity: AppCompatActivity
     ) {
-        // stub
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(deeplink)
-        intent.setPackage(packageName)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        activity.startActivityForResult(intent, SBP_BANK_REQUEST_CODE)
+        activity.openDeepLink(SBP_BANK_REQUEST_CODE, deeplink)
     }
 
     @SuppressLint("QueryPermissionsNeeded")
-    internal fun getBankApps(packageManager: PackageManager, deeplink: String, banks: Set<Any?>): List<String> {
-        // get sbp packages
+    internal fun getBankApps(packageManager: PackageManager, deeplink: String, banks: List<NspkC2bResponse.NspkAppInfo>): Map<String,String> {
         val sbpIntent = Intent(Intent.ACTION_VIEW)
-        sbpIntent.setDataAndNormalize(Uri.parse(deeplink))
-        val sbpPackages = packageManager.queryIntentActivities(sbpIntent, 0)
-            .map { it.activityInfo.packageName }
+        val appAndLinks = buildMap {
+            banks.forEach { appInfo ->
+                val deepLink = prepareNspkDeeplinkWithScheme(appInfo.schema, deeplink)
+                sbpIntent.setDataAndNormalize(deepLink)
+                packageManager.queryIntentActivities(sbpIntent, 0).forEach {
+                    put(it.activityInfo.packageName, deepLink.toString())
+                }
+            }
+        }
+        return appAndLinks
+    }
 
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
-        val browserPackages = packageManager.queryIntentActivities(browserIntent, 0)
-            .map { it.activityInfo.packageName }
-        // filter out browsers
-        val nonBrowserSbpPackages = sbpPackages.filter { it !in browserPackages }
-
-        // get bank packages
-        val bankPackages = packageManager.getInstalledApplications(0)
-            .map { it.packageName }.filter { it in banks }
-
-        // merge two lists
-        return mutableListOf<String>().apply {
-            addAll(nonBrowserSbpPackages)
-            addAll(bankPackages)
-        }.distinct()
+    private fun prepareNspkDeeplinkWithScheme(schema: String, deepLink: String): Uri {
+        val raw = Uri.parse(deepLink)
+        return Uri.Builder().apply {
+            this.scheme(schema)
+            this.authority(raw.authority)
+            this.path(raw.path)
+        }.build()
     }
 }

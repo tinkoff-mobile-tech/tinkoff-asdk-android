@@ -48,8 +48,10 @@ import ru.tinkoff.acquiring.sdk.models.result.BankChooseResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsSubmitV2Delegate
+import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_DEEPLINK
 import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_PACKAGE_NAME
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
+import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
 
 /**
  * @author Mariya Chernyadieva
@@ -176,6 +178,9 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         return ViewModelProvider(this, ViewModelProviderFactory(application, options.features.handleErrorsInSdk, sdk))[clazz]
     }
 
+    protected fun provideYandexViewModelFactory()
+    = YandexPaymentViewModel.factory(application, options.features.handleErrorsInSdk, sdk)
+
     protected fun provideThreeDsSubmitV2Delegate() = ThreeDsSubmitV2Delegate(sdk)
 
     protected open fun setSuccessResult(result: AsdkResult) {
@@ -188,15 +193,19 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                 intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
             }
             is CardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
-            is BankChooseResult -> intent.putExtra(EXTRA_SBP_BANK_PACKAGE_NAME, result.packageName)
+            is BankChooseResult -> with(intent) {
+                putExtra(EXTRA_SBP_BANK_PACKAGE_NAME, result.packageName)
+                putExtra(EXTRA_SBP_BANK_DEEPLINK, result.deeplink)
+            }
         }
 
         setResult(Activity.RESULT_OK, intent)
     }
 
-    protected open fun setErrorResult(throwable: Throwable) {
+    protected open fun setErrorResult(throwable: Throwable, paymentId: Long? = null) {
         val intent = Intent()
         intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
+        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
         setResult(TinkoffAcquiring.RESULT_ERROR, intent)
     }
 
@@ -205,8 +214,8 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         finish()
     }
 
-    open fun finishWithError(throwable: Throwable) {
-        setErrorResult(throwable)
+    open fun finishWithError(throwable: Throwable, paymentId: Long? = null) {
+        setErrorResult(throwable, paymentId)
         finish()
     }
 

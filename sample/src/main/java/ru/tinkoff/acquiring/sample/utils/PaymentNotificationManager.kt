@@ -94,15 +94,11 @@ object PaymentNotificationManager {
                     flags))
         }
 
-        val googlePayIntent = getGooglePayIntent(activity,
-                requireNotNull(priceMap[selectedButtonId]))
-        notificationLayout.setOnClickPendingIntent(R.id.googlePayButton, googlePayIntent)
-
         val tinkoffPayIntent = getTinkoffPayIntent(activity,
                 requireNotNull(priceMap[selectedButtonId]))
         notificationLayout.setOnClickPendingIntent(R.id.buttonPayOther, tinkoffPayIntent)
 
-        val notification = createNotification(activity, googlePayIntent, notificationLayout)
+        val notification = createNotification(activity, tinkoffPayIntent, notificationLayout)
         NotificationManagerCompat.from(activity).notify(NOTIFICATION_ID, notification)
     }
 

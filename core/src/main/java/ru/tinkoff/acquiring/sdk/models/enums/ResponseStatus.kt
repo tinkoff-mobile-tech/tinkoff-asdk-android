@@ -39,11 +39,11 @@ enum class ResponseStatus {
     REFUNDED,
     PARTIAL_REFUNDED,
     REJECTED,
+    DEADLINE_EXPIRED,
     UNKNOWN,
     LOOP_CHECKING,
     COMPLETED,
     AUTH_FAIL,
-    DEADLINE_EXPIRED,
     FORM_SHOWED;
 
     override fun toString(): String {

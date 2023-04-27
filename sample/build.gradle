@@ -42,6 +42,9 @@ android {
             useJUnitPlatform()
         }
     }
+    lintOptions {
+        disable 'NetworkSecurityConfig'
+    }
 }
 
 dependencies {

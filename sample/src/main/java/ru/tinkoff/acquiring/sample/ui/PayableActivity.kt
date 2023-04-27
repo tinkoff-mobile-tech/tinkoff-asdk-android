@@ -18,12 +18,14 @@ package ru.tinkoff.acquiring.sample.ui
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +39,7 @@ import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
@@ -56,6 +59,7 @@ import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.utils.Money
+import ru.tinkoff.acquiring.sdk.utils.getLongOrNull
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
 import ru.tinkoff.acquiring.yandexpay.addYandexResultListener
 import ru.tinkoff.acquiring.yandexpay.createYandexPayButtonFragment
@@ -203,6 +207,10 @@ open class PayableActivity : AppCompatActivity() {
             PaymentByCardProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
             byMainFormPayment.launch(MainFormContract.StartData(options))
         }
+    }
+
+    protected fun getPaymentPendingIntent(): PendingIntent {
+        return tinkoffAcquiring.getPaymentPendingIntent(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
     }
 
     protected fun openDynamicQrScreen() {
@@ -385,32 +393,24 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun handlePaymentResult(resultCode: Int, data: Intent?) {
+    protected fun handlePaymentResult(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> onSuccessPayment()
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
             RESULT_ERROR -> {
-                Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-                getErrorFromIntent(data)?.run {
-                    printStackTrace()
-                    logIfTimeout()
-                }
+                commonErrorHandler(data)
             }
         }
     }
 
-    private fun handleYandexPayResult(resultCode: Int, data: Intent?) {
+    protected fun handleYandexPayResult(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> {
                 acqFragment?.options = createPaymentOptions()
             }
             RESULT_CANCELED -> Toast.makeText(this, R.string.payment_cancelled, Toast.LENGTH_SHORT).show()
             RESULT_ERROR -> {
-                Toast.makeText(this, R.string.payment_failed, Toast.LENGTH_SHORT).show()
-                getErrorFromIntent(data)?.run {
-                    printStackTrace()
-                    logIfTimeout()
-                }
+                commonErrorHandler(data)
             }
         }
     }
@@ -511,6 +511,30 @@ open class PayableActivity : AppCompatActivity() {
         )
     }
 
+    private fun commonErrorHandler(data: Intent?) {
+        val error = getErrorFromIntent(data)
+        val paymentIdFromIntent = data?.getLongOrNull(EXTRA_PAYMENT_ID)
+        val message = configureToastMessage(error, paymentIdFromIntent)
+        log("toast message: $message")
+        error?.printStackTrace()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+
+    private fun configureToastMessage(error: Throwable?, paymentId: Long?): String {
+        val acqSdkTimeout  = error as? AcquiringSdkTimeoutException
+        val payment = paymentId ?: acqSdkTimeout?.paymentId
+        val status = acqSdkTimeout?.status
+        return buildString {
+            append(getString(R.string.payment_failed))
+            append(" ")
+            payment?.let { append("paymentId: $it") }
+            append(" ")
+            status?.let { append("status: $it") }
+        }
+    }
+
+
     companion object {
 
         const val PAYMENT_REQUEST_CODE = 1
@@ -521,6 +545,6 @@ open class PayableActivity : AppCompatActivity() {
         private const val STATE_LOADING_SHOW = "loading_show"
         private const val STATE_ERROR_SHOW = "error_show"
 
-        private const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
+        const val YANDEX_PAY_FRAGMENT_KEY = "yandex_fragment_key"
     }
 }

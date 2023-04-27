@@ -19,4 +19,4 @@ package ru.tinkoff.acquiring.sdk.models.result
 /**
  * @author Mariya Chernyadieva
  */
-internal class BankChooseResult(val packageName: String) : AsdkResult
+internal class BankChooseResult(val packageName: String, val deeplink: String) : AsdkResult

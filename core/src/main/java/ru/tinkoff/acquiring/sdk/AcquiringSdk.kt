@@ -299,6 +299,10 @@ class AcquiringSdk(
          */
         var isPreprodMode = false
 
+        /**
+         * Позволяет переключать SDK на иной апи-контур, работает только в дебаг режиме
+         */
+        var customUrl : String? = null
 
         /**
          * Логирует сообщение

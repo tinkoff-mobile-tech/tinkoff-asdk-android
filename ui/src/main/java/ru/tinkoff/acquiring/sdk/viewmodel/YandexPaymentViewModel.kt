@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
@@ -17,7 +19,6 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
  * Created by i.golovachev
@@ -25,23 +26,29 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 internal class YandexPaymentViewModel(
     application: Application,
     handleErrorsInSdk: Boolean,
-    sdk: AcquiringSdk
+    sdk: AcquiringSdk,
+    private val paymentProcess: YandexPaymentProcess
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
-    private val paymentProcess: YandexPaymentProcess = YandexPaymentProcess(sdk, context, ThreeDsHelper.CollectData)
     private val paymentResult: MutableLiveData<PaymentResult> = MutableLiveData()
     val paymentResultLiveData: LiveData<PaymentResult> = paymentResult
 
-    fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String) {
+    init {
+        viewModelScope.launch {
+            paymentProcess.state.launchAndCollect()
+        }
+    }
+
+    fun startYandexPayPayment(paymentOptions: PaymentOptions, yandexPayToken: String, paymentId: Long?) {
         changeScreenState(LoadingState)
 
         viewModelScope.launch {
-            paymentProcess.create(paymentOptions, yandexPayToken)
+            if (paymentId != null) {
+                paymentProcess.create(paymentId, yandexPayToken)
+            } else {
+                paymentProcess.create(paymentOptions, yandexPayToken)
+            }
             paymentProcess.start()
-        }
-
-        viewModelScope.launch {
-            paymentProcess.state.launchAndCollect()
         }
     }
 
@@ -79,11 +86,27 @@ internal class YandexPaymentViewModel(
                         }
                         is YandexPaymentState.Error -> {
                             changeScreenState(LoadedState)
-                            handleException(it.throwable)
+                            handleException(it.throwable, it.paymentId)
                         }
                         else -> Unit
                     }
                 }
+        }
+    }
+
+    companion object {
+        fun factory(
+            application: Application,
+            handleErrorsInSdk: Boolean,
+            sdk: AcquiringSdk,
+        ) = viewModelFactory {
+            initializer {
+                YandexPaymentViewModel(application,
+                    handleErrorsInSdk,
+                    sdk,
+                    YandexPaymentProcess.instance
+                )
+            }
         }
     }
 }

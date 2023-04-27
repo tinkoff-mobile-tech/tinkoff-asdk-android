@@ -235,7 +235,7 @@ object ThreeDsHelper {
                 else -> ThreeDSWrapper.EmbeddedCertsInfo.PROD
             }).init(context, ThreeDSWrapper.newConfigParameters {
                 setSdkAppId(getSdkAppId(context).toString())
-            }, null, ThreeDSWrapper.newUiCustomization {
+            }, Locale.getDefault().toString(), ThreeDSWrapper.newUiCustomization {
                 toolbarCustomization {
                     headerText = localisation?.threeDsConfirmation ?: "Confirmation"
                     buttonText = localisation?.threeDsCancel ?: "Cancel"
