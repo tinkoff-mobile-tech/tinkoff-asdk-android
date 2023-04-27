@@ -1,36 +1,31 @@
 package ru.tinkoff.acquiring.sdk.payment
 
 import android.app.Application
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
-import ru.tinkoff.acquiring.sdk.models.PaymentSource
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.CardSource
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
-import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsAppBasedTransaction
+import ru.tinkoff.acquiring.sdk.payment.methods.*
+import ru.tinkoff.acquiring.sdk.payment.methods.Check3DsVersionMethodsSdkImpl
+import ru.tinkoff.acquiring.sdk.payment.methods.FinishAuthorizeMethodsSdkImpl
+import ru.tinkoff.acquiring.sdk.payment.methods.InitMethodsSdkImpl
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
-import ru.tinkoff.acquiring.sdk.utils.getIpAddress
 
 /**
  * Created by i.golovachev
  */
 class PaymentByCardProcess internal constructor(
-    private val sdk: AcquiringSdk,
-    private val application: Application,
-    private val threeDsDataCollector: ThreeDsDataCollector,
+    private val initMethods: InitMethods,
+    private val check3DsVersionMethods: Check3DsVersionMethods,
+    private val finishAuthorizeMethods: FinishAuthorizeMethods,
     private val coroutineManager: CoroutineManager = CoroutineManager()
 ) {
 
@@ -42,11 +37,12 @@ class PaymentByCardProcess internal constructor(
         cardData: CardSource,
         paymentOptions: PaymentOptions,
         email: String? = null,
+        isParentOfRecurrent: Boolean = false,
     ) {
         _state.value = PaymentByCardState.Started(paymentOptions, email)
         coroutineManager.launchOnBackground {
             try {
-                callInitRequest(cardData, paymentOptions, email)
+                startFlow(cardData, paymentOptions, email,isParentOfRecurrent)
             } catch (e: Throwable) {
                 handleException(e)
             }
@@ -79,100 +75,39 @@ class PaymentByCardProcess internal constructor(
         _state.value = PaymentByCardState.Created
     }
 
-    private suspend fun callInitRequest(
-        cardData: CardSource,
+    private suspend fun startFlow(
+        card: CardSource,
         paymentOptions: PaymentOptions,
-        email: String?
+        email: String?,
+        isParentOfRecurrent: Boolean,
     ) {
-        this.paymentSource = cardData
-
-        val init = sdk.init {
-            configure(paymentOptions)
-            if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {
-                receipt?.email = email
-            }
-        }.execute()
-
-        callCheck3DsVersion(init.paymentId!!, cardData, paymentOptions, email)
-    }
-
-    private suspend fun callCheck3DsVersion(
-        paymentId: Long,
-        paymentSource: CardSource,
-        paymentOptions: PaymentOptions,
-        email: String? = null
-    ) {
-
-        val check3Ds = sdk.check3DsVersion {
-            this.paymentId = paymentId
-            this.paymentSource = paymentSource
-        }.execute()
-
-        val data = mutableMapOf<String, String>()
-        if (check3Ds.serverTransId != null) {
-            coroutineManager.withMain {
-                data.putAll(threeDsDataCollector(application, check3Ds))
-            }
-        }
-        val threeDsVersion = check3Ds.version
-        var threeDsTransaction: ThreeDsAppBasedTransaction? = null
-
-        if (ThreeDsHelper.isAppBasedFlow(threeDsVersion)) {
-            try {
-                coroutineManager.withMain {
-                    threeDsTransaction = ThreeDsHelper.CreateAppBasedTransaction(
-                        application, threeDsVersion!!, check3Ds.paymentSystem!!, data
-                    )
-                }
-            } catch (e: Throwable) {
-                handleException(e)
-                return
-            }
-        }
-        callFinishAuthorizeRequest(
+        this.paymentSource = card
+        val init = if(isParentOfRecurrent)
+            initMethods.init(paymentOptions, email)
+        else
+            initMethods.initRecurrent(paymentOptions, email)
+        val paymentId = checkNotNull(init.paymentId) { "paymentId must be not null" }
+        val data3ds = check3DsVersionMethods.callCheck3DsVersion(
+            paymentId, card, paymentOptions, email
+        )
+        val finish = finishAuthorizeMethods.finish(
             paymentId,
-            paymentSource,
+            card,
             paymentOptions,
             email,
-            data,
-            threeDsVersion,
-            threeDsTransaction
+            data3ds.additionalData,
+            data3ds.threeDsVersion,
+            data3ds.threeDsTransaction
         )
-    }
-
-    private suspend fun callFinishAuthorizeRequest(
-        paymentId: Long,
-        paymentSource: PaymentSource,
-        paymentOptions: PaymentOptions,
-        email: String? = null,
-        data: Map<String, String>? = null,
-        threeDsVersion: String? = null,
-        threeDsTransaction: ThreeDsAppBasedTransaction? = null
-    ) {
-        val ipAddress = if (data != null) getIpAddress() else null
-
-        val finishRequest = sdk.finishAuthorize {
-            this.paymentId = paymentId
-            this.email = email
-            this.paymentSource = paymentSource
-            this.data = data
-            ip = ipAddress
-            sendEmail = email != null
-        }
-
-        val response = finishRequest.execute()
-        val threeDsData = response.getThreeDsData(threeDsVersion)
-
-        _state.value = if (threeDsData.isThreeDsNeed) {
-            PaymentByCardState.ThreeDsUiNeeded(
-                ThreeDsState(threeDsData, threeDsTransaction),
+        _state.value = when (finish) {
+            is FinishAuthorizeMethods.Result.Need3ds -> PaymentByCardState.ThreeDsUiNeeded(
+                finish.threeDsState,
                 paymentOptions
             )
-        } else {
-            PaymentByCardState.Success(
-                response.paymentId!!,
-                null,
-                response.rebillId
+            is FinishAuthorizeMethods.Result.Success -> PaymentByCardState.Success(
+                finish.paymentId,
+                finish.cardId,
+                finish.rebillId
             )
         }
     }
@@ -199,7 +134,12 @@ class PaymentByCardProcess internal constructor(
             application: Application,
             threeDsDataCollector: ThreeDsDataCollector = ThreeDsHelper.CollectData
         ) {
-            value = PaymentByCardProcess(sdk, application, threeDsDataCollector)
+            value = PaymentByCardProcess(
+                InitMethodsSdkImpl(sdk),
+                Check3DsVersionMethodsSdkImpl(sdk, application, threeDsDataCollector),
+                FinishAuthorizeMethodsSdkImpl(sdk),
+                CoroutineManager(),
+            )
         }
     }
 }

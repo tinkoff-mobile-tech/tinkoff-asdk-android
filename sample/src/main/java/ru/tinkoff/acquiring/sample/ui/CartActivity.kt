@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.adapters.CartListAdapter
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
@@ -42,6 +43,7 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
     private lateinit var listViewCartItems: ListView
     private lateinit var cartContentLayout: LinearLayout
     private lateinit var buttonPay: TextView
+    private lateinit var recurrentButton: TextView
 
     private var cartEmpty: Boolean = true
     private var adapter: ArrayAdapter<*>? = null
@@ -72,6 +74,8 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
         checkCartEmpty()
 
         setupYandexPay(R.style.AcquiringTheme_Base_Yandex,savedInstanceState)
+
+        setupRecurrentParentPayment()
     }
 
     override fun onResume() {
@@ -158,6 +162,10 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
 
         result.setLength(result.length - 2)
         return result.toString()
+    }
+
+    private fun setupRecurrentParentPayment(hasRecurrent: Boolean) {
+        recurrentButton.isVisible = hasRecurrent
     }
 
     companion object {

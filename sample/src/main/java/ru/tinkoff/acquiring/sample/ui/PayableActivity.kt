@@ -23,6 +23,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -54,6 +55,7 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
@@ -67,6 +69,7 @@ import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 /**
@@ -90,6 +93,15 @@ open class PayableActivity : AppCompatActivity() {
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
     private val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
+    private val byCardPayment = registerForActivityResult(PaymentByCard.Contract) { result ->
+        when (result) {
+            is PaymentByCard.Success -> {
+                toast("byCardPayment Success : ${result.paymentId}")
+            }
+            is PaymentByCard.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is PaymentByCard.Canceled -> toast("byCardPayment canceled")
+        }
+    }
     private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) { result ->
         when (result) {
             is TinkoffAcquiring.SbpScreen.Success -> {
@@ -295,6 +307,21 @@ open class PayableActivity : AppCompatActivity() {
             yandexPayButtonContainer.visibility = View.GONE
             showErrorDialog()
         })
+    }
+
+    protected fun setupRecurrentParentPayment() {
+        val recurrentButton : TextView? = findViewById<TextView>(R.id.recurrent_pay)
+        recurrentButton?.isVisible = settings.isRecurrentPayment
+        recurrentButton?.setOnClickListener {
+            val paymentOptions = createPaymentOptions().apply {
+                val session = TerminalsManager.selectedTerminal
+                this.setTerminalParams(
+                    terminalKey = session.terminalKey, publicKey = session.publicKey
+                )
+            }
+            PaymentByCardProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
+            byCardPayment.launch(PaymentByCard.StartData(paymentOptions, ArrayList()))
+        }
     }
 
     private fun createPaymentOptions(): PaymentOptions {
