@@ -89,15 +89,19 @@ internal class MainPaymentFormViewModel(
     }
 
     fun toTpay(isPrimary: Boolean = true) = viewModelScope.launch(coroutineManager.main) {
-        formContent.value = FormContent.Hide
-        mainFormNavController.toTpay(
-            mainFormAnalyticsDelegate.prepareOptions(
-                paymentOptions,
-                ChosenMethod.TinkoffPay
-            ),
-            isPrimary,
-            _formState.value?.data?.info?.getTinkoffPayVersion()
-        )
+        val version = _formState.value?.data?.info?.getTinkoffPayVersion()
+        if (isPrimary && version != null) {
+            formContent.value = FormContent.Hide
+            mainFormNavController.toTpay(
+                paymentOptions = mainFormAnalyticsDelegate.prepareOptions(
+                    paymentOptions,
+                    ChosenMethod.TinkoffPay
+                ),
+                version = version
+            )
+        } else {
+            mainFormNavController.toTpayWebView()
+        }
     }
 
     fun choseCard(card: Card) {

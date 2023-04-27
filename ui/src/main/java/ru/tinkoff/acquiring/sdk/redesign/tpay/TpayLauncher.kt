@@ -46,7 +46,7 @@ object TpayLauncher {
                     putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
                     putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
                 }
-                setResult(RESULT_OK)
+                setResult(RESULT_OK, intent)
             }
         }
         finish()
