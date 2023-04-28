@@ -94,10 +94,10 @@ class DetailsActivity : PayableActivity() {
         val buttonBuy = findViewById<TextView>(R.id.btn_buy_now)
         buttonBuy.setOnClickListener {
             //Стандартный метод проведения оплаты с получением результата в OnActivityResult
-            //initPayment()
+            initPayment()
 
             //Метод проведения оплаты с получением результата в ActivityResultAPI
-            initActivityResultAPIPayment()
+            //initActivityResultAPIPayment()
         }
 
         val sbpButton = findViewById<View>(R.id.btn_fps_pay)
