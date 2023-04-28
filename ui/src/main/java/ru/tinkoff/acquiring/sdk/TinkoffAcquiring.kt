@@ -186,6 +186,7 @@ class TinkoffAcquiring(
      * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
      * @param yandexPayToken  параметр платежной сессии от яндекса
      */
+    // todo переход на новый api result
     fun openYandexPaymentScreen(activity: Activity,
                           options: PaymentOptions,
                           requestCode: Int,
@@ -278,6 +279,7 @@ class TinkoffAcquiring(
     /**
      * Проверка статуса возможности оплата с помощью Tinkoff Pay
      */
+    @Deprecated("use checkTerminalInfo")
     fun checkTinkoffPayStatus(
         onSuccess: (TinkoffPayStatusResponse) -> Unit,
         onFailure: ((Throwable) -> Unit)? = null
@@ -399,6 +401,7 @@ class TinkoffAcquiring(
      * @param options     настройки платежной сессии и визуального отображения экрана
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
+    // todo переход на новый result api
     fun openDynamicQrScreen(activity: Activity, options: PaymentOptions, requestCode: Int) {
         val intent = prepareIntent(activity, options, QrCodeActivity::class.java)
         activity.startActivityForResult(intent, requestCode)
@@ -423,6 +426,7 @@ class TinkoffAcquiring(
      * @param featuresOptions конфигурация визуального отображения экрана
      * @param requestCode     код для получения результата, по завершению работы экрана Acquiring SDK
      */
+    // todo переход на новый result api
     fun openStaticQrScreen(activity: Activity, featuresOptions: FeaturesOptions, requestCode: Int) {
         val options = BaseAcquiringOptions().apply {
             features = featuresOptions
