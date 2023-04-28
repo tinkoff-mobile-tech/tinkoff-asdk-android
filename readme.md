@@ -337,5 +337,5 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [issues]: https://github.com/Tinkoff/AcquiringSdkAndroid/issues
 [acquiring]: https://www.tinkoff.ru/kassa/
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
-[full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
+[full-doc]: https://tinkoff.github.io/api_asdk/
 [network-security-config]:https://developer.android.com/training/articles/security-config
