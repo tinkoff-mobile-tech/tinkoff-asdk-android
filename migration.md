@@ -24,6 +24,7 @@
 больше не поддерживается.
 
 Метод `TinkoffAcquiring#checkTinkoffPayStatus` теперь Deprecated, используйте `TinkoffAcquiring#checkTerminalInfo`
+Метрл `CameraCardScanner#startActivityForScanning` теперь Deprecated, используйте `CardScannerNewApi.kt`
 
 2.13.2
 Новый алгоритм работы со сценарием оплаты СБП

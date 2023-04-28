@@ -1,3 +1,9 @@
+## 3.0.0
+#### Changes
+- redesing sdk
+- new payment process entities ([migration](/migration.md))
+- new methods for screen launching ([migration](/migration.md))
+- new card scan methods `CardScannerNewApi.kt`
 ## 2.13.0
 
 #### Fixed
@@ -19,7 +25,7 @@
 
 #### Fixed
 #### Changes
-- New module for `yandex pay` libraray in `ru.tinkoff.acquiring:yandexpay`
+- New module for `yandex pay` library in `ru.tinkoff.acquiring:yandexpay`
 - update read.me
 - update pages
 #### Additions
