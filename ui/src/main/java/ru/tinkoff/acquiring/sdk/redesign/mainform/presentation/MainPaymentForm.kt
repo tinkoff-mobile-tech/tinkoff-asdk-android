@@ -30,11 +30,15 @@ internal object MainPaymentForm {
 
         object Spb : Primary(Paymethod.SBP)
 
+        object MirPay : Primary(Paymethod.MirPay)
+
         data class Card(val selectedCard: CardChosenModel?) : Primary(Paymethod.Cards)
     }
 
     sealed class Secondary(val paymethod: Paymethod, val order: Int) {
         object Tpay : Secondary(Paymethod.TinkoffPay, 1)
+
+        object MirPay: Secondary(Paymethod.MirPay, 5)
 
         object Spb : Secondary(Paymethod.SBP, 3)
 

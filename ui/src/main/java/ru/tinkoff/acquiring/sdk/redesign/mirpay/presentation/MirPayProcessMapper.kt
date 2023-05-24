@@ -31,8 +31,9 @@ internal class MirPayProcessMapper {
             is MirPayPaymentState.CheckingStatus,
             is MirPayPaymentState.LeaveOnBankApp,
             is MirPayPaymentState.Created -> PaymentStatusSheetState.Progress(
-                title = R.string.acq_commonsheet_payment_waiting_title,
-                secondButton = R.string.acq_commonsheet_payment_waiting_flat_button
+                title = R.string.acq_commonsheet_mir_pay_payment_waiting_title,
+                subtitle = R.string.acq_commonsheet_mir_pay_payment_waiting_sub_title,
+                secondButton = R.string.acq_commonsheet_mir_pay_payment_waiting_close_button
             )
             is MirPayPaymentState.Stopped,
             is MirPayPaymentState.NeedChooseOnUi -> null

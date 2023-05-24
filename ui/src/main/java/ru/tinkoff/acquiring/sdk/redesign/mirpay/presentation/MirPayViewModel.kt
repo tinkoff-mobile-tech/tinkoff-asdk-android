@@ -14,12 +14,8 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.MirPayProcess
-import ru.tinkoff.acquiring.sdk.payment.TpayProcess
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.nav.MirPayNavigation
-import ru.tinkoff.acquiring.sdk.redesign.tpay.nav.TpayNavigation
-import ru.tinkoff.acquiring.sdk.redesign.tpay.presentation.TpayProcessMapper
-import ru.tinkoff.acquiring.sdk.redesign.tpay.presentation.TpayViewModel
 
 /**
  * @author k.shpakovskiy

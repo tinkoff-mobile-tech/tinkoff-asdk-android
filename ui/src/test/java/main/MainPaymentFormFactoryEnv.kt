@@ -74,6 +74,7 @@ internal class MainPaymentFormFactoryEnv(
 
     val secondaryButtonConfigurator
         get() = SecondButtonConfigurator.Impl(
+            installedAppChecker,
             nspkBankAppsProvider,
             installedAppsProvider
         )

@@ -1,16 +1,15 @@
 package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation
 
-import android.content.pm.PackageManager
 import ru.tinkoff.acquiring.sdk.redesign.common.util.InstalledAppChecker
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
 import ru.tinkoff.acquiring.sdk.responses.PaymethodData
-import ru.tinkoff.acquiring.sdk.utils.isPackageInstalled
 
 internal object MainPaymentFromUtils {
 
     private const val TINKOFF_MB_PACKAGE_ID = "com.idamob.tinkoff.android"
+    private const val MIR_PAY_PACKAGE_ID = "ru.nspk.mirpay"
     private const val NSPK_DEEPLINK = "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE"
 
     //keys
@@ -34,13 +33,18 @@ internal object MainPaymentFromUtils {
     }
     // endregion
 
-
-    suspend fun checkNspk(checker: NspkInstalledAppsChecker, provider: NspkBankAppsProvider) = getOrFalse {
+    suspend fun hasNspkAppsInstalled(checker: NspkInstalledAppsChecker, provider: NspkBankAppsProvider) = getOrFalse {
         val nspkApps = provider.getNspkApps()
         checker.checkInstalledApps(nspkApps, NSPK_DEEPLINK).isNotEmpty()
     }
 
-    fun checkTinkoff(installedAppChecker: InstalledAppChecker) = installedAppChecker.isInstall(TINKOFF_MB_PACKAGE_ID)
+    suspend fun hasTinkoffAppInstalled(installedAppChecker: InstalledAppChecker) = getOrFalse {
+        installedAppChecker.isInstall(TINKOFF_MB_PACKAGE_ID)
+    }
+
+    suspend fun hasMirPayAppInstalled(installedAppChecker: InstalledAppChecker) = getOrFalse {
+        installedAppChecker.isInstall(MIR_PAY_PACKAGE_ID)
+    }
 }
 
 internal fun List<PaymethodData>.has(paymethod: Paymethod) = any { it.paymethod == paymethod }

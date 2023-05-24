@@ -52,6 +52,7 @@ internal enum class ChosenMethod {
     NewCard,
     Sbp,
     TinkoffPay,
+    MirPay,
 }
 
 internal enum class MainFormAnalytics {
@@ -59,4 +60,5 @@ internal enum class MainFormAnalytics {
     NewCard,
     Sbp,
     TinkoffPay,
+    MirPay,
 }

@@ -54,6 +54,7 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
         }
         initializer {
             val handle = createSavedStateHandle()
+            val installedAppsChecker = InstalledAppCheckerSdkImpl(application.packageManager)
             val nspkProvider = NspkBankAppsProvider { NspkRequest().execute().dictionary }
             val nspkChecker = NspkInstalledAppsChecker { nspkBanks, dl ->
                 SbpHelper.getBankApps(application.packageManager, dl, nspkBanks)
@@ -64,12 +65,16 @@ fun MainPaymentFormFactory(application: Application, paymentOptions: PaymentOpti
                     acq.sdk,
                     savedCardRepo,
                     PrimaryButtonConfigurator.Impl(
-                        InstalledAppCheckerSdkImpl(application.packageManager),
+                        installedAppsChecker,
                         nspkProvider,
                         nspkChecker,
                         bankCaptionProvider
                     ),
-                    SecondButtonConfigurator.Impl(nspkProvider, nspkChecker),
+                    SecondButtonConfigurator.Impl(
+                        installedAppsChecker,
+                        nspkProvider,
+                        nspkChecker
+                    ),
                     MergeMethodsStrategy.ImplV1,
                     ConnectionChecker(application),
                     bankCaptionProvider,
