@@ -101,6 +101,10 @@
     <string name="acq_commonsheet_payment_waiting_title">Ждем оплату в приложении банка</string>
     <string name="acq_commonsheet_payment_waiting_flat_button">Закрыть</string>
 
+    <string name="acq_commonsheet_mir_pay_payment_waiting_title">Открываем приложение Mir Pay</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_sub_title">Это займет некоторое время</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_close_button">Закрыть</string>
+
     <string name="acq_commonsheet_timeout_failed_title">Время оплаты истекло</string>
     <string name="acq_commonsheet_timeout_failed_description">Попробуйте оплатить снова или выберите другой способ оплаты</string>
     <string name="acq_commonsheet_timeout_failed_primary_button">Оплатить еще раз</string>
@@ -108,12 +112,16 @@
     <string name="acq_chosen_card_change">Сменить карту</string>
 
     <string name="acq_primary_with_tinkoff_pay">Оплатить с Тинькофф</string>
+    <string name="acq_primary_with_mir_pay">Оплатить с</string>
     <string name="acq_primary_with_sbp">Оплатить с</string>
     <string name="acq_primary_with_card">Оплатить картой</string>
 
     <string name="acq_secondary_block_title">Оплатить другим способом</string>
     <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
     <string name="acq_secondary_tinkoff_pay_subtitle">В приложении банка</string>
+
+    <string name="acq_secondary_mir_pay_title">Mir Pay</string>
+    <string name="acq_secondary_mir_pay_subtitle">В приложении Mir Pay</string>
 
     <string name="acq_secondary_sbp_title">CБП</string>
     <string name="acq_secondary_sbp_subtitle">В приложении любого банка</string>

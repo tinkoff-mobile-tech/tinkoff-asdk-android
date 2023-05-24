@@ -57,6 +57,9 @@ class PaymethodData(
 )
 
 enum class Paymethod {
+    @SerializedName("MirPay")
+    MirPay,
+
     @SerializedName("TinkoffPay")
     TinkoffPay,
 

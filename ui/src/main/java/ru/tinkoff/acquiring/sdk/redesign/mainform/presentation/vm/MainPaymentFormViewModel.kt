@@ -104,6 +104,15 @@ internal class MainPaymentFormViewModel(
         }
     }
 
+    fun toMirPay() = viewModelScope.launch(coroutineManager.main) {
+        formContent.value = FormContent.Hide
+        val options = mainFormAnalyticsDelegate.prepareOptions(
+            paymentOptions,
+            ChosenMethod.MirPay
+        )
+        mainFormNavController.toMirPay(options)
+    }
+
     fun choseCard(card: Card) {
         _formState.update {
             it?.let { primaryButtonFactory.changeCard(it, card) }
@@ -136,9 +145,7 @@ internal class MainPaymentFormViewModel(
         coroutineManager.launchOnBackground {
             formContent.value = FormContent.Loading
             runCatching { primaryButtonFactory.getState() }
-                .onFailure {
-                    formContent.value = FormContent.Error
-                }
+                .onFailure { formContent.value = FormContent.Error }
                 .onSuccess {
                     mainFormAnalyticsDelegate.mapAnalytics(it.ui.primary)
                     _formState.value = it

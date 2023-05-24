@@ -24,6 +24,7 @@ internal class MainFormAnalyticsDelegate {
             }
             is MainPaymentForm.Primary.Spb -> MainFormAnalytics.Sbp
             is MainPaymentForm.Primary.Tpay -> MainFormAnalytics.TinkoffPay
+            is MainPaymentForm.Primary.MirPay -> MainFormAnalytics.MirPay
         }
     }
 

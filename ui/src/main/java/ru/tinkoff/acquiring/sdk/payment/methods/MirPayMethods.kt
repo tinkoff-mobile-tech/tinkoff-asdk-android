@@ -19,11 +19,15 @@ internal class MirPayMethodsImpl(
 ) : MirPayMethods {
 
     override suspend fun init(paymentOptions: PaymentOptions): Long {
-        return checkNotNull(acquiringSdk.configureInit(paymentOptions).execute().paymentId)
+        return checkNotNull(
+            acquiringSdk.configureInit(paymentOptions).execute().paymentId
+        )
     }
 
     override suspend fun getLink(paymentId: Long): String {
-        return checkNotNull(acquiringSdk.mirPayLink(paymentId).execute().deeplink)
+        return checkNotNull(
+            acquiringSdk.mirPayLink(paymentId).execute().deeplink
+        )
     }
 
     private fun AcquiringSdk.configureInit(paymentOptions: PaymentOptions) = init {
