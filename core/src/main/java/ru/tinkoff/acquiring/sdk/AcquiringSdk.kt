@@ -222,6 +222,7 @@ class AcquiringSdk(
 
     fun tinkoffPayLink(paymentId: Long, version: String, request: (TinkoffPayLinkRequest.() -> Unit)? = null): TinkoffPayLinkRequest {
         return TinkoffPayLinkRequest(paymentId.toString(), version).apply {
+            terminalKey = this@AcquiringSdk.terminalKey
             request?.invoke(this)
         }
     }
@@ -231,6 +232,7 @@ class AcquiringSdk(
      */
     fun mirPayLink(paymentId: Long, request: (MirPayLinkRequest.() -> Unit)? = null): MirPayLinkRequest {
         return MirPayLinkRequest(paymentId.toString()).apply {
+            terminalKey = this@AcquiringSdk.terminalKey
             request?.invoke(this)
         }
     }

@@ -31,10 +31,12 @@
                 android:host="tinkoff.ru"
                 android:scheme="https" />
         </intent>
+
+        <package android:name="ru.nspk.mirpay" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data
-                android:host="www.tinkoff.ru"
+                android:host="mirpay.nspk.ru"
                 android:scheme="https" />
         </intent>
     </queries>
@@ -121,6 +123,11 @@
             android:theme="@style/AcquiringNewTheme" />
 
         <activity android:name=".redesign.tpay.ui.TpayFlowActivity"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
+
+        <activity android:name=".redesign.mirpay.ui.MirPayFlowActivity"
             android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AcquiringNewTheme" />

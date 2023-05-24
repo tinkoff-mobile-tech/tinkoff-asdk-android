@@ -39,6 +39,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.ErrorStubComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.PrimaryButtonComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryBlockComponent
+import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
@@ -101,6 +102,22 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         }
     }
 
+    private val mirPayPayment = registerForActivityResult(MirPayLauncher.Contract) {
+        when (it) {
+            is MirPayLauncher.Canceled -> {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
+            is MirPayLauncher.Error -> {
+                viewModel.returnOnForm()
+            }
+            is MirPayLauncher.Success -> {
+                setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it))
+                finish()
+            }
+        }
+    }
+
     private val savedCards = registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {
         when (it) {
             is TinkoffAcquiring.ChoseCard.Canceled -> Unit
@@ -136,6 +153,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             viewBinding = AcqMainFormPrimaryButtonComponentBinding.bind(
                 findViewById(R.id.acq_main_form_primary_button)
             ),
+            onMirPayClick = viewModel::toMirPay,
             onNewCardClick = viewModel::toNewCard,
             onSpbClick = viewModel::toSbp,
             onTpayClick = viewModel::toTpay,
@@ -165,6 +183,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             onNewCardClick = viewModel::toPayCardOrNewCard,
             onSpbClick = viewModel::toSbp,
             onTpayClick = { viewModel.toTpay(false) },
+            onMirPayClick = viewModel::toMirPay,
         )
     }
 
@@ -254,25 +273,11 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                 shimmer.isVisible = false
                 content.isVisible = false
                 errorStubComponent.isVisible(false)
+                paymentStatusComponent.isVisible = true
+                paymentStatusComponent.render(cardStatus)
+                bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
+                bottomSheetComponent.collapse()
 
-                suspend fun renderStatus() {
-                    paymentStatusComponent.isVisible = true
-                    paymentStatusComponent.render(cardStatus)
-                    bottomSheetComponent.trimSheetToContent(paymentStatusComponent.viewBinding.root)
-                    bottomSheetComponent.collapse()
-                }
-
-                when (cardStatus) {
-                    PaymentStatusSheetState.Hide -> Unit
-                    PaymentStatusSheetState.NotYet -> Unit
-                    is PaymentStatusSheetState.Error -> {
-                        renderStatus()
-                    }
-                    is PaymentStatusSheetState.Success -> {
-                        renderStatus()
-                    }
-                    else -> Unit
-                }
             } else {
                 paymentStatusComponent.isVisible = false
                 when (formContent) {
@@ -367,6 +372,9 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                 }
                 is MainFormNavController.Navigation.ToTpay -> {
                     tpayPayment.launch(it.startData)
+                }
+                is MainFormNavController.Navigation.ToMirPay -> {
+                    mirPayPayment.launch(it.startData)
                 }
                 is MainFormNavController.Navigation.To3ds -> ThreeDsHelper.Launch.launchBrowserBased(
                     this,

@@ -19,7 +19,8 @@ internal class SecondaryBlockComponent(
     val binding: AcqMainFormSecondaryBlockBinding,
     private val onTpayClick: () -> Unit,
     private val onSpbClick: () -> Unit,
-    private val onNewCardClick: () -> Unit
+    private val onNewCardClick: () -> Unit,
+    private val onMirPayClick: () -> Unit
 ) : UiComponent<Set<MainPaymentForm.Secondary>> {
 
     private val adapter = Adapter().apply {
@@ -33,6 +34,7 @@ internal class SecondaryBlockComponent(
     }
 
     private fun onClick(paymethod: Paymethod) = when (paymethod) {
+        Paymethod.MirPay -> onMirPayClick()
         Paymethod.TinkoffPay -> onTpayClick()
         Paymethod.YandexPay -> Unit
         Paymethod.SBP -> onSpbClick()

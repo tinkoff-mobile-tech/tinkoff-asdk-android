@@ -2,8 +2,7 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.secondary
 
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkNspk
-import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.checkTinkoff
+import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFromUtils.hasNspkAppsInstalled
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
 import ru.tinkoff.acquiring.sdk.responses.Paymethod
@@ -28,13 +27,11 @@ internal interface SecondButtonConfigurator {
 
             val set = info?.paymethods?.mapNotNull {
                 when (it.paymethod) {
+                    Paymethod.MirPay -> MainPaymentForm.Secondary.MirPay
                     Paymethod.TinkoffPay -> MainPaymentForm.Secondary.Tpay
-                    Paymethod.YandexPay -> null// TODO !!!
-                    Paymethod.SBP -> if (checkNspk(checker, provider))
-                        MainPaymentForm.Secondary.Spb
-                    else
-                        null
+                    Paymethod.SBP -> MainPaymentForm.Secondary.Spb.takeIf { hasNspkAppsInstalled(checker, provider) }
                     Paymethod.Cards -> MainPaymentForm.Secondary.Cards(cardsCount)
+                    Paymethod.YandexPay,    // TODO !!! ??
                     Paymethod.Unknown -> null
                     null -> null
                 }

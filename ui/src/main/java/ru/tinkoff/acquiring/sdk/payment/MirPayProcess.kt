@@ -118,6 +118,23 @@ class MirPayProcess internal constructor(
         }
         else -> MirPayPaymentState.CheckingStatus(paymentId, status)
     }
+
+    companion object {
+        private var instance: MirPayProcess? = null
+
+        @Synchronized
+        @JvmStatic
+        internal fun init(sdk: AcquiringSdk) {
+            instance?.scope?.cancel()
+            instance = MirPayProcess(sdk)
+        }
+
+        @JvmStatic
+        internal fun getRequired() = instance!!
+
+        @JvmStatic
+        fun get() = instance
+    }
 }
 
 sealed interface MirPayPaymentState {

@@ -20,7 +20,7 @@ class GetStatusPooling(private val getStatusMethod: GetStatusMethod) {
         return flow {
             var tries = 0
             while (retriesCount > tries) {
-                val status = getStatusMethod(paymentId)
+                val status: ResponseStatus? = getStatusMethod(paymentId)
                 emitNotNull(status)
                 when (status) {
                     in ResponseStatus.successStatuses -> {

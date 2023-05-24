@@ -24,13 +24,11 @@ class SecondaryButtonComponent(val binding: AcqMainFormSecondaryButtonBinding) :
                 paymentSubtitle.text = null
                 paymentSubtitle.isVisible = false
                 paymentTypeIcon.setImageDrawable(null)
-                paymentTypeIcon.background = null
             } else {
                 paymentName.text = state.title
                 paymentSubtitle.text = state.subtitle
                 paymentSubtitle.isGone = state.subtitle.isNullOrBlank()
                 paymentTypeIcon.setImageDrawable(state.icon)
-                paymentTypeIcon.background = state.iconBg
             }
         }
     }
@@ -42,7 +40,6 @@ class SecondaryButtonComponent(val binding: AcqMainFormSecondaryButtonBinding) :
     class State(
         val paymethod: Paymethod,
         val icon: Drawable,
-        val iconBg: Drawable?,
         val title: String?,
         val subtitle: String?
     )
@@ -52,24 +49,26 @@ internal fun MainPaymentForm.Secondary.mapButtonState(context: Context) = when (
     is MainPaymentForm.Secondary.Cards -> SecondaryButtonComponent.State(
         paymethod = Paymethod.Cards,
         icon = ContextCompat.getDrawable(context, R.drawable.acq_add_new_card)!!,
-        iconBg = null,
         title = context.resources.getString(R.string.acq_secondary_card_title),
         subtitle = null
     )
     MainPaymentForm.Secondary.Spb -> SecondaryButtonComponent.State(
         paymethod = Paymethod.SBP,
-        icon = ContextCompat.getDrawable(context, R.drawable.acq_ic_secondary_sbp)!!,
-        iconBg = ContextCompat.getDrawable(context, R.drawable.acq_shimmer_circle_bg)!!,
+        icon = ContextCompat.getDrawable(context, R.drawable.acq_ic_secnod_sbp)!!,
         title = context.resources.getString(R.string.acq_secondary_sbp_title),
         subtitle = context.resources.getString(R.string.acq_secondary_sbp_subtitle)
     )
     MainPaymentForm.Secondary.Tpay -> SecondaryButtonComponent.State(
         paymethod = Paymethod.TinkoffPay,
         icon = ContextCompat.getDrawable(context, R.drawable.acq_icon_tinkoff_pay_alt)!!,
-        iconBg = null,
         title = context.resources.getString(R.string.acq_secondary_tinkoff_pay_title),
         subtitle = context.resources.getString(R.string.acq_secondary_tinkoff_pay_subtitle)
     )
+    MainPaymentForm.Secondary.MirPay -> SecondaryButtonComponent.State(
+        paymethod = Paymethod.MirPay,
+        icon = ContextCompat.getDrawable(context, R.drawable.acq_ic_second_mir_pay)!!,
+        title = context.resources.getString(R.string.acq_secondary_mir_pay_title),
+        subtitle = context.resources.getString(R.string.acq_secondary_mir_pay_subtitle)
+    )
     MainPaymentForm.Secondary.Yandex -> throw IllegalStateException("not supported")
 }
-

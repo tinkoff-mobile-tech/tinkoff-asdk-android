@@ -19,8 +19,8 @@ import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
  */
 internal class PrimaryButtonComponent(
     private val viewBinding: AcqMainFormPrimaryButtonComponentBinding,
-    private val onTpayClick: () -> Unit = { // TODO tpay flow
-    },
+    private val onTpayClick: () -> Unit = {},
+    private val onMirPayClick: () -> Unit = {},
     private val onSpbClick: () -> Unit = {},
     private val onNewCardClick: () -> Unit = {},
     private val onPayClick: () -> Unit = {}
@@ -66,6 +66,13 @@ internal class PrimaryButtonComponent(
                 buttonText = ctx.getString(R.string.acq_primary_with_tinkoff_pay),
                 icon = R.drawable.acq_icon_tinkoff_pay,
                 onClick = onTpayClick
+            )
+            is MainPaymentForm.Primary.MirPay -> setState(
+                bgColor = R.drawable.acq_button_black_bg,
+                textColor = R.color.acq_colorMirPayText,
+                buttonText = ctx.getString(R.string.acq_primary_with_mir_pay),
+                icon = R.drawable.ic_wallet_mir_pay,
+                onClick = onMirPayClick
             )
         }
     }

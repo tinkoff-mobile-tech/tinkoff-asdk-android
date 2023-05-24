@@ -34,6 +34,7 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.*
 import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
 import ru.tinkoff.acquiring.sdk.models.paysources.CardData
 import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
+import ru.tinkoff.acquiring.sdk.payment.MirPayProcess
 import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
 import ru.tinkoff.acquiring.sdk.payment.TpayProcess
@@ -211,6 +212,13 @@ class TinkoffAcquiring(
         TpayProcess.init(sdk)
     }
 
+    /**
+     * Создает платежную сессию в рамках оплаты по MirPay
+     */
+    @MainThread
+    fun initMirPayPaymentSession() {
+        MirPayProcess.init(sdk)
+    }
 
     /**
      * Запуск SDK для оплаты через Систему быстрых платежей

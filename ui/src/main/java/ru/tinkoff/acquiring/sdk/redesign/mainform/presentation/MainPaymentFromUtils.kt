@@ -8,8 +8,10 @@ import ru.tinkoff.acquiring.sdk.responses.PaymethodData
 internal object MainPaymentFromUtils {
 
     private const val TINKOFF_MB_PACKAGE_ID = "com.idamob.tinkoff.android"
+    private const val MIR_PAY_PACKAGE_ID = "ru.nspk.mirpay"
     private const val NSPK_DEEPLINK = "https://qr.nspk.ru/83C25B892E5343E5BF30BA835C9CD2FE"
     private const val TPAY_DEEPLINK = "https://www.tinkoff.ru/tpay/1923863684"
+    private const val MIR_PAY_DEEPLINK = "mirpay://pay.mironline.ru/inapp/eyJhbGciOiJQUz"
 
     //keys
     const val EMAIL_KEY = "EMAIL_KEY"
@@ -32,14 +34,17 @@ internal object MainPaymentFromUtils {
     }
     // endregion
 
-
-    suspend fun checkNspk(checker: NspkInstalledAppsChecker, provider: NspkBankAppsProvider) = getOrFalse {
+    suspend fun hasNspkAppsInstalled(checker: NspkInstalledAppsChecker, provider: NspkBankAppsProvider) = getOrFalse {
         val nspkApps = provider.getNspkApps()
         checker.checkInstalledApps(nspkApps, NSPK_DEEPLINK).isNotEmpty()
     }
 
-    suspend fun checkTinkoff(checker: NspkInstalledAppsChecker) = getOrFalse {
+    suspend fun hasTinkoffAppInstalled(checker: NspkInstalledAppsChecker) = getOrFalse {
         checker.checkInstalledApps(setOf(TINKOFF_MB_PACKAGE_ID), TPAY_DEEPLINK).isNotEmpty()
+    }
+
+    suspend fun hasMirPayAppInstalled(checker: NspkInstalledAppsChecker) = getOrFalse {
+        checker.checkInstalledApps(setOf(MIR_PAY_PACKAGE_ID), MIR_PAY_DEEPLINK).isNotEmpty()
     }
 }
 

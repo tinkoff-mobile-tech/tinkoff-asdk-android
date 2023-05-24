@@ -41,11 +41,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/menu_action_send_notification"
-        android:title="@string/activity_title_send_notification"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/menu_action_settings"
         android:title="@string/activity_title_settings"
         app:showAsAction="never"/>
@@ -58,11 +53,6 @@
     <item
         android:id="@+id/terminals"
         android:title="@string/activity_title_terminals"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/sbp_bank_list"
-        android:title="@string/bank_list"
         app:showAsAction="never"/>
 
     <item

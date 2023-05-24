@@ -9,6 +9,7 @@ import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 
@@ -75,6 +76,10 @@ internal class MainFormNavController {
         }
     }
 
+    suspend fun toMirPay(paymentOptions: PaymentOptions) {
+        channelNav.send(Navigation.ToMirPay(MirPayLauncher.StartData(paymentOptions)))
+    }
+
     suspend fun to3ds(paymentOptions: PaymentOptions, threeDsState: ThreeDsState) =
         channelNav.send(Navigation.To3ds(paymentOptions, threeDsState))
 
@@ -91,6 +96,8 @@ internal class MainFormNavController {
         class ToChooseCard(val savedCardsOptions: SavedCardsOptions) : Navigation
 
         class ToTpay(val startData: TpayLauncher.StartData) : Navigation
+
+        class ToMirPay(val startData: MirPayLauncher.StartData) : Navigation
 
         class ToWebView(val url: String) : Navigation
 

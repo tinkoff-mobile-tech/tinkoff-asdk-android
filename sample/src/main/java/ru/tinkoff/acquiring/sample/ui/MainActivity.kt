@@ -143,11 +143,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 openStaticQrScreen()
                 true
             }
-            R.id.menu_action_send_notification -> {
-                PaymentNotificationManager.triggerNotification(this,
-                        PaymentNotificationManager.PRICE_BUTTON_ID_2)
-                true
-            }
             R.id.menu_action_settings -> {
                 SettingsActivity.start(this)
                 true
