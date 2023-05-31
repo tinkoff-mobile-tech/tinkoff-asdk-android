@@ -31,6 +31,7 @@
             style="?attr/acqToolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/acq_ic_close"
             app:titleTextAppearance="@style/AcqToolbarTitleStyle" />
 
         <ViewFlipper

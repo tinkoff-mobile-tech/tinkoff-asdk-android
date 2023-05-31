@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sdk.smartfield
 
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.res.ResourcesCompat
@@ -47,7 +48,11 @@ internal class BaubleClearOrScanButton {
     }
 
     private fun update() {
-        clear.isVisible = textFieldView.isEnabled && textFieldView.text.isNullOrBlank().not()
-        scan.isVisible = textFieldView.isEnabled && cardScanner.isEnabled() && textFieldView.text.isNullOrBlank()
+        clear.isVisible = textFieldView.isEnabled
+                && textFieldView.text.isNullOrBlank().not()
+                && textFieldView.isViewFocused()
+        scan.isVisible = textFieldView.isEnabled
+                && cardScanner.isEnabled()
+                && textFieldView.text.isNullOrBlank()
     }
 }

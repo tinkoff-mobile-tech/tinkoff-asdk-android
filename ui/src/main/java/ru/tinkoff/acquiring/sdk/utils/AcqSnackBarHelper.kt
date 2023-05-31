@@ -27,21 +27,8 @@ class AcqSnackBarHelper(private val view: View) {
             LayoutInflater.from(view.context).inflate(R.layout.acq_snackbar_progress_layout, null)
         val textView = customSnackView.findViewById<TextView>(R.id.acq_snackbar_text)
         val progressBar = customSnackView.findViewById<ProgressBar>(R.id.acq_snackbar_progress_bar)
-        val snackbarLayout = bar.view as SnackbarLayout
         textView.text = textValue
-
-        snackbarLayout.addView(customSnackView, 0)
-
-        snackbarLayout.setBackgroundColor(
-            ContextCompat.getColor(view.context, android.R.color.transparent)
-        )
-        snackbarLayout.setPadding(
-            view.context.dpToPx(16),
-            0,
-            view.context.dpToPx(16),
-            view.context.dpToPx(24)
-        )
-
+        bar.view.initSnackBarLayout(customSnackView)
         bar.show()
     }
 
@@ -57,21 +44,8 @@ class AcqSnackBarHelper(private val view: View) {
         val textView = customSnackView.findViewById<TextView>(R.id.acq_snackbar_text)
         val imageView = customSnackView.findViewById<ImageView>(R.id.acq_snackbar_icon)
         imageView.setImageResource(iconRes)
-        val snackbarLayout = bar.view as SnackbarLayout
         textView.text = textValue
-
-        snackbarLayout.addView(customSnackView, 0)
-
-        snackbarLayout.setBackgroundColor(
-            ContextCompat.getColor(view.context, android.R.color.transparent)
-        )
-        snackbarLayout.setPadding(
-            view.context.dpToPx(16),
-            0,
-            view.context.dpToPx(16),
-            view.context.dpToPx(24)
-        )
-
+        bar.view.initSnackBarLayout(customSnackView)
         bar.show()
     }
 
@@ -86,6 +60,14 @@ class AcqSnackBarHelper(private val view: View) {
             view.postDelayed({
                 snackbar?.dismiss()
             }, delay)
+        }
+    }
+
+    private fun View.initSnackBarLayout(customSnackBarView: View) {
+        with(this as SnackbarLayout) {
+            addView(customSnackBarView, 0)
+            setBackgroundColor(ContextCompat.getColor(view.context, android.R.color.transparent))
+            setPadding(0, 0, 0, 0)
         }
     }
 }
