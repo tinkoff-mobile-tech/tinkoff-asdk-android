@@ -69,9 +69,9 @@ internal class AttachCardActivity : TransparentActivity() {
 
     private fun observeLiveData() {
         with(attachCardViewModel) {
-            attachCardResultLiveData.observe(this@AttachCardActivity, Observer { finishWithSuccess(it) })
-            screenStateLiveData.observe(this@AttachCardActivity, Observer { handleScreenState(it) })
-            screenChangeEventLiveData.observe(this@AttachCardActivity, Observer { handleScreenChangeEvent(it) })
+            attachCardResultLiveData.observe(this@AttachCardActivity) { finishWithSuccess(it) }
+            screenStateLiveData.observe(this@AttachCardActivity) { handleScreenState(it) }
+            screenChangeEventLiveData.observe(this@AttachCardActivity) { handleScreenChangeEvent(it) }
         }
     }
 

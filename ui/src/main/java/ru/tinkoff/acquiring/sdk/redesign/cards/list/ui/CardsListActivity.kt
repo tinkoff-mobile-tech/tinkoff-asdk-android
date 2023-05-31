@@ -248,30 +248,17 @@ internal class CardsListActivity : TransparentActivity() {
         viewModel.chooseNewCard()
     }
 
-    private fun handleCardAttached(tail: String) {
-        snackBarHelper.showWithIcon(
-            R.drawable.acq_ic_card_sparkle,
-            getString(R.string.acq_cardlist_snackbar_add, tail)
-        )
-    }
-
     private fun CoroutineScope.subscribeOnEvents() {
         launch {
             viewModel.eventFlow.filterNotNull().collect {
-                handleDeleteInProgress(
-                    it is CardListEvent.RemoveCardProgress,
-                    (it as? CardListEvent.RemoveCardProgress)?.deletedCard?.tail
-                )
                 when (it) {
-                    is CardListEvent.RemoveCardProgress -> Unit
+                    is CardListEvent.RemoveCardProgress -> showProgress(it.deletedCard.tail)
                     is CardListEvent.RemoveCardSuccess -> {
+                        hideProgress()
                         it.indexAt?.let(cardsListAdapter::onRemoveCard)
-                        snackBarHelper.showWithIcon(
-                            R.drawable.acq_ic_card_sparkle,
-                            getString(R.string.acq_cardlist_snackbar_remove, it.deletedCard.tail)
-                        )
                     }
                     is CardListEvent.ShowError -> {
+                        hideProgress()
                         showErrorDialog(
                             R.string.acq_generic_alert_label,
                             R.string.acq_generic_stub_description,
@@ -288,6 +275,7 @@ internal class CardsListActivity : TransparentActivity() {
                         finishWithCancel()
                     }
                     is CardListEvent.ShowCardDeleteError -> {
+                        hideProgress()
                         showErrorDialog(
                             R.string.acq_cardlist_alert_deletecard_label,
                             null,
@@ -295,7 +283,10 @@ internal class CardsListActivity : TransparentActivity() {
                         )
                     }
                     is CardListEvent.ShowCardAttachDialog -> {
-                        handleCardAttached(it.it)
+                        snackBarHelper.showWithIcon(
+                            R.drawable.acq_ic_card_sparkle,
+                            getString(R.string.acq_cardlist_snackbar_add, it.it)
+                        )
                     }
                 }
             }
@@ -321,23 +312,24 @@ internal class CardsListActivity : TransparentActivity() {
         stubButtonView.setText(buttonTextRes)
     }
 
-    private fun handleDeleteInProgress(inProgress: Boolean, cardTail: String?) {
-        root.alpha = if (inProgress) 0.5f else 1f
-        if (inProgress) {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+    private fun showProgress(cardTail: String?) {
+        root.alpha = 0.5f
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
+        snackBarHelper.showProgress(
+            getString(
+                R.string.acq_cardlist_snackbar_remove_progress,
+                cardTail
             )
-            snackBarHelper.showProgress(
-                getString(
-                    R.string.acq_cardlist_snackbar_remove_progress,
-                    cardTail
-                )
-            )
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-            snackBarHelper.hide()
-        }
+        )
+    }
+
+    private fun hideProgress() {
+        root.alpha = 1f
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        snackBarHelper.hide(SNACK_BAR_HIDE_DELAY)
     }
 
     private fun finishWithCard(card: Card) {
@@ -348,5 +340,9 @@ internal class CardsListActivity : TransparentActivity() {
     private fun finishAndSelectNew() {
         setResult(TinkoffAcquiring.SELECT_NEW_CARD)
         super.finish()
+    }
+
+    companion object {
+        private const val SNACK_BAR_HIDE_DELAY = 500L
     }
 }

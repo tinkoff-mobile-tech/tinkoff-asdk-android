@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/acq_snackbar_bg"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="16dp">
+    android:layout_height="100dp"
+    >
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/acq_snackbar_progress_bar"
-        app:indicatorColor="@color/acq_progress_bar_color"
-        android:layout_width="40dp"
-        android:indeterminateOnly="true"
-        app:trackColor="@android:color/transparent"
-        app:trackThickness="2dp"
-        android:layout_height="40dp"
-        app:indicatorSize="34dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/acq_snackbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="8dp"
+        >
 
-    <TextView
-        android:id="@+id/acq_snackbar_text"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="64dp"
-        android:fontFamily="@font/roboto_regular"
-        android:textSize="@dimen/acq_large_text_size"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Карта •7913 удалена" />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/acq_snackbar_progress_bar"
+            app:indicatorColor="@color/acq_progress_bar_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateOnly="true"
+            android:layout_marginHorizontal="16dp"
+            app:trackColor="@android:color/transparent"
+            app:trackThickness="2dp"
+            app:indicatorSize="30dp"
+            android:layout_gravity="center_vertical"
+            />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/acq_snackbar_text"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="66dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textSize="@dimen/acq_large_text_size"
+            android:layout_gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Карта •7913 удалена" />
+
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

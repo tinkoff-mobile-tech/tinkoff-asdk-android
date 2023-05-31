@@ -114,6 +114,7 @@ internal class CardDataInputFragment : Fragment() {
         }
 
         with(cvcInput) {
+            editText.letterSpacing = 0.1f
             BaubleClearButton().attach(this)
             transformationMethod = PasswordTransformationMethod()
             MaskFormatWatcher(createCvcMask()).installOn(editText)
