@@ -52,8 +52,11 @@ sealed class PaymentStatusSheetState(
     ) : PaymentStatusSheetState(title, subtitle, null, secondButton)
 
     class Error(
-        title: Int, subtitle: Int? = null, mainButton: Int? = null,
-        secondButton: Int? = null, val throwable: Throwable
+        title: Int,
+        subtitle: Int? = null,
+        mainButton: Int? = null,
+        secondButton: Int? = null,
+        val throwable: Throwable
     ) : PaymentStatusSheetState(title, subtitle, mainButton, secondButton)
 
     class Success(
