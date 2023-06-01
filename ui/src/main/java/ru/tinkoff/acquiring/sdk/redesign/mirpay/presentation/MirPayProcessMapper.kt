@@ -55,8 +55,8 @@ internal class MirPayProcessMapper {
 
     fun mapResult(it: MirPayPaymentState): MirPayLauncher.Result? {
         return when (it) {
-            is MirPayPaymentState.LeaveOnBankApp,
             is MirPayPaymentState.NeedChooseOnUi -> null
+            is MirPayPaymentState.LeaveOnBankApp,
             is MirPayPaymentState.Started,
             is MirPayPaymentState.CheckingStatus,
             is MirPayPaymentState.Created,
