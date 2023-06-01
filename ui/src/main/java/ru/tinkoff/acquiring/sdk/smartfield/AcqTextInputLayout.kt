@@ -307,7 +307,7 @@ constructor(
         return state
     }
 
-    override fun childDrawableStateChanged(child: View?) {
+    override fun childDrawableStateChanged(child: View) {
         if (child === editText) {
             refreshDrawableState()
         } else {

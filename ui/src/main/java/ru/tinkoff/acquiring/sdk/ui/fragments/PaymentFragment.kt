@@ -453,11 +453,11 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             interpolator = DecelerateInterpolator()
         }.apply {
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     emailHintTextView.visibility = View.VISIBLE
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     emailHintTextView.visibility = View.INVISIBLE
                 }
             })
@@ -470,7 +470,7 @@ internal class PaymentFragment : BaseAcquiringFragment(), EditCardScanButtonClic
             interpolator = DecelerateInterpolator()
         }.apply {
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     emailHintTextView.visibility = View.VISIBLE
                 }
             })

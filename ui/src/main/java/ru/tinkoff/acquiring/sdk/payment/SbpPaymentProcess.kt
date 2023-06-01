@@ -104,7 +104,7 @@ class SbpPaymentProcess internal constructor(
         return response.paymentId!!
     }
 
-    private suspend fun sendGetQr(paymentId: Long) = checkNotNull(
+    private suspend fun sendGetQr(paymentId: Long): String = checkNotNull(
         sdk.getQr {
             this.paymentId = paymentId
             this.dataType = DataTypeQr.PAYLOAD

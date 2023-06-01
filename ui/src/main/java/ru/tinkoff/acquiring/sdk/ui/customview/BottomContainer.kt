@@ -298,7 +298,7 @@ internal class BottomContainer @JvmOverloads constructor(
         initAnimation = AnimatorSet().apply {
             playTogether(startAnimations)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     background?.visibility = View.VISIBLE
                     containerState = STATE_SHOWED
                     containerStateListener?.onShowed()
@@ -344,7 +344,7 @@ internal class BottomContainer @JvmOverloads constructor(
                 DecelerateInterpolator())
                 .apply {
                     addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
+                        override fun onAnimationEnd(animation: Animator) {
                             this@BottomContainer.y = destinyPositionY.toFloat()
                             setBackgroundColor(ContextCompat.getColor(context, R.color.acq_colorMain))
                             containerState = STATE_FULLSCREEN
@@ -369,7 +369,7 @@ internal class BottomContainer @JvmOverloads constructor(
                 DecelerateInterpolator())
                 .apply {
                     addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
+                        override fun onAnimationEnd(animation: Animator) {
                             this@BottomContainer.y = expandedPositionY
                             resizeScrollContainer()
                         }
@@ -454,7 +454,7 @@ internal class BottomContainer @JvmOverloads constructor(
                 if (initAnimation != null && initAnimation!!.isRunning) {
                     initAnimation!!.apply {
                         addListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator?) {
+                            override fun onAnimationEnd(animation: Animator) {
                                 expand()
                             }
                         })
