@@ -7,6 +7,7 @@
     android:background="@drawable/acq_bottom_sheet_bg"
     android:gravity="center_horizontal"
     android:paddingBottom="24dp"
+    android:paddingHorizontal="16dp"
     android:orientation="vertical">
 
     <ImageView
@@ -42,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingBottom="12dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/acq_colorTextSecondary"
         android:textSize="16sp"
         tools:text="Пополните его или выберите другой" />
@@ -62,4 +63,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:acq_text="Понятно" />
+
 </LinearLayout>
