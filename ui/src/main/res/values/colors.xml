@@ -25,6 +25,7 @@
     <color name="acq_colorMirPayButton">#000000</color>
     <color name="acq_colorMirPayButtonPressed">#38001024</color>
     <color name="acq_colorButtonDisable">#08001024</color>
+    <color name="acq_colorBottomBar">#38001024</color>
     <color name="acq_colorButtonSecondary">@color/acq_colorButtonDisable</color>
     <color name="acq_colorButtonSecondaryPressed">#08001024</color>
     <color name="acq_colorTitle">#000000</color>

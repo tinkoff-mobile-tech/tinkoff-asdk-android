@@ -14,7 +14,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:layout_marginBottom="16dp"
         android:src="@drawable/acq_ic_cross_circle" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -31,6 +30,7 @@
         android:id="@+id/acq_payment_status_form_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:gravity="center"
         android:textColor="@color/acq_colorText"
         android:textSize="20sp"
@@ -52,6 +52,7 @@
         style="@style/AcqLoaderButton.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         app:acq_text="Вернуться к оплате" />
 
     <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
@@ -59,5 +60,6 @@
         style="@style/AcqLoaderButton.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:acq_text="Понятно" />
 </LinearLayout>
