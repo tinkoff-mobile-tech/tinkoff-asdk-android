@@ -345,9 +345,9 @@ internal class ResultNotificationView : View {
                 invalidate()
             }
             addListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {}
+                override fun onAnimationRepeat(animation: Animator) {}
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     val delay = if (formattedText.isNullOrBlank()) {
                         durationOfDisplayViewWithoutText
                     } else {
@@ -356,9 +356,9 @@ internal class ResultNotificationView : View {
                     this@ResultNotificationView.postDelayed(action, delay)
                 }
 
-                override fun onAnimationCancel(animation: Animator?) {}
+                override fun onAnimationCancel(animation: Animator) {}
 
-                override fun onAnimationStart(animation: Animator?) {}
+                override fun onAnimationStart(animation: Animator) {}
             })
             start()
         }
@@ -386,7 +386,7 @@ internal class ResultNotificationView : View {
                 this@ResultNotificationView.alpha = (1 - animatedValue as Float)
             }
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     this@ResultNotificationView.listeners.forEach {
                         if (context is Activity && !(context as Activity).isFinishing && !(context as Activity).isDestroyed) {
                             status = INVISIBLE

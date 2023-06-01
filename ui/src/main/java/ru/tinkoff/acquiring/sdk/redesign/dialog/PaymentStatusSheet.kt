@@ -92,6 +92,8 @@ class PaymentStatusSheet internal constructor(): BottomSheetDialogFragment() {
 
         if (subtitle != null)
             this.subtitle.setText(subtitle)
+        else
+            this.subtitle.text = null
 
         this.subtitle.isVisible = title != null
 

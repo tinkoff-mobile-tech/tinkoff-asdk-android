@@ -1135,7 +1135,7 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playTogether(cardNumberAlphaAnimator, lastBlockTranslateXAnimator, dateCvcAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     // Setting starting values of delayed animations
                     setHintAlpha(0)
                     setDateAlpha(0)
@@ -1147,7 +1147,7 @@ internal class EditCard @JvmOverloads constructor(
                     switchViewState(CARD_NUMBER_ANIMATION_STATE)
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     // AnimatorSet triggers onAnimationStart callback AFTER the initial tick of inner animations, which
                     // causes problems when animation scale set to zero on device, hence we manually set target values
                     // of delayed animations in onAnimationEnd
@@ -1221,7 +1221,7 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playTogether(cardNumberAlphaAnimator, lastBlockTranslateXAnimator, dateCvcAlphaAnimator, hintAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     cardNumberPaint.alpha = 0
                     switchViewState(CARD_NUMBER_ANIMATION_STATE)
                     if (!checkFlags(FLAG_MASKED_NUMBER)) {
@@ -1230,7 +1230,7 @@ internal class EditCard @JvmOverloads constructor(
                     }
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
@@ -1271,13 +1271,13 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playSequentially(cardNumberTranslateXAnimator, logoAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     logoPaint.alpha = 0
                     switchViewState(CARD_LOGO_ANIMATION_STATE)
                     addFlags(FLAG_CARD_SYSTEM_LOGO)
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
@@ -1317,13 +1317,13 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playSequentially(logoAlphaAnimator, translateXAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     logoPaint.alpha = 255
                     switchViewState(CARD_LOGO_ANIMATION_STATE)
                     removeFlag(FLAG_CARD_SYSTEM_LOGO)
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
