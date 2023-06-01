@@ -24,7 +24,6 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
-import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.utils.*
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
