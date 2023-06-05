@@ -113,7 +113,7 @@
 
     <string name="acq_secondary_block_title">Pay by another method</string>
     <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
-    <string name="acq_secondary_tinkoff_pay_subtitle">in Tinkoff app</string>
+    <string name="acq_secondary_tinkoff_pay_subtitle">In Tinkoff app</string>
 
     <string name="acq_secondary_mir_pay_title">Mir Pay</string>
     <string name="acq_secondary_mir_pay_subtitle">In Mir Pay app</string>
@@ -122,7 +122,7 @@
     <string name="acq_commonsheet_mir_pay_payment_waiting_close_button">Close</string>
 
     <string name="acq_secondary_sbp_title">Fast payment system</string>
-    <string name="acq_secondary_sbp_subtitle">in app of any bank</string>
+    <string name="acq_secondary_sbp_subtitle">In app of any bank</string>
 
     <string name="acq_secondary_card_title">Картой</string>
     <string name="main_form_to_pay">To pay</string>
