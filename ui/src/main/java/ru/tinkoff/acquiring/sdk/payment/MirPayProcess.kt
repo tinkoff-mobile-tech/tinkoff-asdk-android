@@ -92,7 +92,11 @@ class MirPayProcess internal constructor(
 
     private fun startLoping(retriesCount: Int?, paymentId: Long): Job {
         return scope.launch {
-            getStatusPooling.start(retriesCount = retriesCount, paymentId = paymentId)
+            getStatusPooling.start(
+                retriesCount = retriesCount ?: POLLING_RETRIES_COUNT,
+                paymentId = paymentId,
+                delayMs = POLLING_DELAY_MS
+            )
                 .map { mapResponseStatusToState(status = it, paymentId = paymentId) }
                 .catch {
                     emit(MirPayPaymentState.PaymentFailed(throwable = it, paymentId = paymentId))
@@ -120,6 +124,8 @@ class MirPayProcess internal constructor(
     }
 
     companion object {
+        private const val POLLING_DELAY_MS = 5000L
+        private const val POLLING_RETRIES_COUNT = 60
         private var instance: MirPayProcess? = null
 
         @Synchronized
