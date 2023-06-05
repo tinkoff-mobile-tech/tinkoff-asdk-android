@@ -117,7 +117,7 @@
 
     <string name="acq_secondary_mir_pay_title">Mir Pay</string>
     <string name="acq_secondary_mir_pay_subtitle">In Mir Pay app</string>
-    <string name="acq_commonsheet_mir_pay_payment_waiting_title">Open Mir Pay application</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_title">Opening Mir Pay application</string>
     <string name="acq_commonsheet_mir_pay_payment_waiting_sub_title">It will take some time</string>
     <string name="acq_commonsheet_mir_pay_payment_waiting_close_button">Close</string>
 
