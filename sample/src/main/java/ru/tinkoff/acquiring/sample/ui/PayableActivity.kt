@@ -55,9 +55,11 @@ import ru.tinkoff.acquiring.sdk.payment.PaymentListener
 import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
 import ru.tinkoff.acquiring.sdk.payment.PaymentState
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
+import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableMirPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.utils.Money
@@ -141,6 +143,13 @@ open class PayableActivity : AppCompatActivity() {
             is TpayLauncher.Canceled -> toast("tpay canceled")
             is TpayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
             is TpayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+        }
+    }
+    private val mirPayment = registerForActivityResult(MirPayLauncher.Contract) { result ->
+        when (result) {
+            is MirPayLauncher.Canceled -> toast("MirPay canceled")
+            is MirPayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is MirPayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
 
@@ -274,6 +283,26 @@ open class PayableActivity : AppCompatActivity() {
             tinkoffAcquiring.initTinkoffPayPaymentSession()
             tinkoffPayButton.setOnClickListener {
                 tpayPayment.launch(TpayLauncher.StartData(opt, version))
+            }
+        })
+    }
+
+    protected fun setupMirPay() {
+        val mirPayButton = findViewById<View>(R.id.mir_pay_button)
+
+        tinkoffAcquiring.checkTerminalInfo({ status ->
+            if (status.enableMirPay().not()) return@checkTerminalInfo
+
+            mirPayButton.visibility = View.VISIBLE
+
+            val opt = createPaymentOptions()
+            opt.setTerminalParams(
+                TerminalsManager.selectedTerminal.terminalKey,
+                TerminalsManager.selectedTerminal.publicKey
+            )
+            tinkoffAcquiring.initMirPayPaymentSession()
+            mirPayButton.setOnClickListener {
+                mirPayment.launch(MirPayLauncher.StartData(opt))
             }
         })
     }

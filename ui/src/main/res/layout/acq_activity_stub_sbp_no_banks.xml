@@ -20,7 +20,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_stub_phone_denied" />
+        android:src="@drawable/acq_ic_stub_phone_denied" />
 
     <TextView
         android:layout_width="match_parent"

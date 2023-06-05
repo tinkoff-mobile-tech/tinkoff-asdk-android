@@ -108,6 +108,8 @@ class DetailsActivity : PayableActivity() {
 
         setupTinkoffPay()
 
+        setupMirPay()
+
         setupYandexPay(savedInstanceState = savedInstanceState)
 
         fillViews()

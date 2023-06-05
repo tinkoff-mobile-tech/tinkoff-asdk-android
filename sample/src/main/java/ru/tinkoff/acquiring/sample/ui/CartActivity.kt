@@ -71,6 +71,8 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
 
         setupTinkoffPay()
 
+        setupMirPay()
+
         checkCartEmpty()
 
         setupYandexPay(R.style.AcquiringTheme_Base_Yandex,savedInstanceState)
