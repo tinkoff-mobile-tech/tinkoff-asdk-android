@@ -17,3 +17,8 @@ fun TerminalInfo?.enableTinkoffPay(): Boolean {
     this ?: return false
     return paymethods.any { it.paymethod == Paymethod.TinkoffPay }
 }
+
+fun TerminalInfo?.enableMirPay(): Boolean {
+    this ?: return false
+    return paymethods.any { it.paymethod == Paymethod.MirPay }
+}

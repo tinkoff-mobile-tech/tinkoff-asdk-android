@@ -7,12 +7,9 @@ import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.acq_main_form_primary_button_component.view.*
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqMainFormPrimaryButtonComponentBinding
-import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.ChosenCardComponent
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
-import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
 
 /**
  * Created by i.golovachev
@@ -71,7 +68,7 @@ internal class PrimaryButtonComponent(
                 bgColor = R.drawable.acq_button_black_bg,
                 textColor = R.color.acq_colorMirPayText,
                 buttonText = ctx.getString(R.string.acq_primary_with_mir_pay),
-                icon = R.drawable.ic_wallet_mir_pay,
+                icon = R.drawable.acq_ic_wallet_mir_pay,
                 onClick = onMirPayClick
             )
         }
