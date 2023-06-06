@@ -40,7 +40,11 @@
     <string name="acq_commonsheet_timeout_failed_primary_button">Pay again</string>
     <string name="acq_commonsheet_timeout_failed_flat_button">Other payment method</string>
 
-    <string name="acq_commonsheet_failed_title">Payment error</string>
+    <string name="acq_commonsheet_payment_failed_title">Payment failed</string>
+    <string name="acq_commonsheet_payment_failed_description">Try another method</string>
+    <string name="acq_commonsheet_payment_failed_primary_button">Choose another method</string>
+
+    <string name="acq_commonsheet_failed_title">Payment failed</string>
     <string name="acq_commonsheet_failed_description">Try to pay again or choose another payment method</string>
     <string name="acq_commonsheet_failed_primary_button">Pay again</string>
     <string name="acq_commonsheet_clear_primarybutton">OK</string>
