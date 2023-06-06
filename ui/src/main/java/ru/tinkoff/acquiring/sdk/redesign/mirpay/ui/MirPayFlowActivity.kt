@@ -117,7 +117,7 @@ internal class MirPayFlowActivity : AppCompatActivity() {
                     putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
                     putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
                 }
-                setResult(Activity.RESULT_OK)
+                setResult(RESULT_OK, intent)
             }
         }
         finish()
