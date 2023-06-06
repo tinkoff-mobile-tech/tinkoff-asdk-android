@@ -11,17 +11,7 @@ internal class MirPayProcessMapper {
 
     fun mapState(it: MirPayPaymentState): PaymentStatusSheetState? {
         return when (it) {
-            is MirPayPaymentState.PaymentFailed -> {
-                val secondButton = (it.throwable as? AcquiringSdkTimeoutException)?.let {
-                    R.string.acq_commonsheet_timeout_failed_flat_button
-                } ?: R.string.acq_commonsheet_failed_primary_button
-                PaymentStatusSheetState.Error(
-                    title = R.string.acq_commonsheet_timeout_failed_title,
-                    subtitle = R.string.acq_commonsheet_timeout_failed_description,
-                    throwable = it.throwable,
-                    secondButton = secondButton
-                )
-            }
+            is MirPayPaymentState.PaymentFailed -> { it.toPaymentStatusSheetState() }
             is MirPayPaymentState.Success -> PaymentStatusSheetState.Success(
                 title = R.string.acq_commonsheet_paid_title,
                 mainButton = R.string.acq_commonsheet_clear_primarybutton,
@@ -37,6 +27,24 @@ internal class MirPayProcessMapper {
             )
             is MirPayPaymentState.Stopped,
             is MirPayPaymentState.NeedChooseOnUi -> null
+        }
+    }
+
+    private fun MirPayPaymentState.PaymentFailed.toPaymentStatusSheetState(): PaymentStatusSheetState {
+        return if (throwable is AcquiringSdkTimeoutException) {
+            PaymentStatusSheetState.Error(
+                title = R.string.acq_commonsheet_timeout_failed_title,
+                subtitle = R.string.acq_commonsheet_timeout_failed_description,
+                throwable = throwable,
+                secondButton = R.string.acq_commonsheet_timeout_failed_flat_button
+            )
+        } else {
+            PaymentStatusSheetState.Error(
+                title = R.string.acq_commonsheet_payment_failed_title,
+                subtitle = R.string.acq_commonsheet_payment_failed_description,
+                throwable = throwable,
+                mainButton = R.string.acq_commonsheet_payment_failed_primary_button
+            )
         }
     }
 
