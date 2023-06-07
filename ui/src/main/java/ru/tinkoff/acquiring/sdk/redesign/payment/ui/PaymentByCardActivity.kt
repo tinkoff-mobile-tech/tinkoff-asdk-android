@@ -213,9 +213,17 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
         sendReceiptSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.sendReceiptChange(isChecked)
-            if (isChecked.not() && emailInput.isAdded && emailInput.isVisible) {
-                emailInput.emailInput.clearViewFocus()
-                emailInput.emailInput.hideKeyboard()
+            // TODO Избавиться от логики на ui в рамках задачи EACQAPW-5066
+            when {
+                emailInput.isAdded.not() || emailInput.isVisible.not() -> return@setOnCheckedChangeListener
+                isChecked -> emailInput.emailInput.requestViewFocus()
+                else -> {
+                    emailInput.emailInput.clearViewFocus()
+                    emailInput.emailInput.hideKeyboard()
+                    if (cardDataInput.isAdded && cardDataInput.isVisible) {
+                        cardDataInput.clearFocus()
+                    }
+                }
             }
         }
 
@@ -233,7 +241,11 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             emailInputContainer.isVisible = it.sendReceipt
             sendReceiptSwitch.isChecked = it.sendReceipt
             payButton.text = getString(R.string.acq_cardpay_pay, it.amount)
-            payButton.isEnabled = it.buttonEnabled
+
+            // TODO Удалить if в рамках задачи EACQAPW-5066
+            if (payButton.isEnabled != it.buttonEnabled) {
+                payButton.isEnabled = it.buttonEnabled
+            }
         }
     }
 

@@ -36,7 +36,7 @@ internal class MirPayProcessMapper {
                 title = R.string.acq_commonsheet_timeout_failed_title,
                 subtitle = R.string.acq_commonsheet_timeout_failed_description,
                 throwable = throwable,
-                secondButton = R.string.acq_commonsheet_timeout_failed_flat_button
+                mainButton = R.string.acq_commonsheet_timeout_failed_flat_button
             )
         } else {
             PaymentStatusSheetState.Error(
