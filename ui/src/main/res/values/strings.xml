@@ -74,9 +74,9 @@
     <string name="acq_cardlist_description">This is where your cards will be</string>
     <string name="acq_cardlist_button_add">Add</string>
 
-    <string name="acq_cardlist_snackbar_add">Card ·%1$s added</string>
-    <string name="acq_cardlist_snackbar_remove">Card ·%1$s deleted</string>
-    <string name="acq_cardlist_snackbar_remove_progress">Card is deleting ·%1$s</string>
+    <string name="acq_cardlist_snackbar_add">Card •%1$s added</string>
+    <string name="acq_cardlist_snackbar_remove">Card •%1$s deleted</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Card is deleting •%1$s</string>
     <string name="acq_cardlist_addcard">Add new</string>
     <string name="acq_cardlist_button_change">Сhange</string>
     <string name="acq_cardlist_button_done">Done</string>

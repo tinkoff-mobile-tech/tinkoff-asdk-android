@@ -193,6 +193,12 @@ internal class CardDataInputFragment : Fragment() {
         cvcInput.text = ""
     }
 
+    fun clearFocus() {
+        cardNumberInput.clearFocus()
+        expiryDateInput.clearFocus()
+        cvcInput.clearFocus()
+    }
+
     fun interface OnCardDataChanged {
         fun onCardDataChanged(isValid: Boolean)
     }
