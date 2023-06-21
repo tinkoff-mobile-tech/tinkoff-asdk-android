@@ -48,8 +48,8 @@ internal class QrCodeActivity : TransparentActivity() {
 
     private fun observeLiveData() {
         viewModel.run {
-            screenStateLiveData.observe(this@QrCodeActivity, Observer { handleScreenState(it) })
-            paymentResultLiveData.observe(this@QrCodeActivity, Observer { handlePaymentResult(it) })
+            screenStateLiveData.observe(this@QrCodeActivity) { handleScreenState(it) }
+            paymentResultLiveData.observe(this@QrCodeActivity) { handlePaymentResult(it) }
         }
     }
 

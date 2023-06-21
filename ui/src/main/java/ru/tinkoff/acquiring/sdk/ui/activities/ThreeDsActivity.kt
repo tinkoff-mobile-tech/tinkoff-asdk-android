@@ -40,6 +40,7 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION_V2
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.Base64
 import ru.tinkoff.acquiring.sdk.viewmodel.ThreeDsViewModel
@@ -107,7 +108,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
     override fun setErrorResult(throwable: Throwable, paymentId: Long?) {
         val intent = Intent()
-        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
+        intent.putExtra(EXTRA_PAYMENT_ID, paymentId)
         intent.putExtra(ThreeDsHelper.Launch.ERROR_DATA, throwable)
         setResult(ThreeDsHelper.Launch.RESULT_ERROR, intent)
     }

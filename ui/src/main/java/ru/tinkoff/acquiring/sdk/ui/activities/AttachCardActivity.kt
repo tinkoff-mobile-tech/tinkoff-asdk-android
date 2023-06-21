@@ -32,6 +32,7 @@ import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.fragments.AttachCardFragment
 import ru.tinkoff.acquiring.sdk.ui.fragments.LoopConfirmationFragment
@@ -77,7 +78,7 @@ internal class AttachCardActivity : TransparentActivity() {
 
     private fun finishWithSuccess(result: CardResult) {
         val intent = Intent()
-        intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
+        intent.putExtra(EXTRA_CARD_ID, result.cardId)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

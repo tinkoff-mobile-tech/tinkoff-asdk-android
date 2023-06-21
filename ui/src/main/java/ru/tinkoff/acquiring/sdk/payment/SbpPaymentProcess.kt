@@ -11,7 +11,7 @@ import ru.tinkoff.acquiring.sdk.models.NspkRequest
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
+import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
 import ru.tinkoff.acquiring.sdk.payment.base.PaymentUiEvent
 import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider

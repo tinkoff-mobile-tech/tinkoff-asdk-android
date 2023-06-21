@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.MirPayProcess
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_START_DATA
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.nav.MirPayNavigation
 
@@ -28,7 +29,7 @@ internal class MirPayViewModel(
 ) : ViewModel() {
 
     private val startData: MirPayLauncher.StartData by lazy {
-        checkNotNull(savedStateHandle[MirPayLauncher.Contract.EXTRA_START_DATA])
+        checkNotNull(savedStateHandle[EXTRA_START_DATA])
     }
     val state = mirPayProcess.state.mapNotNull(mirPayMapper::mapState)
     val navEvent = mirPayNavigation.flow
@@ -66,7 +67,9 @@ internal class MirPayViewModel(
     companion object {
         fun factory(application: Application, paymentOptions: PaymentOptions) = viewModelFactory {
             val acq = TinkoffAcquiring(
-                application, paymentOptions.terminalKey, paymentOptions.publicKey
+                application,
+                paymentOptions.terminalKey,
+                paymentOptions.publicKey
             )
             initializer {
                 MirPayViewModel(

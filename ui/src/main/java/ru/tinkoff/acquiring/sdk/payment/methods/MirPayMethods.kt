@@ -2,7 +2,7 @@ package ru.tinkoff.acquiring.sdk.payment.methods
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
+import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
 
 /**
  * @author k.shpakovskiy

@@ -37,6 +37,7 @@ import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusCanceled
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsStatusError
@@ -110,7 +111,7 @@ internal open class TransparentActivity : BaseAcquiringActivity() {
                 checkNotNull(data)
                 finishWithError(
                     data.getAsError(ThreeDsHelper.Launch.ERROR_DATA),
-                    data.getLongOrNull(TinkoffAcquiring.EXTRA_PAYMENT_ID)
+                    data.getLongOrNull(EXTRA_PAYMENT_ID)
                 )
             } else {
                 setResult(Activity.RESULT_CANCELED)

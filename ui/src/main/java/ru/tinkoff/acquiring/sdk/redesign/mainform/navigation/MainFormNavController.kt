@@ -3,14 +3,14 @@ package ru.tinkoff.acquiring.sdk.redesign.mainform.navigation
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 
 /**
@@ -23,7 +23,7 @@ internal class MainFormNavController {
 
     suspend fun toSbp(paymentOptions: PaymentOptions) = channelNav.send(
         Navigation.ToSbp(
-            TinkoffAcquiring.SbpScreen.StartData(
+            SbpPayLauncher.StartData(
                 paymentOptions
             )
         )
@@ -32,7 +32,7 @@ internal class MainFormNavController {
     suspend fun toPayNewCard(paymentOptions: PaymentOptions) =
         channelNav.send(
             Navigation.ToPayByCard(
-                PaymentByCard.StartData(
+                PaymentByCardLauncher.StartData(
                     paymentOptions,
                     ArrayList()
                 )
@@ -42,7 +42,7 @@ internal class MainFormNavController {
     suspend fun toPayCard(paymentOptions: PaymentOptions, cards: List<Card>) =
         channelNav.send(
             Navigation.ToPayByCard(
-                PaymentByCard.StartData(
+                PaymentByCardLauncher.StartData(
                     paymentOptions,
                     ArrayList(cards)
                 )
@@ -88,9 +88,9 @@ internal class MainFormNavController {
         channelNav.send(Navigation.Return(acqPaymentResult))
 
     sealed interface Navigation {
-        class ToSbp(val startData: TinkoffAcquiring.SbpScreen.StartData) : Navigation
+        class ToSbp(val startData: SbpPayLauncher.StartData) : Navigation
 
-        class ToPayByCard(val startData: PaymentByCard.StartData) : Navigation
+        class ToPayByCard(val startData: PaymentByCardLauncher.StartData) : Navigation
 
         class ToChooseCard(val savedCardsOptions: SavedCardsOptions) : Navigation
 

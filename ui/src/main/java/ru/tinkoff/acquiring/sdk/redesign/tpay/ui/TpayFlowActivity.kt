@@ -9,14 +9,15 @@ import androidx.lifecycle.whenResumed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.databinding.AcqTpayActivityBinding
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_START_DATA
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
-import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher.Contract.EXTRA_START_DATA
+import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher.StartData
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher.setResult
 import ru.tinkoff.acquiring.sdk.redesign.tpay.nav.TpayNavigation
 import ru.tinkoff.acquiring.sdk.redesign.tpay.presentation.TpayViewModel
 import ru.tinkoff.acquiring.sdk.redesign.tpay.util.TpayHelper
+import ru.tinkoff.acquiring.sdk.utils.getParcelable
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 
 /**
@@ -27,7 +28,7 @@ internal class TpayFlowActivity : AppCompatActivity() {
     private lateinit var binding: AcqTpayActivityBinding
 
     private val startData by lazyUnsafe {
-        checkNotNull(intent.getParcelableExtra<TpayLauncher.StartData>(EXTRA_START_DATA))
+        intent.getParcelable(EXTRA_START_DATA, StartData::class)
     }
 
     private val viewModel: TpayViewModel by viewModels {

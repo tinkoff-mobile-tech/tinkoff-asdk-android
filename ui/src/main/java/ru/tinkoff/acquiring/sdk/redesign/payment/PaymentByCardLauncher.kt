@@ -1,18 +1,28 @@
-package ru.tinkoff.acquiring.sdk.redesign.payment.ui
+package ru.tinkoff.acquiring.sdk.redesign.payment
 
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import kotlinx.android.parcel.Parcelize
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_SAVED_CARDS
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCardActivity
+import ru.tinkoff.acquiring.sdk.utils.getError
+import ru.tinkoff.acquiring.sdk.utils.getExtra
 
-object PaymentByCard {
+object PaymentByCardLauncher {
 
     sealed class Result
     class Success(
@@ -35,19 +45,11 @@ object PaymentByCard {
 
     object Contract : ActivityResultContract<StartData, Result>() {
 
-        internal const val EXTRA_SAVED_CARDS = "extra_saved_cards"
-
         internal fun createSuccessIntent(paymentResult: PaymentResult): Intent {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentResult.paymentId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, paymentResult.cardId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, paymentResult.rebillId)
-            return intent
-        }
-
-        internal fun createFailedIntent(throwable: Throwable): Intent {
-            val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
+            intent.putExtra(EXTRA_PAYMENT_ID, paymentResult.paymentId)
+            intent.putExtra(EXTRA_CARD_ID, paymentResult.cardId)
+            intent.putExtra(EXTRA_REBILL_ID, paymentResult.rebillId)
             return intent
         }
 
@@ -57,17 +59,17 @@ object PaymentByCard {
             }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
-            AppCompatActivity.RESULT_OK -> {
-                val _intent = intent!!
+            RESULT_OK -> {
+                checkNotNull(intent)
                 Success(
-                    _intent.getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
-                    _intent.getStringExtra(TinkoffAcquiring.EXTRA_CARD_ID),
-                    _intent.getStringExtra(TinkoffAcquiring.EXTRA_REBILL_ID),
+                    intent.getLongExtra(EXTRA_PAYMENT_ID, -1),
+                    intent.getStringExtra(EXTRA_CARD_ID),
+                    intent.getStringExtra(EXTRA_REBILL_ID),
                 )
             }
-            TinkoffAcquiring.RESULT_ERROR -> Error(
-                intent!!.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)!! as Throwable,
-                null // TODO
+            RESULT_ERROR -> Error(
+                intent.getError(),
+                errorCode = null // TODO
             )
             else -> Canceled
         }

@@ -37,11 +37,9 @@ internal class ViewModelProviderFactory(
             handleErrorsInSdk,
             sdk
         ),
-        PaymentViewModel::class.java to PaymentViewModel(application, handleErrorsInSdk, sdk),
         AttachCardViewModel::class.java to AttachCardViewModel(application, handleErrorsInSdk, sdk),
         QrViewModel::class.java to QrViewModel(application, handleErrorsInSdk, sdk),
         ThreeDsViewModel::class.java to ThreeDsViewModel(application, handleErrorsInSdk, sdk),
-        NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk)
     )
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

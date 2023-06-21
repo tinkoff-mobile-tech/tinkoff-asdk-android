@@ -12,13 +12,20 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.databinding.AcqMirPayActivityBinding
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_START_DATA
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.util.openDeepLink
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher.Contract.EXTRA_START_DATA
+import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher.StartData
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.nav.MirPayNavigation
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.presentation.MirPayViewModel
+import ru.tinkoff.acquiring.sdk.utils.getParcelable
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 
 /**
@@ -29,7 +36,7 @@ internal class MirPayFlowActivity : AppCompatActivity() {
     private lateinit var binding: AcqMirPayActivityBinding
 
     private val startData by lazyUnsafe {
-        checkNotNull(intent.getParcelableExtra<MirPayLauncher.StartData>(EXTRA_START_DATA))
+        intent.getParcelable(EXTRA_START_DATA, StartData::class)
     }
 
     private val viewModel: MirPayViewModel by viewModels {
@@ -108,14 +115,14 @@ internal class MirPayFlowActivity : AppCompatActivity() {
         when (result) {
             MirPayLauncher.Canceled -> setResult(Activity.RESULT_CANCELED)
             is MirPayLauncher.Error -> {
-                intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, result.error)
-                setResult(TinkoffAcquiring.RESULT_ERROR, intent)
+                intent.putExtra(EXTRA_ERROR, result.error)
+                setResult(RESULT_ERROR, intent)
             }
             is MirPayLauncher.Success -> {
                 with(intent) {
-                    putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, result.paymentId ?: -1)
-                    putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
-                    putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
+                    putExtra(EXTRA_PAYMENT_ID, result.paymentId ?: -1)
+                    putExtra(EXTRA_CARD_ID, result.cardId)
+                    putExtra(EXTRA_REBILL_ID, result.rebillId)
                 }
                 setResult(RESULT_OK, intent)
             }

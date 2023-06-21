@@ -18,7 +18,6 @@ package ru.tinkoff.acquiring.sample.ui
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -26,7 +25,6 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import kotlinx.coroutines.Dispatchers
@@ -39,25 +37,23 @@ import ru.tinkoff.acquiring.sample.utils.CombInitDelegate
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.EXTRA_PAYMENT_ID
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
-import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.payment.*
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.payment.PaymentListener
-import ru.tinkoff.acquiring.sdk.payment.PaymentListenerAdapter
-import ru.tinkoff.acquiring.sdk.payment.PaymentState
-import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.mainform.MainFormLauncher
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
-import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPayment
+import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.RecurrentPayLauncher
+import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableMirPay
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
@@ -87,7 +83,6 @@ open class PayableActivity : AppCompatActivity() {
 
     private lateinit var progressDialog: AlertDialog
     private var errorDialog: AlertDialog? = null
-    private val paymentListener = createPaymentListener()
     private var isProgressShowing = false
     private var isErrorShowing = false
     protected var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
@@ -95,46 +90,46 @@ open class PayableActivity : AppCompatActivity() {
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
     private val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
-    private val byCardPayment = registerForActivityResult(PaymentByCard.Contract) { result ->
+    private val byCardPayment = registerForActivityResult(PaymentByCardLauncher.Contract) { result ->
         when (result) {
-            is PaymentByCard.Success -> {
+            is PaymentByCardLauncher.Success -> {
                 toast("byCardPayment Success : ${result.paymentId}")
             }
-            is PaymentByCard.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is PaymentByCard.Canceled -> toast("byCardPayment canceled")
+            is PaymentByCardLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is PaymentByCardLauncher.Canceled -> toast("byCardPayment canceled")
         }
     }
-    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) { result ->
+    private val spbPayment = registerForActivityResult(SbpPayLauncher.Contract) { result ->
         when (result) {
-            is TinkoffAcquiring.SbpScreen.Success -> {
+            is SbpPayLauncher.Success -> {
                 toast("SBP Success")
             }
-            is TinkoffAcquiring.SbpScreen.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is TinkoffAcquiring.SbpScreen.Canceled -> toast("SBP canceled")
-            is TinkoffAcquiring.SbpScreen.NoBanks -> Unit
+            is SbpPayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is SbpPayLauncher.Canceled -> toast("SBP canceled")
+            is SbpPayLauncher.NoBanks -> Unit
         }
     }
-    private val byMainFormPayment = registerForActivityResult(MainFormContract.Contract) { result ->
+    private val byMainFormPayment = registerForActivityResult(MainFormLauncher.Contract) { result ->
         when (result) {
-            is MainFormContract.Canceled -> toast("payment canceled")
-            is MainFormContract.Error ->  toast(result.error.message ?: getString(R.string.error_title))
-            is MainFormContract.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
+            is MainFormLauncher.Canceled -> toast("payment canceled")
+            is MainFormLauncher.Error ->  toast(result.error.message ?: getString(R.string.error_title))
+            is MainFormLauncher.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
-    private val recurrentPayment = registerForActivityResult(RecurrentPayment.Contract) { result ->
+    private val recurrentPayment = registerForActivityResult(RecurrentPayLauncher.Contract) { result ->
         when (result) {
-            is RecurrentPayment.Canceled -> toast("payment canceled")
-            is RecurrentPayment.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is RecurrentPayment.Success -> toast("payment Success-  paymentId:${result.paymentId}")
+            is RecurrentPayLauncher.Canceled -> toast("payment canceled")
+            is RecurrentPayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is RecurrentPayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
         }
     }
     private val cardsForRecurrent =
-        registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) { result ->
+        registerForActivityResult(ChoseCardLauncher.Contract) { result ->
             when (result) {
-                is TinkoffAcquiring.ChoseCard.Canceled -> Unit
-                is TinkoffAcquiring.ChoseCard.Error -> Unit
-                is TinkoffAcquiring.ChoseCard.Success -> launchRecurrent(result.card)
-                is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> Unit
+                is ChoseCardLauncher.Canceled -> Unit
+                is ChoseCardLauncher.Error -> Unit
+                is ChoseCardLauncher.Success -> launchRecurrent(result.card)
+                is ChoseCardLauncher.NeedInputNewCard -> Unit
             }
         }
 
@@ -166,13 +161,10 @@ open class PayableActivity : AppCompatActivity() {
         settings = SettingsSdkManager(this)
 
         initDialogs()
-
-        SampleApplication.paymentProcess?.subscribe(paymentListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        SampleApplication.paymentProcess?.unsubscribe()
         if (progressDialog.isShowing) {
             progressDialog.dismiss()
         }
@@ -211,7 +203,6 @@ open class PayableActivity : AppCompatActivity() {
 
     protected open fun onSuccessPayment() {
         PaymentResultActivity.start(this, totalPrice)
-        SampleApplication.paymentProcess = null
     }
 
     protected fun initPayment() {
@@ -226,12 +217,8 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
             PaymentByCardProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
-            byMainFormPayment.launch(MainFormContract.StartData(options))
+            byMainFormPayment.launch(MainFormLauncher.StartData(options))
         }
-    }
-
-    protected fun getPaymentPendingIntent(): PendingIntent {
-        return tinkoffAcquiring.getPaymentPendingIntent(this, createPaymentOptions(), PAYMENT_REQUEST_CODE)
     }
 
     protected fun openDynamicQrScreen() {
@@ -255,11 +242,11 @@ open class PayableActivity : AppCompatActivity() {
                     .onSuccess {
                         hideProgressDialog()
                         tinkoffAcquiring.initSbpPaymentSession()
-                        spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(it, opt))
+                        spbPayment.launch(SbpPayLauncher.StartData(it, opt))
                     }
             } else {
                 tinkoffAcquiring.initSbpPaymentSession()
-                spbPayment.launch(TinkoffAcquiring.SbpScreen.StartData(opt))
+                spbPayment.launch(SbpPayLauncher.StartData(opt))
             }
         }
     }
@@ -349,7 +336,7 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
             PaymentByCardProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
-            byCardPayment.launch(PaymentByCard.StartData(paymentOptions, ArrayList()))
+            byCardPayment.launch(PaymentByCardLauncher.StartData(paymentOptions, ArrayList()))
         }
     }
 
@@ -413,38 +400,6 @@ open class PayableActivity : AppCompatActivity() {
                 userCanSelectCard = true
                 selectedCardId = ""
                 showOnlyRecurrentCards = true
-            }
-        }
-    }
-
-    private fun createPaymentListener(): PaymentListener {
-        return object : PaymentListenerAdapter() {
-
-            override fun onStatusChanged(state: PaymentState?) {
-                if (state == PaymentState.STARTED) {
-                    showProgressDialog()
-                }
-            }
-
-            override fun onSuccess(paymentId: Long, cardId: String?, rebillId: String?) {
-                hideProgressDialog()
-                onSuccessPayment()
-            }
-
-            override fun onUiNeeded(state: AsdkState) {
-                hideProgressDialog()
-                tinkoffAcquiring.openPaymentScreen(
-                    this@PayableActivity,
-                    createPaymentOptions(),
-                    PAYMENT_REQUEST_CODE,
-                    state
-                )
-            }
-
-            override fun onError(throwable: Throwable, paymentId: Long?) {
-                hideProgressDialog()
-                showErrorDialog()
-                SampleApplication.paymentProcess = null
             }
         }
     }
@@ -541,7 +496,7 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     private fun getErrorFromIntent(data: Intent?): Throwable? {
-        return (data?.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR) as? Throwable)
+        return (data?.getSerializableExtra(EXTRA_ERROR) as? Throwable)
     }
 
     private fun Throwable.logIfTimeout() {
@@ -563,7 +518,7 @@ open class PayableActivity : AppCompatActivity() {
             )
         }
         recurrentPayment.launch(
-            RecurrentPayment.StartData(card, options)
+            RecurrentPayLauncher.StartData(card, options)
         )
     }
 

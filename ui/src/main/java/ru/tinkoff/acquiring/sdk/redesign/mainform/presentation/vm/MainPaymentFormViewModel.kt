@@ -14,7 +14,7 @@ import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.analytics.MainFor
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentFormFactory
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
 import ru.tinkoff.acquiring.sdk.utils.getExtra
@@ -125,18 +125,18 @@ internal class MainPaymentFormViewModel(
 
     fun onBackPressed() = viewModelScope.launch {
         val result = when (val it = paymentByCardProcess.state.value) {
-            is PaymentByCardState.Created -> PaymentByCard.Canceled
-            is PaymentByCardState.Error -> PaymentByCard.Error(it.throwable, null)
-            is PaymentByCardState.Started -> PaymentByCard.Canceled
-            is PaymentByCardState.Success -> PaymentByCard.Success(
+            is PaymentByCardState.Created -> PaymentByCardLauncher.Canceled
+            is PaymentByCardState.Error -> PaymentByCardLauncher.Error(it.throwable, null)
+            is PaymentByCardState.Started -> PaymentByCardLauncher.Canceled
+            is PaymentByCardState.Success -> PaymentByCardLauncher.Success(
                 it.paymentId,
                 it.cardId,
                 it.rebillId
             )
-            is PaymentByCardState.ThreeDsInProcess -> PaymentByCard.Canceled
-            is PaymentByCardState.ThreeDsUiNeeded -> PaymentByCard.Canceled
-            is PaymentByCardState.CvcUiNeeded -> PaymentByCard.Canceled
-            is PaymentByCardState.CvcUiInProcess -> PaymentByCard.Canceled
+            is PaymentByCardState.ThreeDsInProcess -> PaymentByCardLauncher.Canceled
+            is PaymentByCardState.ThreeDsUiNeeded -> PaymentByCardLauncher.Canceled
+            is PaymentByCardState.CvcUiNeeded -> PaymentByCardLauncher.Canceled
+            is PaymentByCardState.CvcUiInProcess -> PaymentByCardLauncher.Canceled
         }
         mainFormNavController.close(result)
     }

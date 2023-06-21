@@ -1,6 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
-import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -16,11 +16,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.AttachCard
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
+import ru.tinkoff.acquiring.sdk.redesign.cards.attach.AttachCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher.Contract.EXTRA_CHOSEN_CARD
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher.Contract.SELECT_NEW_CARD
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
@@ -59,16 +60,16 @@ internal class CardsListActivity : TransparentActivity() {
         AcqSnackBarHelper(findViewById(R.id.acq_card_list_root))
     }
 
-    private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
+    private val attachCard = registerForActivityResult(AttachCardLauncher.Contract) { result ->
         when (result) {
-            is AttachCard.Success -> {
+            is AttachCardLauncher.Success -> {
                 viewModel.onAttachCard(result.cardId)
                 viewModel.loadData(
                     savedCardsOptions.customer.customerKey,
                     options.features.showOnlyRecurrentCards
                 )
             }
-            is AttachCard.Error -> showErrorDialog(
+            is AttachCardLauncher.Error -> showErrorDialog(
                 getString(R.string.acq_generic_alert_label),
                 ErrorResolver.resolve(
                     result.error,
@@ -333,12 +334,12 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun finishWithCard(card: Card) {
-        setResult(Activity.RESULT_OK, TinkoffAcquiring.ChoseCard.createSuccessIntent(card))
+        setResult(RESULT_OK, Intent().putExtra(EXTRA_CHOSEN_CARD, card))
         super.finish()
     }
 
     private fun finishAndSelectNew() {
-        setResult(TinkoffAcquiring.SELECT_NEW_CARD)
+        setResult(SELECT_NEW_CARD)
         super.finish()
     }
 

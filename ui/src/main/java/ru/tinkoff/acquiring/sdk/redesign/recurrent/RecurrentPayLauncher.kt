@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.redesign.recurrent.ui
+package ru.tinkoff.acquiring.sdk.redesign.recurrent
 
 import android.content.Context
 import android.content.Intent
@@ -6,15 +6,19 @@ import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.parcel.Parcelize
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.asAcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.getErrorCodeIfApiError
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.ui.RecurrentPaymentActivity
+import ru.tinkoff.acquiring.sdk.utils.getError
 
-object RecurrentPayment {
+object RecurrentPayLauncher {
 
     sealed class Result
 
@@ -45,14 +49,14 @@ object RecurrentPayment {
             rebillId: String,
         ): Intent {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, rebillId)
+            intent.putExtra(EXTRA_PAYMENT_ID, paymentId)
+            intent.putExtra(EXTRA_REBILL_ID, rebillId)
             return intent
         }
 
         internal fun createFailedIntent(throwable: Throwable): Intent {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
+            intent.putExtra(EXTRA_ERROR, throwable)
             return intent
         }
 
@@ -64,18 +68,17 @@ object RecurrentPayment {
             AppCompatActivity.RESULT_OK -> {
                 with(checkNotNull(intent)) {
                     Success(
-                        getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
+                        getLongExtra(EXTRA_PAYMENT_ID, -1),
                         null,
-                        checkNotNull(getStringExtra(TinkoffAcquiring.EXTRA_REBILL_ID)),
+                        checkNotNull(getStringExtra(EXTRA_REBILL_ID)),
                     )
                 }
             }
-            TinkoffAcquiring.RESULT_ERROR -> {
+            RESULT_ERROR -> {
                 with(checkNotNull(intent)) {
-                    val throwable =
-                        checkNotNull(intent.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)) as Throwable
+                    val throwable = intent.getError()
                     Error(
-                        getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
+                        getLongExtra(EXTRA_PAYMENT_ID, -1),
                         throwable,
                         throwable.asAcquiringApiException()?.getErrorCodeIfApiError()?.toIntOrNull()
                     )

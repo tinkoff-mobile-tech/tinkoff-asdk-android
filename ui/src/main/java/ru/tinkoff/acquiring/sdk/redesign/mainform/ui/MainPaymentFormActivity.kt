@@ -1,4 +1,4 @@
-package ru.tinkoff.acquiring.sdk.redesign.mainform
+package ru.tinkoff.acquiring.sdk.redesign.mainform.ui
 
 import android.app.Activity
 import android.content.Context
@@ -20,27 +20,24 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.databinding.*
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
-import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormContract
+import ru.tinkoff.acquiring.sdk.redesign.mainform.MainFormLauncher
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainFormInputCardViewModel
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormFactory
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormViewModel
-import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
-import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.ErrorStubComponent
-import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.PrimaryButtonComponent
-import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.SecondaryBlockComponent
 import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard
+import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
@@ -54,33 +51,33 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
 
     val options by lazyUnsafe { intent.getOptions<PaymentOptions>() }
 
-    private val byNewCardPayment = registerForActivityResult(PaymentByCard.Contract) {
+    private val byNewCardPayment = registerForActivityResult(PaymentByCardLauncher.Contract) {
         when (it) {
-            is PaymentByCard.Canceled -> Unit
-            is PaymentByCard.Error -> {
-                setResult(RESULT_ERROR, MainFormContract.Contract.createFailedIntent(it))
+            is PaymentByCardLauncher.Canceled -> Unit
+            is PaymentByCardLauncher.Error -> {
+                setResult(RESULT_ERROR, MainFormLauncher.Contract.createFailedIntent(it))
                 finish()
             }
-            is PaymentByCard.Success -> {
+            is PaymentByCardLauncher.Success -> {
                 setResult(
                     RESULT_OK,
-                    MainFormContract.Contract.createSuccessIntent(it)
+                    MainFormLauncher.Contract.createSuccessIntent(it)
                 )
                 finish()
             }
         }
     }
 
-    private val spbPayment = registerForActivityResult(TinkoffAcquiring.SbpScreen.Contract) {
+    private val spbPayment = registerForActivityResult(SbpPayLauncher.Contract) {
         when (it) {
-            is TinkoffAcquiring.SbpScreen.Canceled -> Unit
-            is TinkoffAcquiring.SbpScreen.NoBanks -> Unit
-            is TinkoffAcquiring.SbpScreen.Error -> {
-                setResult(RESULT_ERROR, MainFormContract.Contract.createFailedIntent(it.error))
+            is SbpPayLauncher.Canceled -> Unit
+            is SbpPayLauncher.NoBanks -> Unit
+            is SbpPayLauncher.Error -> {
+                setResult(RESULT_ERROR, MainFormLauncher.Contract.createFailedIntent(it.error))
                 finish()
             }
-            is TinkoffAcquiring.SbpScreen.Success -> {
-                setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it.payment))
+            is SbpPayLauncher.Success -> {
+                setResult(RESULT_OK, MainFormLauncher.Contract.createSuccessIntent(it.payment))
                 finish()
             }
         }
@@ -96,7 +93,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                 viewModel.returnOnForm()
             }
             is TpayLauncher.Success -> {
-                setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it))
+                setResult(RESULT_OK, MainFormLauncher.Contract.createSuccessIntent(it))
                 finish()
             }
         }
@@ -112,20 +109,20 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                 viewModel.returnOnForm()
             }
             is MirPayLauncher.Success -> {
-                setResult(RESULT_OK, MainFormContract.Contract.createSuccessIntent(it))
+                setResult(RESULT_OK, MainFormLauncher.Contract.createSuccessIntent(it))
                 finish()
             }
         }
     }
 
-    private val savedCards = registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) {
+    private val savedCards = registerForActivityResult(ChoseCardLauncher.Contract) {
         when (it) {
-            is TinkoffAcquiring.ChoseCard.Canceled -> Unit
-            is TinkoffAcquiring.ChoseCard.Error -> Unit
-            is TinkoffAcquiring.ChoseCard.NeedInputNewCard -> {
+            is ChoseCardLauncher.Canceled -> Unit
+            is ChoseCardLauncher.Error -> Unit
+            is ChoseCardLauncher.NeedInputNewCard -> {
                 viewModel.toNewCard()
             }
-            is TinkoffAcquiring.ChoseCard.Success -> {
+            is ChoseCardLauncher.Success -> {
                 viewModel.choseCard(it.card)
                 cardInputViewModel.choseCard(it.card)
             }
@@ -387,11 +384,11 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
                         is AcqPaymentResult.Canceled -> setResult(RESULT_CANCELED)
                         is AcqPaymentResult.Error -> setResult(
                             RESULT_ERROR,
-                            MainFormContract.Contract.createFailedIntent(it.result.error)
+                            MainFormLauncher.Contract.createFailedIntent(it.result.error)
                         )
                         is AcqPaymentResult.Success -> setResult(
                             RESULT_OK,
-                            MainFormContract.Contract.createSuccessIntent(it.result)
+                            MainFormLauncher.Contract.createSuccessIntent(it.result)
                         )
                     }
                     finish()

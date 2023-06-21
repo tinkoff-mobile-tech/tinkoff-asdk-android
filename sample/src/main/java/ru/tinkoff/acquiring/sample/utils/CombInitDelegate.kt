@@ -3,7 +3,7 @@ package ru.tinkoff.acquiring.sample.utils
 import kotlinx.coroutines.*
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
+import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.InitResponse
 import kotlin.coroutines.CoroutineContext
