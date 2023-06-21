@@ -1,6 +1,5 @@
 package ru.tinkoff.acquiring.sample.ui
 
-import android.graphics.Point
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout

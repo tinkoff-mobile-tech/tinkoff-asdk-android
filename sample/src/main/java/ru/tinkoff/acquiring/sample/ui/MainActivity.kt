@@ -18,8 +18,6 @@ package ru.tinkoff.acquiring.sample.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -32,19 +30,16 @@ import ru.tinkoff.acquiring.sample.SampleApplication
 import ru.tinkoff.acquiring.sample.adapters.BooksListAdapter
 import ru.tinkoff.acquiring.sample.models.Book
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
-import ru.tinkoff.acquiring.sample.service.PaymentNotificationIntentService
-import ru.tinkoff.acquiring.sample.service.PriceNotificationReceiver
 import ru.tinkoff.acquiring.sample.ui.environment.AcqEnvironmentDialog
-import ru.tinkoff.acquiring.sample.utils.PaymentNotificationManager
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.AttachCard
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.SavedCards
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
+import ru.tinkoff.acquiring.sdk.redesign.cards.attach.AttachCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.SavedCardsLauncher
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 
 /**
@@ -55,21 +50,20 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     private lateinit var listViewBooks: ListView
     private lateinit var adapter: BooksListAdapter
     private lateinit var settings: SettingsSdkManager
-    private val priceNotificationReceiver = PriceNotificationReceiver()
     private var selectedCardIdForDemo: String? = null
 
-    private val attachCard = registerForActivityResult(AttachCard.Contract) { result ->
+    private val attachCard = registerForActivityResult(AttachCardLauncher.Contract) { result ->
         when (result) {
-            is AttachCard.Success -> PaymentResultActivity.start(this, result.cardId)
-            is AttachCard.Error -> toast(result.error.message ?: getString(R.string.attachment_failed))
-            is AttachCard.Canceled -> toast(R.string.attachment_cancelled)
+            is AttachCardLauncher.Success -> PaymentResultActivity.start(this, result.cardId)
+            is AttachCardLauncher.Error -> toast(result.error.message ?: getString(R.string.attachment_failed))
+            is AttachCardLauncher.Canceled -> toast(R.string.attachment_cancelled)
         }
     }
 
-    private val savedCards = registerForActivityResult(SavedCards.Contract) { result ->
+    private val savedCards = registerForActivityResult(SavedCardsLauncher.Contract) { result ->
         when (result) {
-            is SavedCards.Success -> selectedCardIdForDemo = result.selectedCardId
-            is SavedCards.Error -> toast(result.error.message ?: getString(R.string.error_title))
+            is SavedCardsLauncher.Success -> selectedCardIdForDemo = result.selectedCardId
+            is SavedCardsLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
             else -> Unit
         }
     }
@@ -81,17 +75,9 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
 
         settings = SettingsSdkManager(this)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PaymentNotificationManager.createNotificationChannel(this)
-        }
-
         val booksRegistry = BooksRegistry()
         adapter = BooksListAdapter(this, booksRegistry.getBooks(this), this)
         initViews()
-
-        val intentFilter = IntentFilter(PaymentNotificationIntentService.ACTION_PRICE_SELECT)
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT)
-        registerReceiver(priceNotificationReceiver, intentFilter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -106,11 +92,6 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     override fun onResume() {
         super.onResume()
         invalidateOptionsMenu()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(priceNotificationReceiver)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

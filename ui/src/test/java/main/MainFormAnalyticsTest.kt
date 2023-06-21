@@ -7,12 +7,11 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.analytics.ChosenMethod
 import ru.tinkoff.acquiring.sdk.models.options.screen.analytics.MainFormAnalytics
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configureData
+import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configureData
 import ru.tinkoff.acquiring.sdk.redesign.mainform.navigation.MainFormNavController
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.MainPaymentForm
 import ru.tinkoff.acquiring.sdk.redesign.mainform.presentation.vm.MainPaymentFormViewModel

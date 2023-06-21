@@ -3,7 +3,6 @@ package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,22 +15,25 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
-import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_SAVED_CARDS
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputFragment
 import ru.tinkoff.acquiring.sdk.redesign.dialog.*
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard.Contract.EXTRA_SAVED_CARDS
-import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCard.Contract.createSuccessIntent
+import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher.Contract.createSuccessIntent
+import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher.StartData
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.Launch.ERROR_DATA
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.Launch.RESULT_DATA
+import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.Launch.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.ui.component.bindKtx
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
-import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
-import ru.tinkoff.acquiring.sdk.utils.getOptions
+import ru.tinkoff.acquiring.sdk.utils.getExtra
+import ru.tinkoff.acquiring.sdk.utils.getParcelable
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 
@@ -43,8 +45,8 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     EmailInputFragment.OnEmailDataChanged,
     OnPaymentSheetCloseListener {
 
-    private val startData: PaymentByCard.StartData by lazyUnsafe {
-        intent.getParcelableExtra(EXTRA_SAVED_CARDS)!!
+    private val startData: StartData by lazyUnsafe {
+        intent.getParcelable(EXTRA_SAVED_CARDS, StartData::class)
     }
     private val savedCardOptions: SavedCardsOptions by lazyUnsafe {
         SavedCardsOptions().apply {
@@ -78,11 +80,11 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     }
     private val statusSheetStatus = createPaymentSheetWrapper()
     private val savedCards =
-        registerForActivityResult(TinkoffAcquiring.ChoseCard.Contract) { result ->
+        registerForActivityResult(ChoseCardLauncher.Contract) { result ->
             chosenCardComponent.clearCvc()
             when (result) {
-                is TinkoffAcquiring.ChoseCard.Success -> viewModel.setSavedCard(result.card)
-                is TinkoffAcquiring.ChoseCard.NeedInputNewCard ->  {
+                is ChoseCardLauncher.Success -> viewModel.setSavedCard(result.card)
+                is ChoseCardLauncher.NeedInputNewCard ->  {
                     cardDataInput.clearInput()
                     viewModel.setInputNewCard()
                 }
@@ -127,8 +129,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                val result =
-                    data.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as PaymentResult
+                val result = data.getExtra(RESULT_DATA, PaymentResult::class)
                 statusSheetStatus.state = PaymentStatusSheetState.Success(
                     title = R.string.acq_commonsheet_paid_title,
                     mainButton = R.string.acq_commonsheet_clear_primarybutton,
@@ -136,11 +137,11 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                     cardId = result.cardId,
                     rebillId = result.rebillId
                 )
-            } else if (resultCode == ThreeDsHelper.Launch.RESULT_ERROR) {
+            } else if (resultCode == RESULT_ERROR) {
                 statusSheetStatus.state = PaymentStatusSheetState.Error(
                     title = R.string.acq_commonsheet_failed_title,
                     mainButton = R.string.acq_commonsheet_failed_primary_button,
-                    throwable = data?.getSerializableExtra(ThreeDsHelper.Launch.ERROR_DATA) as Throwable
+                    throwable = data!!.getExtra(ERROR_DATA, Throwable::class)
                 )
             } else {
                 setResult(Activity.RESULT_CANCELED)

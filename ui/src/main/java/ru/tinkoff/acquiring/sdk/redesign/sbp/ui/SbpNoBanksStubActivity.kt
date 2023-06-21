@@ -46,7 +46,6 @@ class SbpNoBanksStubActivity : AppCompatActivity() {
     }
 
     companion object {
-
         private const val URL_NSPK = "https://sbp.nspk.ru/participants/"
 
         fun show(activity: Activity) {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.TpayProcess
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_START_DATA
 import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.tpay.nav.TpayNavigation
 
@@ -24,7 +25,7 @@ internal class TpayViewModel(
     private val tpayNavigation: TpayNavigation
 ) : ViewModel() {
 
-    private val startData: TpayLauncher.StartData = checkNotNull(savedStateHandle[TpayLauncher.Contract.EXTRA_START_DATA])
+    private val startData: TpayLauncher.StartData = checkNotNull(savedStateHandle[EXTRA_START_DATA])
     val state = tpayProcess.state.mapNotNull(tpayProcessMapper::mapState)
     val navEvent = tpayNavigation.flow
 

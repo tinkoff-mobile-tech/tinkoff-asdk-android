@@ -50,8 +50,8 @@ internal interface PrimaryButtonConfigurator {
             return when {
                 isCanPayWithTpay() -> Tpay
                 isCanPayWithSavedCard(savedCard) -> Card(savedCard)
-                isCanPayWithMirPay() -> MirPay
                 isCanPayWithSbp() -> Spb
+                isCanPayWithMirPay() -> MirPay
                 else -> Primary.Card(null)
             }
         }

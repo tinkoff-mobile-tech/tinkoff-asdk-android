@@ -34,19 +34,23 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.redesign.dialog.*
+import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher.Contract.EXTRA_PAYMENT_DATA
+import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher.Contract.SBP_BANK_RESULT_CODE_NO_BANKS
+import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher.StartData
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.SbpHelper.openSbpDeeplink
-import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
+import ru.tinkoff.acquiring.sdk.utils.*
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
-import ru.tinkoff.acquiring.sdk.utils.showById
 
 internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseListener {
 
-    private val startData: TinkoffAcquiring.SbpScreen.StartData by lazyUnsafe {
-        intent.getParcelableExtra(EXTRA_PAYMENT_DATA)!!
+    private val startData: StartData by lazyUnsafe {
+        intent.getParcelable(EXTRA_PAYMENT_DATA, StartData::class)
     }
 
     private val viewModel: SbpPaymentViewModel by viewModels {
@@ -161,6 +165,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                     }
                 }
                 is SpbBankListState.Empty -> {
+                    setResult(SBP_BANK_RESULT_CODE_NO_BANKS)
                     finish()
                     SbpNoBanksStubActivity.show(this)
                 }
@@ -209,7 +214,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
 
     private fun finishWithResult(paymentId: Long) {
         val intent = Intent()
-        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
+        intent.putExtra(EXTRA_PAYMENT_ID, paymentId)
         setResult(RESULT_OK, intent)
         finish()
     }
@@ -221,8 +226,8 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
 
     private fun setErrorResult(throwable: Throwable) {
         val intent = Intent()
-        intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
-        setResult(TinkoffAcquiring.RESULT_ERROR, intent)
+        intent.putExtra(EXTRA_ERROR, throwable)
+        setResult(RESULT_ERROR, intent)
     }
 
     inner class Adapter : RecyclerView.Adapter<VH>() {
@@ -257,13 +262,6 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                 onBankSelected(deeplink)
             }
         }
-    }
-
-    companion object {
-        internal const val EXTRA_PAYMENT_ID = "extra_payment_id"
-        internal const val EXTRA_PAYMENT_DATA = "extra_payment_data"
-
-        internal const val SBP_BANK_RESULT_CODE_NO_BANKS = 501
     }
 }
 

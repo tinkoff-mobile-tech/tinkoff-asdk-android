@@ -15,16 +15,17 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring.Companion.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.databinding.AcqPaymentStatusFormBinding
 import ru.tinkoff.acquiring.sdk.databinding.AcqRecurrentFromActivityBinding
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
 import ru.tinkoff.acquiring.sdk.redesign.dialog.PaymentStatusSheetState
 import ru.tinkoff.acquiring.sdk.redesign.dialog.component.PaymentStatusComponent
 import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.BottomSheetComponent
+import ru.tinkoff.acquiring.sdk.redesign.recurrent.RecurrentPayLauncher
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation.RecurrentPaymentViewModel
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation.RecurrentViewModelsFactory
 import ru.tinkoff.acquiring.sdk.redesign.recurrent.presentation.RejectedViewModel
@@ -153,14 +154,14 @@ internal class RecurrentPaymentActivity : AppCompatActivity() {
                     is RecurrentPaymentEvent.CloseWithError -> {
                         setResult(
                             RESULT_ERROR,
-                            RecurrentPayment.Contract.createFailedIntent(it.throwable)
+                            RecurrentPayLauncher.Contract.createFailedIntent(it.throwable)
                         )
                         finish()
                     }
                     is RecurrentPaymentEvent.CloseWithSuccess -> {
                         setResult(
                             RESULT_OK,
-                            RecurrentPayment.Contract.createSuccessIntent(it.paymentId, it.rebillId)
+                            RecurrentPayLauncher.Contract.createSuccessIntent(it.paymentId, it.rebillId)
                         )
                         finish()
                     }

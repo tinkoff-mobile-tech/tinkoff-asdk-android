@@ -1,20 +1,23 @@
-package ru.tinkoff.acquiring.sdk.redesign.mainform.navigation
+package ru.tinkoff.acquiring.sdk.redesign.mainform
 
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import kotlinx.android.parcel.Parcelize
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
-import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
-import ru.tinkoff.acquiring.sdk.redesign.mainform.MainPaymentFormActivity
+import ru.tinkoff.acquiring.sdk.redesign.mainform.ui.MainPaymentFormActivity
+import ru.tinkoff.acquiring.sdk.utils.getError
 
-object MainFormContract {
+object MainFormLauncher {
     sealed class Result
     class Success(
         override val paymentId: Long? = null,
@@ -42,16 +45,16 @@ object MainFormContract {
             MainPaymentFormActivity.intent(input.paymentOptions, context)
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
-            AppCompatActivity.RESULT_OK -> {
-                val _intent = intent!!
+            RESULT_OK -> {
+                checkNotNull(intent)
                 Success(
-                    _intent.getLongExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, -1),
-                    _intent.getStringExtra(TinkoffAcquiring.EXTRA_CARD_ID),
-                    _intent.getStringExtra(TinkoffAcquiring.EXTRA_REBILL_ID),
+                    intent.getLongExtra(EXTRA_PAYMENT_ID, -1),
+                    intent.getStringExtra(EXTRA_CARD_ID),
+                    intent.getStringExtra(EXTRA_REBILL_ID),
                 )
             }
-            TinkoffAcquiring.RESULT_ERROR -> {
-                val th = intent!!.getSerializableExtra(TinkoffAcquiring.EXTRA_ERROR)!! as Throwable
+            RESULT_ERROR -> {
+                val th = intent.getError()
                 Error(th, (th as? AcquiringApiException)?.response?.errorCode?.toInt())
             }
             else -> Canceled
@@ -63,9 +66,9 @@ object MainFormContract {
             rebillId: String? = null
         ): Intent {
             val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, cardId)
-            intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, rebillId)
+            intent.putExtra(EXTRA_PAYMENT_ID, paymentId)
+            intent.putExtra(EXTRA_CARD_ID, cardId)
+            intent.putExtra(EXTRA_REBILL_ID, rebillId)
             return intent
         }
 
@@ -74,12 +77,10 @@ object MainFormContract {
         ) = createSuccessIntent(success.paymentId, success.cardId, success.cardId)
 
         internal fun createFailedIntent(throwable: Throwable): Intent {
-            val intent = Intent()
-            intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
-            return intent
+            return Intent().putExtra(EXTRA_ERROR, throwable)
         }
 
         internal fun createFailedIntent(error: AcqPaymentResult.Error) =
-            Contract.createFailedIntent(error.error)
+            createFailedIntent(error.error)
     }
 }

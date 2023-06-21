@@ -23,7 +23,6 @@ import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
 import ru.tinkoff.acquiring.sdk.utils.SampleAcquiringTokenGenerator
 
 /**
@@ -40,19 +39,16 @@ class SampleApplication : Application() {
         AcquiringSdk.customUrl = SettingsSdkManager(this).customUrl
     }
 
-    override fun onTerminate() {
-        super.onTerminate()
-        paymentProcess?.stop()
-    }
-
     companion object {
         lateinit var tinkoffAcquiring: TinkoffAcquiring
             private set
-        var paymentProcess: PaymentProcess? = null
 
         fun initSdk(context: Context, params: SessionParams) {
-            tinkoffAcquiring = TinkoffAcquiring(context.applicationContext,
-                params.terminalKey, params.publicKey)
+            tinkoffAcquiring = TinkoffAcquiring(
+                context.applicationContext,
+                params.terminalKey,
+                params.publicKey
+            )
             AcquiringSdk.tokenGenerator = params.password?.let { SampleAcquiringTokenGenerator(it) }
         }
     }

@@ -47,12 +47,6 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".ui.activities.PaymentActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme"
-            android:windowSoftInputMode="adjustNothing" />
-
-        <activity
             android:name=".ui.activities.YandexPaymentActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"
@@ -80,11 +74,6 @@
             android:theme="@style/AcquiringTheme.Base" />
 
         <activity
-            android:name=".ui.activities.NotificationPaymentActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringNotificationTransparentTheme" />
-
-        <activity
             android:name=".ui.activities.BankChooseActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringNotificationTransparentTheme" />
@@ -110,7 +99,7 @@
             android:theme="@style/AcquiringTheme.Base" />
 
         <activity
-            android:name=".redesign.mainform.MainPaymentFormActivity"
+            android:name=".redesign.mainform.ui.MainPaymentFormActivity"
             android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AcquiringNewTheme" />

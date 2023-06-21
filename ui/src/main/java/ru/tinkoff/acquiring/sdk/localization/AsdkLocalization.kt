@@ -26,7 +26,7 @@ import java.util.*
 /**
  * @author Mariya Chernyadieva
  */
-@Deprecated("Redesign")
+@Deprecated("Удалить в 3.1.0. Для кастомизации локализации необходимо использовать замену строковых ресурсов")
 internal object AsdkLocalization {
 
     lateinit var resources: LocalizationResources

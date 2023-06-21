@@ -4,7 +4,7 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
+import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
 import ru.tinkoff.acquiring.sdk.requests.InitRequest
 import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.responses.InitResponse

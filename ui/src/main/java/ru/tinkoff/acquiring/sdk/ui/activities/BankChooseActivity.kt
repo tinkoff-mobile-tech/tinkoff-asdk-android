@@ -109,7 +109,7 @@ internal class BankChooseActivity: TransparentActivity() {
         private const val EXTRA_PAYLOAD_LINK = "extra_payload_link"
 
         fun createIntent(context: Context, options: BaseAcquiringOptions, supportedBanks: BankChooseInfo, payloadLink: String): Intent {
-            val intent = createIntent(context, options, BankChooseActivity::class.java)
+            val intent = createIntent(context, options, BankChooseActivity::class)
             intent.putExtra(EXTRA_BANKS, supportedBanks)
             intent.putExtra(EXTRA_PAYLOAD_LINK, payloadLink)
             return intent
