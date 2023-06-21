@@ -74,11 +74,6 @@
             android:theme="@style/AcquiringTheme.Base" />
 
         <activity
-            android:name=".ui.activities.BankChooseActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringNotificationTransparentTheme" />
-
-        <activity
             android:name=".redesign.cards.list.ui.CardsListActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme.Base" />

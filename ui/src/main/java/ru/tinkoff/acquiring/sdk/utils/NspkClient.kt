@@ -22,7 +22,6 @@ import com.google.gson.JsonParseException
 import okhttp3.OkHttpClient
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.exceptions.NetworkException
-import ru.tinkoff.acquiring.sdk.models.NspkResponse
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.responses.NspkC2bResponse
 import java.io.IOException
