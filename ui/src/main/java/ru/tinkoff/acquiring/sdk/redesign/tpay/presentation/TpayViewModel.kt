@@ -63,7 +63,9 @@ internal class TpayViewModel(
     companion object {
         fun factory(application: Application, paymentOptions: PaymentOptions) = viewModelFactory {
             val acq = TinkoffAcquiring(
-                application, paymentOptions.terminalKey, paymentOptions.publicKey
+                application,
+                paymentOptions.terminalKey,
+                paymentOptions.publicKey
             )
             initializer {
                 TpayViewModel(

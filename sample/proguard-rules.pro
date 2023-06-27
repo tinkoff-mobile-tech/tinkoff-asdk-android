@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class ru.tinkoff.acquiring.sdk.localization.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.requests.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.responses.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.models.** { *; }
+-keep class ru.tinkoff.acquiring.sdk.yandexpay.models.** { *; }
+-keep class ru.rtln.tds.sdk.** { *; }
+-keep class org.spongycastle.**
+-keep class org.bouncycastle.**
