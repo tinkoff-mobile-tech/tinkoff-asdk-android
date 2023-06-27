@@ -119,9 +119,12 @@ class SbpPaymentProcess internal constructor(
                         status = it,
                         paymentId = paymentId
                     )
+                }.catch {
+                    emit(SbpPaymentState.PaymentFailed(throwable = it, paymentId = paymentId))
                 }
-                .catch { SbpPaymentState.PaymentFailed(throwable = it, paymentId = paymentId) }
-                .collectLatest { state.value = it }
+                .collectLatest {
+                    state.value = it
+                }
         }
     }
 
