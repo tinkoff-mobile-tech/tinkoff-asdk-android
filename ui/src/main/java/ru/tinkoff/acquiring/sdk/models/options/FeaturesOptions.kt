@@ -63,6 +63,7 @@ class FeaturesOptions() : Options(), Parcelable {
     /**
      * Обработчик сканирования карты с помощью камеры телефона
      */
+    @Deprecated("use cameraCardScannerContract")
     var cameraCardScanner: CameraCardScanner? = null
 
     /**

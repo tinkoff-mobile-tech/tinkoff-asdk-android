@@ -57,11 +57,6 @@ class DetailsActivity : PayableActivity() {
 
     private var book: Book? = null
 
-    private val paymentContract =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-            handlePaymentResult(result.resultCode, result.data)
-        }
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -91,11 +86,7 @@ class DetailsActivity : PayableActivity() {
 
         val buttonBuy = findViewById<TextView>(R.id.btn_buy_now)
         buttonBuy.setOnClickListener {
-            //Стандартный метод проведения оплаты с получением результата в OnActivityResult
             initPayment()
-
-            //Метод проведения оплаты с получением результата в ActivityResultAPI
-            //initActivityResultAPIPayment()
         }
 
         val sbpButton = findViewById<View>(R.id.btn_fps_pay)

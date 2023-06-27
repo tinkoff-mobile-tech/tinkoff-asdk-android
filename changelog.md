@@ -1,3 +1,13 @@
+## 3.0.0
+
+#### Changes
+- add MirPay payment method
+- redesing sdk screens
+- !up targetSdk version to 33!
+- new payment process entities ([migration](/migration.md))
+- new methods for screen launching ([migration](/migration.md))
+- new card scan methods `CardScannerNewApi.kt`
+
 ## 2.13.0
 
 #### Fixed

@@ -1,5 +1,6 @@
 package ru.tinkoff.acquiring.sdk.redesign.mirpay
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
@@ -55,7 +56,7 @@ object MirPayLauncher {
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result =
             when (resultCode) {
-                AppCompatActivity.RESULT_OK -> {
+                RESULT_OK -> {
                     with(checkNotNull(intent)) {
                         Success(
                             getLongExtra(EXTRA_PAYMENT_ID, -1),
