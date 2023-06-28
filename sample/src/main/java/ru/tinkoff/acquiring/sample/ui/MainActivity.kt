@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
                 when (resultCode) {
                     RESULT_OK -> {
                         val result = data?.getSerializableExtra(ThreeDsHelper.Launch.RESULT_DATA) as CardResult
-                        toast("Attach success: cardId = ${result.cardId} ")
+                        toast("Attach success card: ${result.panSuffix ?: result.cardId}")
                     }
                     RESULT_CANCELED -> toast("Attach canceled")
                     RESULT_ERROR -> {

@@ -47,6 +47,7 @@ import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_PAN
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
@@ -195,7 +196,10 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
                 intent.putExtra(EXTRA_CARD_ID, result.cardId)
                 intent.putExtra(EXTRA_REBILL_ID, result.rebillId)
             }
-            is CardResult -> intent.putExtra(EXTRA_CARD_ID, result.cardId)
+            is CardResult -> {
+                intent.putExtra(EXTRA_CARD_ID, result.cardId)
+                intent.putExtra(EXTRA_CARD_PAN, result.panSuffix)
+            }
         }
 
         setResult(Activity.RESULT_OK, intent)
