@@ -63,7 +63,7 @@ internal class CardsListActivity : TransparentActivity() {
     private val attachCard = registerForActivityResult(AttachCardLauncher.Contract) { result ->
         when (result) {
             is AttachCardLauncher.Success -> {
-                viewModel.onAttachCard(result.cardId)
+                viewModel.onAttachCard(result.panSuffix)
                 viewModel.loadData(
                     savedCardsOptions.customer.customerKey,
                     options.features.showOnlyRecurrentCards

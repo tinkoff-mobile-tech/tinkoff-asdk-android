@@ -151,8 +151,8 @@ internal class CardsListViewModel(
         }
     }
 
-    fun onAttachCard(cardId: String) {
-        eventFlow.value = CardListEvent.ShowCardAttachDialog(cardId)
+    fun onAttachCard(cardPan: String) {
+        eventFlow.value = CardListEvent.ShowCardAttachDialog(cardPan)
     }
 
     fun onStubClicked() = viewModelScope.launch {

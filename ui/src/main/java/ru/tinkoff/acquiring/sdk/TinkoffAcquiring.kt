@@ -19,13 +19,8 @@ package ru.tinkoff.acquiring.sdk
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.Fragment
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
@@ -35,16 +30,9 @@ import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
 import ru.tinkoff.acquiring.sdk.payment.TpayProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
-import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
-import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
-import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
-import ru.tinkoff.acquiring.sdk.redesign.sbp.ui.SbpPaymentActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.YandexPaymentActivity
-import ru.tinkoff.acquiring.sdk.utils.getError
 import kotlin.reflect.KClass
 
 /**

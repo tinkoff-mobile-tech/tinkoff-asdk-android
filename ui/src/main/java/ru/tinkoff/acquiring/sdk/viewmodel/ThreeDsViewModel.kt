@@ -87,7 +87,7 @@ internal class ThreeDsViewModel(
         coroutine.call(request,
             onSuccess = { response ->
                 if (response.status == ResponseStatus.COMPLETED) {
-                    asdkResult.value = CardResult(response.cardId)
+                    asdkResult.value = CardResult(response.cardId, null)
                 } else {
                     val throwable =
                         AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))
