@@ -7,6 +7,7 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentContainerView
@@ -56,6 +57,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             )
             customer = startData.paymentOptions.customer
             features = startData.paymentOptions.features
+            withArrowBack = true
         }
     }
     private val cardDataInputContainer: FragmentContainerView by lazyView(R.id.fragment_card_data_input)
@@ -200,10 +202,14 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     //region init views
     private fun initToolbar() {
-        setSupportActionBar(findViewById(R.id.acq_toolbar))
+        val toolbar = findViewById<Toolbar>(R.id.acq_toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setTitle(R.string.acq_cardpay_title)
+        if (startData.withArrowBack) {
+            toolbar.setNavigationIcon(R.drawable.acq_arrow_back)
+        }
     }
 
     private fun initViews() {

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.activity.viewModels
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -128,10 +129,14 @@ internal class CardsListActivity : TransparentActivity() {
     }
 
     private fun initToolbar() {
-        setSupportActionBar(findViewById(R.id.acq_toolbar))
+        val toolbar = findViewById<Toolbar>(R.id.acq_toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setTitle(R.string.acq_cardlist_title)
+        if (savedCardsOptions.withArrowBack) {
+            toolbar.setNavigationIcon(R.drawable.acq_arrow_back)
+        }
     }
 
     private fun initViews() {

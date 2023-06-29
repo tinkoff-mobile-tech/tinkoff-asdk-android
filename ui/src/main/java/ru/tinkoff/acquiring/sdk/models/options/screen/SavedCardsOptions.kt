@@ -2,6 +2,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.CustomerOptions
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
@@ -13,8 +14,9 @@ import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
  */
 class SavedCardsOptions : BaseCardsOptions<SavedCardsOptions>, Parcelable {
 
-    internal var anotherCard: Boolean = false
-    internal var addNewCard: Boolean = true
+    var anotherCard: Boolean = false
+    var addNewCard: Boolean = true
+    var withArrowBack: Boolean = false
 
     /**
      * [TinkoffAcquiring.savedCardsOptions]
@@ -25,6 +27,7 @@ class SavedCardsOptions : BaseCardsOptions<SavedCardsOptions>, Parcelable {
         parcel.run {
             anotherCard = readByte().isTrue()
             addNewCard = readByte().isTrue()
+            withArrowBack = readByte().isTrue()
         }
     }
 
@@ -33,6 +36,7 @@ class SavedCardsOptions : BaseCardsOptions<SavedCardsOptions>, Parcelable {
         parcel.run {
             writeByte(anotherCard.toByte())
             writeByte(addNewCard.toByte())
+            writeByte(withArrowBack.toByte())
         }
     }
 
