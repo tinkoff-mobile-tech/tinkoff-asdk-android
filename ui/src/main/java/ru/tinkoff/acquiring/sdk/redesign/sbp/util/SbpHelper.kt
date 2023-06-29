@@ -14,9 +14,11 @@ object SbpHelper {
 
     fun openSbpDeeplink(
         deeplink: String,
-        activity: AppCompatActivity
+        activity: AppCompatActivity,
+        errorCallback: (Throwable) -> Unit
     ) {
-        activity.openDeepLink(SBP_BANK_REQUEST_CODE, deeplink)
+        runCatching { activity.openDeepLink(SBP_BANK_REQUEST_CODE, deeplink) }
+            .onFailure { errorCallback(it) }
     }
 
     @SuppressLint("QueryPermissionsNeeded")
