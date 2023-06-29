@@ -385,6 +385,7 @@ open class PayableActivity : AppCompatActivity() {
         val params = TerminalsManager.selectedTerminal
 
         return SampleApplication.tinkoffAcquiring.savedCardsOptions {
+            withArrowBack = true
             customerOptions {
                 customerKey = params.customerKey
                 checkType = settings.checkType

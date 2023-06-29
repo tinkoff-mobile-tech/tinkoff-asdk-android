@@ -40,7 +40,8 @@ object PaymentByCardLauncher {
     @Parcelize
     class StartData(
         val paymentOptions: PaymentOptions,
-        val list: ArrayList<Card>
+        val list: ArrayList<Card>,
+        val withArrowBack: Boolean = false
     ) : Parcelable
 
     object Contract : ActivityResultContract<StartData, Result>() {

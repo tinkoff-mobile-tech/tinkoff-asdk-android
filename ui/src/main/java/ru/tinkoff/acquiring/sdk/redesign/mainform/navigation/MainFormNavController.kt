@@ -34,7 +34,8 @@ internal class MainFormNavController {
             Navigation.ToPayByCard(
                 PaymentByCardLauncher.StartData(
                     paymentOptions,
-                    ArrayList()
+                    ArrayList(),
+                    withArrowBack = true
                 )
             )
         )
@@ -44,7 +45,8 @@ internal class MainFormNavController {
             Navigation.ToPayByCard(
                 PaymentByCardLauncher.StartData(
                     paymentOptions,
-                    ArrayList(cards)
+                    ArrayList(cards),
+                    withArrowBack = true
                 )
             )
         )
@@ -60,6 +62,7 @@ internal class MainFormNavController {
             features.selectedCardId = card?.cardId
             addNewCard = false
             anotherCard = true
+            withArrowBack = true
         }
         channelNav.send(Navigation.ToChooseCard(savedCardsOptions))
     }
