@@ -45,6 +45,12 @@ internal class SbpPaymentViewModel(
         sbpPaymentProcess.goingToBankApp()
     }
 
+    fun errorOpenDeeplink(throwable: Throwable) {
+        stateUiFlow.value = SpbBankListState.Error(throwable)
+        sbpPaymentProcess.stop()
+        paymentStateFlow.value = PaymentStatusSheetState.Hide
+    }
+
     fun startCheckingStatus() {
         sbpPaymentProcess.startCheckingStatus()
     }

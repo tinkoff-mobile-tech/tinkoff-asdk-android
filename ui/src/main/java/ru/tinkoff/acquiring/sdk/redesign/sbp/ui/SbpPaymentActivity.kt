@@ -190,7 +190,9 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
 
     private fun onBankSelected(deeplink: String) {
         viewModel.onGoingToBankApp()
-        openSbpDeeplink(deeplink, this)
+        openSbpDeeplink(deeplink, this) {
+            viewModel.errorOpenDeeplink(it)
+        }
     }
 
     private fun showStub(
