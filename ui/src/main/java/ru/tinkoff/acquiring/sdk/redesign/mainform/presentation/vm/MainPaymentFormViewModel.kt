@@ -141,7 +141,7 @@ internal class MainPaymentFormViewModel(
         mainFormNavController.close(result)
     }
 
-    private fun loadState() {
+    fun loadState() {
         coroutineManager.launchOnBackground {
             formContent.value = FormContent.Loading
             runCatching { primaryButtonFactory.getState() }

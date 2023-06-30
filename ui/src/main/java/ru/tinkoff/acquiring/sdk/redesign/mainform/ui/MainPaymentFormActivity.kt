@@ -117,7 +117,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
 
     private val savedCards = registerForActivityResult(ChoseCardLauncher.Contract) {
         when (it) {
-            is ChoseCardLauncher.Canceled -> Unit
+            is ChoseCardLauncher.Canceled -> viewModel.loadState()
             is ChoseCardLauncher.Error -> Unit
             is ChoseCardLauncher.NeedInputNewCard -> {
                 viewModel.toNewCard()
