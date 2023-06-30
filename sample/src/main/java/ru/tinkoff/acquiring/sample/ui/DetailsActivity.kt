@@ -194,8 +194,10 @@ class DetailsActivity : PayableActivity() {
                 )
             } catch (e: java.lang.Exception) {
                 if (e !is CancellationException) {
-                    hideProgressDialog()
-                    showErrorDialog()
+                    runOnUiThread {
+                        hideProgressDialog()
+                        showErrorDialog()
+                    }
                 }
             }
         }
