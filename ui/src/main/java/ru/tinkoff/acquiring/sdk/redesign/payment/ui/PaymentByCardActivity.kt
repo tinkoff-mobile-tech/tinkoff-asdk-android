@@ -265,7 +265,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                     statusSheetStatus.showIfNeed(supportFragmentManager).state =
                         PaymentStatusSheetState.Error(
                             title = R.string.acq_commonsheet_failed_title,
-                            mainButton = R.string.acq_commonsheet_failed_primary_button,
+                            mainButton = R.string.acq_commonsheet_clear_primarybutton,
                             throwable = it.throwable
                         )
                 }
