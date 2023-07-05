@@ -19,7 +19,7 @@ package ru.tinkoff.acquiring.sdk.models.result
 /**
  * @author Mariya Chernyadieva
  */
-class CardResult(
+data class CardResult(
     val cardId: String? = null,
     val panSuffix: String?
 ) : AsdkResult

@@ -307,12 +307,13 @@ object ThreeDsHelper {
             requestCode: Int,
             options: BaseAcquiringOptions?,
             threeDsData: ThreeDsData,
-            appBasedTransaction: ThreeDsAppBasedTransaction?
+            appBasedTransaction: ThreeDsAppBasedTransaction?,
+            panSuffix: String = ""
         ) {
             if (isAppBasedFlow(threeDsData.version)) {
                 launchAppBased(activity, threeDsData, appBasedTransaction!!)
             } else {
-                launchBrowserBased(activity, requestCode, options!!, threeDsData)
+                launchBrowserBased(activity, requestCode, options!!, threeDsData, panSuffix)
             }
         }
 
@@ -381,9 +382,10 @@ object ThreeDsHelper {
             activity: Activity,
             requestCode: Int,
             options: BaseAcquiringOptions,
-            threeDsData: ThreeDsData
+            threeDsData: ThreeDsData,
+            panSuffix: String = ""
         ) {
-            val intent = ThreeDsActivity.createIntent(activity, options, threeDsData)
+            val intent = ThreeDsActivity.createIntent(activity, options, threeDsData, panSuffix)
             activity.startActivityForResult(intent, requestCode)
         }
     }

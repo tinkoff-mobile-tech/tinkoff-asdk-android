@@ -19,9 +19,7 @@ package ru.tinkoff.acquiring.sdk.ui.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
@@ -32,7 +30,6 @@ import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
-import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_PAN
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
@@ -108,8 +105,14 @@ internal class AttachCardActivity : TransparentActivity() {
             when (screen) {
                 is ThreeDsScreenState -> attachCardViewModel.coroutine.launchOnMain {
                     try {
-                        ThreeDsHelper.Launch(this@AttachCardActivity,
-                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                        ThreeDsHelper.Launch(
+                            this@AttachCardActivity,
+                            THREE_DS_REQUEST_CODE,
+                            options,
+                            screen.data,
+                            screen.transaction,
+                            screen.panSuffix
+                        )
                     } catch (e: Throwable) {
                         finishWithError(e)
                     }
