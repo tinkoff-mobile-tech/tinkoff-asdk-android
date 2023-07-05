@@ -22,14 +22,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
 import org.json.JSONObject
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
@@ -37,9 +34,11 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsData
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.SUBMIT_3DS_AUTHORIZATION_V2
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_PAN
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.Base64
@@ -53,6 +52,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
     private lateinit var viewModel: ThreeDsViewModel
     private lateinit var data: ThreeDsData
     private var termUrl: String? = null
+    private var panSuffix: String = ""
 
     companion object {
 
@@ -66,12 +66,18 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
         private val cancelActions = arrayOf("cancel.do", "cancel=true")
 
-        fun createIntent(context: Context, options: BaseAcquiringOptions, data: ThreeDsData): Intent {
+        fun createIntent(
+            context: Context,
+            options: BaseAcquiringOptions,
+            data: ThreeDsData,
+            panSuffix: String = ""
+        ): Intent {
             val intent = Intent(context, ThreeDsActivity::class.java)
             intent.putExtra(THREE_DS_DATA, data)
             intent.putExtras(Bundle().apply {
                 putParcelable(EXTRA_OPTIONS, options)
             })
+            intent.putExtra(EXTRA_CARD_PAN, panSuffix)
             return intent
         }
     }
@@ -91,6 +97,7 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
         progressBar = findViewById(R.id.acq_progressbar)
         content = wvThreeDs
+        panSuffix = intent.getStringExtra(EXTRA_CARD_PAN) ?: ""
 
         data = intent.getSerializableExtra(THREE_DS_DATA) as ThreeDsData
 
@@ -102,7 +109,13 @@ internal class ThreeDsActivity : BaseAcquiringActivity() {
 
     override fun setSuccessResult(result: AsdkResult) {
         val intent = Intent()
-        intent.putExtra(ThreeDsHelper.Launch.RESULT_DATA, result)
+        val cardResult = result.takeIf { result is CardResult }
+            ?.let {
+                it as CardResult
+                CardResult(it.cardId, panSuffix)
+            }
+            ?: result
+        intent.putExtra(ThreeDsHelper.Launch.RESULT_DATA, cardResult)
         setResult(Activity.RESULT_OK, intent)
     }
 

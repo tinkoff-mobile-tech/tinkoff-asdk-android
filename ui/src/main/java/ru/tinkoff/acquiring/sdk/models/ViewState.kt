@@ -35,7 +35,11 @@ internal object FpsScreenState: Screen()
 internal class BrowseFpsBankScreenState(val paymentId: Long, val deepLink: String, val banks: List<NspkC2bResponse.NspkAppInfo>?) : Screen()
 internal class OpenTinkoffPayBankScreenState(val paymentId: Long, val deepLink: String) : Screen()
 internal class RejectedCardScreenState(val cardId: String, val rejectedPaymentId: Long) : Screen()
-internal class ThreeDsScreenState(val data: ThreeDsData, val transaction: ThreeDsAppBasedTransaction?) : Screen()
+internal class ThreeDsScreenState(
+    val data: ThreeDsData,
+    val transaction: ThreeDsAppBasedTransaction?,
+    val panSuffix: String = ""
+    ) : Screen()
 internal class LoopConfirmationScreenState(val requestKey: String) : Screen()
 
 internal sealed class LoadState : ScreenState()

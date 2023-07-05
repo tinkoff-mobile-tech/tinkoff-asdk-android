@@ -26,7 +26,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.Toolbar
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.localization.LocalizationResources
@@ -35,7 +34,6 @@ import ru.tinkoff.acquiring.sdk.models.FinishWithErrorScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.ScreenState
-import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper

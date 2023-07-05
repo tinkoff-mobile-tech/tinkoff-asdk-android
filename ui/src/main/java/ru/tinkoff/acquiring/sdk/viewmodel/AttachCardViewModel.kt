@@ -145,7 +145,13 @@ internal class AttachCardViewModel(
                             version = checkNotNull(check3dsVersionResponse.version)
                         )
                     }
-                    changeScreenState(ThreeDsScreenState(_3dsData, null))
+                    changeScreenState(
+                        ThreeDsScreenState(
+                            _3dsData,
+                            null,
+                            cardData.pan.panSuffix()
+                        )
+                    )
                 }
                 ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
                 null -> attachCardResult.value = CardResult(it.cardId, cardData.pan.panSuffix())
