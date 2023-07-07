@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/ru.tinkoff.acquiring/ui.svg?maxAge=3600)][search.maven]
 
-<img src="images/pay.jpeg" width="320"> <img src="images/attach.jpeg" width="320">
+<img src="images/tpay.png" width="320"> <img src="images/card_pay.png" width="320">
 
 Acquiring SDK позволяет интегрировать [Интернет-Эквайринг Tinkoff][acquiring] в мобильные приложения для платформы Android.
 
@@ -126,7 +126,7 @@ byMainFormPayment.launch(MainFormContract.StartData(paymentOptions))
 ```
 Результат платежа вернется в **ActivityResultCallback**:
 - при успешном платеже возвращается _MainFormLauncher.Success_ - содержащий _paymentId_ идентификатор платежа, опционально _cardId_ - id карты, с которой проводился платеж, тип String и опционально _rebillId_ - rebillId карты, если был совершен рекуррентный платеж
-- при неуспешном платеже (_MainFormLauncher.Error_) подробнее о возвращаемых ошибках в [документации][full-doc]
+- при неуспешном платеже (_MainFormLauncher.Error_)
 - при отмене платежа (_MainFormLauncher.Canceled_)
 
 Можно так же передать данные чека, указав параметр **receipt** в методе **PaymentOptions**#_orderOptions_ и передать дополнительные параметры **additionalData**. Эти объекты при их наличии будут переданы на сервер с помощью метода [**API Init**][init-documentation], где можно посмотреть их детальное описание.
@@ -178,7 +178,7 @@ attachCard.launch(options)
 ```
 Результат вызова метода вернется в **ActivityResultCallback** в виде **AttachCard.Result**:
 - при успешной привязке (_AttachCard.Success_) возвращается _cardId_ - id карты, которая была привязана, тип String
-- при неуспешной привязке (_AttachCard.Error_) возвращается ошибка _error_ типа Throwable (подробнее о возвращаемых ошибках в [документации][full-doc])
+- при неуспешной привязке (_AttachCard.Error_) возвращается ошибка _error_ типа Throwable
 
 
 ### Система быстрых платежей
@@ -346,5 +346,4 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [issues]: https://github.com/Tinkoff/AcquiringSdkAndroid/issues
 [acquiring]: https://www.tinkoff.ru/kassa/
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
-[full-doc]: https://github.com/Tinkoff/AcquiringSdkAndroid/blob/master/Android%20SDK.pdf
 [network-security-config]:https://developer.android.com/training/articles/security-config
