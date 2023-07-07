@@ -2,7 +2,11 @@ package ru.tinkoff.acquiring.sdk.redesign.cards.list.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
@@ -27,9 +31,15 @@ import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
-import ru.tinkoff.acquiring.sdk.utils.*
+import ru.tinkoff.acquiring.sdk.utils.AcqSnackBarHelper
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
+import ru.tinkoff.acquiring.sdk.utils.ErrorResolver
+import ru.tinkoff.acquiring.sdk.utils.getSdk
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
 import ru.tinkoff.acquiring.sdk.utils.lazyView
+import ru.tinkoff.acquiring.sdk.utils.menuItemVisible
+import ru.tinkoff.acquiring.sdk.utils.showById
 
 // TODO Разобраться с навигацией, код размазан, надо переделать
 internal class CardsListActivity : TransparentActivity() {

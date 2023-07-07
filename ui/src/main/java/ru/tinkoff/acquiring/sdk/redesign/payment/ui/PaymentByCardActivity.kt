@@ -3,6 +3,7 @@ package ru.tinkoff.acquiring.sdk.redesign.payment.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -85,12 +86,17 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         registerForActivityResult(ChoseCardLauncher.Contract) { result ->
             chosenCardComponent.clearCvc()
             when (result) {
-                is ChoseCardLauncher.Success -> viewModel.setSavedCard(result.card)
+                is ChoseCardLauncher.Success -> {
+                    viewModel.setSavedCard(result.card)
+                }
                 is ChoseCardLauncher.NeedInputNewCard ->  {
                     cardDataInput.clearInput()
                     viewModel.setInputNewCard()
                 }
-                else -> Unit
+                else ->  {
+                    cardDataInput.clearInput()
+                    viewModel.setEmptyCardList()
+                }
             }
         }
 
@@ -156,6 +162,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
 
     //region Data change callbacks
     override fun onCardDataChanged(isValid: Boolean) {
+        Log.d("log", "onCardDataChanged isValid ${isValid}")
         viewModel.setCardDate(
             cardNumber = cardDataInput.cardNumber,
             cvc = cardDataInput.cvc,
