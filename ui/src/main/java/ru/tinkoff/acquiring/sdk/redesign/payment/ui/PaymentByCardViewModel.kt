@@ -107,7 +107,11 @@ internal class PaymentByCardViewModel(
         val _state = state.value
         val emailForPayment = if (_state.sendReceipt) _state.email else null
 
-        paymentByCardProcess.start(_state.cardSource, _state.paymentOptions, emailForPayment)
+        paymentByCardProcess.start(
+            cardData = _state.cardSource,
+            paymentOptions = _state.paymentOptions,
+            email = emailForPayment
+        )
     }
 
     fun rechoseCard() {

@@ -42,7 +42,7 @@ class PaymentByCardProcess internal constructor(
         _state.value = PaymentByCardState.Started(paymentOptions, email)
         coroutineManager.launchOnBackground {
             try {
-                startFlow(cardData, paymentOptions, email,isParentOfRecurrent)
+                startFlow(cardData, paymentOptions, email, isParentOfRecurrent)
             } catch (e: Throwable) {
                 handleException(e)
             }
@@ -82,10 +82,12 @@ class PaymentByCardProcess internal constructor(
         isParentOfRecurrent: Boolean,
     ) {
         this.paymentSource = card
-        val init = if(isParentOfRecurrent)
-            initMethods.init(paymentOptions, email)
-        else
+        val init = if (isParentOfRecurrent) {
             initMethods.initRecurrent(paymentOptions, email)
+        } else {
+            initMethods.init(paymentOptions, email)
+        }
+
         val paymentId = checkNotNull(init.paymentId) { "paymentId must be not null" }
         val data3ds = check3DsVersionMethods.callCheck3DsVersion(
             paymentId, card, paymentOptions, email
