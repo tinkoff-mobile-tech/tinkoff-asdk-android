@@ -88,10 +88,6 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                 is ChoseCardLauncher.Success -> {
                     viewModel.setSavedCard(result.card)
                 }
-                is ChoseCardLauncher.NeedInputNewCard ->  {
-                    cardDataInput.clearInput()
-                    viewModel.setInputNewCard()
-                }
                 else ->  {
                     cardDataInput.clearInput()
                     viewModel.setInputNewCard()
