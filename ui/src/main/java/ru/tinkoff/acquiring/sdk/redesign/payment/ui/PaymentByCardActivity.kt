@@ -94,7 +94,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
                 }
                 else ->  {
                     cardDataInput.clearInput()
-                    viewModel.setEmptyCardList()
+                    viewModel.setInputNewCard()
                 }
             }
         }

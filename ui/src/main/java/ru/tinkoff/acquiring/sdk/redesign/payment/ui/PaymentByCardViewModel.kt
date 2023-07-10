@@ -95,18 +95,6 @@ internal class PaymentByCardViewModel(
             )
         }
 
-    fun setEmptyCardList() = state.update {
-        it.copy(
-            cardId = null,
-            cardNumber = null,
-            cvc = null,
-            dateExpired = null,
-            isValidCardData = false,
-            isValidEmail = it.isValidEmail,
-            chosenCard = null
-        )
-    }
-
     fun sendReceiptChange(isSelect: Boolean) = state.update {
         it.copy(sendReceipt = isSelect)
     }
