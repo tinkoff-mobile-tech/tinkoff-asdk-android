@@ -19,7 +19,7 @@ import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.payment.PaymentByCardState
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChooseCardLauncher
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_SAVED_CARDS
 import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputFragment
@@ -33,6 +33,7 @@ import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper.Launch.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.ui.activities.TransparentActivity
 import ru.tinkoff.acquiring.sdk.ui.component.bindKtx
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+import ru.tinkoff.acquiring.sdk.utils.UiLogger
 import ru.tinkoff.acquiring.sdk.utils.getExtra
 import ru.tinkoff.acquiring.sdk.utils.getParcelable
 import ru.tinkoff.acquiring.sdk.utils.lazyUnsafe
@@ -45,6 +46,10 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     CardDataInputFragment.OnCardDataChanged,
     EmailInputFragment.OnEmailDataChanged,
     OnPaymentSheetCloseListener {
+
+    companion object {
+        val logger = UiLogger()
+    }
 
     private val startData: StartData by lazyUnsafe {
         intent.getParcelable(EXTRA_SAVED_CARDS, StartData::class)
@@ -82,15 +87,18 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     }
     private val statusSheetStatus = createPaymentSheetWrapper()
     private val savedCards =
-        registerForActivityResult(ChoseCardLauncher.Contract) { result ->
+        registerForActivityResult(ChooseCardLauncher.Contract) { result ->
             chosenCardComponent.clearCvc()
             when (result) {
-                is ChoseCardLauncher.Success -> {
+                is ChooseCardLauncher.Success -> {
                     viewModel.setSavedCard(result.card)
                 }
-                else ->  {
+                is ChooseCardLauncher.NeedInputNewCard, is ChooseCardLauncher.Canceled->  {
                     cardDataInput.clearInput()
                     viewModel.setInputNewCard()
+                }
+                is ChooseCardLauncher.Error -> {
+                    logger.log(result.error)
                 }
             }
         }

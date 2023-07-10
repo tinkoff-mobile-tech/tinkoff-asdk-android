@@ -25,8 +25,8 @@ import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.attach.AttachCardLauncher
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher.Contract.EXTRA_CHOSEN_CARD
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher.Contract.SELECT_NEW_CARD
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChooseCardLauncher.Contract.EXTRA_CHOSEN_CARD
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChooseCardLauncher.Contract.SELECT_NEW_CARD
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.adapters.CardsListAdapter
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
 import ru.tinkoff.acquiring.sdk.redesign.common.util.AcqShimmerAnimator

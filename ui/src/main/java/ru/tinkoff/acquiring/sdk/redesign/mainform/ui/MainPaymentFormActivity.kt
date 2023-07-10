@@ -23,7 +23,7 @@ import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.*
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChooseCardLauncher
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
@@ -115,14 +115,14 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         }
     }
 
-    private val savedCards = registerForActivityResult(ChoseCardLauncher.Contract) {
+    private val savedCards = registerForActivityResult(ChooseCardLauncher.Contract) {
         when (it) {
-            is ChoseCardLauncher.Canceled -> viewModel.loadState()
-            is ChoseCardLauncher.Error -> Unit
-            is ChoseCardLauncher.NeedInputNewCard -> {
+            is ChooseCardLauncher.Canceled -> viewModel.loadState()
+            is ChooseCardLauncher.Error -> Unit
+            is ChooseCardLauncher.NeedInputNewCard -> {
                 viewModel.toNewCard()
             }
-            is ChoseCardLauncher.Success -> {
+            is ChooseCardLauncher.Success -> {
                 viewModel.choseCard(it.card)
                 cardInputViewModel.choseCard(it.card)
             }

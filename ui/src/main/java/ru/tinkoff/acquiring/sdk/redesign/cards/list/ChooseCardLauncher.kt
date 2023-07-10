@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.redesign.cards.list.ui.CardsListActivity
-import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
 import ru.tinkoff.acquiring.sdk.utils.getError
@@ -16,7 +15,7 @@ import ru.tinkoff.acquiring.sdk.utils.getExtra
 /**
  * @author k.shpakovskiy
  */
-object ChoseCardLauncher {
+object ChooseCardLauncher {
     sealed class Result
     class Success(val card: Card) : Result()
     class Canceled : Result()

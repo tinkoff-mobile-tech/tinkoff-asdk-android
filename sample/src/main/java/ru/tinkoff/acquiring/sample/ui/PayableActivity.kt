@@ -44,7 +44,7 @@ import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChoseCardLauncher
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChooseCardLauncher
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
@@ -124,12 +124,12 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
     private val cardsForRecurrent =
-        registerForActivityResult(ChoseCardLauncher.Contract) { result ->
+        registerForActivityResult(ChooseCardLauncher.Contract) { result ->
             when (result) {
-                is ChoseCardLauncher.Canceled -> Unit
-                is ChoseCardLauncher.Error -> Unit
-                is ChoseCardLauncher.Success -> launchRecurrent(result.card)
-                is ChoseCardLauncher.NeedInputNewCard -> Unit
+                is ChooseCardLauncher.Canceled -> Unit
+                is ChooseCardLauncher.Error -> Unit
+                is ChooseCardLauncher.Success -> launchRecurrent(result.card)
+                is ChooseCardLauncher.NeedInputNewCard -> Unit
             }
         }
 
