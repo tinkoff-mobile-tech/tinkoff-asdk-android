@@ -310,8 +310,7 @@ open class PayableActivity : AppCompatActivity() {
                 )
             }
 
-            val yaFragment =
-                createYandexButtonFragment(savedInstanceState, paymentOptions, yandexPayData, theme)
+            val yaFragment = createYandexButtonFragment(savedInstanceState, paymentOptions, yandexPayData, theme)
 
             if (supportFragmentManager.isDestroyed.not()) {
                 supportFragmentManager.commit { replace(yandexPayButtonContainer.id, yaFragment) }

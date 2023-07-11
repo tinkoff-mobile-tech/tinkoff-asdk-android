@@ -39,9 +39,7 @@ class YandexPaymentProcess(
     private val _state = MutableStateFlow<YandexPaymentState?>(null)
     val state = _state.asStateFlow()
 
-    private val scope = CoroutineScope(
-        ioDispatcher + CoroutineExceptionHandler { _, throwable -> handleException(throwable) }
-    )
+    private lateinit var scope: CoroutineScope
 
     private lateinit var paymentSource: YandexPay
     private var initRequest: InitRequest? = null
@@ -56,6 +54,7 @@ class YandexPaymentProcess(
     private var rejectedPaymentId: Long? = null
 
     fun create(paymentOptions: PaymentOptions, yandexPayToken: String) {
+        initScope()
         this.initRequest = sdk.init {
             configure(paymentOptions)
         }
@@ -63,6 +62,7 @@ class YandexPaymentProcess(
     }
 
     fun create(paymentId: Long, yandexPayToken: String) {
+        initScope()
         this.paymentSource = YandexPay(yandexPayToken)
         this.paymentId = paymentId
     }
@@ -85,6 +85,12 @@ class YandexPaymentProcess(
     fun stop() {
         scope.coroutineContext.cancelChildren()
         sendToListener(YandexPaymentState.Stopped)
+    }
+
+    private fun initScope() {
+        scope = CoroutineScope(
+            ioDispatcher + CoroutineExceptionHandler { _, throwable -> handleException(throwable) }
+        )
     }
 
     private fun sendToListener(state: YandexPaymentState?) {
@@ -114,7 +120,6 @@ class YandexPaymentProcess(
             data = threeDsDataCollector.invoke(app.applicationContext, null)
         )
     }
-
 
     private fun modifyRejectedData(request: InitRequest): Map<String, String> {
         val map = HashMap<String, String>()

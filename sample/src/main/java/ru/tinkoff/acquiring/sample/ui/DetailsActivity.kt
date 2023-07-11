@@ -135,10 +135,8 @@ class DetailsActivity : PayableActivity() {
     ): YandexButtonFragment {
         return savedInstanceState?.let {
             try {
-                (supportFragmentManager.getFragment(
-                    savedInstanceState,
-                    YANDEX_PAY_FRAGMENT_KEY
-                ) as? YandexButtonFragment)?.also {
+                val yaFragment = (supportFragmentManager.getFragment(savedInstanceState, YANDEX_PAY_FRAGMENT_KEY) as? YandexButtonFragment)
+                yaFragment?.also {
                     tinkoffAcquiring.addYandexResultListener(
                         fragment = it,
                         activity = this,
