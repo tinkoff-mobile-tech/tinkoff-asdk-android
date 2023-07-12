@@ -18,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.payment.methods.InitMethodsSdkImpl
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
+import ru.tinkoff.acquiring.sdk.utils.checkNotNull
 
 /**
  * Created by i.golovachev
@@ -36,13 +37,12 @@ class PaymentByCardProcess internal constructor(
     fun start(
         cardData: CardSource,
         paymentOptions: PaymentOptions,
-        email: String? = null,
-        isParentOfRecurrent: Boolean = false,
+        email: String? = null
     ) {
         _state.value = PaymentByCardState.Started(paymentOptions, email)
         coroutineManager.launchOnBackground {
             try {
-                startFlow(cardData, paymentOptions, email, isParentOfRecurrent)
+                startFlow(cardData, paymentOptions, email)
             } catch (e: Throwable) {
                 handleException(e)
             }
@@ -79,16 +79,13 @@ class PaymentByCardProcess internal constructor(
         card: CardSource,
         paymentOptions: PaymentOptions,
         email: String?,
-        isParentOfRecurrent: Boolean,
     ) {
         this.paymentSource = card
-        val init = if (isParentOfRecurrent) {
-            initMethods.initRecurrent(paymentOptions, email)
-        } else {
-            initMethods.init(paymentOptions, email)
-        }
+        val paymentId = initMethods
+                .init(paymentOptions, email)
+                .paymentId
+                .checkNotNull { "paymentId must be not null" }
 
-        val paymentId = checkNotNull(init.paymentId) { "paymentId must be not null" }
         val data3ds = check3DsVersionMethods.callCheck3DsVersion(
             paymentId, card, paymentOptions, email
         )

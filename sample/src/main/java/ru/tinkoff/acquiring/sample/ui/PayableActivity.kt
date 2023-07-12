@@ -325,7 +325,7 @@ open class PayableActivity : AppCompatActivity() {
     }
 
     protected fun setupRecurrentParentPayment() {
-        val recurrentButton : TextView? = findViewById<TextView>(R.id.recurrent_pay)
+        val recurrentButton : TextView? = findViewById(R.id.recurrent_pay)
         recurrentButton?.isVisible = settings.isRecurrentPayment
         recurrentButton?.setOnClickListener {
             val paymentOptions = createPaymentOptions().apply {
