@@ -114,6 +114,9 @@ object AcquiringApi {
         return oldMethodsList.contains(apiMethod)
     }
 
-    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = "v2") =
-        custom?.let { "$it/$oldOrV2" } ?: default
+    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = API_VERSION) =
+        custom?.let {
+            if (it.contains(oldOrV2)) it
+            else "$it/$oldOrV2"
+        } ?: default
 }
