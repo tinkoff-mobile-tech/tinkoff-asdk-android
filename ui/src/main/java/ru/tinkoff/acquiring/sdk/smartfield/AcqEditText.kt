@@ -200,13 +200,12 @@ constructor(
     }
 
     fun showKeyboard() {
-        // TODO поправить в рамках задачи EACQAPW-5399
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            this.windowInsetsController?.show(WindowInsets.Type.ime())
-//        } else {
-//            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            imm.showSoftInput(this, 0)
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            this.windowInsetsController?.show(WindowInsets.Type.ime())
+        } else {
+            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(this, 0)
+        }
     }
 
     fun hideKeyboard() {

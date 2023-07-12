@@ -307,13 +307,13 @@ constructor(
         return state
     }
 
-    override fun childDrawableStateChanged(child: View) {
-        if (child === editText) {
-            refreshDrawableState()
-        } else {
-            super.childDrawableStateChanged(child)
-        }
-    }
+//    override fun childDrawableStateChanged(child: View) {
+//        if (child == editText) {
+//            refreshDrawableState()
+//        } else {
+//            super.childDrawableStateChanged(child)
+//        }
+//    }
 
     override fun drawableStateChanged() {
         super.drawableStateChanged()
