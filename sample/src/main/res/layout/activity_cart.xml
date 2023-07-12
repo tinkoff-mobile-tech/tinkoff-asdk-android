@@ -95,6 +95,16 @@
                 tools:visibility="visible" />
 
             <include
+                android:id="@+id/mir_pay_button"
+                layout="@layout/acq_button_mir_pay"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_margin="8dp"
+                android:padding="12dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <include
                 android:id="@+id/btn_fps_pay"
                 layout="@layout/btn_fps_pay" />
 
