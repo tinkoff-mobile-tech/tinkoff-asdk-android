@@ -20,6 +20,7 @@ import ru.tinkoff.acquiring.sdk.loggers.JavaLogger
 import ru.tinkoff.acquiring.sdk.loggers.Logger
 import ru.tinkoff.acquiring.sdk.requests.*
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
+import ru.tinkoff.acquiring.sdk.utils.EnvironmentMode
 import ru.tinkoff.acquiring.sdk.utils.SampleAcquiringTokenGenerator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.KeyCreator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.StringKeyCreator
@@ -270,6 +271,11 @@ class AcquiringSdk(
     }
 
     companion object {
+
+        /**
+         * Позволяет установить мод для окружения по умолчанию (дебаг)
+         */
+        var environmentMode: EnvironmentMode = EnvironmentMode.IsDebugMode
 
         /**
          * Объект, который будет использоваться для генерации токена при формировании запросов к api
