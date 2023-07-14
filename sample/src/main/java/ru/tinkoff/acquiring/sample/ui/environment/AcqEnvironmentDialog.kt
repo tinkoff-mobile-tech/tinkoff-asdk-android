@@ -1,6 +1,7 @@
 package ru.tinkoff.acquiring.sample.ui.environment
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
@@ -17,6 +18,13 @@ import ru.tinkoff.acquiring.sdk.utils.EnvironmentMode
  * Created by i.golovachev
  */
 class AcqEnvironmentDialog : DialogFragment() {
+
+    companion object {
+
+        private const val PRE_PROD_URL = "https://qa-mapi.tcsbank.ru"
+        const val TAG = "AcqEnvironmentDialog"
+
+    }
 
     private val ok: TextView by lazy {
         requireView().findViewById(R.id.acq_env_ok)
@@ -37,34 +45,20 @@ class AcqEnvironmentDialog : DialogFragment() {
         return inflater.inflate(R.layout.asdk_environment_dialog, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         evnGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.acq_env_is_pre_prod_btn -> {
-                    setEnvironment(
-                        EnvironmentMode.IsPreProdMode,
-                        PRE_PROD_URL,
-                        isDeveloperMode = false,
-                        isEditable = false
-                    )
-                }
-                R.id.acq_env_is_debug_btn -> {
-                    setEnvironment(
-                        EnvironmentMode.IsDebugMode,
-                        AcquiringApi.getUrl("/"),
-                        isDeveloperMode = true,
-                        isEditable = false
-                    )
-                }
+                R.id.acq_env_is_pre_prod_btn -> configureCustomUrl(PRE_PROD_URL, EnvironmentMode.IsPreProdMode)
+                R.id.acq_env_is_debug_btn -> configureCustomUrl(AcquiringApi.getUrl("/"), EnvironmentMode.IsDebugMode)
                 R.id.acq_env_is_custom_btn -> {
-                    setEnvironment(
-                        EnvironmentMode.IsCustomMode,
-                        "https://",
-                        isDeveloperMode = false,
-                        isEditable = true
-                    )
+                    AcquiringSdk.environmentMode = EnvironmentMode.IsCustomMode
+                    editUrlText.setText("https://")
+                    editUrlText.setSelection(editUrlText.text.length)
+                    editUrlText.isEnabled = true
+                    editUrlText.requestFocus()
                 }
             }
         }
@@ -78,6 +72,17 @@ class AcqEnvironmentDialog : DialogFragment() {
         }
     }
 
+    private fun configureCustomUrl(url: String, mode: EnvironmentMode) {
+        AcquiringSdk.environmentMode = mode
+        AcquiringSdk.customUrl = url
+        disableEditing(url)
+    }
+
+    private fun disableEditing(url: String) = with(editUrlText) {
+        setText(url)
+        isEnabled = false
+    }
+
     override fun onResume() {
         dialog?.window?.setLayout(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -86,45 +91,17 @@ class AcqEnvironmentDialog : DialogFragment() {
         super.onResume()
     }
 
-    private fun setEnvironment(
-        mode: EnvironmentMode,
-        url: String,
-        isDeveloperMode: Boolean,
-        isEditable: Boolean
-    ) {
-        AcquiringSdk.environmentMode = mode
-        AcquiringSdk.customUrl = if (isEditable) null else url
-        AcquiringSdk.isDeveloperMode = isDeveloperMode
-
-        editUrlText.setText(url)
-        editUrlText.isEnabled = isEditable
-
-        if (isEditable) {
-            editUrlText.requestFocus()
-        }
-    }
-
     private fun setupEnv() {
-
         when(AcquiringSdk.environmentMode) {
             is EnvironmentMode.IsPreProdMode -> {
-                AcquiringSdk.isDeveloperMode = false
                 evnGroup.check(R.id.acq_env_is_pre_prod_btn)
             }
             is EnvironmentMode.IsDebugMode -> {
-                AcquiringSdk.isDeveloperMode = true
                 evnGroup.check(R.id.acq_env_is_debug_btn)
             }
             is EnvironmentMode.IsCustomMode -> {
-                AcquiringSdk.isDeveloperMode = false
                 evnGroup.check(R.id.acq_env_is_custom_btn)
             }
         }
-    }
-
-    companion object {
-        private val PRE_PROD_URL = "https://qa-mapi.tcsbank.ru"
-
-        const val TAG = "AcqEnvironmentDialog"
     }
 }
