@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
-
+import ru.tinkoff.acquiring.sdk.utils.EnvironmentMode
 
 /**
  * Created by i.golovachev
@@ -43,20 +43,28 @@ class AcqEnvironmentDialog : DialogFragment() {
         evnGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.acq_env_is_pre_prod_btn -> {
-                    editUrlText.setText(PRE_PROD_URL)
-                    editUrlText.isEnabled = false
-                    customUrl = PRE_PROD_URL
+                    setEnvironment(
+                        EnvironmentMode.IsPreProdMode,
+                        PRE_PROD_URL,
+                        isDeveloperMode = false,
+                        isEditable = false
+                    )
                 }
                 R.id.acq_env_is_debug_btn -> {
-                    customUrl = null
-                    editUrlText.isEnabled = false
-                    editUrlText.setText(AcquiringApi.getUrl("/"))
+                    setEnvironment(
+                        EnvironmentMode.IsDebugMode,
+                        AcquiringApi.getUrl("/"),
+                        isDeveloperMode = true,
+                        isEditable = false
+                    )
                 }
                 R.id.acq_env_is_custom_btn -> {
-                    customUrl = null
-                    editUrlText.setText("https://")
-                    editUrlText.isEnabled = true
-                    editUrlText.requestFocus()
+                    setEnvironment(
+                        EnvironmentMode.IsCustomMode,
+                        "https://",
+                        isDeveloperMode = false,
+                        isEditable = true
+                    )
                 }
             }
         }
@@ -78,29 +86,40 @@ class AcqEnvironmentDialog : DialogFragment() {
         super.onResume()
     }
 
+    private fun setEnvironment(
+        mode: EnvironmentMode,
+        url: String,
+        isDeveloperMode: Boolean,
+        isEditable: Boolean
+    ) {
+        AcquiringSdk.environmentMode = mode
+        AcquiringSdk.customUrl = if (isEditable) null else url
+        AcquiringSdk.isDeveloperMode = isDeveloperMode
+
+        editUrlText.setText(url)
+        editUrlText.isEnabled = isEditable
+
+        if (isEditable) {
+            editUrlText.requestFocus()
+        }
+    }
 
     private fun setupEnv() {
-        val isDebug = AcquiringSdk.isDeveloperMode
-        val customUrl = AcquiringSdk.customUrl
 
-        when {
-            customUrl != null && isDebug -> {
-                if (customUrl.contains(PRE_PROD_URL)) {
-                    evnGroup.check(R.id.acq_env_is_pre_prod_btn)
-                } else {
-                    evnGroup.check(R.id.acq_env_is_custom_btn)
-                }
-                editUrlText.setText(customUrl)
+        when(AcquiringSdk.environmentMode) {
+            is EnvironmentMode.IsPreProdMode -> {
+                AcquiringSdk.isDeveloperMode = false
+                evnGroup.check(R.id.acq_env_is_pre_prod_btn)
             }
-            isDebug -> {
+            is EnvironmentMode.IsDebugMode -> {
+                AcquiringSdk.isDeveloperMode = true
                 evnGroup.check(R.id.acq_env_is_debug_btn)
-                editUrlText.setText(AcquiringApi.getUrl("/"))
             }
-            else -> {
-                 evnGroup.check(-1)
+            is EnvironmentMode.IsCustomMode -> {
+                AcquiringSdk.isDeveloperMode = false
+                evnGroup.check(R.id.acq_env_is_custom_btn)
             }
         }
-
     }
 
     companion object {
