@@ -18,6 +18,7 @@ Acquiring SDK позволяет интегрировать [Интернет-Э
 - Поддержка Системы быстрых платежей
 - Оплата через Tinkoff Pay
 - Оплата через Mir Pay
+- Оплата с помощью Yandex Pay
 
 ### Требования
 Для работы Tinkoff Acquiring SDK необходим Android версии 7.0 и выше (API level 24).
@@ -126,7 +127,7 @@ byMainFormPayment.launch(MainFormContract.StartData(paymentOptions))
 ```
 Результат платежа вернется в **ActivityResultCallback**:
 - при успешном платеже возвращается _MainFormLauncher.Success_ - содержащий _paymentId_ идентификатор платежа, опционально _cardId_ - id карты, с которой проводился платеж, тип String и опционально _rebillId_ - rebillId карты, если был совершен рекуррентный платеж
-- при неуспешном платеже (_MainFormLauncher.Error_)
+- при неуспешном платеже (_MainFormLauncher.Error_) содержащий Throwable (подробнее о возвращаемых ошибках в [документации][full-doc])
 - при отмене платежа (_MainFormLauncher.Canceled_)
 
 Можно так же передать данные чека, указав параметр **receipt** в методе **PaymentOptions**#_orderOptions_ и передать дополнительные параметры **additionalData**. Эти объекты при их наличии будут переданы на сервер с помощью метода [**API Init**][init-documentation], где можно посмотреть их детальное описание.
@@ -178,7 +179,7 @@ attachCard.launch(options)
 ```
 Результат вызова метода вернется в **ActivityResultCallback** в виде **AttachCard.Result**:
 - при успешной привязке (_AttachCard.Success_) возвращается _cardId_ - id карты, которая была привязана, тип String
-- при неуспешной привязке (_AttachCard.Error_) возвращается ошибка _error_ типа Throwable
+- при неуспешной привязке (_AttachCard.Error_) возвращается ошибка _error_ типа Throwable (подробнее о возвращаемых ошибках в [документации][full-doc])
 
 
 ### Система быстрых платежей
@@ -338,6 +339,7 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 ### Поддержка
 - По возникающим вопросам просьба обращаться на [oplata@tinkoff.ru][support-email]
 - Баги и feature-реквесты можно направлять в раздел [issues][issues]
+- Полная документация по методам [api][full-doc]
 
 [search.maven]: http://search.maven.org/#search|ga|1|ru.tinkoff.acquiring.ui
 [build-config]: https://developer.android.com/studio/build/index.html
@@ -345,4 +347,5 @@ implementation 'ru.tinkoff.acquiring:core:$latestVersion'
 [issues]: https://github.com/Tinkoff/AcquiringSdkAndroid/issues
 [acquiring]: https://www.tinkoff.ru/kassa/
 [init-documentation]: https://oplata.tinkoff.ru/develop/api/payments/init-request/
+[full-doc]: https://tinkoff.github.io/api_asdk/
 [network-security-config]:https://developer.android.com/training/articles/security-config

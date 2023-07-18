@@ -1,5 +1,6 @@
 ## 3.0.0
 
+#### Fixed
 #### Changes
 - add MirPay payment method
 - redesing sdk screens
@@ -7,6 +8,14 @@
 - new payment process entities ([migration](/migration.md))
 - new methods for screen launching ([migration](/migration.md))
 - new card scan methods `CardScannerNewApi.kt`
+#### Additions
+
+## 2.13.2
+
+#### Fixed
+- new scheme for sbp workflow
+#### Changes
+#### Additions
 
 ## 2.13.0
 
