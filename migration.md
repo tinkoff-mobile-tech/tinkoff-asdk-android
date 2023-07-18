@@ -1,3 +1,34 @@
+3.0.0
+Редизайн asdk
+Некоторые методы `TinkoffAcquiring` для открытия экранов оплаты удалены,
+новая версия sdk подразумевает использовать классы :
+`MainFormLauncher.Contract`,
+`TpayLauncher.Contract`,
+`MirPayLauncher.Contract`,
+`SbpPayLauncher.Contract`,
+`PaymentByCardLauncher.Contract`,
+`RecurrentPayLauncher.Contract`,
+`AttachCardLauncher.Contract`,
+`SavedCardsLauncher.Contract`,
+`ChoseCardLauncher.Contract`
+для открытия экранов используя new Result api.
+
+Методы `TinkoffAcquiring` для управления платежной сессией теперь Deprecated,
+новая версия sdk подразумевает использовать классы :
+`MirPayProcess`,
+`PaymentByCardProcess`,
+`RecurrentPaymentProcess`,
+`SbpPaymentProcess`,
+`TpayProcess`,
+`YandexPaymentProcess`,
+для использования бизнес-логики эквайринга.
+
+По дефолту поддерживается русская и английская локализация с помощью ресурсов, `AsdkLocalization`
+больше не поддерживается.
+
+Метод `TinkoffAcquiring#checkTinkoffPayStatus` удален, в место него используйте `TinkoffAcquiring#checkTerminalInfo`
+Метод `CameraCardScanner#startActivityForScanning` теперь Deprecated, используйте `CardScannerNewApi.kt`
+
 2.13.2
 Новый алгоритм работы со сценарием оплаты СБП
 Новый инстанс ошибки `NspkOpenException` - выбрасывается при неуспешном открытии приложения - партнера

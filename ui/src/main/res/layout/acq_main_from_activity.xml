@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/acq_main_form_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/acq_main_form_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/acq_bottom_sheet_bg"
+        android:clipToPadding="true"
+        app:behavior_fitToContents="true"
+        app:behavior_hideable="true"
+        android:paddingBottom="48dp"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <LinearLayout
+            android:id="@+id/acq_main_form_flipper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/acq_main_form_loader"
+                layout="@layout/acq_main_from_shimmer"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/acq_main_form_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/acq_ic_main_form_gerb">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="42dp"
+                    android:gravity="center"
+                    android:text="@string/main_form_to_pay"
+                    android:textColor="@color/acq_colorTextSecondary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/acq_main_form_amount"
+                    style="@style/AcquiringScreenTitleStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp"
+                    android:textSize="34sp" />
+
+                <include
+                    android:id="@+id/acq_main_card_pay"
+                    layout="@layout/acq_card_pay_component"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/acq_main_form_primary_button"
+                    layout="@layout/acq_main_form_primary_button_component" />
+
+                <include
+                    android:id="@+id/acq_main_form_secondary_button"
+                    layout="@layout/acq_main_form_secondary_block" />
+
+            </LinearLayout>
+
+            <include
+                android:id="@+id/acq_payment_status"
+                layout="@layout/acq_payment_status_form"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/acq_main_from_error_stub"
+                layout="@layout/acq_main_from_error_stub"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

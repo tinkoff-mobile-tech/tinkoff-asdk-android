@@ -659,7 +659,7 @@ internal class EditCard @JvmOverloads constructor(
     override fun afterTextChanged(editable: Editable?) {
         when (editable) {
             is CardNumberEditable -> {
-                val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+                val paymentSystem = CardPaymentSystem.resolve(cardNumber)
                 if (!paymentSystem.showLogo) {
                     if (editable.isEmpty()) {
                         post { hideLogoIfNeed() }
@@ -925,14 +925,14 @@ internal class EditCard @JvmOverloads constructor(
     }
 
     private fun shouldAutoSwitchFromCardNumber(): Boolean {
-        val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
         return cardNumber.length == paymentSystem.range.last
     }
 
     private fun isFilled(field: EditCardField): Boolean {
         return when (field) {
             CARD_NUMBER -> {
-                val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+                val paymentSystem = CardPaymentSystem.resolve(cardNumber)
                 cardNumber.length in paymentSystem.range
             }
             EXPIRE_DATE -> cardDate.length == CardValidator.MAX_DATE_LENGTH
@@ -1135,7 +1135,7 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playTogether(cardNumberAlphaAnimator, lastBlockTranslateXAnimator, dateCvcAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     // Setting starting values of delayed animations
                     setHintAlpha(0)
                     setDateAlpha(0)
@@ -1147,7 +1147,7 @@ internal class EditCard @JvmOverloads constructor(
                     switchViewState(CARD_NUMBER_ANIMATION_STATE)
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     // AnimatorSet triggers onAnimationStart callback AFTER the initial tick of inner animations, which
                     // causes problems when animation scale set to zero on device, hence we manually set target values
                     // of delayed animations in onAnimationEnd
@@ -1221,7 +1221,7 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playTogether(cardNumberAlphaAnimator, lastBlockTranslateXAnimator, dateCvcAlphaAnimator, hintAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     cardNumberPaint.alpha = 0
                     switchViewState(CARD_NUMBER_ANIMATION_STATE)
                     if (!checkFlags(FLAG_MASKED_NUMBER)) {
@@ -1230,7 +1230,7 @@ internal class EditCard @JvmOverloads constructor(
                     }
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
@@ -1271,13 +1271,13 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playSequentially(cardNumberTranslateXAnimator, logoAlphaAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     logoPaint.alpha = 0
                     switchViewState(CARD_LOGO_ANIMATION_STATE)
                     addFlags(FLAG_CARD_SYSTEM_LOGO)
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
@@ -1317,13 +1317,13 @@ internal class EditCard @JvmOverloads constructor(
         AnimatorSet().apply {
             playSequentially(logoAlphaAnimator, translateXAnimator)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     logoPaint.alpha = 255
                     switchViewState(CARD_LOGO_ANIMATION_STATE)
                     removeFlag(FLAG_CARD_SYSTEM_LOGO)
                 }
 
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     if (hasFocus()) {
                         startCursorBlinking()
                     }
@@ -1477,14 +1477,14 @@ internal class EditCard @JvmOverloads constructor(
     }
 
     private fun hideLogoIfNeed() {
-        val showLogo = CardPaymentSystem.resolvePaymentSystem(cardNumber).showLogo
+        val showLogo = CardPaymentSystem.resolve(cardNumber).showLogo
         if (!showLogo && checkFlags(FLAG_CARD_SYSTEM_LOGO) && viewState != CARD_LOGO_ANIMATION_STATE) {
             hideCardSystemLogo()
         }
     }
 
     private fun updateCardInputFilter() {
-        val paymentSystem = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val paymentSystem = CardPaymentSystem.resolve(cardNumber)
         cardNumberEditable.filters = arrayOf(InputFilter.LengthFilter(paymentSystem.range.last))
     }
 

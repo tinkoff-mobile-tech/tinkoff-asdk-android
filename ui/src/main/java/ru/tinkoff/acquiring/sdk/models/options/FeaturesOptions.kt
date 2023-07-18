@@ -20,6 +20,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StyleRes
 import ru.tinkoff.acquiring.sdk.cardscanners.CameraCardScanner
+import ru.tinkoff.acquiring.sdk.cardscanners.delegate.CardScannerContract
+import ru.tinkoff.acquiring.sdk.cardscanners.delegate.CardScannerDelegate
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.DarkThemeMode
@@ -61,7 +63,13 @@ class FeaturesOptions() : Options(), Parcelable {
     /**
      * Обработчик сканирования карты с помощью камеры телефона
      */
+    @Deprecated("use cameraCardScannerContract")
     var cameraCardScanner: CameraCardScanner? = null
+
+    /**
+     * Контракт, для внедрения стороннего сканнера в приложение
+     */
+    var cameraCardScannerContract: CardScannerContract? = null
 
     /**
      * Включение приема платежа через Систему быстрых платежей
@@ -139,6 +147,7 @@ class FeaturesOptions() : Options(), Parcelable {
             useSecureKeyboard = readByte().toInt() != 0
             localizationSource = readSerializable() as LocalizationSource
             cameraCardScanner = readSerializable() as CameraCardScanner?
+            cameraCardScannerContract = readSerializable() as CardScannerContract?
             handleCardListErrorInSdk = readByte().toInt() != 0
             darkThemeMode = DarkThemeMode.valueOf(readString() ?: DarkThemeMode.AUTO.name)
             fpsEnabled = readByte().toInt() != 0
@@ -159,6 +168,7 @@ class FeaturesOptions() : Options(), Parcelable {
             writeByte((if (useSecureKeyboard) 1 else 0).toByte())
             writeSerializable(localizationSource)
             writeSerializable(cameraCardScanner)
+            writeSerializable(cameraCardScannerContract)
             writeByte((if (handleCardListErrorInSdk) 1 else 0).toByte())
             writeString(darkThemeMode.name)
             writeByte((if (fpsEnabled) 1 else 0).toByte())

@@ -20,6 +20,7 @@ import ru.tinkoff.acquiring.sdk.loggers.JavaLogger
 import ru.tinkoff.acquiring.sdk.loggers.Logger
 import ru.tinkoff.acquiring.sdk.requests.*
 import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
+import ru.tinkoff.acquiring.sdk.utils.EnvironmentMode
 import ru.tinkoff.acquiring.sdk.utils.SampleAcquiringTokenGenerator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.KeyCreator
 import ru.tinkoff.acquiring.sdk.utils.keycreators.StringKeyCreator
@@ -222,6 +223,17 @@ class AcquiringSdk(
 
     fun tinkoffPayLink(paymentId: Long, version: String, request: (TinkoffPayLinkRequest.() -> Unit)? = null): TinkoffPayLinkRequest {
         return TinkoffPayLinkRequest(paymentId.toString(), version).apply {
+            terminalKey = this@AcquiringSdk.terminalKey
+            request?.invoke(this)
+        }
+    }
+
+    /**
+     * Метод получения Deeplink-a для оплаты с помощью MirPay
+     */
+    fun mirPayLink(paymentId: Long, request: (MirPayLinkRequest.() -> Unit)? = null): MirPayLinkRequest {
+        return MirPayLinkRequest(paymentId.toString()).apply {
+            terminalKey = this@AcquiringSdk.terminalKey
             request?.invoke(this)
         }
     }
@@ -261,6 +273,11 @@ class AcquiringSdk(
     companion object {
 
         /**
+         * Позволяет установить мод для окружения по умолчанию (дебаг)
+         */
+        var environmentMode: EnvironmentMode = EnvironmentMode.IsDebugMode
+
+        /**
          * Объект, который будет использоваться для генерации токена при формировании запросов к api
          * ([документация по формированию токена](https://www.tinkoff.ru/kassa/develop/api/request-sign/)).
          *
@@ -285,10 +302,15 @@ class AcquiringSdk(
         var isDeveloperMode = false
 
         /**
+         * Позволяет переключать SDK с тестового режима(на другой контур) и обратно. В тестовом режиме деньги с карты не
+         * списываются. По-умолчанию выключен
+         */
+        var isPreprodMode = false
+
+        /**
          * Позволяет переключать SDK на иной апи-контур, работает только в дебаг режиме
          */
         var customUrl : String? = null
-
 
         /**
          * Логирует сообщение

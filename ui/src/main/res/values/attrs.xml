@@ -60,11 +60,97 @@
         <attr name="spi_lastPlus" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="SmartFieldView">
+        <attr name="acq_sf_state_pseudo_focus" format="boolean" />
+        <attr name="acq_sf_state_error" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="AcqTextInputLayout">
+        <attr name="acq_til_title" format="string" />
+        <attr name="acq_til_title_enabled" format="boolean" />
+        <attr name="acq_til_title_text_size" format="dimension" />
+        <attr name="acq_til_title_text_color" format="color" />
+        <attr name="acq_til_title_bottom_margin" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="AcqTextFieldView">
+        <!-- Enables or disables interaction with this view. Unlike android:enabled
+        affects all of it's children including nested ones. -->
+        <attr name="acq_editable" format="boolean" />
+        <!-- If set to false user will not be able to interact with *editText* using keyboard and rather
+        encouraged to select value by other means. -->
+        <attr name="acq_textEditable" format="boolean" />
+        <!-- User visible description of this field displayed above text. -->
+        <attr name="acq_title" format="string" />
+        <!-- If set to *false* title will be hidden while text inside the field is not empty (instead
+        of being lifted to the top). -->
+        <attr name="acq_floatingTitle" format="boolean" />
+        <!-- Hint that will be displayed in place of text value while this field has focus but it's text
+        value is empty. -->
+        <attr name="acq_placeholder" format="string" />
+        <!-- Text that will be displayed to the right of the entered text value. Meant to be used
+        for displaying currency symbol. -->
+        <attr name="acq_appendix" format="string" />
+        <!-- Reference to color resource of an appendix or "sameAsText". -->
+        <attr name="acq_appendixColorRes" format="enum|reference">
+            <enum name="sameAsText" value="-1" />
+        </attr>
+        <!-- Side on which z_appendix will be displayed. -->
+        <attr name="acq_appendixSide" format="enum">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <!-- Size of text. -->
+        <attr name="acq_textSize" format="dimension" />
+        <!-- Font of text as a font resource id -->
+        <attr name="acq_fontFamily" format="reference" />
+        <!-- Text style of text. -->
+        <attr name="acq_textStyle" format="enum">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
+        <!-- Input type which will be set in this field's editText. This is superseded by
+        app:z_inputType if it's set. -->
+        <attr name="android:inputType" />
+
+        <!-- When changing z_inputType also change InputTypes -->
+
+        <!-- Input type which will be set in this field's editText (see InputTypes).
+        This attribute supersedes android:inputType if set. -->
+        <attr name="acq_inputType">
+            <enum name="z_text_default" value="540673" />
+            <enum name="z_text_cap_all" value="528385" />
+            <enum name="z_text_cap_words" value="532481" />
+            <enum name="z_phone" value="3" />
+            <enum name="z_number" value="2" />
+            <enum name="z_amount" value="12290" />
+            <enum name="z_money" value="12290" />
+            <enum name="z_date" value="20" />
+            <enum name="z_email" value="33" />
+        </attr>
+        <!-- Maximum number of lines of text. -->
+        <attr name="acq_maxLines" format="enum|integer">
+            <enum name="unlimited" value="-1" />
+        </attr>
+        <!-- If set to value > 0 the amount of symbols user can enter in text field will be restricted and
+        the remaining symbols counter will be shown at the bottom right part of the field when it's focused.
+        Values less than 1 mean there will be no symbol limit, hence counter won't be displayed. -->
+        <attr name="acq_maxSymbols" format="integer" />
+        <!-- If set to false symbols counter (see z_maxSymbols) will not be displayed. -->
+        <attr name="acq_maxSymbolsCounterVisible" format="boolean" />
+        <!-- Text in this field. -->
+        <attr name="acq_text" />
+    </declare-styleable>
+
     <declare-styleable name="LoaderButton">
         <attr name="acq_text" />
         <attr name="acq_text_color" format="color" />
         <attr name="acq_background" format="reference" />
         <attr name="acq_progress_color" format="color" />
     </declare-styleable>
+
+    <attr name="acq_text" format="string" />
 
 </resources>

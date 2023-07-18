@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?colorPrimary"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/acq_toolbar"
+        style="?attr/acqToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@null"
+        app:navigationIcon="@drawable/acq_ic_close"
+        app:titleTextAppearance="@style/AcqToolbarTitleStyle" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside"
+        android:src="@drawable/acq_ic_stub_phone_denied" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="35dp"
+        android:text="@string/acq_stub_sbp_no_banks_description"
+        android:textColor="@color/acq_colorText"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+        android:id="@+id/acq_button_ok"
+        style="@style/AcqLoaderButton.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
+        app:acq_text="@string/acq_generic_alert_access" />
+
+    <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+        android:id="@+id/acq_button_details"
+        style="@style/AcqLoaderButton.Flat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        app:acq_text="@string/acq_stub_sbp_no_banks_details" />
+
+
+</LinearLayout>

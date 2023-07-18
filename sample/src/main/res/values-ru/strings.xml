@@ -32,6 +32,7 @@
     <string name="activity_title_saved_cards">Сохраненные карты</string>
     <string name="activity_title_send_notification">Отправить уведомление</string>
     <string name="activity_title_book_subscription">Подписка на книги</string>
+    <string name="activity_title_environment">Окружение</string>
 
     <string name="author">Автор</string>
     <string name="year">Год выпуска</string>
@@ -50,6 +51,7 @@
     <string name="version">Tinkoff Acquiring SDK v%1$s(%2$d)</string>
     <string name="pay_with">Оплатить через</string>
     <string name="buy_with_card">Оплатить по карте</string>
+    <string name="buy_with_recurrent">Родительский платеж</string>
     <string name="total_sum">Итого к оплате:</string>
 
     <string name="payment_failed">Невозможно совершить оплату</string>
@@ -74,6 +76,7 @@
     <string name="settings_title_dark_mode_id">Темная тема</string>
     <string name="settings_title_check_type_id">CheckType</string>
     <string name="settings_title_camera">Модуль камеры</string>
+    <string name="settings_title_combi_init">Combi - Init</string>
 
     <string name="attachment_failed">Невозможно завершить привязку карты</string>
     <string name="attachment_cancelled">Привязка карты была отменена</string>
@@ -83,4 +86,5 @@
     <string name="notification_channel_name">Платежные уведомления</string>
     <string name="notification_order_title_subscription_renewal">Продление подписки</string>
     <string name="notification_payment_success">Подписка успешно продлена!</string>
+    <string name="bank_list">Список банков</string>
 </resources>

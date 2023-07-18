@@ -51,7 +51,7 @@ data class SessionParams(
                 "L+evz0+s60Qz5gbBRGfqCA57lUiB3hfXQZq5/q1YkABOHf9cR6Ov5nTRSOnjORgP\n" +
                 "jwIDAQAB"
 
-        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1"
+        private const val DEFAULT_CUSTOMER_KEY = "TestSDK_CustomerKey1123413431"
         private const val DEFAULT_CUSTOMER_EMAIL = "user@example.com"
 
         val TEST_SDK = SessionParams("TestSDK", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL)
@@ -63,6 +63,8 @@ data class SessionParams(
             SessionParams("1578942570730", PASSWORD, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "SBP 3"),
             SessionParams("1661351612593", "45tnvz0kkyyz82mw", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "With token"),
             SessionParams("1661161705205", null, PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "Without token"),
+            SessionParams("1584440932619", "dniplpm7ct3tg9e3", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "Sbp pay with token"),
+            SessionParams("1674123391307", "rpcmn7osqle5sj2r", PUBLIC_KEY, DEFAULT_CUSTOMER_KEY, DEFAULT_CUSTOMER_EMAIL, "new merchant")
         )
     }
 }

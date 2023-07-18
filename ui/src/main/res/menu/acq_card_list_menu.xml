@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <item
+        android:id="@+id/acq_card_list_action_change"
+        android:title="@string/acq_cardlist_button_change"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/acq_card_list_action_complete"
+        android:title="@string/acq_cardlist_button_done"
+        app:showAsAction="always" />
+</menu>

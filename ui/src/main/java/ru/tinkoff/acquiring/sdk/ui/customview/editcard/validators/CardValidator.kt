@@ -34,7 +34,7 @@ internal object CardValidator {
             return false
         }
 
-        val cardType = CardPaymentSystem.resolvePaymentSystem(cardNumber)
+        val cardType = CardPaymentSystem.resolve(cardNumber)
         val allowedLengths = cardType.range
         var lengthAllowed = false
 
@@ -87,6 +87,11 @@ internal object CardValidator {
                 cvc,
                 CVC_CODE_REGEXP
         )
+    }
+
+    fun validateSecurityCodeOrFalse(cvc: String?): Boolean {
+        cvc ?: return false
+        return validateSecurityCode(cvc)
     }
 
     //http://en.wikipedia.org/wiki/Luhn_algorithm

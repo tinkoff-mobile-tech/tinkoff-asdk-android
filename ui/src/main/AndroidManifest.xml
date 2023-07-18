@@ -25,23 +25,26 @@
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="tinkoff.ru" />
+            <data
+                android:host="tinkoff.ru"
+                android:scheme="https" />
         </intent>
+
+        <package android:name="ru.nspk.mirpay" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="www.tinkoff.ru" />
+            <data
+                android:host="mirpay.nspk.ru"
+                android:scheme="https" />
         </intent>
     </queries>
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="false"
         android:supportsRtl="true">
-
-        <activity
-            android:name=".ui.activities.PaymentActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme"
-            android:windowSoftInputMode="adjustNothing" />
 
         <activity
             android:name=".ui.activities.YandexPaymentActivity"
@@ -53,7 +56,7 @@
             android:name=".ui.activities.AttachCardActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/AcquiringTheme"
-            android:windowSoftInputMode="adjustNothing" />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".cardscanners.ui.AsdkNfcScanActivity"
@@ -66,24 +69,50 @@
             android:theme="@style/AcquiringTheme" />
 
         <activity
-            android:name=".ui.activities.SavedCardsActivity"
-            android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringTheme.Base" />
-
-        <activity
             android:name=".ui.activities.ThreeDsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AcquiringTheme.Base" />
 
         <activity
-            android:name=".ui.activities.NotificationPaymentActivity"
+            android:name=".redesign.cards.list.ui.CardsListActivity"
             android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringNotificationTransparentTheme" />
+            android:theme="@style/AcquiringTheme.Base" />
 
         <activity
-            android:name=".ui.activities.BankChooseActivity"
+            android:name=".redesign.sbp.ui.SbpPaymentActivity"
             android:screenOrientation="unspecified"
-            android:theme="@style/AcquiringNotificationTransparentTheme" />
+            android:theme="@style/AcquiringTheme.Base" />
+
+        <activity
+            android:name=".redesign.sbp.ui.SbpNoBanksStubActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base" />
+
+        <activity
+            android:name=".redesign.payment.ui.PaymentByCardActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AcquiringTheme.Base" />
+
+        <activity
+            android:name=".redesign.mainform.ui.MainPaymentFormActivity"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
+
+        <activity android:name=".redesign.recurrent.ui.RecurrentPaymentActivity"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
+
+        <activity android:name=".redesign.tpay.ui.TpayFlowActivity"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
+
+        <activity android:name=".redesign.mirpay.ui.MirPayFlowActivity"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AcquiringNewTheme" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

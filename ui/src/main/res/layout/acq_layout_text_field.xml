@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ru.tinkoff.acquiring.sdk.smartfield.AcqTextInputLayout
+        android:id="@+id/text_input_layout"
+        style="@style/AcqTextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:background="@drawable/acq_sf_text_field_bg"
+        tools:layout_height="@dimen/acq_sf_min_row_height"
+        tools:layout_width="match_parent">
+
+        <ru.tinkoff.acquiring.sdk.smartfield.AcqEditText
+            android:id="@+id/edit_text"
+            style="@style/AcqEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="18dp"
+            android:layout_weight="1"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:gravity="top|start"
+            android:imeOptions="actionNext"
+            android:inputType="text|textNoSuggestions|textVisiblePassword" />
+
+    </ru.tinkoff.acquiring.sdk.smartfield.AcqTextInputLayout>
+
+    <TextView
+        android:id="@+id/symbol_counter"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:textColor="@color/acq_colorHint"
+        android:textSize="@dimen/acq_sf_text_size_medium" />
+
+</merge>

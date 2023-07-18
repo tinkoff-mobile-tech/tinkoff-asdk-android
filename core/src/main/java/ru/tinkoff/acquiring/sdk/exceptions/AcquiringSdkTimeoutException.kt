@@ -25,6 +25,6 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
  */
 class AcquiringSdkTimeoutException(
     val throwable: Throwable,
-    val paymentId: Long?,
-    val status: ResponseStatus?,
+    val paymentId: Long? = null,
+    val status: ResponseStatus? = null,
 ) : RuntimeException(throwable.message, throwable)

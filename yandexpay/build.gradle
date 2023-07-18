@@ -48,6 +48,6 @@ dependencies {
 
 
     testImplementation 'junit:junit:4.13'
-    testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlin}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mokitoKotlinVersion}"
     testImplementation 'org.mockito:mockito-inline:2.13.0'
 }

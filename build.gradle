@@ -1,12 +1,10 @@
-apply plugin: 'kotlin'
-apply plugin: 'org.jetbrains.dokka'
-apply from: 'gradle/versions.gradle'
-
 buildscript {
     apply from: 'gradle/versions.gradle'
 
     repositories {
         google()
+        jcenter()
+        mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 
@@ -16,6 +14,14 @@ buildscript {
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
     }
 }
+
+plugins {
+    id 'org.ajoberstar.grgit' version '5.0.0'
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+apply from: 'gradle/versions.gradle'
 
 allprojects {
     repositories {
@@ -28,6 +34,17 @@ allprojects {
     }
 }
 
+tasks.register("realeaseNotes") {
+    doLast {
+        def branch = grgit.branch.current().fullName
+        def log = grgit
+                .log { range branch, diffWithOrigin }
+                .findAll { !it.shortMessage.startsWith("Merge") }
+                .collect { it.shortMessage }
+                .join("\n\n")
+        print log
+    }
+}
 dokkaHtmlMultiModule.configure {
     outputDirectory.set(new File("$buildDir/dokka"))
 }

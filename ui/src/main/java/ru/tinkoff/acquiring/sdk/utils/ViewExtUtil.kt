@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.annotation.IdRes
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong

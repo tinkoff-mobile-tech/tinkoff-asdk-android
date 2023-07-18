@@ -13,73 +13,36 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fillViewport="true">
+    android:layout_height="match_parent"
+    android:background="@color/acq_colorMain">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_card_data_input"
+        android:name="ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CardDataInputFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/acq_fragment_card_data_input" />
+
+    <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+        android:id="@+id/acq_attach_btn_attach"
+        style="@style/AcqLoaderButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        app:acq_text="@string/acq_addcard_button_add" />
 
     <FrameLayout
+        android:id="@+id/acq_touch_interceptor"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/acq_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="?acqViewHorizontalOffset"
-            android:layout_marginRight="?acqViewHorizontalOffset"
-            android:focusableInTouchMode="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/acq_attach_ll_title_header"
-                style="?acqScreenTitleLayoutStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="?acqViewHorizontalOffset"
-                android:layout_marginRight="?acqViewHorizontalOffset"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/acq_attach_tv_label"
-                    style="?acqScreenTitleStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    tools:text="Привязать карту" />
-
-            </LinearLayout>
-
-            <include
-                layout="@layout/acq_item_card"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/acq_edit_card_height" />
-
-            <Button
-                android:id="@+id/acq_attach_btn_attach"
-                style="?acqButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="?acqViewHorizontalOffset"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="?acqViewHorizontalOffset"
-                android:layout_marginBottom="22dp"
-                android:visibility="visible"
-                tools:text="Attach" />
-
-        </LinearLayout>
-
-        <include
-            layout="@layout/acq_error_message_with_button"
-            tools:visibility="gone" />
-
-        <include
-            layout="@layout/acq_progress_bar"
-            tools:visibility="visible" />
-
-    </FrameLayout>
-
-</ScrollView>
+</RelativeLayout>

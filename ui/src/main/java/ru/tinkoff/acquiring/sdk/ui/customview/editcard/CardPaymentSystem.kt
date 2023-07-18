@@ -44,7 +44,7 @@ enum class CardPaymentSystem(val regex: Regex, val range: IntRange, val showLogo
 
     companion object {
 
-        fun resolvePaymentSystem(cardNumber: String): CardPaymentSystem {
+        fun resolve(cardNumber: String): CardPaymentSystem {
             if (cardNumber.length == 1 && cardNumber.startsWith("6")) {
                 // special case: wait for more digits for MAESTRO/UNION_PAY disambiguation
                 return UNKNOWN

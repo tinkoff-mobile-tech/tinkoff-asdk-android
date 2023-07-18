@@ -16,7 +16,6 @@
 
 package ru.tinkoff.acquiring.sdk.payment
 
-import ru.tinkoff.acquiring.sdk.models.AsdkState
 import ru.tinkoff.acquiring.sdk.models.ThreeDsState
 
 /**
@@ -45,12 +44,14 @@ enum class PaymentState {
 sealed interface YandexPaymentState {
     object Created : YandexPaymentState
     object Started : YandexPaymentState
-    class Registred(val paymentId: Long): YandexPaymentState
+    class Registred(val paymentId: Long) : YandexPaymentState
 
     object ThreeDsRejected : YandexPaymentState
     class ThreeDsUiNeeded(val asdkState: ThreeDsState) : YandexPaymentState
 
     class Error(val paymentId: Long?, val throwable: Throwable) : YandexPaymentState
-    class Success(val paymentId: Long,val cardId: String?, val rebillId: String?) : YandexPaymentState
+    class Success(val paymentId: Long, val cardId: String?, val rebillId: String?) :
+        YandexPaymentState
+
     object Stopped : YandexPaymentState
 }

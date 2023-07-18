@@ -20,8 +20,6 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
-import ru.tinkoff.acquiring.sdk.BuildConfig
-import ru.tinkoff.acquiring.sdk.localization.AsdkLocalization
 import ru.tinkoff.acquiring.sdk.models.DefaultScreenState
 import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
@@ -29,8 +27,7 @@ import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.enums.DataTypeQr
 import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess.Companion.configure
-import ru.tinkoff.acquiring.sdk.requests.InitRequest
+import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
 
 internal class QrViewModel(
     application: Application,
@@ -66,7 +63,7 @@ internal class QrViewModel(
 
         coroutine.call(request,
                 onSuccess = { response ->
-                    qrImageResult.value = response.data
+                    qrImageResult.value = response.data!!
                     changeScreenState(LoadedState)
                 })
     }
@@ -99,7 +96,7 @@ internal class QrViewModel(
                 onSuccess = {
                     when (type) {
                         DataTypeQr.IMAGE -> {
-                            qrImageResult.value = it.data
+                            qrImageResult.value = it.data!!
                             coroutine.runWithDelay(15000) {
                                 getState(paymentId)
                             }
@@ -118,7 +115,7 @@ internal class QrViewModel(
         coroutine.call(request,
                 onSuccess = { response ->
                     if (response.status == ResponseStatus.CONFIRMED || response.status == ResponseStatus.AUTHORIZED) {
-                        paymentResult.value = response.paymentId
+                        paymentResult.value = response.paymentId!!
                     } else {
                         coroutine.runWithDelay(5000) {
                             getState(paymentId)

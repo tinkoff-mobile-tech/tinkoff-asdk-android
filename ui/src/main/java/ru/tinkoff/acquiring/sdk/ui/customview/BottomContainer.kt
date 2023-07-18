@@ -109,7 +109,6 @@ internal class BottomContainer @JvmOverloads constructor(
 
         setBackgroundResource(R.drawable.acq_top_rounded_background)
 
-        scrollableView = findViewById(R.id.acq_payment_tv_order_description) ?: findViewById(R.id.acq_sbp_banks_list)
         background = (this.parent as View).findViewById(R.id.acq_activity_background_layout)
         background?.apply {
             visibility = View.GONE
@@ -298,7 +297,7 @@ internal class BottomContainer @JvmOverloads constructor(
         initAnimation = AnimatorSet().apply {
             playTogether(startAnimations)
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     background?.visibility = View.VISIBLE
                     containerState = STATE_SHOWED
                     containerStateListener?.onShowed()
@@ -344,7 +343,7 @@ internal class BottomContainer @JvmOverloads constructor(
                 DecelerateInterpolator())
                 .apply {
                     addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
+                        override fun onAnimationEnd(animation: Animator) {
                             this@BottomContainer.y = destinyPositionY.toFloat()
                             setBackgroundColor(ContextCompat.getColor(context, R.color.acq_colorMain))
                             containerState = STATE_FULLSCREEN
@@ -369,7 +368,7 @@ internal class BottomContainer @JvmOverloads constructor(
                 DecelerateInterpolator())
                 .apply {
                     addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
+                        override fun onAnimationEnd(animation: Animator) {
                             this@BottomContainer.y = expandedPositionY
                             resizeScrollContainer()
                         }
@@ -454,7 +453,7 @@ internal class BottomContainer @JvmOverloads constructor(
                 if (initAnimation != null && initAnimation!!.isRunning) {
                     initAnimation!!.apply {
                         addListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator?) {
+                            override fun onAnimationEnd(animation: Animator) {
                                 expand()
                             }
                         })

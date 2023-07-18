@@ -36,6 +36,7 @@ import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.responses.AttachCardResponse
 import ru.tinkoff.acquiring.sdk.responses.Check3dsVersionResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
+import ru.tinkoff.acquiring.sdk.utils.panSuffix
 import kotlin.properties.ReadWriteProperty
 
 /**
@@ -80,7 +81,7 @@ internal class AttachCardViewModel(
 
         coroutine.call(request,
                 onSuccess = {
-                    attachCardResult.value = CardResult(it.cardId)
+                    attachCardResult.value = CardResult(it.cardId, cardData.pan.panSuffix())
                     changeScreenState(LoadedState)
                 })
     }
@@ -144,10 +145,16 @@ internal class AttachCardViewModel(
                             version = checkNotNull(check3dsVersionResponse.version)
                         )
                     }
-                    changeScreenState(ThreeDsScreenState(_3dsData, null))
+                    changeScreenState(
+                        ThreeDsScreenState(
+                            _3dsData,
+                            null,
+                            cardData.pan.panSuffix()
+                        )
+                    )
                 }
                 ResponseStatus.LOOP_CHECKING -> changeScreenState(LoopConfirmationScreenState(it.requestKey!!))
-                null -> attachCardResult.value = CardResult(it.cardId)
+                null -> attachCardResult.value = CardResult(it.cardId, cardData.pan.panSuffix())
                 else -> {
                     val throwable =
                         AcquiringSdkException(IllegalStateException("ResponseStatus = ${it.status}"))

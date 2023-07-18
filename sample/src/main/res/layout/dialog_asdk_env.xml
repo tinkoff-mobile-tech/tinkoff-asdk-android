@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:padding="16dp">
+
+    <Switch
+        android:text="is preProd environment"
+        android:id="@+id/acq_env_is_pre_prod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseSwitchCompatOrMaterialXml">
+    </Switch>
+
+    <TextView
+        android:minLines="2"
+        android:id="@+id/acq_env_description"
+        style="@style/AcqEditText"
+        app:layout_constraintTop_toBottomOf="@id/acq_env_is_pre_prod"
+        android:layout_marginTop="24dp"
+        tools:text="Для запросов на Back-end Acquiring будет использован URL:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </TextView>
+
+    <TextView
+        android:id="@+id/acq_env_ok"
+        style="@style/AcqEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:paddingVertical="12dp"
+        android:text="OK"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acq_env_description" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

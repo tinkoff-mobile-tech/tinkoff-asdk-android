@@ -31,6 +31,7 @@ interface CameraCardScanner : Serializable {
     /**
      * Запуск экрана сканирования карты
      */
+    @Deprecated("use CardScannerWrapper and activity result api")
     fun startActivityForScanning(context: Context, requestCode: Int)
 
     /**

@@ -14,10 +14,15 @@
   ~  limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="acq_nfc_need_enable">Turn on NFC to scan a card</string>
     <string name="acq_nfc_is_disable">NFC is turn off</string>
+
+    <string name="acq_scan_by_nfc">Scan card by NFC</string>
+    <string name="acq_scan_by_nfc_close">close</string>
+    <string name="acq_scan_by_nfc_description">Hold the card up to the back of the phone</string>
+    <string name="acq_scan_by_camera">Scan card by photo</string>
 
     <string name="googlepay_button_content_description">Google Pay</string>
 
@@ -29,8 +34,106 @@
     <string name="acq_commonsheet_processing_title">Processing the payment</string>
     <string name="acq_commonsheet_processing_description">it will take some time</string>
     <string name="acq_commonsheet_paid_title">Paid</string>
-    <string name="acq_commonsheet_failed_title">Payment error</string>
+
+    <string name="acq_commonsheet_timeout_failed_title">Payment time has expired</string>
+    <string name="acq_commonsheet_timeout_failed_description">Try to pay again or choose another payment method</string>
+    <string name="acq_commonsheet_timeout_failed_primary_button">Pay again</string>
+    <string name="acq_commonsheet_timeout_failed_flat_button">Other payment method</string>
+
+    <string name="acq_commonsheet_payment_failed_title">Payment failed</string>
+    <string name="acq_commonsheet_payment_failed_description">Try another method</string>
+    <string name="acq_commonsheet_payment_failed_primary_button">Choose another method</string>
+
+    <string name="acq_commonsheet_failed_title">Payment failed</string>
+    <string name="acq_commonsheet_failed_description">Try to pay again or choose another payment method</string>
+    <string name="acq_commonsheet_failed_primary_button">Pay again</string>
     <string name="acq_commonsheet_clear_primarybutton">OK</string>
     <string name="acq_commonsheet_changemethod_primarybutton">Use a different payment method</string>
+    <string name="acq_commonsheet_payment_waiting_title">Waiting for payment in the bank application</string>
+    <string name="acq_commonsheet_payment_waiting_flat_button">Close</string>
+
+    <string name="acq_cardlist_bankname">%1$s • %2$s</string>
+    <string name="acq_cardlist_title">Your cards</string>
+
+    <string name="acq_cardlist_addcard_title">Attach card</string>
+    <string name="acq_label_card_number">Number</string>
+    <string name="acq_label_email">Email address</string>
+    <string name="acq_label_expiry_date">Expiry date</string>
+    <string name="acq_label_card_cvv">Code</string>
+    <string name="acq_label_card_secure">CVV</string>
+    <string name="acq_addcard_button_add">Attach</string>
+
+    <string name="acq_generic_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>
+    <string name="acq_generic_stub_description">Try again in a couple of minutes</string>
+    <string name="acq_generic_alert_access">OK</string>
+
+    <string name="acq_generic_stubnet_title">Not loaded</string>
+    <string name="acq_generic_stubnet_description"><![CDATA[Check internet access and try again]]></string>
+    <string name="acq_generic_button_stubnet">Refresh</string>
+
+    <string name="acq_cardlist_description">This is where your cards will be</string>
+    <string name="acq_cardlist_button_add">Add</string>
+
+    <string name="acq_cardlist_snackbar_add">Card •%1$s added</string>
+    <string name="acq_cardlist_snackbar_remove">Card •%1$s deleted</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Card is deleting •%1$s</string>
+    <string name="acq_cardlist_addcard">Add new</string>
+    <string name="acq_cardlist_button_change">Сhange</string>
+    <string name="acq_cardlist_button_done">Done</string>
+    <string name="acq_cardlist_other_card_button">Another card</string>
+
+    <string name="acq_cardlist_alert_deletecard_label">Couldn\'t delete the card</string>
+
+    <string name="acq_attach_card_error">Error attaching card</string>
+
+    <string name="acq_cardpay_title">Payment by card</string>
+    <string name="acq_cardpay_pay">%1$s pay</string>
+
+    <plurals name="acq_sf_max_symbol_counter_empty">
+        <item quantity="one">%d symbol available</item>
+        <item quantity="other">%d symbols available</item>
+    </plurals>
+    <plurals name="acq_sf_max_symbol_counter_remaining">
+        <item quantity="one">%d symbol remaining</item>
+        <item quantity="other">%d symbols remaining</item>
+    </plurals>
+
+    <string name="acq_bank_issuer_tinkoff">Tinkoff</string>
+    <string name="acq_bank_issuer_alfabank">Alfabank</string>
+    <string name="acq_bank_issuer_vtb">VTB</string>
+    <string name="acq_bank_issuer_sberbank">Sberbank</string>
+    <string name="acq_bank_issuer_raiffeizen">Raiffeizen</string>
+    <string name="acq_bank_issuer_gazprombank">Gazprombank</string>
+
+    <string name="acq_banklist_title">Choose bank</string>
+    <string name="acq_stub_sbp_no_banks_description">You need a bank app wit Fast Payment System support to make the payment</string>
+    <string name="acq_stub_sbp_no_banks_details">Details</string>
+    <string name="acq_chosen_card_change">Change card</string>
+
+    <string name="acq_primary_with_tinkoff_pay">Pay with Tinkoff</string>
+    <string name="acq_primary_with_mir_pay">Pay with</string>
+    <string name="acq_primary_with_sbp">Pay with</string>
+    <string name="acq_primary_with_card">Pay by a card</string>
+
+    <string name="acq_secondary_block_title">Pay by another method</string>
+    <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
+    <string name="acq_secondary_tinkoff_pay_subtitle">In Tinkoff app</string>
+
+    <string name="acq_secondary_mir_pay_title">Mir Pay</string>
+    <string name="acq_secondary_mir_pay_subtitle">In Mir Pay app</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_title">Opening Mir Pay application</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_sub_title">It will take some time</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_close_button">Close</string>
+
+    <string name="acq_secondary_sbp_title">Fast payment system</string>
+    <string name="acq_secondary_sbp_subtitle">In app of any bank</string>
+
+    <string name="acq_secondary_card_title">Картой</string>
+    <string name="main_form_to_pay">To pay</string>
+    <plurals name="acq_secondary_cards_subtitle">
+        <item quantity="one">one saved card</item>
+        <item quantity="other">%d saved cards</item>
+    </plurals>
+
 
 </resources>

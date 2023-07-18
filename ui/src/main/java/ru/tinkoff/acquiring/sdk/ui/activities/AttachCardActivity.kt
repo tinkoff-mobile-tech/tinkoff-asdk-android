@@ -16,8 +16,9 @@
 
 package ru.tinkoff.acquiring.sdk.ui.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.models.ErrorButtonClickedEvent
 import ru.tinkoff.acquiring.sdk.models.ErrorScreenState
@@ -28,6 +29,9 @@ import ru.tinkoff.acquiring.sdk.models.ScreenState
 import ru.tinkoff.acquiring.sdk.models.SingleEvent
 import ru.tinkoff.acquiring.sdk.models.ThreeDsScreenState
 import ru.tinkoff.acquiring.sdk.models.options.screen.AttachCardOptions
+import ru.tinkoff.acquiring.sdk.models.result.CardResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_PAN
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.ui.fragments.AttachCardFragment
 import ru.tinkoff.acquiring.sdk.ui.fragments.LoopConfirmationFragment
@@ -43,11 +47,12 @@ internal class AttachCardActivity : TransparentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        initViews()
-
         attachCardOptions = options as AttachCardOptions
+        setContentView(R.layout.acq_activity_attach_card)
+
         attachCardViewModel = provideViewModel(AttachCardViewModel::class.java) as AttachCardViewModel
+
+        initToolbar()
         observeLiveData()
 
         if (savedInstanceState == null) {
@@ -55,13 +60,27 @@ internal class AttachCardActivity : TransparentActivity() {
         }
     }
 
+    private fun initToolbar() {
+        setSupportActionBar(findViewById(R.id.acq_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setTitle(R.string.acq_cardlist_addcard_title)
+    }
+
     private fun observeLiveData() {
         with(attachCardViewModel) {
-            loadStateLiveData.observe(this@AttachCardActivity, Observer { handleLoadState(it) })
-            attachCardResultLiveData.observe(this@AttachCardActivity, Observer { finishWithSuccess(it) })
-            screenStateLiveData.observe(this@AttachCardActivity, Observer { handleScreenState(it) })
-            screenChangeEventLiveData.observe(this@AttachCardActivity, Observer { handleScreenChangeEvent(it) })
+            attachCardResultLiveData.observe(this@AttachCardActivity) { finishWithSuccess(it) }
+            screenStateLiveData.observe(this@AttachCardActivity) { handleScreenState(it) }
+            screenChangeEventLiveData.observe(this@AttachCardActivity) { handleScreenChangeEvent(it) }
         }
+    }
+
+    private fun finishWithSuccess(result: CardResult) {
+        val intent = Intent()
+        intent.putExtra(EXTRA_CARD_ID, result.cardId)
+        intent.putExtra(EXTRA_CARD_PAN, result.panSuffix)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
     private fun handleScreenState(screenState: ScreenState) {
@@ -69,8 +88,11 @@ internal class AttachCardActivity : TransparentActivity() {
             is FinishWithErrorScreenState -> finishWithError(screenState.error)
             is ErrorScreenState -> {
                 if (supportFragmentManager.findFragmentById(R.id.acq_activity_fl_container) !is LoopConfirmationFragment) {
-                    showErrorScreen(screenState.message) {
-                        hideErrorScreen()
+                    showErrorDialog(
+                        getString(R.string.acq_attach_card_error),
+                        screenState.message,
+                        getString(R.string.acq_generic_alert_access)
+                    ) {
                         attachCardViewModel.createEvent(ErrorButtonClickedEvent)
                     }
                 }
@@ -83,8 +105,14 @@ internal class AttachCardActivity : TransparentActivity() {
             when (screen) {
                 is ThreeDsScreenState -> attachCardViewModel.coroutine.launchOnMain {
                     try {
-                        ThreeDsHelper.Launch(this@AttachCardActivity,
-                            THREE_DS_REQUEST_CODE, options, screen.data, screen.transaction)
+                        ThreeDsHelper.Launch(
+                            this@AttachCardActivity,
+                            THREE_DS_REQUEST_CODE,
+                            options,
+                            screen.data,
+                            screen.transaction,
+                            screen.panSuffix
+                        )
                     } catch (e: Throwable) {
                         finishWithError(e)
                     }
@@ -93,5 +121,9 @@ internal class AttachCardActivity : TransparentActivity() {
                 else -> Unit
             }
         }
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 }

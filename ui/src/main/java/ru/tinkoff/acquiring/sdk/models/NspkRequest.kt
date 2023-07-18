@@ -43,11 +43,4 @@ internal class NspkRequest : Request<NspkC2bResponse> {
         val client = NspkClient()
         client.call(this, onSuccess, onFailure)
     }
-
-    suspend fun execute() = suspendCoroutine<NspkC2bResponse> { ctn ->
-        execute(
-            onSuccess = { response -> ctn.resume(response) },
-            onFailure = { ctn.resumeWithException(it) }
-        )
-    }
 }

@@ -31,6 +31,7 @@
     <string name="activity_title_saved_cards">Saved cards</string>
     <string name="activity_title_send_notification">Send notification</string>
     <string name="activity_title_book_subscription">Book Subscription</string>
+    <string name="activity_title_environment">Environment</string>
 
     <string name="author">Author</string>
     <string name="year">Year</string>
@@ -49,6 +50,7 @@
     <string name="version">Tinkoff Acquiring SDK v%1$s(%2$d)</string>
     <string name="pay_with">Pay with</string>
     <string name="buy_with_card">Pay with card</string>
+    <string name="buy_with_recurrent">Init recurrent</string>
     <string name="total_sum">Total:</string>
 
     <string name="payment_failed">Payment failed. Try later.</string>
@@ -73,6 +75,7 @@
     <string name="settings_title_dark_mode_id">Dark Mode</string>
     <string name="settings_title_check_type_id">CheckType</string>
     <string name="settings_title_camera">Camera module</string>
+    <string name="settings_title_combi_init">Combi - Init</string>
 
     <string name="attachment_failed">Attachment failed. Try later.</string>
     <string name="attachment_cancelled">Attachment canceled</string>
@@ -82,4 +85,5 @@
     <string name="notification_channel_name">Payment notifications</string>
     <string name="notification_order_title_subscription_renewal">Subscription renewal</string>
     <string name="notification_payment_success">Subscription renewed successfully!</string>
+    <string name="bank_list">Bank list</string>
 </resources>

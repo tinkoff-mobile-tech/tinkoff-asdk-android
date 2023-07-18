@@ -39,8 +39,13 @@ constructor(
 
     val textView = TextView(context).apply {
         textSize = 16f
-        setTextColor(ResourcesCompat.getColorStateList(
-            context.resources, R.color.acq_button_text_selector, context.theme))
+        setTextColor(
+            ResourcesCompat.getColorStateList(
+                context.resources,
+                R.color.acq_button_text_selector,
+                context.theme
+            )
+        )
     }
     var textColor: ColorStateList?
         get() = textView.textColors
@@ -70,10 +75,15 @@ constructor(
 
         context.withStyledAttributes(attrs, R.styleable.LoaderButton, defStyleAttr, defStyleRes) {
             text = getString(R.styleable.LoaderButton_acq_text).orEmpty()
-            textColor = getColorStateList(R.styleable.LoaderButton_acq_text_color)
+            getColorStateList(R.styleable.LoaderButton_acq_text_color)?.let { textColor = it }
             getDrawable(R.styleable.LoaderButton_acq_background)?.let { background = it }
                 ?: setBackgroundResource(R.drawable.acq_button_yellow_bg)
-            progressColor = getColorStateList(R.styleable.LoaderButton_acq_progress_color)
+            getColorStateList(R.styleable.LoaderButton_acq_progress_color)?.let { progressColor = it }
         }
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        textView.isEnabled = enabled
     }
 }

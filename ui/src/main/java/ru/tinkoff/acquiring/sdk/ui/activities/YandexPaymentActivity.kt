@@ -47,7 +47,7 @@ internal class YandexPaymentActivity : TransparentActivity() {
         asdkState = paymentOptions.asdkState
 
         initViews()
-        bottomContainer.isVisible = false
+        bottomContainer?.isVisible = false
 
         paymentViewModel = provideYandexViewModelFactory().create(
             YandexPaymentViewModel::class.java,

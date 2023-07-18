@@ -17,33 +17,23 @@
 package ru.tinkoff.acquiring.sdk
 
 import android.app.Activity
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.*
-import ru.tinkoff.acquiring.sdk.localization.LocalizationSource
 import ru.tinkoff.acquiring.sdk.models.*
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.*
-import ru.tinkoff.acquiring.sdk.models.paysources.AttachedCard
-import ru.tinkoff.acquiring.sdk.models.paysources.CardData
-import ru.tinkoff.acquiring.sdk.models.paysources.GooglePay
-import ru.tinkoff.acquiring.sdk.payment.PaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.MirPayProcess
+import ru.tinkoff.acquiring.sdk.payment.SbpPaymentProcess
+import ru.tinkoff.acquiring.sdk.payment.TpayProcess
 import ru.tinkoff.acquiring.sdk.requests.performSuspendRequest
-import ru.tinkoff.acquiring.sdk.responses.GetTerminalPayMethodsResponse
 import ru.tinkoff.acquiring.sdk.responses.TerminalInfo
-import ru.tinkoff.acquiring.sdk.responses.TinkoffPayStatusResponse
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.ui.activities.*
-import ru.tinkoff.acquiring.sdk.ui.activities.AttachCardActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.BaseAcquiringActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.NotificationPaymentActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity
 import ru.tinkoff.acquiring.sdk.ui.activities.QrCodeActivity
-import ru.tinkoff.acquiring.sdk.ui.activities.SavedCardsActivity
-import kotlin.coroutines.suspendCoroutine
+import ru.tinkoff.acquiring.sdk.ui.activities.YandexPaymentActivity
+import kotlin.reflect.KClass
 
 /**
  * Точка входа для взаимодействия с Acquiring SDK
@@ -66,111 +56,6 @@ class TinkoffAcquiring(
     val sdk = AcquiringSdk(terminalKey, publicKey)
 
     /**
-     * Создает платежную сессию. Для проведения оплаты с помощью привязанной карты.
-     * Включает в себя инициирование нового платежа и подтверждение платежа.
-     * Процесс асинхронный
-     *
-     * @param attachedCard   привязанная карта
-     * @param paymentOptions настройки платежной сессии
-     * @return объект для проведения оплаты
-     */
-    fun initPayment(attachedCard: AttachedCard, paymentOptions: PaymentOptions): PaymentProcess {
-        paymentOptions.setTerminalParams(terminalKey, publicKey)
-        return PaymentProcess(sdk, applicationContext).createPaymentProcess(attachedCard, paymentOptions)
-    }
-
-    /**
-     * Создает платежную сессию. Для проведения оплаты с помощью карты.
-     * Включает в себя инициирование нового платежа и подтверждение платежа.
-     * Процесс асинхронный
-     *
-     * @param cardData       данные карты
-     * @param paymentOptions настройки платежной сессии
-     * @return объект для проведения оплаты
-     */
-    fun initPayment(cardData: CardData, paymentOptions: PaymentOptions): PaymentProcess {
-        paymentOptions.setTerminalParams(terminalKey, publicKey)
-        return PaymentProcess(sdk, applicationContext).createPaymentProcess(cardData, paymentOptions)
-    }
-
-    /**
-     * Создает платежную сессию. Для проведения оплаты с помощью Google Pay.
-     * Включает в себя инициирование нового платежа и подтверждение платежа
-     * Процесс асинхронный
-     *
-     * @param googlePayToken токен для оплаты полученный через Google Pay
-     * @param paymentOptions настройки платежной сессии
-     * @return объект для проведения оплаты
-     */
-    fun initPayment(googlePayToken: String, paymentOptions: PaymentOptions): PaymentProcess {
-        paymentOptions.setTerminalParams(terminalKey, publicKey)
-        return PaymentProcess(sdk, applicationContext).createPaymentProcess(GooglePay(googlePayToken), paymentOptions)
-    }
-
-    /**
-     * Создает платежную сессию для подтверждения ранее инициированного платежа.
-     * Включает в себя только подтверждение платежа
-     * Процесс асинхронный
-     *
-     * @param paymentId     уникальный идентификатор транзакции в системе банка,
-     *                      полученный после проведения инициации платежа
-     * @param paymentSource источник платежа
-     * @return объект для проведения оплаты
-     */
-    fun finishPayment(paymentId: Long, paymentSource: PaymentSource): PaymentProcess {
-        return PaymentProcess(sdk, applicationContext).createFinishProcess(paymentId, paymentSource)
-    }
-
-    /**
-     * Получение Acquiring SDK PendingIntent для проведения оплаты и получения результата с помощью Activity Result API
-     *
-     * @param activity    контекст для запуска экрана из Activity
-     * @param options     настройки платежной сессии и визуального отображения экрана
-     * @param requestCode код для получения результата, по завершению оплаты
-     * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
-     *                    с заданного состояния
-     * @return настроенный PendingIntent
-     */
-    @JvmOverloads
-    fun getPaymentPendingIntent(
-        activity: Activity,
-        options: PaymentOptions,
-        requestCode: Int,
-        state: AsdkState = DefaultState
-    ): PendingIntent {
-        options.asdkState = state
-        val intent = prepareIntent(activity, options, PaymentActivity::class.java)
-
-        val flags = when {
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> PendingIntent.FLAG_UPDATE_CURRENT
-            else -> PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-        }
-
-        return PendingIntent.getActivity(
-            activity,
-            requestCode,
-            intent,
-            flags
-        )
-    }
-
-    /**
-     * Запуск экрана Acquiring SDK для проведения оплаты
-     *
-     * @param activity    контекст для запуска экрана из Activity
-     * @param options     настройки платежной сессии и визуального отображения экрана
-     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
-     * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
-     *                    с заданного состояния
-     */
-    @JvmOverloads
-    fun openPaymentScreen(activity: Activity, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
-        options.asdkState = state
-        val intent = prepareIntent(activity, options, PaymentActivity::class.java)
-        activity.startActivityForResult(intent, requestCode)
-    }
-
-    /**
      * Запуск экрана Acquiring SDK для проведения оплаты
      *
      * @param activity        контекст для запуска экрана из Activity
@@ -185,73 +70,32 @@ class TinkoffAcquiring(
                           paymentId: Long? = null
     ) {
         options.asdkState = YandexPayState(yandexPayToken, paymentId)
-        val intent = prepareIntent(activity, options, YandexPaymentActivity::class.java)
+        val intent = prepareIntent(activity, options, YandexPaymentActivity::class)
         activity.startActivityForResult(intent, requestCode)
     }
 
     /**
-     * Запуск экрана Acquiring SDK для проведения оплаты
-     *
-     * @param fragment    контекст для запуска экрана из Fragment
-     * @param options     настройки платежной сессии и визуального отображения экрана
-     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
-     * @param state       вспомогательный параметр для запуска экрана Acquiring SDK
-     *                    с заданного состояния
+     * Создает платежную сессию в рамках оплаты по Системе быстрых платежей
      */
-    @JvmOverloads
-    fun openPaymentScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int, state: AsdkState = DefaultState) {
-        options.asdkState = state
-        val intent = prepareIntent(fragment.requireContext(), options, PaymentActivity::class.java)
-        fragment.startActivityForResult(intent, requestCode)
+    @MainThread
+    fun initSbpPaymentSession() {
+        SbpPaymentProcess.init(sdk, applicationContext.packageManager)
     }
 
     /**
-     * Запуск SDK для оплаты через Систему быстрых платежей
-     *
-     * @param activity    контекст для запуска экрана из Activity
-     * @param options     настройки платежной сессии
-     * @param requestCode код для получения результата, по завершению работы SDK
+     * Создает платежную сессию в рамках оплаты по tinkoffPay
      */
-    fun payWithSbp(activity: Activity, options: PaymentOptions, requestCode: Int) {
-        openPaymentScreen(activity, options, requestCode, FpsState)
+    @MainThread
+    fun initTinkoffPayPaymentSession() {
+        TpayProcess.init(sdk)
     }
 
     /**
-     * Запуск SDK для оплаты через Систему быстрых платежей
-     *
-     * @param fragment    контекст для запуска экрана из Fragment
-     * @param options     настройки платежной сессии
-     * @param requestCode код для получения результата, по завершению работы SDK
+     * Создает платежную сессию в рамках оплаты по MirPay
      */
-    fun payWithSbp(fragment: Fragment, options: PaymentOptions, requestCode: Int) {
-        openPaymentScreen(fragment, options, requestCode, FpsState)
-    }
-
-    /**
-     * Запуск SDK для оплаты через Систему быстрых платежей
-     *
-     * @param paymentId     уникальный идентификатор транзакции в системе банка,
-     *                      полученный после проведения инициации платежа
-     */
-    fun payWithSbp(paymentId: Long): PaymentProcess {
-        return PaymentProcess(sdk, applicationContext).createInitializedSbpPaymentProcess(paymentId)
-    }
-
-    /**
-     * Проверка статуса возможности оплата с помощью Tinkoff Pay
-     */
-    fun checkTinkoffPayStatus(
-        onSuccess: (TinkoffPayStatusResponse) -> Unit,
-        onFailure: ((Throwable) -> Unit)? = null
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val mainScope = this
-            val result = sdk.tinkoffPayStatus().performSuspendRequest()
-            withContext(Dispatchers.Main) {
-                result.fold(onSuccess = onSuccess, onFailure = { onFailure?.invoke(it) })
-                mainScope.cancel()
-            }
-        }
+    @MainThread
+    fun initMirPayPaymentSession() {
+        MirPayProcess.init(sdk)
     }
 
     /**
@@ -273,75 +117,6 @@ class TinkoffAcquiring(
     }
 
     /**
-     * Запуск SDK для оплаты через Tinkoff Pay. У возвращенгого объекта следует указать
-     * слушатель событий с помощью метода [PaymentProcess.subscribe] и вызвать метод
-     * [PaymentProcess.start] для запуска сценария оплаты.
-     *
-     * @param options настройки платежной сессии
-     * @param version версия Tinkoff Pay
-     */
-    fun payWithTinkoffPay(options: PaymentOptions, version: String): PaymentProcess {
-        return PaymentProcess(sdk, applicationContext).createTinkoffPayPaymentProcess(options, version)
-    }
-
-
-    /**
-     * Запуск экрана Acquiring SDK для привязки новой карты
-     *
-     * @param activity    контекст для запуска экрана из Activity
-     * @param options     настройки привязки карты и визуального отображения экрана
-     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
-     */
-    fun openAttachCardScreen(activity: Activity, options: AttachCardOptions, requestCode: Int) {
-        val intent = prepareIntent(activity, options, AttachCardActivity::class.java)
-        activity.startActivityForResult(intent, requestCode)
-    }
-
-    /**
-     * Запуск экрана Acquiring SDK для привязки новой карты
-     *
-     * @param fragment    контекст для запуска экрана из Fragment
-     * @param options     настройки привязки карты и визуального отображения экрана
-     * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
-     */
-    fun openAttachCardScreen(fragment: Fragment, options: AttachCardOptions, requestCode: Int) {
-        val intent = prepareIntent(fragment.requireContext(), options, AttachCardActivity::class.java)
-        fragment.startActivityForResult(intent, requestCode)
-    }
-
-    /**
-     * Запуск экрана Acquiring SDK для просмотра сохраненных карт
-     *
-     * @param activity          контекст для запуска экрана из Activity
-     * @param savedCardsOptions настройки экрана сохраненных карт
-     * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK.
-     *                          В случае удаления/добавления карты на экране, возвращается intent с
-     *                          параметром Boolean по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
-     *                          В случае выбора покупателем приоритетной карты, возвращается intent
-     *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
-     */
-    fun openSavedCardsScreen(activity: Activity, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
-        val intent = prepareIntent(activity, savedCardsOptions, SavedCardsActivity::class.java)
-        activity.startActivityForResult(intent, requestCode)
-    }
-
-    /**
-     * Запуск экрана Acquiring SDK для просмотра сохраненных карт
-     *
-     * @param fragment          контекст для запуска экрана из Fragment
-     * @param savedCardsOptions настройки экрана сохраненных карт
-     * @param requestCode       код для получения результата, по завершению работы экрана Acquiring SDK.
-     *                          В случае удаления/добавления карты на экране, возвращается intent с
-     *                          параметром Boolean по ключу [TinkoffAcquiring.EXTRA_CARD_LIST_CHANGED]
-     *                          В случае выбора покупателем приоритетной карты, возвращается intent
-     *                          с параметром String по ключу [TinkoffAcquiring.EXTRA_CARD_ID]
-     */
-    fun openSavedCardsScreen(fragment: Fragment, savedCardsOptions: SavedCardsOptions, requestCode: Int) {
-        val intent = prepareIntent(fragment.requireContext(), savedCardsOptions, SavedCardsActivity::class.java)
-        fragment.startActivityForResult(intent, requestCode)
-    }
-
-    /**
      * Запуск экрана с отображением QR кода для оплаты покупателем
      *
      * @param activity    контекст для запуска экрана из Activity
@@ -349,7 +124,7 @@ class TinkoffAcquiring(
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
     fun openDynamicQrScreen(activity: Activity, options: PaymentOptions, requestCode: Int) {
-        val intent = prepareIntent(activity, options, QrCodeActivity::class.java)
+        val intent = prepareIntent(activity, options, QrCodeActivity::class)
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -361,7 +136,7 @@ class TinkoffAcquiring(
      * @param requestCode код для получения результата, по завершению работы экрана Acquiring SDK
      */
     fun openDynamicQrScreen(fragment: Fragment, options: PaymentOptions, requestCode: Int) {
-        val intent = prepareIntent(fragment.requireContext(), options, QrCodeActivity::class.java)
+        val intent = prepareIntent(fragment.requireContext(), options, QrCodeActivity::class)
         fragment.startActivityForResult(intent, requestCode)
     }
 
@@ -376,7 +151,7 @@ class TinkoffAcquiring(
         val options = BaseAcquiringOptions().apply {
             features = featuresOptions
         }
-        val intent = prepareIntent(activity, options, QrCodeActivity::class.java)
+        val intent = prepareIntent(activity, options, QrCodeActivity::class)
         activity.startActivityForResult(intent, requestCode)
     }
 
@@ -391,132 +166,22 @@ class TinkoffAcquiring(
         val options = BaseAcquiringOptions().apply {
             features = featuresOptions
         }
-        val intent = prepareIntent(fragment.requireContext(), options, QrCodeActivity::class.java)
+        val intent = prepareIntent(fragment.requireContext(), options, QrCodeActivity::class)
         fragment.startActivityForResult(intent, requestCode)
     }
 
-    /**
-     * Запуск экрана с отображением QR кода для оплаты покупателем
-     *
-     * @param activity     контекст для запуска экрана
-     * @param localization локализация экрана
-     * @param requestCode  код для получения результата, по завершению работы экрана Acquiring SDK
-     */
-    @Deprecated("Replaced with expanded method",
-        ReplaceWith("openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)"))
-    fun openStaticQrScreen(activity: Activity, localization: LocalizationSource, requestCode: Int) {
-        openStaticQrScreen(activity, FeaturesOptions().apply { localizationSource = localization }, requestCode)
-    }
-
-    /**
-     * Создает PendingIntent для вызова оплаты через GooglePay из уведомления.
-     * Результат оплаты будет обработан в SDK
-     *
-     * @param context         контекст для запуска экрана
-     * @param googlePayParams параметры GooglePay
-     * @param options         настройки платежной сессии
-     * @param notificationId  ID уведомления.
-     *                        Если передан, уведомлене удалится в случае успешной оплаты
-     * @return настроенный PendingIntent
-     */
-    @JvmOverloads
-    @Deprecated("Not supported yet")
-    fun createGooglePayPendingIntent(context: Context,
-                                     googlePayParams: GooglePayParams,
-                                     options: PaymentOptions,
-                                     notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, publicKey)
-        return NotificationPaymentActivity.createPendingIntent(context,
-            options,
-            null,
-            NotificationPaymentActivity.PaymentMethod.GPAY,
-            notificationId,
-            googlePayParams)
-    }
-
-    /**
-     * Создает PendingIntent для вызова оплаты через экран оплаты Tinkoff из уведомления.
-     * Результат оплаты будет обработан в SDK
-     *
-     * @param context        контекст для запуска экрана
-     * @param options        настройки платежной сессии
-     * @param notificationId ID уведомления.
-     *                       Если передан, уведомлене удалится в случае успешной оплаты
-     * @return настроенный PendingIntent
-     */
-    @JvmOverloads
-    fun createTinkoffPaymentPendingIntent(context: Context, options: PaymentOptions, notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, publicKey)
-        return NotificationPaymentActivity.createPendingIntent(context,
-            options,
-            null,
-            NotificationPaymentActivity.PaymentMethod.TINKOFF,
-            notificationId)
-    }
-
-    /**
-     * Создает PendingIntent для вызова оплаты через GooglePay из уведомления.
-     * Результат вернется в onActivityResult с кодом [requestCode] (успех, ошибка или отмена)
-     *
-     * @param activity        контекст для запуска экрана
-     * @param googlePayParams параметры GooglePay
-     * @param options         настройки платежной сессии
-     * @param requestCode     код для получения результата, по завершению оплаты
-     * @param notificationId  ID уведомления.
-     *                        Если передан, уведомлене удалится в случае успешной оплаты
-     * @return настроенный PendingIntent
-     */
-    @JvmOverloads
-    fun createGooglePayPendingIntentForResult(activity: Activity,
-                                              googlePayParams: GooglePayParams,
-                                              options: PaymentOptions,
-                                              requestCode: Int,
-                                              notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, publicKey)
-        return NotificationPaymentActivity.createPendingIntent(activity,
-                options,
-                requestCode,
-                NotificationPaymentActivity.PaymentMethod.GPAY,
-                notificationId,
-                googlePayParams)
-    }
-
-    /**
-     * Создает PendingIntent для вызова оплаты через экран оплаты Tinkoff из уведомления
-     *
-     * @param activity       контекст для запуска экрана
-     * @param options        настройки платежной сессии
-     * @param requestCode    код для получения результата, по завершению оплаты
-     * @param notificationId ID уведомления.
-     *                       Если передан, уведомлене удалится в случае успешной оплаты
-     * @return настроенный PendingIntent
-     */
-    @JvmOverloads
-    fun createTinkoffPaymentPendingIntentForResult(activity: Activity,
-                                                   options: PaymentOptions,
-                                                   requestCode: Int,
-                                                   notificationId: Int? = null): PendingIntent {
-        options.setTerminalParams(terminalKey, publicKey)
-        return NotificationPaymentActivity.createPendingIntent(activity,
-            options,
-            requestCode,
-            NotificationPaymentActivity.PaymentMethod.TINKOFF,
-            notificationId)
-    }
-
-    private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
+    private fun prepareIntent(context: Context, options: BaseAcquiringOptions, cls: KClass<*>): Intent {
         options.setTerminalParams(terminalKey, publicKey)
         return BaseAcquiringActivity.createIntent(context, options, cls)
     }
 
-    companion object {
+    fun attachCardOptions(setup: AttachCardOptions.() -> Unit) = AttachCardOptions().also { options ->
+        options.setTerminalParams(terminalKey, publicKey)
+        setup(options)
+    }
 
-        const val RESULT_ERROR = 500
-        const val EXTRA_ERROR = "extra_error"
-        const val EXTRA_CARD_ID = "extra_card_id"
-        const val EXTRA_PAYMENT_ID = "extra_payment_id"
-        const val EXTRA_REBILL_ID = "extra_rebill_id"
-
-        const val EXTRA_CARD_LIST_CHANGED = "extra_cards_changed"
+    fun savedCardsOptions(setup: SavedCardsOptions.() -> Unit) = SavedCardsOptions().also { options ->
+        options.setTerminalParams(terminalKey, publicKey)
+        setup(options)
     }
 }

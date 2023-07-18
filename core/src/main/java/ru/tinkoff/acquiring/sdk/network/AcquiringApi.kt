@@ -44,6 +44,7 @@ object AcquiringApi {
     const val SUBMIT_3DS_AUTHORIZATION_V2 = "Submit3DSAuthorizationV2"
     const val COMPLETE_3DS_METHOD_V2 = "Complete3DSMethodv2"
     const val GET_TERMINAL_PAY_METHODS = "GetTerminalPayMethods"
+    const val MIR_PAY_GET_DEEPLINK_METHOD = "MirPay/GetDeepLink"
 
     const val API_ERROR_CODE_3DSV2_NOT_SUPPORTED = "106"
     const val API_ERROR_CODE_CUSTOMER_NOT_FOUND = "7"
@@ -57,40 +58,9 @@ object AcquiringApi {
     /**
      * Коды ошибок, сообщение которых можно показать конечным пользователям
      */
-    val errorCodesForUserShowing = listOf(
-        "53",
-        "206",
-        "224",
-        "225",
-        "252",
-        "99",
-        "101",
-        "1006",
-        "1012",
-        "1013",
-        "1014",
-        "1015",
-        "1030",
-        "1033",
-        "1034",
-        "1035",
-        "1036",
-        "1037",
-        "1038",
-        "1039",
-        "1040",
-        "1041",
-        "1042",
-        "1043",
-        "1051",
-        "1054",
-        "1057",
-        "1065",
-        "1082",
-        "1089",
-        "1091",
-        "1096"
-    )
+    val errorCodesForUserShowing = listOf("53", "206", "224", "225", "252", "99", "101",
+            "1006", "1012", "1013", "1014", "1015", "1030", "1033", "1034", "1035", "1036", "1037", "1038",
+            "1039", "1040", "1041", "1042", "1043", "1051", "1054", "1057", "1065", "1082", "1089", "1091", "1096")
 
     /**
      * Коды ошибок, вызванные временными неполадками системы
@@ -106,7 +76,7 @@ object AcquiringApi {
     internal const val API_REQUEST_METHOD_POST = "POST"
     internal const val API_REQUEST_METHOD_GET = "GET"
 
-    internal const val JSON = "application/json"
+    const val JSON = "application/json"
     internal const val FORM_URL_ENCODED = "application/x-www-form-urlencoded"
     internal const val TIMEOUT = 40000L
 
@@ -116,6 +86,9 @@ object AcquiringApi {
     private const val API_VERSION = "v2"
     private const val API_URL_RELEASE = "https://securepay.tinkoff.ru/$API_VERSION"
     private const val API_URL_DEBUG = "https://rest-api-test.tinkoff.ru/$API_VERSION"
+
+    private const val API_URL_PREPROD_OLD = "https://qa-mapi.tcsbank.ru/rest"
+    private const val API_URL_PREPROD = "https://qa-mapi.tcsbank.ru/$API_VERSION"
 
     private val oldMethodsList = listOf("Submit3DSAuthorization")
 
@@ -141,6 +114,9 @@ object AcquiringApi {
         return oldMethodsList.contains(apiMethod)
     }
 
-    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = "v2") =
-        custom?.let { "$it/$oldOrV2" } ?: default
+    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = API_VERSION) =
+        custom?.let {
+            if (it.contains(oldOrV2)) it
+            else "$it/$oldOrV2"
+        } ?: default
 }

@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="56dp"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/chosenCard"
+        layout="@layout/acq_layout_choosen_card" />
+
+    <include
+        android:id="@+id/emailInput"
+        layout="@layout/acq_email_component" />
+
+    <ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
+        android:id="@+id/loaderButton"
+        style="@style/AcqLoaderButton.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>

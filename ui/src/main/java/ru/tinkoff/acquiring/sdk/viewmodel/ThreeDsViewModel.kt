@@ -31,7 +31,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
-import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPoling
+import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 
 internal class ThreeDsViewModel(
     application: Application,
@@ -39,7 +39,7 @@ internal class ThreeDsViewModel(
     sdk: AcquiringSdk
 ) : BaseAcquiringViewModel(application, handleErrorsInSdk, sdk) {
 
-    private val getStatusPooling = GetStatusPoling(sdk)
+    private val getStatusPooling = GetStatusPooling(sdk)
     private val asdkResult: MutableLiveData<AsdkResult> = MutableLiveData()
     private var requestPaymentStateJob: Job? = null
     val resultLiveData: LiveData<AsdkResult> = asdkResult
@@ -87,7 +87,7 @@ internal class ThreeDsViewModel(
         coroutine.call(request,
             onSuccess = { response ->
                 if (response.status == ResponseStatus.COMPLETED) {
-                    asdkResult.value = CardResult(response.cardId)
+                    asdkResult.value = CardResult(response.cardId, null)
                 } else {
                     val throwable =
                         AcquiringSdkException(IllegalStateException("AsdkState = ${response.status}"))

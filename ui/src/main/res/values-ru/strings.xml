@@ -15,20 +15,129 @@
   ~  limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="acq_nfc_need_enable">Для сканирования карты необходимо включить NFC</string>
     <string name="acq_nfc_is_disable">NFC выключен</string>
+
+    <string name="acq_scan_by_nfc">Сканирование с помощью NFC</string>
+    <string name="acq_scan_by_nfc_close">Закрыть</string>
+    <string name="acq_scan_by_nfc_description">Поднесите карту к задней крышке телефона</string>
+    <string name="acq_scan_by_camera">Сканирование с помощью камеры</string>
 
     <string name="googlepay_button_content_description">Google Pay</string>
 
     <string name="acq_fps_chooser_title">Выберите приложение</string>
 
+    <string name="acq_cardlist_bankname">%1$s • %2$s</string>
+    <string name="acq_cardlist_title">Ваши карты</string>
+
+    <string name="acq_generic_alert_label"><![CDATA[У нас проблема, мы уже решаем ее]]></string>
+    <string name="acq_generic_stub_description">Попробуйте снова через пару минут</string>
+    <string name="acq_generic_alert_access">Понятно</string>
+
+    <string name="acq_generic_stubnet_title">Не загрузилось</string>
+    <string name="acq_generic_stubnet_description"><![CDATA[Проверьте доступ к интернету и попробуйте еще раз]]></string>
+    <string name="acq_generic_button_stubnet">Обновить</string>
+    <string name="acq_cardlist_description">Здесь будут ваши карты</string>
+    <string name="acq_cardlist_button_add">Добавить</string>
+    <string name="acq_cardlist_addcard">Добавить новую</string>
+
+    <string name="acq_cardlist_addcard_title">Добавить карту</string>
+    <string name="acq_label_card_number">Номер</string>
+    <string name="acq_label_email">Электронная почта</string>
+    <string name="acq_label_expiry_date">Срок</string>
+    <string name="acq_label_card_cvv">Код</string>
+    <string name="acq_label_card_secure">CVV</string>
+    <string name="acq_addcard_button_add">Добавить</string>
+
+    <string name="acq_cardlist_snackbar_add">Карта •%1$s добавлена</string>
+    <string name="acq_cardlist_snackbar_remove">Карта •%1$s удалена</string>
+    <string name="acq_cardlist_snackbar_remove_progress">Удаляем карту •%1$s</string>
+    <string name="acq_cardlist_other_card_button">Другой картой</string>
+
+    <string name="acq_cardlist_button_change">Изменить</string>
+    <string name="acq_cardlist_button_done">Готово</string>
+
+    <string name="acq_cardlist_alert_deletecard_label">Не получилось удалить карту</string>
+
+    <string name="acq_attach_card_error">Ошибка добавления карты</string>
+
+    <string name="acq_cardpay_title">Оплата картой</string>
+    <string name="acq_cardpay_pay">Оплатить %1$s</string>
+
+    <plurals name="acq_sf_max_symbol_counter_empty">
+        <item quantity="one">Доступен %d символ</item>
+        <item quantity="few">Доступно %d символа</item>
+        <item quantity="many">Доступно %d символов</item>
+        <item quantity="other">Доступно %d символов</item>
+    </plurals>
+    <plurals name="acq_sf_max_symbol_counter_remaining">
+        <item quantity="one">Остался %d символ</item>
+        <item quantity="few">Осталось %d символа</item>
+        <item quantity="many">Осталось %d символов</item>
+        <item quantity="other">Осталось %d символов</item>
+    </plurals>
+
+    <string name="acq_bank_issuer_tinkoff">Тинькофф</string>
+    <string name="acq_bank_issuer_alfabank">Альфа банк</string>
+    <string name="acq_bank_issuer_gazprombank">Газпромбанк</string>
+    <string name="acq_bank_issuer_vtb">ВТБ</string>
+    <string name="acq_bank_issuer_sberbank">Сбербанк</string>
+    <string name="acq_bank_issuer_raiffeizen">Райффайзен</string>
+
+    <string name="acq_banklist_title">Выбор банка</string>
+    <string name="acq_stub_sbp_no_banks_description"><![CDATA[Для оплаты нужно приложение вашего банка с поддержкой СБП]]></string>
+    <string name="acq_stub_sbp_no_banks_details">Узнать подробности</string>
+
     <string name="acq_commonsheet_processing_title">Обрабатываем платеж</string>
     <string name="acq_commonsheet_processing_description">Это займет некоторое время</string>
     <string name="acq_commonsheet_paid_title">Оплачено</string>
     <string name="acq_commonsheet_failed_title">Не получилось оплатить</string>
+    <string name="acq_commonsheet_failed_description">Попробуйте другой способ оплаты</string>
+    <string name="acq_commonsheet_failed_primary_button">Выбрать другой способ оплаты</string>
     <string name="acq_commonsheet_clear_primarybutton">Понятно</string>
     <string name="acq_commonsheet_changemethod_primarybutton">Воспользуйтесь другим\nспособом оплаты</string>
+    <string name="acq_commonsheet_payment_waiting_title">Ждем оплату в приложении банка</string>
+    <string name="acq_commonsheet_payment_waiting_flat_button">Закрыть</string>
+
+    <string name="acq_commonsheet_mir_pay_payment_waiting_title">Открываем приложение Mir Pay</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_sub_title">Это займет некоторое время</string>
+    <string name="acq_commonsheet_mir_pay_payment_waiting_close_button">Закрыть</string>
+
+    <string name="acq_commonsheet_timeout_failed_title">Время оплаты истекло</string>
+    <string name="acq_commonsheet_timeout_failed_description">Попробуйте оплатить снова или выберите другой способ оплаты</string>
+    <string name="acq_commonsheet_timeout_failed_primary_button">Оплатить еще раз</string>
+    <string name="acq_commonsheet_timeout_failed_flat_button">Другой способ оплаты</string>
+
+    <string name="acq_commonsheet_payment_failed_title">Не получилось оплатить</string>
+    <string name="acq_commonsheet_payment_failed_description">Выберите другой способ оплаты</string>
+    <string name="acq_commonsheet_payment_failed_primary_button">Выбрать другой способ</string>
+
+    <string name="acq_chosen_card_change">Сменить карту</string>
+
+    <string name="acq_primary_with_tinkoff_pay">Оплатить с Тинькофф</string>
+    <string name="acq_primary_with_mir_pay">Оплатить с</string>
+    <string name="acq_primary_with_sbp">Оплатить с</string>
+    <string name="acq_primary_with_card">Оплатить картой</string>
+
+    <string name="acq_secondary_block_title">Оплатить другим способом</string>
+    <string name="acq_secondary_tinkoff_pay_title">Tinkoff Pay</string>
+    <string name="acq_secondary_tinkoff_pay_subtitle">В приложении банка</string>
+
+    <string name="acq_secondary_mir_pay_title">Mir Pay</string>
+    <string name="acq_secondary_mir_pay_subtitle">В приложении Mir Pay</string>
+
+    <string name="acq_secondary_sbp_title">CБП</string>
+    <string name="acq_secondary_sbp_subtitle">В приложении любого банка</string>
+
+
+    <string name="acq_secondary_card_title">Картой</string>
+    <string name="main_form_to_pay">К оплате</string>
+    <plurals name="acq_secondary_cards_subtitle">
+        <item quantity="one" tools:ignore="ImpliedQuantity">одна сохраненная карта</item>
+        <item quantity="few">%d сохранненные</item>
+        <item quantity="many">%d сохранненных</item>
+    </plurals>
 
 </resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/acq_snackbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="8dp"
+        >
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/acq_snackbar_progress_bar"
+            app:indicatorColor="@color/acq_progress_bar_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateOnly="true"
+            android:layout_marginHorizontal="16dp"
+            app:trackColor="@android:color/transparent"
+            app:trackThickness="2dp"
+            app:indicatorSize="30dp"
+            android:layout_gravity="center_vertical"
+            />
+
+        <TextView
+            android:id="@+id/acq_snackbar_text"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="66dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textSize="@dimen/acq_large_text_size"
+            android:layout_gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Карта •7913 удалена" />
+
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

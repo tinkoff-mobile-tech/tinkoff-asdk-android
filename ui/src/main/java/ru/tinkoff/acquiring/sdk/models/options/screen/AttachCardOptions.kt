@@ -18,6 +18,7 @@ package ru.tinkoff.acquiring.sdk.models.options.screen
 
 import android.os.Parcel
 import android.os.Parcelable
+import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 
 /**
@@ -27,7 +28,10 @@ import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
  */
 class AttachCardOptions : BaseCardsOptions<AttachCardOptions>, Parcelable {
 
-    constructor() : super()
+    /**
+     * [TinkoffAcquiring.attachCardOptions]
+     */
+    internal constructor() : super()
     private constructor(parcel: Parcel) : super(parcel)
 
     override fun setOptions(options: AttachCardOptions.() -> Unit): AttachCardOptions {

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="20dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/acq_card_choosen_item_logo"
+            android:layout_width="40dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/acq_ic_card_mir_tinkoff" />
+
+        <TextView
+            android:id="@+id/acq_card_choosen_item"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="16dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_regular"
+            android:textSize="@dimen/acq_large_text_size"
+            app:layout_constraintBottom_toTopOf="@+id/acq_card_change"
+            app:layout_constraintEnd_toStartOf="@+id/cvc_container"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/acq_card_choosen_item_logo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Тинькофф банк • 7913" />
+
+        <TextView
+            android:id="@+id/acq_card_change"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_regular"
+            android:text="@string/acq_chosen_card_change"
+            android:textColor="?attr/colorAccent"
+            android:textSize="@dimen/acq_small_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cvc_container"
+            app:layout_constraintStart_toEndOf="@+id/acq_card_choosen_item_logo"
+            app:layout_constraintTop_toBottomOf="@+id/acq_card_choosen_item" />
+
+        <FrameLayout
+            android:id="@+id/cvc_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <include
+                layout="@layout/acq_fragment_cvc_input"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

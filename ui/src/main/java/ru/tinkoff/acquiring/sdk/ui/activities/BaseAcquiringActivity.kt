@@ -26,6 +26,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -42,14 +44,18 @@ import ru.tinkoff.acquiring.sdk.models.LoadedState
 import ru.tinkoff.acquiring.sdk.models.LoadingState
 import ru.tinkoff.acquiring.sdk.models.options.screen.BaseAcquiringOptions
 import ru.tinkoff.acquiring.sdk.models.result.AsdkResult
-import ru.tinkoff.acquiring.sdk.models.result.BankChooseResult
 import ru.tinkoff.acquiring.sdk.models.result.CardResult
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_PAN
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
+import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsSubmitV2Delegate
-import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_DEEPLINK
-import ru.tinkoff.acquiring.sdk.ui.activities.PaymentActivity.Companion.EXTRA_SBP_BANK_PACKAGE_NAME
 import ru.tinkoff.acquiring.sdk.viewmodel.ViewModelProviderFactory
 import ru.tinkoff.acquiring.sdk.viewmodel.YandexPaymentViewModel
+import kotlin.reflect.KClass
 
 /**
  * @author Mariya Chernyadieva
@@ -68,10 +74,10 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         const val EXTRA_OPTIONS = "options"
 
         @Throws(AcquiringSdkException::class)
-        fun createIntent(context: Context, options: BaseAcquiringOptions, cls: Class<*>): Intent {
+        fun createIntent(context: Context, options: BaseAcquiringOptions, cls: KClass<*>): Intent {
             options.validateRequiredFields()
 
-            val intent = Intent(context, cls)
+            val intent = Intent(context, cls.java)
             intent.putExtras(Bundle().apply {
                 putParcelable(EXTRA_OPTIONS, options)
             })
@@ -131,6 +137,34 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
         }
     }
 
+    protected fun showErrorDialog(
+        @StringRes title: Int,
+        @StringRes message: Int?,
+        @StringRes buttonText: Int,
+        onButtonClick: (() -> Unit)? = null
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .apply { message?.let { setMessage(it) } }
+            .setPositiveButton(buttonText) { _, _ ->
+                onButtonClick?.invoke()
+            }.show()
+    }
+
+    protected fun showErrorDialog(
+        title: String,
+        message: String?,
+        buttonText: String,
+        onButtonClick: (() -> Unit)? = null
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .apply { message?.let { setMessage(it) } }
+            .setPositiveButton(buttonText) { _, _ ->
+                onButtonClick?.invoke()
+            }.show()
+    }
+
     protected fun hideErrorScreen() {
         val errorView = findViewById<View>(R.id.acq_error_ll_container)
         content = findViewById(R.id.acq_content)
@@ -158,14 +192,13 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
 
         when (result) {
             is PaymentResult -> {
-                intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, result.paymentId)
-                intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
-                intent.putExtra(TinkoffAcquiring.EXTRA_REBILL_ID, result.rebillId)
+                intent.putExtra(EXTRA_PAYMENT_ID, result.paymentId)
+                intent.putExtra(EXTRA_CARD_ID, result.cardId)
+                intent.putExtra(EXTRA_REBILL_ID, result.rebillId)
             }
-            is CardResult -> intent.putExtra(TinkoffAcquiring.EXTRA_CARD_ID, result.cardId)
-            is BankChooseResult -> with(intent) {
-                putExtra(EXTRA_SBP_BANK_PACKAGE_NAME, result.packageName)
-                putExtra(EXTRA_SBP_BANK_DEEPLINK, result.deeplink)
+            is CardResult -> {
+                intent.putExtra(EXTRA_CARD_ID, result.cardId)
+                intent.putExtra(EXTRA_CARD_PAN, result.panSuffix)
             }
         }
 
@@ -174,9 +207,9 @@ internal open class BaseAcquiringActivity : AppCompatActivity() {
 
     protected open fun setErrorResult(throwable: Throwable, paymentId: Long? = null) {
         val intent = Intent()
-        intent.putExtra(TinkoffAcquiring.EXTRA_ERROR, throwable)
-        intent.putExtra(TinkoffAcquiring.EXTRA_PAYMENT_ID, paymentId)
-        setResult(TinkoffAcquiring.RESULT_ERROR, intent)
+        intent.putExtra(EXTRA_ERROR, throwable)
+        intent.putExtra(EXTRA_PAYMENT_ID, paymentId)
+        setResult(RESULT_ERROR, intent)
     }
 
     open fun finishWithSuccess(result: AsdkResult) {

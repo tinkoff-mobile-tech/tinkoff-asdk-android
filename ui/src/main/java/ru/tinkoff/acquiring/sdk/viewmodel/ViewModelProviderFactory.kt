@@ -20,24 +20,26 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.redesign.cards.list.presentation.CardsListViewModel
+import ru.tinkoff.acquiring.sdk.utils.BankCaptionResourceProvider
+import ru.tinkoff.acquiring.sdk.utils.ConnectionChecker
 
 /**
  * @author Mariya Chernyadieva
  */
 internal class ViewModelProviderFactory(
-    application: Application,
-    handleErrorsInSdk: Boolean,
-    sdk: AcquiringSdk
+    application: Application, handleErrorsInSdk: Boolean, sdk: AcquiringSdk
 ) : ViewModelProvider.AndroidViewModelFactory(application) {
 
     private val viewModelCollection: Map<Class<out ViewModel>, BaseAcquiringViewModel> = mapOf(
-        BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(application, handleErrorsInSdk, sdk),
-        PaymentViewModel::class.java to PaymentViewModel(application, handleErrorsInSdk, sdk),
+        BaseAcquiringViewModel::class.java to BaseAcquiringViewModel(
+            application,
+            handleErrorsInSdk,
+            sdk
+        ),
         AttachCardViewModel::class.java to AttachCardViewModel(application, handleErrorsInSdk, sdk),
         QrViewModel::class.java to QrViewModel(application, handleErrorsInSdk, sdk),
         ThreeDsViewModel::class.java to ThreeDsViewModel(application, handleErrorsInSdk, sdk),
-        SavedCardsViewModel::class.java to SavedCardsViewModel(application, handleErrorsInSdk, sdk),
-        NotificationPaymentViewModel::class.java to NotificationPaymentViewModel(application, handleErrorsInSdk, sdk)
     )
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
