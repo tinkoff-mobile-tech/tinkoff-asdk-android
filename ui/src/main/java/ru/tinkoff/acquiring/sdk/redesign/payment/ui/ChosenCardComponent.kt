@@ -36,9 +36,10 @@ internal class ChosenCardComponent(
         initingFocusAndKeyboard,
         onDataChange = { b, s ->
             onCvcCompleted(s, b)
-        }, onInitScreen = { _, function ->
+        },
+        onInitScreen = { _, function ->
             if(initingFocusAndKeyboard){
-                onFocusCvc.invoke(root.cvc_container.cvc_input.editText.apply(function))
+                onFocusCvc(root.cvc_container.cvc_input.editText.apply(function))
             }
         }
     )

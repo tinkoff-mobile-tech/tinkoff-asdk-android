@@ -89,10 +89,6 @@ internal object CardValidator {
         )
     }
 
-    fun validateSecurityCode(cvc: String, initState: Boolean): Boolean {
-        return cvc.isEmpty() && initState
-    }
-
     fun validateSecurityCodeOrFalse(cvc: String?): Boolean {
         cvc ?: return false
         return validateSecurityCode(cvc)

@@ -60,20 +60,12 @@ class CvcComponent(
         }
 
         onInitScreen(shouldFocusOnlyCvc){
-            with(cvcInput.editText){
-                post {
-                    requestFocus()
-                }
-            }
+            post { cvcInput.editText.requestFocus() }
         }
     }
 
     private fun validate(code: String): Boolean {
         return CardValidator.validateSecurityCode(code)
-    }
-
-    fun validate(code: String, initState: Boolean): Boolean {
-        return CardValidator.validateSecurityCode(code, initState)
     }
 
     override fun render(state: String?) {
