@@ -34,7 +34,7 @@ class CardPayComponent(
     private val savedCardComponent = ChosenCardComponent(viewBinding.chosenCard.root,
         onCvcCompleted = { cvc, _ -> onCvcCompleted(cvc) },
         onChangeCard = { onChooseCardClick() }
-    )
+    ) { viewBinding.chosenCard.cvcContainer }
 
     fun render(state: CardChosenModel, email: String?, paymentOptions: PaymentOptions) {
         emailInputComponent.render(email, email.isNullOrBlank().not())

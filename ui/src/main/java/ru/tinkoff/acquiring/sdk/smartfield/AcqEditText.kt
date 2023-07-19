@@ -11,6 +11,7 @@ import android.text.Spanned
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
@@ -29,6 +30,24 @@ constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : AppCompatEditText(context, attrs) {
+
+    init {
+        this.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                v.performClick()
+                v.requestFocus()
+                this.rootView.parent.requestDisallowInterceptTouchEvent(true)
+            } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+                this.rootView.parent.requestDisallowInterceptTouchEvent(false)
+            }
+            false
+        }
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
+    }
 
     var errorHighlighted = false
         set(value) {

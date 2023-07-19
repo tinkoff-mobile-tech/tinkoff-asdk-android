@@ -19,7 +19,6 @@ package ru.tinkoff.acquiring.sdk.requests
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import okhttp3.Response
@@ -217,7 +216,7 @@ abstract class AcquiringRequest<R : AcquiringResponse>(internal val apiMethod: S
         const val RECURRENT = "Recurrent"
         const val REBILL_ID = "RebillId"
         const val CARD_ID = "CardId"
-        const val CVV = "CVV"
+        const val CVC = "CVC"
         const val PAY_TYPE = "PayType"
         const val RECEIPT = "Receipt"
         const val RECEIPTS = "Receipts"

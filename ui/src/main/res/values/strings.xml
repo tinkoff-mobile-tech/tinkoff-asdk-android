@@ -59,8 +59,8 @@
     <string name="acq_label_card_number">Number</string>
     <string name="acq_label_email">Email address</string>
     <string name="acq_label_expiry_date">Expiry date</string>
-    <string name="acq_label_card_cvv">Code</string>
-    <string name="acq_label_card_secure">CVV</string>
+    <string name="acq_label_card_cvc">CVC</string>
+    <string name="acq_label_card_secure">CVC</string>
     <string name="acq_addcard_button_add">Attach</string>
 
     <string name="acq_generic_alert_label"><![CDATA[We have a problem, we are already solving it]]></string>

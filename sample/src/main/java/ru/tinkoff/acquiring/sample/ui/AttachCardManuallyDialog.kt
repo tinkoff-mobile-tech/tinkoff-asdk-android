@@ -35,7 +35,7 @@ class AttachCardManuallyDialogFragment : DialogFragment() {
         close.setOnClickListener { dismiss() }
 
         attach.setOnClickListener {
-            val cardData = CardData(pan.text.toString(), date.text.toString(), cvv.text.toString())
+            val cardData = CardData(pan.text.toString(), date.text.toString(), cvc.text.toString())
             try {
                 cardData.validate()
             } catch (e: Throwable) {

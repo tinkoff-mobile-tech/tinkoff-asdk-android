@@ -85,7 +85,7 @@ internal class MainFormInputCardViewModel(
         val cvc = savedStateHandle.get<String>(CVC_KEY)
         byCardProcess.start(
             paymentOptions = mainFormAnalyticsDelegate.prepareOptions(paymentOptions, ChosenMethod.Card),
-            cardData = AttachedCard(cardId = card.id, cvv = cvc)
+            cardData = AttachedCard(cardId = card.id, cvc = cvc)
         )
     }
 

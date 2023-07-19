@@ -47,8 +47,8 @@
     <string name="acq_label_card_number">Номер</string>
     <string name="acq_label_email">Электронная почта</string>
     <string name="acq_label_expiry_date">Срок</string>
-    <string name="acq_label_card_cvv">Код</string>
-    <string name="acq_label_card_secure">CVV</string>
+    <string name="acq_label_card_cvc">CVC</string>
+    <string name="acq_label_card_secure">CVC</string>
     <string name="acq_addcard_button_add">Добавить</string>
 
     <string name="acq_cardlist_snackbar_add">Карта •%1$s добавлена</string>
