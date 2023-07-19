@@ -35,16 +35,16 @@ class AttachedCard() : CardSource {
     /**
      * Секретный код проверки подлинности
      */
-    var cvv: String? = null
+    var cvc: String? = null
 
     /**
      * Идентификатор рекуррентного платежа
      */
     var rebillId: String? = null
 
-    constructor(cardId: String?, cvv: String?) : this() {
+    constructor(cardId: String?, cvc: String?) : this() {
         this.cardId = cardId
-        this.cvv = cvv
+        this.cvc = cvc
     }
 
     constructor(rebillId: String?) : this() {
@@ -54,7 +54,7 @@ class AttachedCard() : CardSource {
     override fun encode(publicKey: PublicKey): String {
         validate()
         return if (rebillId.isNullOrEmpty()) {
-            val mergedData: String = String.format("%s=%s;%s=%s", KEY_CARD_ID, cardId, KEY_CVV, cvv)
+            val mergedData: String = String.format("%s=%s;%s=%s", KEY_CARD_ID, cardId, KEY_CVC, cvc)
             CryptoUtils.encodeBase64(CryptoUtils.encryptRsa(mergedData, publicKey))
         } else {
             CryptoUtils.encodeBase64(CryptoUtils.encryptRsa(rebillId!!, publicKey))
@@ -64,7 +64,7 @@ class AttachedCard() : CardSource {
     override fun validate() {
         if (rebillId.isNullOrEmpty()) {
             check(!cardId.isNullOrEmpty()) { "CardId should not be empty " }
-            check(!cvv.isNullOrEmpty() && CardValidator.validateSecurityCode(cvv!!)) {
+            check(!cvc.isNullOrEmpty() && CardValidator.validateSecurityCode(cvc!!)) {
                 "Field security code should not be empty "
             }
         } else {
@@ -75,6 +75,6 @@ class AttachedCard() : CardSource {
     companion object {
 
         private const val KEY_CARD_ID = "CardId"
-        private const val KEY_CVV = "CVV"
+        private const val KEY_CVC = "CVC"
     }
 }

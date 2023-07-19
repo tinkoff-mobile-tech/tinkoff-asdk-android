@@ -72,8 +72,9 @@ internal class PaymentByCardActivity : AppCompatActivity(),
     private val chosenCardComponent: ChosenCardComponent by lazyUnsafe {
         ChosenCardComponent(
             chosenCardContainer,
+            true,
             onChangeCard = { onChangeCard() },
-            onCvcCompleted = { cvc, isValid -> viewModel.setCvc(cvc, isValid) }
+            onCvcCompleted = { cvc, isValid -> viewModel.setCvc(cvc, isValid) },
         )
     }
     private val emailInput: EmailInputFragment by lazyUnsafe {
@@ -112,7 +113,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
         setContentView(R.layout.acq_payment_by_card_new_activity)
         initToolbar()
         initViews()
-
+        chosenCardComponent.clearCvc()
         lifecycleScope.launchWhenResumed { processState() }
         lifecycleScope.launchWhenCreated { uiState() }
         lifecycleScope.launch { selectedCardState() }

@@ -223,8 +223,8 @@ internal class CardsViewPagerAdapter(
                 if (options.order.recurrentPayment && position != rejectedItem) {
                     AttachedCard(selectedCard.rebillId)
                 } else {
-                    val cvv = currentView?.findViewById<EditCard>(R.id.acq_edit_card)?.cardCvc
-                    AttachedCard(selectedCard.cardId, cvv)
+                    val cvc = currentView?.findViewById<EditCard>(R.id.acq_edit_card)?.cardCvc
+                    AttachedCard(selectedCard.cardId, cvc)
                 }
             }
         }

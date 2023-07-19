@@ -54,7 +54,7 @@ class CardData() : CardSource {
         val mergedData = String.format("%s=%s;%s=%s;%s=%s",
                 KEY_PAN, pan,
                 KEY_DATE, date,
-                KEY_CVV, securityCode)
+                KEY_CVC, securityCode)
 
         return CryptoUtils.encodeBase64(CryptoUtils.encryptRsa(mergedData, publicKey))
     }
@@ -79,6 +79,6 @@ class CardData() : CardSource {
 
         private const val KEY_PAN = "PAN"
         private const val KEY_DATE = "ExpDate"
-        private const val KEY_CVV = "CVV"
+        private const val KEY_CVC = "CVC"
     }
 }

@@ -11,6 +11,7 @@
         android:layout_weight="1"
         android:background="@drawable/acq_sf_text_field_bg"
         tools:layout_height="@dimen/acq_sf_min_row_height"
+        android:addStatesFromChildren="true"
         tools:layout_width="match_parent">
 
         <ru.tinkoff.acquiring.sdk.smartfield.AcqEditText
@@ -21,7 +22,6 @@
             android:layout_marginTop="14dp"
             android:layout_marginBottom="18dp"
             android:layout_weight="1"
-            android:duplicateParentState="true"
             android:ellipsize="end"
             android:gravity="top|start"
             android:imeOptions="actionNext"

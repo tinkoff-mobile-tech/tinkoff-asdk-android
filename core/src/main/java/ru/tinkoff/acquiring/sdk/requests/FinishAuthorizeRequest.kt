@@ -67,7 +67,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
     var ip: String? = null
 
     private var cardId: String? = null
-    private var cvv: String? = null
+    private var cvc: String? = null
     private var source: String? = null
     private var encryptedToken: String? = null
     private var encodedCardData: String? = null
@@ -76,7 +76,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
         get() {
             val result = HashSet<String>()
             result.add(CARD_ID)
-            result.add(CVV)
+            result.add(CVC)
             result.add(DATA)
             return result
         }
@@ -88,7 +88,7 @@ class FinishAuthorizeRequest : AcquiringRequest<FinishAuthorizeResponse>(FINISH_
         map.putIfNotNull(SEND_EMAIL, sendEmail)
         map.putIfNotNull(CARD_DATA, encodedCardData)
         map.putIfNotNull(CARD_ID, cardId)
-        map.putIfNotNull(CVV, cvv)
+        map.putIfNotNull(CVC, cvc)
         map.putIfNotNull(EMAIL, email)
         map.putIfNotNull(SOURCE, source)
         map.putIfNotNull(ENCRYPTED_PAYMENT_DATA, encryptedToken)

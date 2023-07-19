@@ -71,19 +71,19 @@ internal class CardDataInputFragment : Fragment() {
             }
 
             editText.afterTextChanged {
-                errorHighlighted = false
+                editText.errorHighlighted = false
 
                 val cardNumber = cardNumber
                 val paymentSystem = CardPaymentSystem.resolve(cardNumber)
 
                 if (cardNumber.startsWith("0")) {
-                    errorHighlighted = true
+                    editText.errorHighlighted = true
                     return@afterTextChanged
                 }
 
                 if (cardNumber.length in paymentSystem.range) {
                     if (!CardValidator.validateCardNumber(cardNumber)) {
-                        errorHighlighted = true
+                        editText.errorHighlighted = true
                     } else if (shouldAutoSwitchFromCardNumber(cardNumber, paymentSystem)) {
                         expiryDateInput.requestViewFocus()
                     }
@@ -98,14 +98,14 @@ internal class CardDataInputFragment : Fragment() {
             MaskFormatWatcher(createExpiryDateMask()).installOn(editText)
 
             editText.afterTextChanged {
-                errorHighlighted = false
+                editText.errorHighlighted = false
 
                 val expiryDate = expiryDate
                 if (expiryDate.length >= EXPIRY_DATE_MASK.length) {
                     if (CardValidator.validateExpireDate(expiryDate, false)) {
                         cvcInput.requestViewFocus()
                     } else {
-                        errorHighlighted = true
+                        editText.errorHighlighted = true
                     }
                 }
 
@@ -120,7 +120,7 @@ internal class CardDataInputFragment : Fragment() {
             MaskFormatWatcher(createCvcMask()).installOn(editText)
 
             editText.afterTextChanged {
-                errorHighlighted = false
+                editText.errorHighlighted = false
 
                 val cvc = cvc
                 if (cvc.length >= EXPIRY_DATE_MASK.length) {
@@ -130,7 +130,7 @@ internal class CardDataInputFragment : Fragment() {
                             onComplete?.invoke(this@CardDataInputFragment)
                         }
                     } else {
-                        errorHighlighted = true
+                        editText.errorHighlighted = true
                     }
                 }
 

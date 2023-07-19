@@ -40,7 +40,7 @@
         android:inputType="phone"
         android:paddingStart="6dp"
         android:paddingEnd="16dp"
-        app:acq_title="@string/acq_label_card_cvv"
+        app:acq_title="@string/acq_label_card_cvc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/card_number_input" />
