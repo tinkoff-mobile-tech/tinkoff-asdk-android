@@ -17,6 +17,7 @@
 package ru.tinkoff.acquiring.sdk.network
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
+import ru.tinkoff.acquiring.sdk.utils.EnvironmentMode
 
 /**
  * Содержит константы для создания запросов к Acquiring API
@@ -85,7 +86,7 @@ object AcquiringApi {
 
     private const val API_VERSION = "v2"
     private const val API_URL_RELEASE = "https://securepay.tinkoff.ru/$API_VERSION"
-    private const val API_URL_DEBUG = "https://rest-api-test.tinkoff.ru/$API_VERSION"
+    const val API_URL_DEBUG = "https://rest-api-test.tinkoff.ru/$API_VERSION"
 
     private const val API_URL_PREPROD_OLD = "https://qa-mapi.tcsbank.ru/rest"
     private const val API_URL_PREPROD = "https://qa-mapi.tcsbank.ru/$API_VERSION"
@@ -97,16 +98,13 @@ object AcquiringApi {
      * Зависит от режима работы SDK [AcquiringSdk.isDeveloperMode]
      */
     fun getUrl(apiMethod: String): String {
-        return if (useV1Api(apiMethod)) {
-            if (AcquiringSdk.isDeveloperMode)
-                useCustomOrDefault(API_URL_DEBUG_OLD, AcquiringSdk.customUrl, "rest")
-            else
-                API_URL_RELEASE_OLD
-        } else {
-            if (AcquiringSdk.isDeveloperMode)
-                useCustomOrDefault(API_URL_DEBUG, AcquiringSdk.customUrl)
-            else
-                API_URL_RELEASE
+        return when {
+            useV1Api(apiMethod) && AcquiringSdk.isDebugMode -> useCustomOrDefault(API_URL_DEBUG_OLD, AcquiringSdk.customUrl, "rest")
+            useV1Api(apiMethod) -> API_URL_RELEASE_OLD
+            AcquiringSdk.isDebugMode -> useCustomOrDefault(API_URL_DEBUG, AcquiringSdk.customUrl)
+            AcquiringSdk.isPreProdMode -> useCustomOrDefault(API_URL_PREPROD, AcquiringSdk.customUrl)
+            AcquiringSdk.environmentMode is EnvironmentMode.IsCustomMode && AcquiringSdk.customUrl != null -> AcquiringSdk.customUrl!!
+            else -> API_URL_RELEASE
         }
     }
 
@@ -114,9 +112,12 @@ object AcquiringApi {
         return oldMethodsList.contains(apiMethod)
     }
 
-    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = API_VERSION) =
-        custom?.let {
-            if (it.contains(oldOrV2)) it
-            else "$it/$oldOrV2"
+    private fun useCustomOrDefault(default: String, custom: String?, oldOrV2: String = API_VERSION): String {
+        return custom?.let {
+            when {
+                it.endsWith(oldOrV2) -> it
+                else -> "$it/$oldOrV2"
+            }
         } ?: default
+    }
 }
