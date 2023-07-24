@@ -2,6 +2,7 @@ package ru.tinkoff.acquiring.sample.ui.environment
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
@@ -37,6 +38,19 @@ class AcqEnvironmentDialog : DialogFragment() {
     }
     private var customUrl: String? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        customUrl = context?.getSharedPreferences("prefs", Context.MODE_PRIVATE)?.getString("customUrl", null)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        context?.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            ?.edit()
+            ?.putString("customUrl", customUrl)
+            ?.apply()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,18 +66,25 @@ class AcqEnvironmentDialog : DialogFragment() {
         evnGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.acq_env_is_pre_prod_btn -> configureCustomUrl(PRE_PROD_URL, EnvironmentMode.IsPreProdMode)
-                R.id.acq_env_is_debug_btn -> configureCustomUrl(AcquiringApi.getUrl("/"), EnvironmentMode.IsDebugMode)
+                R.id.acq_env_is_debug_btn -> configureCustomUrl(AcquiringApi.API_URL_DEBUG, EnvironmentMode.IsDebugMode)
                 R.id.acq_env_is_custom_btn -> {
                     AcquiringSdk.environmentMode = EnvironmentMode.IsCustomMode
-                    editUrlText.setText("https://")
-                    editUrlText.setSelection(editUrlText.text.length)
-                    editUrlText.isEnabled = true
-                    editUrlText.requestFocus()
+                    with(editUrlText){
+                        setText("https://")
+                        setSelection(text.length)
+                        isEnabled = true
+                        requestFocus()
+                    }
                 }
             }
         }
 
         setupEnv()
+
+        if(AcquiringSdk.environmentMode is EnvironmentMode.IsCustomMode){
+            AcquiringSdk.customUrl = editUrlText.text.toString()
+            editUrlText.setText(customUrl)
+        }
 
         ok.setOnClickListener {
             customUrl = editUrlText.text.toString()

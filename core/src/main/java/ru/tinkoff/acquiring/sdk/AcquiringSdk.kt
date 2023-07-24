@@ -308,6 +308,15 @@ class AcquiringSdk(
         var isPreprodMode = false
 
         /**
+         * Позволяют привязать environment mode к пропертям режима(debug / preProd)
+         */
+        val isDebugMode: Boolean
+            get() = environmentMode is EnvironmentMode.IsDebugMode
+
+        val isPreProdMode: Boolean
+            get() = environmentMode is EnvironmentMode.IsPreProdMode
+
+        /**
          * Позволяет переключать SDK на иной апи-контур, работает только в дебаг режиме
          */
         var customUrl : String? = null
