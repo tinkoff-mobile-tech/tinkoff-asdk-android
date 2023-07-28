@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.annotation.IdRes
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.acq_card_pay_component.view.chosenCard
+import kotlinx.android.synthetic.main.acq_fragment_cvc_input.view.cvc_input
+import ru.tinkoff.acquiring.sdk.redesign.common.cardpay.CardPayComponent
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -114,6 +116,21 @@ internal fun ViewGroup.forEachChild(action: (child: View) -> Unit) {
     }
 }
 
+internal fun View.setupCvcInput(viewGroup: ViewGroup, cardPayComponent: CardPayComponent) {
+    val inputField = viewGroup.chosenCard.cvc_input
+    val inputEditText = viewGroup.chosenCard.cvc_input.editText
+
+    listOf(this, inputField, inputEditText).forEach { view ->
+        view.apply {
+            setOnClickListener {
+                requestFocus()
+                isEnabled = true
+                cardPayComponent.clearCvc()
+            }
+        }
+    }
+}
+
 internal fun lerp(start: Int, end: Int, fraction: Float): Int {
     return (start + (end - start) * fraction).roundToInt()
 }
@@ -134,3 +151,6 @@ internal fun <T> Fragment.lazyView(@IdRes id: Int): Lazy<T> =
 
 internal fun <T> Activity.lazyView(@IdRes id: Int): Lazy<T> =
     lazyUnsafe { findViewById(id) }
+
+internal fun <T : View> Activity.lazyView(id: View): Lazy<T> =
+    lazyUnsafe { this.findViewById(id.id) }

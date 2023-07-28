@@ -60,6 +60,7 @@ internal class RecurrentPaymentActivity : AppCompatActivity() {
 
     private val cardPayComponent by lazyUnsafe {
         CardPayComponent(
+            binding.root,
             viewBinding = binding.acqRecurrentFormPay,
             email = null,
             onCvcCompleted = rejectedViewModel::inputCvc,

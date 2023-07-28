@@ -1,12 +1,18 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.cardpay
 
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
+import kotlinx.android.synthetic.main.acq_fragment_cvc_input.view.cvc_input
+import kotlinx.android.synthetic.main.acq_layout_choosen_card.view.cvc_container
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqCardPayComponentBinding
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
+import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.ChosenCardComponent
+import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
 import ru.tinkoff.acquiring.sdk.ui.customview.LoaderButton
 import ru.tinkoff.acquiring.sdk.utils.KeyboardVisionUtils
 
@@ -14,23 +20,45 @@ import ru.tinkoff.acquiring.sdk.utils.KeyboardVisionUtils
  * Created by i.golovachev
  */
 class CardPayComponent(
+    private val root: ViewGroup,
+    private val initingFocusAndKeyboard: Boolean = false,
     private val viewBinding: AcqCardPayComponentBinding,
     private val email: String?,
     private val onCvcCompleted: (String) -> Unit = {},
     private val onEmailInput: (String) -> Unit = {},
     private val onEmailVisibleChange: (Boolean) -> Unit = {},
     private val onChooseCardClick: () -> Unit = {},
-    private val onPayClick: () -> Unit = {}
-) {
+    private val onPayClick: () -> Unit = {},
+    private val onChangeCard: (CardChosenModel) -> Unit = {},
+    private val onFocusCvc: View.() -> Unit = {
+        requestFocus()
+        isEnabled = true
+    }
+): UiComponent<CardChosenModel> {
     private val loaderButton: LoaderButton = viewBinding.loaderButton.apply {
         setOnClickListener { onPayClick() }
     }
+
+    private val cardCvc: CvcComponent = CvcComponent(
+        root.findViewById(R.id.cvc_container),
+        initingFocusAndKeyboard,
+        onDataChange = { b, s ->
+            onCvcCompleted(s)
+        },
+        onInitScreen = { _, function ->
+            if(initingFocusAndKeyboard){
+                onFocusCvc(root.cvc_container.cvc_input.editText.apply(function))
+            }
+        }
+    )
+
     private val emailInputComponent = EmailInputComponent(viewBinding.emailInput.root,
         onEmailChange = { onEmailInput(it) },
         onEmailVisibleChange = { onEmailVisibleChange(it) }
     ).apply {
         render(EmailInputComponent.State(email, email != null))
     }
+
     private val savedCardComponent = ChosenCardComponent(viewBinding.chosenCard.root,
         onCvcCompleted = { cvc, _ -> onCvcCompleted(cvc) },
         onChangeCard = { onChooseCardClick() }
@@ -82,5 +110,13 @@ class CardPayComponent(
             KeyboardVisionUtils.showKeyboard(viewBinding.root)
         else
             KeyboardVisionUtils.hideKeyboard(viewBinding.root)
+    }
+
+    override fun render(state: CardChosenModel) {
+        root.setOnClickListener { onChangeCard(state) }
+    }
+
+    fun clearCvc(){
+        cardCvc.render(null)
     }
 }

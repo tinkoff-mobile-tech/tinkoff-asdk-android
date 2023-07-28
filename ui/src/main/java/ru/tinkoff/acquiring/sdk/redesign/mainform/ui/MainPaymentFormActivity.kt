@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -17,6 +18,8 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.android.synthetic.main.acq_card_pay_component.view.chosenCard
+import kotlinx.android.synthetic.main.acq_fragment_cvc_input.view.cvc_input
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
@@ -160,6 +163,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
 
     private val cardPayComponent by lazyUnsafe {
         CardPayComponent(
+            this.root,
             viewBinding = AcqCardPayComponentBinding.bind(
                 findViewById(R.id.acq_main_card_pay)
             ),
@@ -168,7 +172,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             onEmailInput = cardInputViewModel::email,
             onEmailVisibleChange = cardInputViewModel::needEmail,
             onChooseCardClick = viewModel::toChooseCard,
-            onPayClick = { cardInputViewModel.pay() }
+            onPayClick = { cardInputViewModel.pay() },
         )
     }
 
@@ -202,6 +206,9 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_main_from_activity)
+
+        root.chosenCard.cvc_input.setupCvcInput(root, cardPayComponent)
+
         createTitleView()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -234,6 +241,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        //cardPayComponent.clearCvc()
         if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 val result =
@@ -259,6 +267,8 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
     override fun onBackPressed() {
         viewModel.onBackPressed()
     }
+
+
 
     private suspend fun updateContent() {
         combine(
@@ -358,6 +368,8 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         viewModel.mainFormNav.collect {
             when (it) {
                 is MainFormNavController.Navigation.ToChooseCard -> {
+                    //cardPayComponent.clearCvc()
+                    Log.d("log", "subscribeOnNav")
                     cardPayComponent.isKeyboardVisible(false)
                     savedCards.launch(it.savedCardsOptions)
                 }

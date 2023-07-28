@@ -8,4 +8,5 @@
     android:minWidth="64dp"
     android:minHeight="48dp"
     android:gravity="center"
+    android:duplicateParentState="true"
     app:acq_title="@string/acq_label_card_secure" />
