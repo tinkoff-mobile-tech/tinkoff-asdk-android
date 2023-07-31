@@ -120,6 +120,11 @@ val paymentOptions =
         }
     }
 ```
+> **Примечание**
+> Если параметры **successUrl** & **failUrl** переданы - используются их значения. В ином случае - используются
+> стандартные значения из настроек терминала. Для установки стандартных **successUrl** & **failUrl** обратитесь к
+> персональному менеджеру через нашу поддержку.
+
 Затем регистрируем контракт **MainFormContract**#_Contract_, и вызываем метод **ActivityResultLauncher**#_launch_
 ```kotlin
 val byMainFormPayment = registerForActivityResult(MainFormLauncher.Contract, ActivityResultCallback {})
