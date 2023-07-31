@@ -152,5 +152,5 @@ internal fun <T> Fragment.lazyView(@IdRes id: Int): Lazy<T> =
 internal fun <T> Activity.lazyView(@IdRes id: Int): Lazy<T> =
     lazyUnsafe { findViewById(id) }
 
-internal fun <T : View> Activity.lazyView(id: View): Lazy<T> =
-    lazyUnsafe { this.findViewById(id.id) }
+internal fun <T : View> Activity.lazyView(view: View): Lazy<T> =
+    lazyUnsafe { this.findViewById(view.id) }

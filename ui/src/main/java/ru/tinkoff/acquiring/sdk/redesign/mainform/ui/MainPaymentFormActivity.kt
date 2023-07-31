@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -207,7 +206,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_main_from_activity)
 
-        root.chosenCard.cvc_input.setupCvcInput(root, cardPayComponent)
+        initCvcClickListener(root, cardPayComponent)
 
         createTitleView()
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -241,7 +240,6 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        //cardPayComponent.clearCvc()
         if (requestCode == TransparentActivity.THREE_DS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 val result =
@@ -268,7 +266,9 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         viewModel.onBackPressed()
     }
 
-
+    private fun initCvcClickListener(root: ViewGroup, card: CardPayComponent){
+        root.chosenCard.cvc_input.setupCvcInput(root, card)
+    }
 
     private suspend fun updateContent() {
         combine(
@@ -368,8 +368,6 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
         viewModel.mainFormNav.collect {
             when (it) {
                 is MainFormNavController.Navigation.ToChooseCard -> {
-                    //cardPayComponent.clearCvc()
-                    Log.d("log", "subscribeOnNav")
                     cardPayComponent.isKeyboardVisible(false)
                     savedCards.launch(it.savedCardsOptions)
                 }
