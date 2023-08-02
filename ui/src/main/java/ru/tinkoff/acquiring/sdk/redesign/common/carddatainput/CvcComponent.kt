@@ -24,7 +24,7 @@ class CvcComponent(
     private val onInitScreen: (Boolean, View.() -> Unit) -> Unit = { _, function -> }
 ) : UiComponent<String?> {
 
-    private val cvcInput: AcqTextFieldView = root.findViewById(R.id.cvc_input)
+    internal val cvcInput: AcqTextFieldView = root.findViewById(R.id.cvc_input)
     val cvc get() = cvcInput.text.orEmpty()
 
     init {

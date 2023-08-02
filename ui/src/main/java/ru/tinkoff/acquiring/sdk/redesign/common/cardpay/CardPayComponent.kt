@@ -3,12 +3,10 @@ package ru.tinkoff.acquiring.sdk.redesign.common.cardpay
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import kotlinx.android.synthetic.main.acq_fragment_cvc_input.view.cvc_input
-import kotlinx.android.synthetic.main.acq_layout_choosen_card.view.cvc_container
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqCardPayComponentBinding
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CvcComponent
+import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.EnhancedCvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.ChosenCardComponent
@@ -39,18 +37,18 @@ class CardPayComponent(
         setOnClickListener { onPayClick() }
     }
 
-    private val cardCvc: CvcComponent = CvcComponent(
+    private val cardCvc: EnhancedCvcComponent = EnhancedCvcComponent(
         root.findViewById(R.id.cvc_container),
         initingFocusAndKeyboard,
-        onDataChange = { b, s ->
+        onFocusCvc,
+        onInputComplete = { s ->
             onCvcCompleted(s)
         },
-        onInitScreen = { _, function ->
-            if(initingFocusAndKeyboard){
-                onFocusCvc(root.cvc_container.cvc_input.editText.apply(function))
-            }
+        onDataChange = { b, s ->
+            onCvcCompleted(s)
         }
     )
+
 
     private val emailInputComponent = EmailInputComponent(viewBinding.emailInput.root,
         onEmailChange = { onEmailInput(it) },

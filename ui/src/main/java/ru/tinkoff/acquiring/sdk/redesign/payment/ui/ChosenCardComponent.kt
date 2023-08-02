@@ -5,10 +5,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
-import kotlinx.android.synthetic.main.acq_fragment_cvc_input.view.cvc_input
-import kotlinx.android.synthetic.main.acq_layout_choosen_card.view.cvc_container
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.CvcComponent
+import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.EnhancedCvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
 import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
@@ -31,16 +29,15 @@ internal class ChosenCardComponent(
     private val cardLogo: ImageView = root.findViewById(R.id.acq_card_choosen_item_logo)
     private val cardName: TextView = root.findViewById(R.id.acq_card_choosen_item)
     private val cardChange: TextView = root.findViewById(R.id.acq_card_change)
-    private val cardCvc: CvcComponent = CvcComponent(
+    private val cardCvc: EnhancedCvcComponent = EnhancedCvcComponent(
         root.findViewById(R.id.cvc_container),
         initingFocusAndKeyboard,
+        onFocusCvc,
+        onInputComplete = { s ->
+            onCvcCompleted(s, true)
+        },
         onDataChange = { b, s ->
             onCvcCompleted(s, b)
-        },
-        onInitScreen = { _, function ->
-            if(initingFocusAndKeyboard){
-                onFocusCvc(root.cvc_container.cvc_input.editText.apply(function))
-            }
         }
     )
 
@@ -67,9 +64,5 @@ internal class ChosenCardComponent(
 
     fun enableCvc(isEnable: Boolean) {
         cardCvc.enable(isEnable)
-    }
-
-    fun showKeyboard() {
-
     }
 }
