@@ -39,7 +39,7 @@ internal class PaymentByCardViewModel(
         MutableStateFlow(
             State(
                 cardId = chosenCard?.id,
-                isValidEmail = startData.paymentOptions.customer.email.isNullOrBlank().not(),
+                isValidEmail = startData.paymentOptions.customer.email.isNullOrBlank(),
                 sendReceipt = startData.paymentOptions.customer.email.isNullOrBlank().not(),
                 email = startData.paymentOptions.customer.email,
                 paymentOptions = startData.paymentOptions,
