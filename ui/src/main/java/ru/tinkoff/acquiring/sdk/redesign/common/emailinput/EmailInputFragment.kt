@@ -1,6 +1,8 @@
 package ru.tinkoff.acquiring.sdk.redesign.common.emailinput
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +11,6 @@ import androidx.fragment.app.Fragment
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.smartfield.AcqTextFieldView
 import ru.tinkoff.acquiring.sdk.smartfield.BaubleClearButton
-import ru.tinkoff.acquiring.sdk.utils.SimpleTextWatcher
 import ru.tinkoff.acquiring.sdk.utils.getParent
 import ru.tinkoff.acquiring.sdk.utils.lazyView
 import java.util.regex.Pattern
@@ -22,8 +23,17 @@ internal class EmailInputFragment : Fragment() {
     val emailInput: AcqTextFieldView by lazyView(R.id.email_input)
     val emailValue get() = emailInput.text.orEmpty()
 
-    private val textWatcher = SimpleTextWatcher.after {
-        onDataChanged()
+    private val textWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            onDataChanged()
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            onDataChanged()
+        }
     }
 
     override fun onCreateView(
@@ -38,7 +48,17 @@ internal class EmailInputFragment : Fragment() {
 
         with(emailInput) {
             BaubleClearButton().attach(this)
-            arguments?.getString(EMAIL_ARG)?.let { editText.setText(it) }
+            val oldText = arguments?.getString(EMAIL_ARG)
+
+            oldText?.let { text ->
+                if (EmailValidator.validate(text)) {
+                    editText.setText(text)
+                } else {
+                    emailInput.errorHighlighted = true
+                    editText.setText(text)
+                }
+            }
+
             editText.addTextChangedListener(textWatcher)
         }
     }
@@ -47,7 +67,11 @@ internal class EmailInputFragment : Fragment() {
         arguments = bundleOf(EMAIL_ARG to email)
     }
 
-    fun isValid(): Boolean = EmailValidator.validate(emailValue)
+    fun isValid(): Boolean {
+        val isValid = EmailValidator.validate(emailValue)
+        emailInput.errorHighlighted = !isValid
+        return isValid
+    }
 
     fun clearFocus() {
         emailInput.clearViewFocus()

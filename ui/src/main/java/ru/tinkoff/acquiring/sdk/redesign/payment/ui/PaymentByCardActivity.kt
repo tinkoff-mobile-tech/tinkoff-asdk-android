@@ -259,10 +259,7 @@ internal class PaymentByCardActivity : AppCompatActivity(),
             sendReceiptSwitch.isChecked = it.sendReceipt
             payButton.text = getString(R.string.acq_cardpay_pay, it.amount)
 
-            // TODO Удалить if в рамках задачи EACQAPW-5066
-            if (payButton.isEnabled != it.buttonEnabled) {
-                payButton.isEnabled = it.buttonEnabled
-            }
+            payButton.isEnabled = it.buttonEnabled
         }
     }
 
