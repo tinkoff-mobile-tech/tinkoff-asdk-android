@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sdk.R
-import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.EnhancedCvcComponent
+import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.FocusAtStartCvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.ui.component.UiComponent
 import ru.tinkoff.acquiring.sdk.viewmodel.CardLogoProvider
@@ -29,7 +29,7 @@ internal class ChosenCardComponent(
     private val cardLogo: ImageView = root.findViewById(R.id.acq_card_choosen_item_logo)
     private val cardName: TextView = root.findViewById(R.id.acq_card_choosen_item)
     private val cardChange: TextView = root.findViewById(R.id.acq_card_change)
-    private val cardCvc: EnhancedCvcComponent = EnhancedCvcComponent(
+    private val cardCvc: FocusAtStartCvcComponent = FocusAtStartCvcComponent(
         root.findViewById(R.id.cvc_container),
         initingFocusAndKeyboard,
         onFocusCvc,
