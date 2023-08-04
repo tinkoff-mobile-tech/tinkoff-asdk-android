@@ -10,7 +10,7 @@ interface CvcUIComponent : UiComponent<String?> {
     fun enableCvc(isEnabled: Boolean)
 }
 
-class FocusAtStartCvcComponent(
+class FocusDecoratorCvcComponent(
     private val root: ViewGroup,
     private val initingFocusAndKeyboard: Boolean,
     private val onFocusCvc: View.() -> Unit,

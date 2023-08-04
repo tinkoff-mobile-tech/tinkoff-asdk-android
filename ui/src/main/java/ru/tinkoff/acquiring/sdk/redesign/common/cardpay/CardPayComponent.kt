@@ -6,7 +6,7 @@ import androidx.core.view.isVisible
 import ru.tinkoff.acquiring.sdk.R
 import ru.tinkoff.acquiring.sdk.databinding.AcqCardPayComponentBinding
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
-import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.FocusAtStartCvcComponent
+import ru.tinkoff.acquiring.sdk.redesign.common.carddatainput.FocusDecoratorCvcComponent
 import ru.tinkoff.acquiring.sdk.redesign.common.emailinput.EmailInputComponent
 import ru.tinkoff.acquiring.sdk.redesign.payment.model.CardChosenModel
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.ChosenCardComponent
@@ -37,7 +37,7 @@ class CardPayComponent(
         setOnClickListener { onPayClick() }
     }
 
-    private val cardCvc: FocusAtStartCvcComponent = FocusAtStartCvcComponent(
+    private val cardCvc: FocusDecoratorCvcComponent = FocusDecoratorCvcComponent(
         root.findViewById(R.id.cvc_container),
         initingFocusAndKeyboard,
         onFocusCvc,
