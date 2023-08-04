@@ -17,6 +17,8 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.android.synthetic.main.acq_card_pay_component.view.chosenCard
+import kotlinx.android.synthetic.main.acq_fragment_cvc_input.view.cvc_input
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sdk.R
@@ -160,6 +162,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
 
     private val cardPayComponent by lazyUnsafe {
         CardPayComponent(
+            this.root,
             viewBinding = AcqCardPayComponentBinding.bind(
                 findViewById(R.id.acq_main_card_pay)
             ),
@@ -168,7 +171,7 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
             onEmailInput = cardInputViewModel::email,
             onEmailVisibleChange = cardInputViewModel::needEmail,
             onChooseCardClick = viewModel::toChooseCard,
-            onPayClick = { cardInputViewModel.pay() }
+            onPayClick = { cardInputViewModel.pay() },
         )
     }
 
@@ -202,6 +205,9 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acq_main_from_activity)
+
+        initCvcClickListener(root, cardPayComponent)
+
         createTitleView()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -258,6 +264,10 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         viewModel.onBackPressed()
+    }
+
+    private fun initCvcClickListener(root: ViewGroup, card: CardPayComponent){
+        root.chosenCard.cvc_input.setupCvcInput(root, card)
     }
 
     private suspend fun updateContent() {
