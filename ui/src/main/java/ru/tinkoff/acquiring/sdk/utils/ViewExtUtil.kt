@@ -125,7 +125,9 @@ internal fun View.setupCvcInput(viewGroup: ViewGroup, cardPayComponent: CardPayC
             setOnClickListener {
                 requestFocus()
                 isEnabled = true
-                cardPayComponent.clearCvc()
+                if (inputEditText.text.isNullOrEmpty()) {
+                    cardPayComponent.clearCvc()
+                }
             }
         }
     }
