@@ -50,6 +50,12 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
     var asdkState: AsdkState = DefaultState
 
     /**
+     *  Номер платежа, полученного после инициализации
+     *  платежа на стороне бекенда мерчанта.
+     */
+    var paymentId: Long? = null
+
+    /**
      * Аналитика главной формы
      */
     internal var analyticsOptions: AnalyticsOptions = AnalyticsOptions()
@@ -65,6 +71,7 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
             features = readParcelable(FeaturesOptions::class.java.classLoader)!!
             asdkState = readSerializable() as AsdkState
             analyticsOptions = readParcelable(AnalyticsOptions::class.java.classLoader)!!
+            paymentId = readSerializable() as? Long?
         }
     }
 
@@ -77,6 +84,7 @@ class PaymentOptions() : BaseAcquiringOptions(), Parcelable {
             writeParcelable(features, flags)
             writeSerializable(asdkState)
             writeParcelable(analyticsOptions, flags)
+            writeSerializable(paymentId)
         }
     }
 

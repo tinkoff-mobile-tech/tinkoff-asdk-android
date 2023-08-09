@@ -13,12 +13,11 @@ import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 class TpayProcessTest {
 
     @Test
-    fun `test recreate process`() {
+    fun `test standart flow process`() {
         TpayProcessEnv().runWithEnv(
             given = { setInitAndLingResult(defaultPaymentId) },
             `when` = {
-                tpayProcess.stop()
-                tpayProcess.start(PaymentOptions(), versionTpay, defaultPaymentId)
+                tpayProcess.start(PaymentOptions(), versionTpay)
             },
             then = {
                 assertByClassName(
@@ -34,10 +33,16 @@ class TpayProcessTest {
         TpayProcessEnv().runWithEnv(
             given = {},
             `when` = {
-                tpayProcess.start(PaymentOptions(), versionTpay, defaultPaymentId)
-                assertByClassName(TpayPaymentState.PaymentFailed(defaultPaymentId,IllegalStateException()), tpayProcess.state.value)
+                tpayProcess.start(PaymentOptions(), versionTpay)
+                assertByClassName(
+                    TpayPaymentState.PaymentFailed(
+                        defaultPaymentId,
+                        IllegalStateException()
+                    ),
+                    tpayProcess.state.value
+                )
                 setInitAndLingResult(defaultPaymentId)
-                tpayProcess.start(PaymentOptions(), versionTpay, defaultPaymentId)
+                tpayProcess.start(PaymentOptions(), versionTpay)
             },
             then = {
                 assertByClassName(TpayPaymentState.NeedChooseOnUi(defaultPaymentId,deeplink), tpayProcess.state.value)

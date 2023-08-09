@@ -24,16 +24,7 @@ object SbpPayLauncher {
     class NoBanks : Result()
 
     @Parcelize
-    class StartData private constructor(
-        val paymentOptions: PaymentOptions, val paymentId: Long?
-    ) : Parcelable {
-
-        // для обычного платежа
-        constructor(paymentOptions: PaymentOptions) : this(paymentOptions, null)
-
-        // если вызов init был на стороне вашего сервера
-        constructor(paymentId: Long, paymentOptions: PaymentOptions) : this(paymentOptions, paymentId)
-    }
+    class StartData(val paymentOptions: PaymentOptions) : Parcelable
 
     object Contract: ActivityResultContract<StartData, Result>() {
         internal const val SBP_BANK_RESULT_CODE_NO_BANKS = 501

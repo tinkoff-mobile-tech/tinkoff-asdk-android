@@ -29,7 +29,7 @@ internal class PaymentByCardViewModel(
 
     private val startData =
         savedStateHandle.get<PaymentByCardLauncher.StartData>(EXTRA_SAVED_CARDS)!!
-    private val chosenCard = startData.list.firstOrNull { it.status == CardStatus.ACTIVE }?.let {
+    private val chosenCard = startData.cards.firstOrNull { it.status == CardStatus.ACTIVE }?.let {
         CardChosenModel(it, bankCaptionProvider(it.pan!!))
     }
 

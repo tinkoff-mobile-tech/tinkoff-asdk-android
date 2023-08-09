@@ -23,7 +23,7 @@ internal class GetTpayLinkMethodsSdkImpl(
     override suspend fun init(
         paymentOptions: PaymentOptions
     ): Long {
-        return checkNotNull(acquiringSdk.configureInit(paymentOptions).execute().paymentId)
+        return acquiringSdk.configureInit(paymentOptions).execute().requiredPaymentId()
     }
 
     override suspend fun tinkoffPayLink(paymentId: Long, version: String): String {

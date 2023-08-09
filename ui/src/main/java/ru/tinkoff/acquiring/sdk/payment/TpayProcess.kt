@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
-import ru.tinkoff.acquiring.sdk.exceptions.AcquiringApiException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkException
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.exceptions.getErrorCodeIfApiError
@@ -15,7 +14,6 @@ import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.methods.GetTpayLinkMethodsSdkImpl
 import ru.tinkoff.acquiring.sdk.payment.methods.TpayMethods
 import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by i.golovachev
@@ -41,11 +39,10 @@ class TpayProcess internal constructor(
     fun start(
         paymentOptions: PaymentOptions,
         tpayVersion: String,
-        paymentId: Long? = null,
     ) {
         scope.launch {
             try {
-                startFlow(paymentOptions, tpayVersion, paymentId)
+                startFlow(paymentOptions, tpayVersion)
             } catch (ignored: CancellationException) {
                 throw ignored
             } catch (e: Exception) {
@@ -84,12 +81,11 @@ class TpayProcess internal constructor(
     private suspend fun startFlow(
         paymentOptions: PaymentOptions,
         tpayVersion: String,
-        paymentId: Long? = null,
     ) {
-        val _paymentId = paymentId ?: init(paymentOptions)
-        state.value = TpayPaymentState.Started(_paymentId)
-        val link = getLink(_paymentId, tpayVersion)
-        state.value = TpayPaymentState.NeedChooseOnUi(_paymentId, link)
+        val paymentId = paymentOptions.paymentId ?: init(paymentOptions)
+        state.value = TpayPaymentState.Started(paymentId)
+        val link = getLink(paymentId, tpayVersion)
+        state.value = TpayPaymentState.NeedChooseOnUi(paymentId, link)
     }
 
     private suspend fun init(paymentOptions: PaymentOptions): Long {

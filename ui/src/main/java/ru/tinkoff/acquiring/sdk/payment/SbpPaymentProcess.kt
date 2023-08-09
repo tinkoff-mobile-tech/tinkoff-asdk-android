@@ -13,6 +13,7 @@ import ru.tinkoff.acquiring.sdk.models.enums.ResponseStatus
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
 import ru.tinkoff.acquiring.sdk.payment.base.PaymentUiEvent
+import ru.tinkoff.acquiring.sdk.payment.methods.requiredPaymentId
 import ru.tinkoff.acquiring.sdk.payment.pooling.GetStatusPooling
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkBankAppsProvider
 import ru.tinkoff.acquiring.sdk.redesign.sbp.util.NspkInstalledAppsChecker
@@ -45,15 +46,15 @@ class SbpPaymentProcess internal constructor(
     val state = MutableStateFlow<SbpPaymentState>(SbpPaymentState.Created)
     private var looperJob: Job = Job()
 
-    fun start(paymentOptions: PaymentOptions, paymentId: Long? = null) {
+    fun start(options: PaymentOptions) {
         scope.launch {
             runOrCatch {
                 val nspkApps = nspkBankProvider.getNspkApps()
-                val id = paymentId ?: sendInit(paymentOptions)
-                state.value = SbpPaymentState.Started(id)
-                val deeplink = sendGetQr(id)
+                val paymentId = options.paymentId ?: sendInit(options)
+                state.value = SbpPaymentState.Started(paymentId)
+                val deeplink = sendGetQr(paymentId)
                 val installedApps = bankAppsProvider.checkInstalledApps(nspkApps, deeplink)
-                state.value = SbpPaymentState.NeedChooseOnUi(id, PaymentUiEvent.ShowApps(installedApps))
+                state.value = SbpPaymentState.NeedChooseOnUi(paymentId, PaymentUiEvent.ShowApps(installedApps))
             }
         }
     }
@@ -101,7 +102,7 @@ class SbpPaymentProcess internal constructor(
 
     private suspend fun sendInit(paymentOptions: PaymentOptions): Long {
         val response = sdk.init { configure(paymentOptions) }.performSuspendRequest().getOrThrow()
-        return response.paymentId!!
+        return response.requiredPaymentId()
     }
 
     private suspend fun sendGetQr(paymentId: Long): String = checkNotNull(

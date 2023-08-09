@@ -35,14 +35,14 @@ object MainFormLauncher {
     }
 
     @Parcelize
-    class StartData(
-        val paymentOptions: PaymentOptions,
-        val paymentId: Int? = null
-    ) : Parcelable
+    class StartData(val paymentOptions: PaymentOptions) : Parcelable
 
     object Contract : ActivityResultContract<StartData, Result>() {
         override fun createIntent(context: Context, input: StartData) =
-            MainPaymentFormActivity.intent(input.paymentOptions, context)
+            MainPaymentFormActivity.intent(
+                context = context,
+                options = input.paymentOptions
+            )
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
             RESULT_OK -> {

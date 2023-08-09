@@ -36,12 +36,9 @@ class MirPayProcess internal constructor(
     val state = MutableStateFlow<MirPayPaymentState>(MirPayPaymentState.Created(null))
     private var looperJob: Job = Job()
 
-    fun start(
-        paymentOptions: PaymentOptions,
-        paymentId: Long? = null,
-    ) {
+    fun start(paymentOptions: PaymentOptions) {
         scope.launch {
-            runCatching { startFlow(paymentOptions, paymentId) }
+            runCatching { startFlow(paymentOptions) }
                 .onFailure { handlePaymentFlowFailure(it) }
         }
     }
@@ -73,14 +70,11 @@ class MirPayProcess internal constructor(
         }
     }
 
-    private suspend fun startFlow(
-        paymentOptions: PaymentOptions,
-        paymentId: Long? = null
-    ) {
-        val _paymentId = paymentId ?: linkMethods.init(paymentOptions)
-        state.value = MirPayPaymentState.Started(_paymentId)
-        val link = linkMethods.getLink(_paymentId)
-        state.value = MirPayPaymentState.NeedChooseOnUi(_paymentId, link)
+    private suspend fun startFlow(paymentOptions: PaymentOptions) {
+        val paymentId = paymentOptions.paymentId ?: linkMethods.init(paymentOptions)
+        state.value = MirPayPaymentState.Started(paymentId)
+        val link = linkMethods.getLink(paymentId)
+        state.value = MirPayPaymentState.NeedChooseOnUi(paymentId, link)
     }
 
     private fun handlePaymentFlowFailure(ex: Throwable) {

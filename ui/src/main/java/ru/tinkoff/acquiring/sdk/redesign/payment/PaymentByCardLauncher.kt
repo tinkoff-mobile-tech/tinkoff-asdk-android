@@ -4,15 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import kotlinx.android.parcel.Parcelize
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.result.PaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
-import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_REBILL_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_SAVED_CARDS
@@ -20,7 +17,6 @@ import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.result.AcqPaymentResult
 import ru.tinkoff.acquiring.sdk.redesign.payment.ui.PaymentByCardActivity
 import ru.tinkoff.acquiring.sdk.utils.getError
-import ru.tinkoff.acquiring.sdk.utils.getExtra
 
 object PaymentByCardLauncher {
 
@@ -40,7 +36,7 @@ object PaymentByCardLauncher {
     @Parcelize
     class StartData(
         val paymentOptions: PaymentOptions,
-        val list: ArrayList<Card>,
+        val cards: ArrayList<Card>,
         val withArrowBack: Boolean = false
     ) : Parcelable
 
@@ -54,9 +50,9 @@ object PaymentByCardLauncher {
             return intent
         }
 
-        override fun createIntent(context: Context, startData: StartData): Intent =
+        override fun createIntent(context: Context, input: StartData): Intent =
             Intent(context, PaymentByCardActivity::class.java).apply {
-                putExtra(EXTRA_SAVED_CARDS, startData)
+                putExtra(EXTRA_SAVED_CARDS, input)
             }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {

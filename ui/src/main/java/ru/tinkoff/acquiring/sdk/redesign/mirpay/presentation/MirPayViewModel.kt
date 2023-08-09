@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.processNextEventInCurrentThread
 import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.payment.MirPayProcess
@@ -42,10 +43,7 @@ internal class MirPayViewModel(
     }
 
     fun pay() {
-        mirPayProcess.start(
-            paymentOptions = startData.paymentOptions,
-            paymentId = startData.paymentId
-        )
+        mirPayProcess.start(paymentOptions = startData.paymentOptions)
     }
 
     fun goingToBankApp() {
@@ -62,6 +60,11 @@ internal class MirPayViewModel(
                 mirPayNavigation.send(MirPayNavigation.Event.Close(it))
             }
         }
+    }
+
+    override fun onCleared() {
+        mirPayProcess.stop()
+        super.onCleared()
     }
 
     companion object {

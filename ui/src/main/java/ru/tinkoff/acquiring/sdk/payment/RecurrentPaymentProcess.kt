@@ -18,6 +18,7 @@ import ru.tinkoff.acquiring.sdk.responses.ChargeResponse
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsDataCollector
 import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
 import ru.tinkoff.acquiring.sdk.utils.CoroutineManager
+import ru.tinkoff.acquiring.sdk.utils.checkNotNull
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -105,11 +106,20 @@ class RecurrentPaymentProcess internal constructor(
         paymentOptions: PaymentOptions,
         email: String?
     ) {
-        val init = initMethods.init(paymentOptions, email)
-        val paymentId = checkNotNull(init.paymentId) { "paymentId must be not null" }
-        _state.value = PaymentByCardState.Started(paymentOptions, email, paymentId)
-        val charge = chargeMethods.charge(init.paymentId, cardData.rebillId)
-        charge.emitSuccess(cardData.rebillId)
+        val paymentId = paymentOptions.paymentId
+            ?: initMethods
+                .init(paymentOptions, email)
+                .requiredPaymentId()
+
+        _state.value = PaymentByCardState.Started(
+            paymentOptions = paymentOptions,
+            email = email,
+            paymentId = paymentId
+        )
+
+        chargeMethods
+            .charge(paymentId = paymentId, rebillId = cardData.rebillId)
+            .emitSuccess(rebillId = cardData.rebillId)
     }
 
     private suspend fun startRejectedFlow(
@@ -120,14 +130,35 @@ class RecurrentPaymentProcess internal constructor(
         email: String?
     ) {
         _state.value  = PaymentByCardState.CvcUiInProcess
-        val card =
-            AttachedCard(chargeMethods.getCardByRebillId(rebillId, paymentOptions).cardId, cvc)
-        val init = chargeMethods.init(paymentOptions, email, rejectedId)
-        val paymentId = checkNotNull(init.paymentId) { "paymentId must be not null" }
+
+        val cardId = chargeMethods
+            .getCardByRebillId(
+                rebillId = rebillId,
+                paymentOptions = paymentOptions
+            )
+            .cardId
+
+        val card = AttachedCard(cardId = cardId, cvv = cvc)
+
+        val paymentId = paymentOptions.paymentId
+            ?: chargeMethods
+                .init(
+                    paymentOptions = paymentOptions,
+                    email = email,
+                    rejectedPaymentId = rejectedId
+                )
+                .requiredPaymentId()
+
         _state.value = PaymentByCardState.Started(paymentOptions, email, paymentId)
-        val data3ds = check3DsVersionMethods.callCheck3DsVersion(
-            paymentId, card, paymentOptions, email
-        )
+
+        val data3ds = check3DsVersionMethods
+            .callCheck3DsVersion(
+                paymentId,
+                card,
+                paymentOptions,
+                email
+            )
+
         val finish = finishAuthorizeMethods.finish(
             paymentId,
             card,
