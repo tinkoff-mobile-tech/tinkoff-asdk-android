@@ -16,14 +16,12 @@
 
 package ru.tinkoff.acquiring.sample.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ListView
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
@@ -33,6 +31,7 @@ import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.ui.environment.AcqEnvironmentDialog
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
+import ru.tinkoff.acquiring.sample.utils.toast
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
 import ru.tinkoff.acquiring.sdk.models.options.FeaturesOptions
@@ -247,17 +246,8 @@ class MainActivity : AppCompatActivity(), BooksListAdapter.BookDetailsClickListe
     }
 
     companion object {
-
         private const val STATIC_QR_REQUEST_CODE = 12
         const val NOTIFICATION_PAYMENT_REQUEST_CODE = 14
         const val THREE_DS_REQUEST_CODE = 15
-
-        fun Activity.toast(message: String) = runOnUiThread {
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        }
-
-        fun Activity.toast(@StringRes message: Int) = runOnUiThread {
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        }
     }
 }

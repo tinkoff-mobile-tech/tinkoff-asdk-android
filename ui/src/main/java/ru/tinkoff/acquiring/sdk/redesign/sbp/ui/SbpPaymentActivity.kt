@@ -79,7 +79,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
         setContentView(R.layout.acq_activity_bank_list)
 
         if (savedInstanceState == null) {
-            viewModel.loadData(startData.paymentOptions, startData.paymentId)
+            viewModel.loadData(startData.paymentOptions)
         }
 
         initToolbar()
@@ -161,7 +161,7 @@ internal class SbpPaymentActivity : AppCompatActivity(), OnPaymentSheetCloseList
                         buttonTextRes = R.string.acq_generic_button_stubnet
                     )
                     stubButtonView.setOnClickListener {
-                        viewModel.loadData(startData.paymentOptions, startData.paymentId)
+                        viewModel.loadData(startData.paymentOptions)
                     }
                 }
                 is SpbBankListState.Empty -> {

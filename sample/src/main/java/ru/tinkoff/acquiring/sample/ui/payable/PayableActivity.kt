@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package ru.tinkoff.acquiring.sample.ui
+package ru.tinkoff.acquiring.sample.ui.payable
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -22,17 +22,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import kotlinx.coroutines.Dispatchers
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.SampleApplication
-import ru.tinkoff.acquiring.sample.ui.MainActivity.Companion.toast
+import ru.tinkoff.acquiring.sample.ui.PaymentResultActivity
+import ru.tinkoff.acquiring.sample.ui.payable.delegates.*
 import ru.tinkoff.acquiring.sample.utils.CombInitDelegate
 import ru.tinkoff.acquiring.sample.utils.SettingsSdkManager
 import ru.tinkoff.acquiring.sample.utils.TerminalsManager
@@ -40,24 +38,12 @@ import ru.tinkoff.acquiring.sdk.AcquiringSdk.Companion.log
 import ru.tinkoff.acquiring.sdk.exceptions.AcquiringSdkTimeoutException
 import ru.tinkoff.acquiring.sdk.localization.AsdkSource
 import ru.tinkoff.acquiring.sdk.localization.Language
-import ru.tinkoff.acquiring.sdk.models.Card
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.models.options.screen.SavedCardsOptions
 import ru.tinkoff.acquiring.sdk.payment.*
-import ru.tinkoff.acquiring.sdk.redesign.cards.list.ChooseCardLauncher
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_PAYMENT_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.RESULT_ERROR
-import ru.tinkoff.acquiring.sdk.threeds.ThreeDsHelper
-import ru.tinkoff.acquiring.sdk.redesign.mainform.MainFormLauncher
-import ru.tinkoff.acquiring.sdk.redesign.mirpay.MirPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.payment.PaymentByCardLauncher
-import ru.tinkoff.acquiring.sdk.redesign.recurrent.RecurrentPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.sbp.SbpPayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.tpay.TpayLauncher
-import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableMirPay
-import ru.tinkoff.acquiring.sdk.redesign.tpay.models.enableTinkoffPay
-import ru.tinkoff.acquiring.sdk.redesign.tpay.models.getTinkoffPayVersion
 import ru.tinkoff.acquiring.sdk.utils.Money
 import ru.tinkoff.acquiring.sdk.utils.getLongOrNull
 import ru.tinkoff.acquiring.yandexpay.YandexButtonFragment
@@ -67,86 +53,35 @@ import ru.tinkoff.acquiring.yandexpay.models.YandexPayData
 import ru.tinkoff.acquiring.yandexpay.models.enableYandexPay
 import ru.tinkoff.acquiring.yandexpay.models.mapYandexPayData
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 /**
  * @author Mariya Chernyadieva
  */
 @SuppressLint("Registered")
-open class PayableActivity : AppCompatActivity() {
+open class PayableActivity : AppCompatActivity(),
+    TpayPaymentDelegate by TpayPayment(),
+    MirPayPaymentDelegate by MirPayPayment(),
+    SbpPayPaymentDelegate by SbpPayPayment(),
+    MainFormPaymentDelegate by MainFormPayment(),
+    RecurrentPaymentDelegate by RecurrentPayment(),
+    CardsForRecurrentDelegate by CardsForRecurrent(),
+    RecurrentParentPaymentDelegate by RecurrentParentPayment() {
 
     protected var totalPrice: Money = Money()
     protected var title: String = ""
     protected var description: String = ""
-    protected lateinit var settings: SettingsSdkManager
+    lateinit var settings: SettingsSdkManager
 
     private lateinit var progressDialog: AlertDialog
     private var errorDialog: AlertDialog? = null
     private var isProgressShowing = false
     private var isErrorShowing = false
-    protected var tinkoffAcquiring = SampleApplication.tinkoffAcquiring
+    val tinkoffAcquiring = SampleApplication.tinkoffAcquiring
     private val orderId: String
         get() = abs(Random().nextInt()).toString()
     private var acqFragment: YandexButtonFragment? = null
-    private val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
-    private val byCardPayment = registerForActivityResult(PaymentByCardLauncher.Contract) { result ->
-        when (result) {
-            is PaymentByCardLauncher.Success -> {
-                toast("byCardPayment Success : ${result.paymentId}")
-            }
-            is PaymentByCardLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is PaymentByCardLauncher.Canceled -> toast("byCardPayment canceled")
-        }
-    }
-    private val spbPayment = registerForActivityResult(SbpPayLauncher.Contract) { result ->
-        when (result) {
-            is SbpPayLauncher.Success -> {
-                toast("SBP Success")
-            }
-            is SbpPayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is SbpPayLauncher.Canceled -> toast("SBP canceled")
-            is SbpPayLauncher.NoBanks -> Unit
-        }
-    }
-    private val byMainFormPayment = registerForActivityResult(MainFormLauncher.Contract) { result ->
-        when (result) {
-            is MainFormLauncher.Canceled -> toast("payment canceled")
-            is MainFormLauncher.Error ->  toast(result.error.message ?: getString(R.string.error_title))
-            is MainFormLauncher.Success ->  toast("payment Success-  paymentId:${result.paymentId}")
-        }
-    }
-    private val recurrentPayment = registerForActivityResult(RecurrentPayLauncher.Contract) { result ->
-        when (result) {
-            is RecurrentPayLauncher.Canceled -> toast("payment canceled")
-            is RecurrentPayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is RecurrentPayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
-        }
-    }
-    private val cardsForRecurrent =
-        registerForActivityResult(ChooseCardLauncher.Contract) { result ->
-            when (result) {
-                is ChooseCardLauncher.Canceled -> Unit
-                is ChooseCardLauncher.Error -> Unit
-                is ChooseCardLauncher.Success -> launchRecurrent(result.card)
-                is ChooseCardLauncher.NeedInputNewCard -> Unit
-            }
-        }
-
-    private val tpayPayment = registerForActivityResult(TpayLauncher.Contract) { result ->
-        when (result) {
-            is TpayLauncher.Canceled -> toast("tpay canceled")
-            is TpayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is TpayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
-        }
-    }
-    private val mirPayment = registerForActivityResult(MirPayLauncher.Contract) { result ->
-        when (result) {
-            is MirPayLauncher.Canceled -> toast("MirPay canceled")
-            is MirPayLauncher.Error -> toast(result.error.message ?: getString(R.string.error_title))
-            is MirPayLauncher.Success -> toast("payment Success-  paymentId:${result.paymentId}")
-        }
-    }
+    val combInitDelegate: CombInitDelegate = CombInitDelegate(tinkoffAcquiring.sdk, Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -161,6 +96,13 @@ open class PayableActivity : AppCompatActivity() {
         settings = SettingsSdkManager(this)
 
         initDialogs()
+        initSbpPayPayment(this)
+        initTpayPaymentDelegate(this)
+        initMirPayPaymentDelegate(this)
+        initMainFormPaymentDelegate(this)
+        initRecurrentPaymentDelegate(this)
+        initCardsForRecurrentDelegate(this)
+        initRecurrentParentPaymentDelegate(this)
     }
 
     override fun onDestroy() {
@@ -175,7 +117,8 @@ open class PayableActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            PAYMENT_REQUEST_CODE, DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode, data)
+            PAYMENT_REQUEST_CODE,
+            DYNAMIC_QR_PAYMENT_REQUEST_CODE -> handlePaymentResult(resultCode, data)
             YANDEX_PAY_REQUEST_CODE -> handleYandexPayResult(resultCode, data)
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
@@ -207,91 +150,14 @@ open class PayableActivity : AppCompatActivity() {
 
     protected fun initPayment() {
         if (settings.isRecurrentPayment) {
-            RecurrentPaymentProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
-            cardsForRecurrent.launch(createSavedCardOptions())
+            launchCardsScreen()
         } else {
-            val options = createPaymentOptions().apply {
-                this.setTerminalParams(
-                    terminalKey = TerminalsManager.selectedTerminal.terminalKey,
-                    publicKey = TerminalsManager.selectedTerminal.publicKey
-                )
-            }
-            PaymentByCardProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
-            byMainFormPayment.launch(MainFormLauncher.StartData(options))
+            launchMainFormPayment()
         }
     }
 
     protected fun openDynamicQrScreen() {
         tinkoffAcquiring.openDynamicQrScreen(this, createPaymentOptions(), DYNAMIC_QR_PAYMENT_REQUEST_CODE)
-    }
-
-    protected fun startSbpPayment() {
-        lifecycleScope.launch {
-            val opt = createPaymentOptions()
-            opt.setTerminalParams(
-                TerminalsManager.selectedTerminal.terminalKey,
-                TerminalsManager.selectedTerminal.publicKey
-            )
-            if (settings.isEnableCombiInit) {
-                showProgressDialog()
-                runCatching { combInitDelegate.sendInit(opt).paymentId!! }
-                    .onFailure {
-                        hideProgressDialog()
-                        showErrorDialog()
-                    }
-                    .onSuccess {
-                        hideProgressDialog()
-                        tinkoffAcquiring.initSbpPaymentSession()
-                        spbPayment.launch(SbpPayLauncher.StartData(it, opt))
-                    }
-            } else {
-                tinkoffAcquiring.initSbpPaymentSession()
-                spbPayment.launch(SbpPayLauncher.StartData(opt))
-            }
-        }
-    }
-
-    protected fun setupTinkoffPay() {
-        if (!settings.isTinkoffPayEnabled) return
-
-        val tinkoffPayButton = findViewById<View>(R.id.tinkoff_pay_button)
-
-        tinkoffAcquiring.checkTerminalInfo({ status ->
-            if (status.enableTinkoffPay().not()) return@checkTerminalInfo
-
-            tinkoffPayButton.visibility = View.VISIBLE
-
-            val opt = createPaymentOptions()
-            opt.setTerminalParams(
-                TerminalsManager.selectedTerminal.terminalKey,
-                TerminalsManager.selectedTerminal.publicKey
-            )
-            val version = checkNotNull(status?.getTinkoffPayVersion())
-            tinkoffAcquiring.initTinkoffPayPaymentSession()
-            tinkoffPayButton.setOnClickListener {
-                tpayPayment.launch(TpayLauncher.StartData(opt, version))
-            }
-        })
-    }
-
-    protected fun setupMirPay() {
-        val mirPayButton = findViewById<View>(R.id.mir_pay_button)
-
-        tinkoffAcquiring.checkTerminalInfo({ status ->
-            if (status.enableMirPay().not()) return@checkTerminalInfo
-
-            mirPayButton.visibility = View.VISIBLE
-
-            val opt = createPaymentOptions()
-            opt.setTerminalParams(
-                TerminalsManager.selectedTerminal.terminalKey,
-                TerminalsManager.selectedTerminal.publicKey
-            )
-            tinkoffAcquiring.initMirPayPaymentSession()
-            mirPayButton.setOnClickListener {
-                mirPayment.launch(MirPayLauncher.StartData(opt))
-            }
-        })
     }
 
     protected fun setupYandexPay(theme: Int? = null, savedInstanceState: Bundle?) {
@@ -324,22 +190,7 @@ open class PayableActivity : AppCompatActivity() {
         })
     }
 
-    protected fun setupRecurrentParentPayment() {
-        val recurrentButton : TextView? = findViewById(R.id.recurrent_pay)
-        recurrentButton?.isVisible = settings.isRecurrentPayment
-        recurrentButton?.setOnClickListener {
-            val paymentOptions = createPaymentOptions().apply {
-                val session = TerminalsManager.selectedTerminal
-                this.setTerminalParams(
-                    terminalKey = session.terminalKey, publicKey = session.publicKey
-                )
-            }
-            PaymentByCardProcess.init(SampleApplication.tinkoffAcquiring.sdk, application, ThreeDsHelper.CollectData)
-            byCardPayment.launch(PaymentByCardLauncher.StartData(paymentOptions, ArrayList()))
-        }
-    }
-
-    private fun createPaymentOptions(): PaymentOptions {
+    fun createPaymentOptions(): PaymentOptions {
         val sessionParams = TerminalsManager.selectedTerminal
 
         return PaymentOptions()
@@ -376,10 +227,14 @@ open class PayableActivity : AppCompatActivity() {
                     userCanSelectCard = true
                     duplicateEmailToReceipt = true
                 }
+                setTerminalParams(
+                    sessionParams.terminalKey,
+                    sessionParams.publicKey
+                )
             }
     }
 
-    private fun createSavedCardOptions(): SavedCardsOptions {
+    fun createSavedCardOptions(): SavedCardsOptions {
         val settings = SettingsSdkManager(this)
         val params = TerminalsManager.selectedTerminal
 
@@ -426,7 +281,7 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    protected fun showErrorDialog() {
+    fun showErrorDialog() {
         errorDialog = AlertDialog.Builder(this).apply {
             setTitle(R.string.error_title)
             setMessage(getString(R.string.error_message))
@@ -485,12 +340,12 @@ open class PayableActivity : AppCompatActivity() {
         )
     }
 
-    protected fun showProgressDialog() {
+    fun showProgressDialog() {
         progressDialog.show()
         isProgressShowing = true
     }
 
-    protected fun hideProgressDialog() {
+    fun hideProgressDialog() {
         progressDialog.dismiss()
         isProgressShowing = false
     }
@@ -510,18 +365,6 @@ open class PayableActivity : AppCompatActivity() {
         }
     }
 
-    private fun launchRecurrent(card: Card) {
-        val options = createPaymentOptions().apply {
-            this.setTerminalParams(
-                terminalKey = TerminalsManager.selectedTerminal.terminalKey,
-                publicKey = TerminalsManager.selectedTerminal.publicKey
-            )
-        }
-        recurrentPayment.launch(
-            RecurrentPayLauncher.StartData(card, options)
-        )
-    }
-
     private fun commonErrorHandler(data: Intent?) {
         val error = getErrorFromIntent(data)
         val paymentIdFromIntent = data?.getLongOrNull(EXTRA_PAYMENT_ID)
@@ -530,7 +373,6 @@ open class PayableActivity : AppCompatActivity() {
         error?.printStackTrace()
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
-
 
     private fun configureToastMessage(error: Throwable?, paymentId: Long?): String {
         val acqSdkTimeout  = error as? AcquiringSdkTimeoutException
@@ -544,7 +386,6 @@ open class PayableActivity : AppCompatActivity() {
             status?.let { append("status: $it") }
         }
     }
-
 
     companion object {
 

@@ -67,10 +67,13 @@ internal class AttachCardViewModel(
             this.checkType = checkType
         }
 
-        coroutine.call(addCardRequest,
+        coroutine
+            .call(
+                request = addCardRequest,
                 onSuccess = {
                     check3dsVersionIfNeed(cardData, it.paymentId, it.requestKey!!,data)
-                })
+                }
+            )
     }
 
     fun submitRandomAmount(requestKey: String, amount: Long) {

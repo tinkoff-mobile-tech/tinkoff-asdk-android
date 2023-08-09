@@ -40,7 +40,6 @@ internal class TpayViewModel(
         tpayProcess.start(
             paymentOptions = startData.paymentOptions,
             tpayVersion = startData.version,
-            paymentId = startData.paymentId
         )
     }
 
@@ -58,6 +57,11 @@ internal class TpayViewModel(
                 tpayNavigation.send(TpayNavigation.Event.Close(it))
             }
         }
+    }
+
+    override fun onCleared() {
+        tpayProcess.stop()
+        super.onCleared()
     }
 
     companion object {

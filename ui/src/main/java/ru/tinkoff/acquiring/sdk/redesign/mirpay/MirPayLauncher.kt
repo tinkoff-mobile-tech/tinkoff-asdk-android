@@ -42,10 +42,7 @@ object MirPayLauncher {
     ) : Result(), AcqPaymentResult.Error, java.io.Serializable
 
     @Parcelize
-    class StartData(
-        val paymentOptions: PaymentOptions,
-        val paymentId: Long? = null
-    ) : Parcelable
+    class StartData(val paymentOptions: PaymentOptions) : Parcelable
 
     object Contract : ActivityResultContract<StartData, Result> () {
 

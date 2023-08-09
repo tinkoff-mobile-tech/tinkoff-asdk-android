@@ -419,7 +419,10 @@ internal class MainPaymentFormActivity : AppCompatActivity() {
     }
 
     internal companion object {
-        fun intent(options: PaymentOptions, context: Context): Intent {
+        fun intent(
+            context: Context,
+            options: PaymentOptions,
+        ): Intent {
             val intent = Intent(context, MainPaymentFormActivity::class.java)
             intent.putOptions(options)
             return intent

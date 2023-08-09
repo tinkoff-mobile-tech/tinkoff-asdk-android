@@ -63,7 +63,6 @@ object TpayLauncher {
     class StartData(
         val paymentOptions: PaymentOptions,
         val version: String,
-        val paymentId: Long? = null
     ) : Parcelable
 
     object Contract : ActivityResultContract<StartData, Result>() {

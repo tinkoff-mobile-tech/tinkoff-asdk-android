@@ -77,36 +77,42 @@ class PaymentByCardProcess internal constructor(
 
     private suspend fun startFlow(
         card: CardSource,
-        paymentOptions: PaymentOptions,
+        options: PaymentOptions,
         email: String?,
     ) {
         this.paymentSource = card
-        val paymentId = initMethods
-                .init(paymentOptions, email)
-                .paymentId
-                .checkNotNull { "paymentId must be not null" }
+
+        val paymentId = options.paymentId
+            ?: initMethods
+                .init(options, email)
+                .requiredPaymentId()
 
         val data3ds = check3DsVersionMethods.callCheck3DsVersion(
-            paymentId, card, paymentOptions, email
+            paymentId = paymentId,
+            paymentSource = card,
+            paymentOptions = options,
+            email = email
         )
+
         val finish = finishAuthorizeMethods.finish(
-            paymentId,
-            card,
-            paymentOptions,
-            email,
-            data3ds.additionalData,
-            data3ds.threeDsVersion,
-            data3ds.threeDsTransaction
+            paymentId = paymentId,
+            paymentSource = card,
+            paymentOptions = options,
+            email = email,
+            data = data3ds.additionalData,
+            threeDsVersion = data3ds.threeDsVersion,
+            threeDsTransaction = data3ds.threeDsTransaction
         )
+
         _state.value = when (finish) {
             is FinishAuthorizeMethods.Result.Need3ds -> PaymentByCardState.ThreeDsUiNeeded(
-                finish.threeDsState,
-                paymentOptions
+                threeDsState = finish.threeDsState,
+                paymentOptions = options
             )
             is FinishAuthorizeMethods.Result.Success -> PaymentByCardState.Success(
-                finish.paymentId,
-                finish.cardId,
-                finish.rebillId
+                paymentId = finish.paymentId,
+                cardId = finish.cardId,
+                rebillId = finish.rebillId
             )
         }
     }

@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenResumed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.tinkoff.acquiring.sdk.TinkoffAcquiring
 import ru.tinkoff.acquiring.sdk.databinding.AcqMirPayActivityBinding
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_CARD_ID
 import ru.tinkoff.acquiring.sdk.redesign.common.LauncherConstants.EXTRA_ERROR

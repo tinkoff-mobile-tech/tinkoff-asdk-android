@@ -31,6 +31,7 @@ import ru.tinkoff.acquiring.sample.R
 import ru.tinkoff.acquiring.sample.adapters.CartListAdapter
 import ru.tinkoff.acquiring.sample.models.BooksRegistry
 import ru.tinkoff.acquiring.sample.models.Cart
+import ru.tinkoff.acquiring.sample.ui.payable.PayableActivity
 import ru.tinkoff.acquiring.sdk.utils.Money
 
 /**
@@ -164,10 +165,6 @@ class CartActivity : PayableActivity(), CartListAdapter.DeleteCartItemListener {
 
         result.setLength(result.length - 2)
         return result.toString()
-    }
-
-    private fun setupRecurrentParentPayment(hasRecurrent: Boolean) {
-        recurrentButton.isVisible = hasRecurrent
     }
 
     companion object {
