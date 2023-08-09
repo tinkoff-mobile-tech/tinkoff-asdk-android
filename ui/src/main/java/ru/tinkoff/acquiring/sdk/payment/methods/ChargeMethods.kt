@@ -2,6 +2,8 @@ package ru.tinkoff.acquiring.sdk.payment.methods
 
 import ru.tinkoff.acquiring.sdk.AcquiringSdk
 import ru.tinkoff.acquiring.sdk.models.Card
+import ru.tinkoff.acquiring.sdk.models.ReceiptFfd105
+import ru.tinkoff.acquiring.sdk.models.ReceiptFfd12
 import ru.tinkoff.acquiring.sdk.models.options.screen.PaymentOptions
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi
 import ru.tinkoff.acquiring.sdk.payment.methods.InitConfigurator.configure
@@ -37,16 +39,19 @@ internal class ChargeMethodsSdkImpl(private val acquiringSdk: AcquiringSdk) : Ch
             .execute()
     }
 
-    // случайное копирование
-    // возможно, это поведение будет модифицировано, поэтому не стоит объеденять с InitMethods
     private fun AcquiringSdk.configureInit(
         paymentOptions: PaymentOptions,
         email: String? = null
     ) = init {
         configure(paymentOptions)
+
         if (paymentOptions.features.duplicateEmailToReceipt && !email.isNullOrEmpty()) {
-            receipt?.email = email
+            when (receipt) {
+                is ReceiptFfd105 -> (receipt as ReceiptFfd105).email = email
+                is ReceiptFfd12 -> (receipt as ReceiptFfd12).base.email = email
+            }
         }
+
         this.recurrent = true
     }
 

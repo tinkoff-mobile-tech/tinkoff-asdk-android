@@ -16,7 +16,10 @@
 
 package ru.tinkoff.acquiring.sdk.requests
 
+import ru.tinkoff.acquiring.sdk.models.FfdVersion
 import ru.tinkoff.acquiring.sdk.models.Receipt
+import ru.tinkoff.acquiring.sdk.models.ReceiptFfd105
+import ru.tinkoff.acquiring.sdk.models.ReceiptFfd12
 import ru.tinkoff.acquiring.sdk.models.Shop
 import ru.tinkoff.acquiring.sdk.network.AcquiringApi.INIT_METHOD
 import ru.tinkoff.acquiring.sdk.responses.InitResponse
@@ -177,8 +180,17 @@ class InitRequest : AcquiringRequest<InitResponse>(INIT_METHOD) {
         super.performRequest(this, InitResponse::class.java, onSuccess, onFailure)
     }
 
-    fun receipt(receipt: Receipt.() -> Unit) {
-        this.receipt = Receipt().apply(receipt)
+    fun receipt(version: FfdVersion, initializer: Receipt.() -> Unit): Receipt {
+        val receipt: Receipt = when(version) {
+            FfdVersion.VERSION1_05 -> ReceiptFfd105()
+            FfdVersion.VERSION1_2 -> {
+                val base = ReceiptFfd105()
+                ReceiptFfd12(base)
+            }
+        }
+
+        receipt.apply(initializer)
+        return receipt
     }
 
     private fun MutableMap<String, Any>.putDataIfNonNull(data: Map<String, String>?) {
